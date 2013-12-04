@@ -1,0 +1,33 @@
+<div ng-form="form">
+  <div class="form-group"
+       ng-class="{'has-error': form.$invalid}">
+    <label ng-if="label"
+           class="col-md-2 control-label">
+      {{ label }}
+      <i ng-if="tooltip" rln-tooltip="{{ tooltip }}"></i>
+    </label>
+
+    <div
+        ng-class="{ true: 'col-md-10', false: 'col-md-12' }[label.length > 0]"
+        ng-transclude></div>
+
+    <div ng-if="!hideErrors"
+         ng-class="{ true: 'col-md-10 col-md-offset-2', false: 'col-md-12' }[label.length > 0]">
+      <span mw-forms-validation="required">{{ 'errors.isRequired' | i18n }}</span>
+      <span mw-forms-validation="email">{{ 'errors.hasToBeAnEmail' | i18n }}</span>
+    </div>
+
+    <!--<span class="help-block"-->
+    <!--ng-show="form.inputField.$error.pattern && type === 'phone'">{{'errors.phoneNumber' | i18n }}</span>-->
+    <!--<span class="help-block"-->
+    <!--ng-show="form.inputField.$error.required">{{'errors.isRequired' | i18n }}</span>-->
+    <!--<span class="help-block"-->
+    <!--ng-show="form.inputField.$error.email">{{'errors.hasToBeAnEmail' | i18n }}</span>-->
+    <!--<span class="help-inline"-->
+    <!--ng-show="form.inputField.$error.minlength">{{'errors.minValue' | i18n:{count: min} }}</span>-->
+    <!--<span class="help-inline"-->
+    <!--ng-show="form.inputField.$error.maxlength">{{'errors.maxValue' | i18n:{count: max} }}</span>-->
+    <!--<span class="help-inline"-->
+    <!--ng-show="form.inputField.$error.url">{{'errors.validUrl' | i18n }}</span>-->
+  </div>
+</div>

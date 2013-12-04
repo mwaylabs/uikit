@@ -1,8 +1,10 @@
-angular.module('Relution.UI')
+'use strict';
+
+angular.module('mwListable', [])
 
 /**
  * @ngdoc directive
- * @name Relution.Common.directive:rlnListable
+ * @name mwListable.directive:mwListable
  * @element table
  * @description
  *
@@ -11,8 +13,30 @@ angular.module('Relution.UI')
  *
  * @param {string} selectable Instance of selectable for this listable item
  * @param {string} filterable Instance of filterable for this listable item. Needed for pagination
+ * @example
+ * <doc:example>
+ *   <doc:source>
+ *    <table mw-listable
+ *           selectable="selectable"
+ *           filterable="filterable">
+ *      <thead>
+ *        <tr>
+ *          <th mw-listable-header
+ *          title="A column"></th>
+ *        </tr>
+ *      </thead>
+ *      <tbody>
+ *        <tr ng-repeat="item in filterable.items()">
+ *          <td mw-listable-column-checkbox></td>
+ *          <td>Column content</td>
+ *        </tr>
+ *        <tr id="listableFooter"></tr>
+ *      </tbody>
+ *    </table>
+ *   </doc:source>
+ * </doc:example>
  */
-    .directive('rlnListable', function ($compile, $window, $document) {
+    .directive('mwListable', function ($compile, $window, $document) {
       var _element,
           _scope,
           _header,
@@ -112,7 +136,7 @@ angular.module('Relution.UI')
 
 /**
  * @ngdoc directive
- * @name Relution.Common.directive:rlnListableHeader
+ * @name mwListable.directive:mwListableHeader
  * @element th
  * @description
  *
@@ -122,10 +146,10 @@ angular.module('Relution.UI')
  * @param {string} title Title of the table header
  * @param {string} sort Property key of the model to sort by
  */
-    .directive('rlnListableHeader', function () {
+    .directive('mwListableHeader', function () {
       return {
         restrict: 'A',
-        require: '^rlnListable',
+        require: '^mwListable',
         scope: {
           title: '@',
           property: '@sort'
@@ -137,33 +161,42 @@ angular.module('Relution.UI')
             '</span>' +
             ' {{ title }}' +
             '</th>',
-        link: function (scope, elm, attr, rlnListableCtrl) {
+        link: function (scope, elm, attr, mwListableCtrl) {
           var ascending = '+',
               descending = '-';
 
           scope.toggleSortOrder = function () {
             if (scope.property) {
               var sortOrder = ascending; //default
-              if (rlnListableCtrl.getSort() === ascending + scope.property) {
+              if (mwListableCtrl.getSort() === ascending + scope.property) {
                 sortOrder = descending;
               }
-              rlnListableCtrl.sort(scope.property, sortOrder);
+              mwListableCtrl.sort(scope.property, sortOrder);
             }
           };
 
-          scope.isSelected = function(prefix) {
-            return rlnListableCtrl.getSort() === prefix + scope.property;
+          scope.isSelected = function (prefix) {
+            return mwListableCtrl.getSort() === prefix + scope.property;
           };
 
-          rlnListableCtrl.registerColumn(scope);
+          mwListableCtrl.registerColumn(scope);
         }
-      }
-          ;
+      };
     })
 
-
-    .
-    directive('rlnListableColumnCheckbox', function () {
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwListableColumnCheckbox
+ * @element th
+ * @description
+ *
+ * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+ * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+ *
+ * @param {string} title Title of the table header
+ * @param {string} sort Property key of the model to sort by
+ */
+    .directive('mwListableColumnCheckbox', function () {
       return {
         restrict: 'A',
         template: '<input type="checkbox" ' +
