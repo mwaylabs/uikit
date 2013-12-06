@@ -45,7 +45,10 @@ angular.module('mwListable', [])
       var compileHeaderCheckbox = function () {
         _header.prepend(
             '<th>' +
-                '<input type="checkbox" ng-click="toggleAll()" ng-checked="selectable.allSelected()" />' +
+                '<input type="checkbox" ' +
+                'ng-if="filterable.items().length > 0" ' +
+                'ng-click="toggleAll()" ' +
+                'ng-checked="selectable.allSelected()" />' +
                 '</th>');
         $compile(_header)(_scope);
       };
@@ -156,8 +159,8 @@ angular.module('mwListable', [])
         },
         template: '<th ng-click="toggleSortOrder()" ng-class="{ clickable: property }">' +
             '<span ng-if="property">' +
-            '<i ng-if="isSelected(\'-\')" rln-icon="sort-by-attributes-alt"></i>' +
-            '<i ng-if="isSelected(\'+\')" rln-icon="sort-by-attributes" ></i>' +
+            '<i ng-if="isSelected(\'-\')" mw-icon="sort-by-attributes-alt"></i>' +
+            '<i ng-if="isSelected(\'+\')" mw-icon="sort-by-attributes" ></i>' +
             '</span>' +
             ' {{ title }}' +
             '</th>',

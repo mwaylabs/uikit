@@ -13,8 +13,9 @@
 
     <div ng-if="!hideErrors"
          ng-class="{ true: 'col-md-10 col-md-offset-2', false: 'col-md-12' }[label.length > 0]">
-      <span mw-forms-validation="required">{{ 'errors.isRequired' | i18n }}</span>
-      <span mw-forms-validation="email">{{ 'errors.hasToBeAnEmail' | i18n }}</span>
+      <span mw-form-validation="required">{{ 'errors.isRequired' | i18n }}</span>
+      <span mw-form-validation="email">{{ 'errors.hasToBeAnEmail' | i18n }}</span>
+      <span mw-form-validation="pattern">{{ 'errors.hasToMatchPattern' | i18n }}</span>
     </div>
 
     <!--<span class="help-block"-->

@@ -1,1 +1,0 @@
-angular.module('Relution.UI', ['mwModal', 'mwListable', 'mwForms', 'mwComponents']);
