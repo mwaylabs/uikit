@@ -2,7 +2,7 @@
   <div class="row">
     <ul class="nav nav-tabs" ng-class="{ true: 'nav-justified' }[justified]">
       <li ng-repeat="pane in panes" ng-class="{ active: pane.selected }">
-        <a ng-click="select(pane)">{{ pane.title }}</a>
+        <a ng-class="{ 'has-error': !pane.isValid }" ng-click="select(pane)">{{ pane.title }}</a>
       </li>
     </ul>
   </div>

@@ -4,7 +4,7 @@
     <label ng-if="label"
            class="col-md-2 control-label">
       {{ label }}
-      <i ng-if="tooltip" rln-tooltip="{{ tooltip }}"></i>
+      <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
     </label>
 
     <div
@@ -16,6 +16,7 @@
       <span mw-form-validation="required">{{ 'errors.isRequired' | i18n }}</span>
       <span mw-form-validation="email">{{ 'errors.hasToBeAnEmail' | i18n }}</span>
       <span mw-form-validation="pattern">{{ 'errors.hasToMatchPattern' | i18n }}</span>
+      <span mw-form-validation="min">{{'errors.minValue' | i18n:{count: minValue} }}</span>
     </div>
 
     <!--<span class="help-block"-->
