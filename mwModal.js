@@ -30,6 +30,7 @@ angular.module('mwModal', [])
     .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller) {
       var _scope,
           _template,
+          _cachedTemplate,
           _modals = {},
           _body = $document.find('body').eq(0);
 
@@ -56,16 +57,21 @@ angular.module('mwModal', [])
         }
 
         // Generate modal id from templateUrl: '/url/to/myModal.html' -> 'myModal'
-        _modalId = modalOptions.templateUrl
-            .substring(modalOptions.templateUrl.lastIndexOf('/') + 1)
-            .split('.')[0];
+        _modalId = modalOptions.templateUrl;
 
         if (!_modals[_modalId]) {
           // Create new scope if scope is not given in options
           _scope = (modalOptions.scope || $rootScope).$new();
 
-          // Get template from cache and build element
-          _template = angular.element($templateCache.get(modalOptions.templateUrl).trim());
+          // Get template from cache
+          _cachedTemplate = $templateCache.get(modalOptions.templateUrl);
+
+          // Throw error if template with this ID/Path hasn't been found
+          if (!angular.isDefined(_cachedTemplate)) {
+            throw new Error('Modal service: template \'' + modalOptions.templateUrl + '\' has not been found. Does a template with this ID/Path exist?');
+          }
+          // Build element
+          _template = angular.element(_cachedTemplate.trim());
 
           _modal = $compile(_template)(_scope);
           _body.append(_modal);

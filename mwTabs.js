@@ -36,7 +36,7 @@ angular.module('mwTabs', [])
         restrict: 'A',
         scope: {
           title: '@mwTabsPane',
-          isValid: '='
+          isInvalid: '='
         },
         replace: true,
         transclude: true,
