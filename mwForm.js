@@ -145,6 +145,11 @@ angular.module('mwForm', [])
               parent = scope.$parent,
               invalid = false;
 
+          if (!inputName) {
+            invalid = true;
+            throw new Error('element doesn\'t have name attribute');
+          }
+
           if (!parent.form) {
             invalid = true;
             throw new Error('missing form on parent scope!');
