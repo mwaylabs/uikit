@@ -71,11 +71,35 @@ angular.module('mwFilter', [])
  * Directive for the filter panel.
  *
  */
-    .directive('mwFilterPanel', function () {
+    .directive('mwFilterPanel', function ($document) {
       return {
         replace: true,
         transclude: true,
-        templateUrl: 'modules/ui/templates/mwFilter/mwFilterPanel.html'
+        scope: {
+          affix:'@',
+          offset:'@'
+        },
+        templateUrl: 'modules/ui/templates/mwFilter/mwFilterPanel.html',
+        link: function(scope,el,attr){
+
+          var repositionFilterPanel = function(){
+            var scrollPos = $document.scrollTop(),
+                newPos = scrollPos-attr.offset;
+            newPos=newPos>0?newPos:0;
+            if(newPos<0){
+              newPos=0;
+              el.removeClass('affixed');
+            }
+            el.addClass('affixed');
+            el.css('top',newPos);
+          };
+
+          if(attr.affix){
+            angular.element(window).scroll(function() {
+              repositionFilterPanel();
+            });
+          }
+        }
       };
     });
 
