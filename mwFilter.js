@@ -24,7 +24,11 @@ angular.module('mwFilter', [])
         },
         templateUrl: 'modules/ui/templates/mwFilter/mwFilterSelect.html',
         link: function (scope) {
-          scope.model = scope.filterable.properties[scope.property];
+          scope.$watch('filterable', function() {
+            if(scope.filterable) {
+              scope.model = scope.filterable.properties[scope.property];
+            }
+          });
         }
       };
     })
@@ -70,6 +74,9 @@ angular.module('mwFilter', [])
  *
  * Directive for the filter panel.
  *
+ * @param {boolean} affix Make the filterbar affix by listening on window scroll event and changing top position so that the filterbar can be postion relative instead of fixed
+ * @param {number} offset If needed an offset to the top for example when a nav bar is over the sidebar that is not fixed.
+ *
  */
     .directive('mwFilterPanel', function ($document) {
       return {
@@ -82,9 +89,11 @@ angular.module('mwFilter', [])
         templateUrl: 'modules/ui/templates/mwFilter/mwFilterPanel.html',
         link: function(scope,el,attr){
 
+          var offsetTop = angular.element(el).offset().top;
+
           var repositionFilterPanel = function(){
             var scrollPos = $document.scrollTop(),
-                newPos = scrollPos-attr.offset;
+                newPos = scrollPos-offsetTop-(attr.offset*-1);
             newPos=newPos>0?newPos:0;
             if(newPos<0){
               newPos=0;
