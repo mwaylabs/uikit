@@ -141,6 +141,7 @@ angular.module('mwForm', [])
         },
         template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
         link: function (scope, elm, attr, mwFormInputCtrl) {
+
           var inputName = mwFormInputCtrl.element.attr('name'),
               parent = scope.$parent,
               invalid = false;
