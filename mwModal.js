@@ -28,6 +28,15 @@ angular.module('mwModal', [])
  * </doc:example>
  */
     .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller) {
+
+      /**
+       * TODO: Modals have to be removed from the dom at some time. There are several options for this:
+       * * Don't append it to the body, but put it inside ng-view so that it will be destroyed on every location change
+       * * Remove it from the body at some point in time. The only question is when. On Modal close?
+       * * Maybe it makes sense to limit the existence in the dom to the actual display of the modal. Create it on open,
+       *   remove it on close!
+       */
+
       var _scope,
           _template,
           _cachedTemplate,
