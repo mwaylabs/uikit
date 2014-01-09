@@ -202,7 +202,7 @@ angular.module('mwListable', [])
  *
  * @param {string} title Title of the table header
  * @param {string} sort Property key of the model to sort by
- * @param (boolean} disabled Property if checkbox should be disabled
+ * @param {boolean} disabled Property if checkbox should be disabled
  */
   .directive('mwListableColumnCheckbox', function () {
     return {
