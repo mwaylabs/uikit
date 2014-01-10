@@ -7,7 +7,9 @@
     return {
       restrict: 'E',
       link: function (scope, elm) {
-        if (elm.attr('type') !== 'checkbox' && scope.$$prevSibling) {
+        var skipTheFollowing = ['checkbox', 'radio'];
+
+        if (skipTheFollowing.indexOf(elm.attr('type')) === -1 && scope.$$prevSibling) {
           // Add default class coming from bootstrap
           elm.addClass('form-control');
           if (scope.$$prevSibling) {
