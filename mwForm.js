@@ -64,6 +64,63 @@ angular.module('mwForm', [])
 
 /**
  * @ngdoc directive
+ * @name mwForm.directive:mwFormInput
+ * @element div
+ * @description
+ *
+ * Wrapper for input elements. Adds validation messages, form HTML and corresponding CSS.
+ * The following elements can register itself on mwFormInput:
+ *
+ * - select
+ * - input[text]
+ *
+ * @scope
+ *
+ * @param {string} label Label to show
+ * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
+ *
+ */
+  .directive('mwFormMultiSelect', function () {
+    return {
+      restrict: 'A',
+      transclude: true,
+      scope: {
+        model: '=',
+        options: '=',
+        label: '@',
+        tooltip: '@',
+        hideErrors: '='
+      },
+      templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
+      controller: function ($scope) {
+
+        $scope.model= $scope.model || [];
+
+        if (!angular.isArray($scope.model)) {
+          $scope.model = [];
+        }
+
+        $scope.toggleKeyIntoModelArray = function (key) {
+          //Check if key is already in the model array
+          //When user unselects a checkbox it will be deleted from the model array
+          if ($scope.model.indexOf(key) >= 0) {
+            // Delete key from model array
+            $scope.model.splice($scope.model.indexOf(key), 1);
+            // Delete model if no attribute is in there (for validation purposes)
+            if ($scope.model.length === 0) {
+              delete $scope.model;
+            }
+          } else {
+            $scope.model.push(key);
+          }
+        };
+
+      }
+    };
+  })
+
+/**
+ * @ngdoc directive
  * @name mwForm.directive:mwFormCheckbox
  * @element div
  * @description
@@ -145,7 +202,9 @@ angular.module('mwForm', [])
           var inputName = mwFormInputCtrl.element.attr('name'),
               parent = scope.$parent,
               invalid = false;
-
+//          if(inputName === 'emailTitle') {
+//            debugger;
+//          }
           if (!inputName) {
             invalid = true;
             throw new Error('element doesn\'t have name attribute');
