@@ -37,6 +37,7 @@
    *
    * - select
    * - input[text]
+   * - textarea
    *
    * @scope
    *
@@ -151,9 +152,15 @@
           transclude: true,
           scope: {
             label: '@',
-            tooltip: '@'
+            tooltip: '@',
+            badges: '@'
           },
-          templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html'
+          templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
+          link: function (scope) {
+            if (scope.badges) {
+              scope.splittedBadges = scope.badges.split(',');
+            }
+          }
         };
       })
 
