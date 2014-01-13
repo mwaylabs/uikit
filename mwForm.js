@@ -97,8 +97,6 @@
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
         controller: function ($scope) {
 
-          $scope.model= $scope.model || [];
-
           if (!angular.isArray($scope.model)) {
             $scope.model = [];
           }
@@ -113,6 +111,8 @@
           }
 
           $scope.toggleKeyIntoModelArray = function (key) {
+
+            $scope.model= $scope.model || [];
             //Check if key is already in the model array
             //When user unselects a checkbox it will be deleted from the model array
             if ($scope.model.indexOf(key) >= 0) {
