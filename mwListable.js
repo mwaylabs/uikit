@@ -70,7 +70,7 @@ angular.module('mwListable', [])
           };
 
 
-          elm.addClass('table table-striped relution');
+          elm.addClass('table table-striped mw-listable');
 
           /**
            * Compile fragments of header and footer into template
@@ -197,11 +197,15 @@ angular.module('mwListable', [])
           item: '='
         },
         template: '<input type="checkbox" ' +
-            'ng-click="selectable.toggle(item)" ' +
+            'ng-click="click(item, $event)" ' +
             'ng-disabled="{{ disabled || false }}"' +
             'ng-checked="selectable.isSelected(item)">',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
+          scope.click = function(item, $event) {
+            $event.stopPropagation();
+            scope.selectable.toggle(item);
+          };
         }
       };
     })

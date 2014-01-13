@@ -1,0 +1,19 @@
+<hr>
+<div class="row text-center">
+  <a class="clickable"
+     ng-click="toggleFilters = !toggleFilters">
+    <span ng-if="toggleFilters"><span mw-icon="collapse-down"></span> Hide</span>
+    <span ng-if="!toggleFilters"><span mw-icon="expand"></span> Show</span>
+    filters
+  </a>
+</div>
+<div ng-if="toggleFilters" ng-transclude></div>
+
+<div ng-if="toggleFilters && filterable">
+  <button
+      class="btn btn-default btn-block"
+      ng-click="filterable.resetFilters(); filterable.applyFilters()">
+    <span mw-icon="repeat"></span>
+    {{ 'common.reset' | i18n }}
+  </button>
+</div>
