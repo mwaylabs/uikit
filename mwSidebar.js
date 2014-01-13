@@ -84,8 +84,6 @@ angular.module('mwSidebar', [])
         transclude: true,
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarPanel.html',
         link: function (scope, el, attr) {
-          console.log(scope.filterable);
-
           var offsetTop = angular.element(el).offset().top;
 
           var repositionFilterPanel = function () {
