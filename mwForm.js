@@ -103,6 +103,15 @@
             $scope.model = [];
           }
 
+          if(angular.isArray($scope.options)){
+            var objOptions = {};
+            $scope.options.forEach(function(option){
+              objOptions[option] = option;
+            });
+
+            $scope.options = objOptions;
+          }
+
           $scope.toggleKeyIntoModelArray = function (key) {
             //Check if key is already in the model array
             //When user unselects a checkbox it will be deleted from the model array
