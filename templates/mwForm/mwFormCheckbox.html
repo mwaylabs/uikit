@@ -1,5 +1,11 @@
 <div class="checkbox">
-  <label>
-    <span ng-transclude></span>{{label}}
-  </label>
+  <div class="col-md-9 col-md-offset-3">
+    <div ng-transclude></div>
+    {{ label }} <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
+    <span ng-repeat="badge in splittedBadges"
+        class="label label-info">{{ badge }}</span>
+    <!--<input type="checkbox"-->
+           <!--ng-model="model.silent"> {{ 'devices.actions.DEPLOY_APP.silentLabel' | i18n }}-->
+    <!--<span class="label label-info">SAFE</span>-->
+  </div>
 </div>

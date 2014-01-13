@@ -37,6 +37,7 @@
    *
    * - select
    * - input[text]
+   * - textarea
    *
    * @scope
    *
@@ -84,43 +85,43 @@
    * @param {expression} options Options which can be selected
    *
    */
-    .directive('mwFormMultiSelect', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        scope: {
-          model: '=',
-          options: '=',
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
-        controller: function ($scope) {
+      .directive('mwFormMultiSelect', function () {
+        return {
+          restrict: 'A',
+          transclude: true,
+          scope: {
+            model: '=',
+            options: '=',
+            label: '@',
+            tooltip: '@'
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
+          controller: function ($scope) {
 
-          $scope.model= $scope.model || [];
+            $scope.model = $scope.model || [];
 
-          if (!angular.isArray($scope.model)) {
-            $scope.model = [];
-          }
-
-          $scope.toggleKeyIntoModelArray = function (key) {
-            //Check if key is already in the model array
-            //When user unselects a checkbox it will be deleted from the model array
-            if ($scope.model.indexOf(key) >= 0) {
-              // Delete key from model array
-              $scope.model.splice($scope.model.indexOf(key), 1);
-              // Delete model if no attribute is in there (for validation purposes)
-              if ($scope.model.length === 0) {
-                delete $scope.model;
-              }
-            } else {
-              $scope.model.push(key);
+            if (!angular.isArray($scope.model)) {
+              $scope.model = [];
             }
-          };
 
-        }
-      };
-    })
+            $scope.toggleKeyIntoModelArray = function (key) {
+              //Check if key is already in the model array
+              //When user unselects a checkbox it will be deleted from the model array
+              if ($scope.model.indexOf(key) >= 0) {
+                // Delete key from model array
+                $scope.model.splice($scope.model.indexOf(key), 1);
+                // Delete model if no attribute is in there (for validation purposes)
+                if ($scope.model.length === 0) {
+                  delete $scope.model;
+                }
+              } else {
+                $scope.model.push(key);
+              }
+            };
+
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -133,6 +134,8 @@
    * @scope
    *
    * @param {string} label Label to show
+   * @param {string} tooltip Tooltip to display
+   * @param {string} badges Comma separated badges to display
    *
    */
       .directive('mwFormCheckbox', function () {
@@ -142,9 +145,15 @@
           transclude: true,
           scope: {
             label: '@',
-            tooltip: '@'
+            tooltip: '@',
+            badges: '@'
           },
-          templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html'
+          templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
+          link: function (scope) {
+            if (scope.badges) {
+              scope.splittedBadges = scope.badges.split(',');
+            }
+          }
         };
       })
 
