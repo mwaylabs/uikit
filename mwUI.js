@@ -1,3 +1,3 @@
 angular.module('mwUI', [
-  'mwModal', 'mwListable', 'mwForm', 'mwComponents', 'mwTabs', 'mwFilter', 'mwFormValidators'
+  'mwModal', 'mwListable', 'mwForm', 'mwComponents', 'mwTabs', 'mwFilter', 'mwFormValidators','mwNav'
 ]);

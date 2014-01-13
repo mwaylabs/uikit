@@ -1,7 +1,9 @@
-<div class="checkbox" ng-repeat="(key,value) in options">
-  <label>
-    <input type="checkbox"
-           ng-checked="model.indexOf(key)>=0"
-           ng-click="toggleKeyIntoModelArray(key)">{{value}}
-  </label>
+<div ng-form="form" class="mw-form">
+  <div class="checkbox" ng-repeat="(key,value) in options">
+    <label>
+      <input type="checkbox"
+             ng-checked="model.indexOf(key)>=0"
+             ng-click="toggleKeyIntoModelArray(key)">{{value}}
+    </label>
+  </div>
 </div>
