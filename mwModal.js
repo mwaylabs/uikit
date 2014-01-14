@@ -41,6 +41,7 @@ angular.module('mwModal', [])
           _template,
           _cachedTemplate,
           _modals = {},
+          that = this,
           _body = $document.find('body').eq(0);
 
       /**
@@ -83,14 +84,18 @@ angular.module('mwModal', [])
           _template = angular.element(_cachedTemplate.trim());
 
           _modal = $compile(_template)(_scope);
+          _modals[_modalId] = _modal;
           _body.append(_modal);
+
+          _scope.$on('$destroy', function () {
+            that.destroy(_modalId);
+          });
 
           if (angular.isFunction(modalOptions.controller)) {
             _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
           }
 
           _modal.modal({ show: false });
-          _modals[_modalId] = _modal;
         }
         return _modalId;
       };
@@ -146,6 +151,22 @@ angular.module('mwModal', [])
       this.toggle = function (modalId) {
         getModal(modalId).modal('toggle');
       };
+
+      /**
+       *
+       * @ngdoc function
+       * @name mwModal.Modal#destroy
+       * @methodOf mwModal.Modal
+       * @function
+       * @description Removes the modal from the dom
+       * @param {String} modalId Modal identifier
+       */
+      this.destroy = function (modalId) {
+        if(_modals[modalId]) {
+          _modals[modalId].remove();
+          delete _modals[modalId];
+        }
+      };
     })
 
 
@@ -182,7 +203,7 @@ angular.module('mwModal', [])
           title: '@'
         },
         transclude: true,
-        templateUrl: 'modules/ui/templates/mwModal.html'
+        templateUrl: 'modules/ui/templates/mwModal/mwModal.html'
       };
     })
 
@@ -215,5 +236,35 @@ angular.module('mwModal', [])
         restrict: 'A',
         transclude: true,
         template: '<div class="modal-footer" ng-transclude></div>'
+      };
+    })
+
+/**
+ * @ngdoc directive
+ * @name mwModal.directive:mwModalConfirm
+ * @element div
+ * @description
+ *
+ * Opens a simple confirm modal.
+ *
+ * @scope
+ *
+ * @param {expression} ok Expression to evaluate on click on 'ok' button
+ * @param {expression} cancel Expression to evaluate on click on 'cancel' button
+ */
+    .directive('mwModalConfirm', function () {
+      return {
+        restrict: 'A',
+        transclude: true,
+        templateUrl: 'modules/ui/templates/mwModal/mwModalConfirm.html',
+        link: function (scope, elm, attr) {
+
+          angular.forEach(['ok', 'cancel'], function (action) {
+            scope[action] = function () {
+              scope.$eval(attr[action]);
+            };
+          });
+
+        }
       };
     });

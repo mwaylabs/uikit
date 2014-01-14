@@ -47,6 +47,8 @@ angular.module('mwListable', [])
         },
         link: function (scope, elm) {
 
+
+
           var _footer = elm.find('tr#listableFooter');
 
           var compileFooterNoneFound = function () {
@@ -87,12 +89,19 @@ angular.module('mwListable', [])
            */
           var w = angular.element($window);
           var d = angular.element($document);
-          w.scroll(function () {
+          var scrollCallback = function () {
             if (w.scrollTop() === d.height() - w.height()) {
               if (scope.filterable) {
                 scope.filterable.loadMore();
               }
             }
+          };
+          // Register scroll callback
+          w.on('scroll', scrollCallback);
+
+          // Deregister scroll callback if scope is destroyed
+          scope.$on('$destroy', function() {
+            w.off('scroll', scrollCallback);
           });
         },
         controller: function ($scope) {
