@@ -1,0 +1,17 @@
+<div mw-modal title="{{ 'common.areYouSure' | i18n }}">
+  <div mw-modal-body>
+    <div ng-transclude></div>
+  </div>
+  <div mw-modal-footer>
+    <button type="button"
+            class="btn btn-default"
+            data-dismiss="modal"
+            ng-click="cancel()">{{'common.cancel' | i18n }}
+    </button>
+    <button type="button"
+            class="btn btn-primary"
+            data-dismiss="modal"
+            ng-click="ok()">{{'common.ok' | i18n }}
+    </button>
+  </div>
+</div>
