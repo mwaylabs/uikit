@@ -31,8 +31,10 @@ angular.module('mwListable', [])
  *              item="item"></td>
  *          <td>Column content</td>
  *        </tr>
- *        <tr id="listableFooter"></tr>
  *      </tbody>
+ *      <tfoot>
+ *        <tr id="listableFooter"></tr>
+ *      </tfoot>
  *    </table>
  *   </doc:source>
  * </doc:example>
@@ -64,7 +66,7 @@ angular.module('mwListable', [])
             _footer.append(
                 '<td ng-if="filterable.items().length < filterable.total()"' +
                     'colspan="{{ columns.length + 1 }}">' +
-                    '<button class="btn btn-lg col-md-12" ng-click="filterable.loadMore()">' +
+                    '<button class="btn btn-default btn-lg col-md-12" ng-click="filterable.loadMore()">' +
                     '{{ \'common.loadMore\' | i18n }}' +
                     '</button>' +
                     '</td>');
