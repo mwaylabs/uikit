@@ -18,17 +18,9 @@
       <span mw-form-validation="pattern">{{ 'errors.hasToMatchPattern' | i18n }}</span>
       <span mw-form-validation="url">{{ 'errors.validUrl' | i18n }}</span>
       <span mw-form-validation="min">{{'errors.minValue' | i18n:{count: minValue} }}</span>
+      <span mw-form-validation="max">{{'errors.maxValue' | i18n:{count: maxValue} }}</span>
       <span mw-form-validation="phone">{{'errors.phoneNumber' | i18n }}</span>
       <span mw-form-validation="unique">{{'errors.notUnique' | i18n }}</span>
     </div>
-
-    <!--<span class="help-block"-->
-    <!--ng-show="form.inputField.$error.required">{{'errors.isRequired' | i18n }}</span>-->
-    <!--<span class="help-block"-->
-    <!--ng-show="form.inputField.$error.email">{{'errors.hasToBeAnEmail' | i18n }}</span>-->
-    <!--<span class="help-inline"-->
-    <!--ng-show="form.inputField.$error.minlength">{{'errors.minValue' | i18n:{count: min} }}</span>-->
-    <!--<span class="help-inline"-->
-    <!--ng-show="form.inputField.$error.maxlength">{{'errors.maxValue' | i18n:{count: max} }}</span>-->
   </div>
 </div>
