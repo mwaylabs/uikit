@@ -1,8 +1,11 @@
 <div class="checkbox">
   <div class="col-md-9 col-md-offset-3">
-    <div ng-transclude></div>
-    {{ label }} <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
+    <label>
+      <div ng-transclude></div>
+      {{ label }}
+    </label>
+    <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
     <span ng-repeat="badge in splittedBadges"
-        class="label label-info">{{ badge }}</span>
+          class="label label-info">{{ badge }}</span>
   </div>
 </div>
