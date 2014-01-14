@@ -3,6 +3,7 @@
   <div class="btn-group">
     <button type="button"
             class="btn btn-danger"
+            ng-if="hasCancel"
             ng-click="cancel()">
       <span mw-icon="remove"></span>
       {{ 'common.cancel' | i18n }}
@@ -10,6 +11,7 @@
     <button type="button"
             class="btn btn-primary"
             ng-click="save()"
+            ng-if="hasSave"
             ng-disabled="form.$invalid">
       <span mw-icon="ok"></span>
       {{'common.save' | i18n }}
