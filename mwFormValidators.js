@@ -43,6 +43,35 @@
             ngModel.$parsers.push(validateNumber);
           }
         };
+      })
+
+      .directive('mwValidateMatch', function () {
+        return {
+          require: 'ngModel',
+          link: function (scope, elm, attr, ctrl) {
+            var pwdWidget = elm.inheritedData('$formController')[attr.mwValidateMatch];
+
+//            debugger;
+
+            ctrl.$parsers.push(function (value) {
+              var isValid = false;
+              if (value === pwdWidget.$viewValue) {
+                isValid = true;
+              }
+              ctrl.$setValidity('match', isValid);
+              return value;
+            });
+
+            pwdWidget.$parsers.push(function (value) {
+              var isValid = false;
+              if (value === ctrl.$viewValue) {
+                isValid = true;
+              }
+              ctrl.$setValidity('match', isValid);
+              return value;
+            });
+          }
+        };
       });
 
 
