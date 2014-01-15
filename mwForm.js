@@ -295,6 +295,8 @@
           templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
           link: function (scope, elm, attr, formCtrl) {
             scope.form = formCtrl;
+            scope.hasCancel = attr.cancel;
+            scope.hasSave = attr.save;
           }
         };
       })
