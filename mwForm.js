@@ -55,13 +55,20 @@
             hideErrors: '='
           },
           templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
+          link: function(scope, elm) {
+            scope.isInvalid = function() {
+              return elm.inheritedData('$formController')[scope.elementName].$invalid;
+            };
+          },
           controller: function ($scope) {
             var that = this;
             that.element = null;
             $scope.mwFormInputRegister = function (element) {
               if (!that.element) {
                 that.element = element;
+                $scope.elementName = element.attr('name');
                 $scope.minValue = element.attr('min');
+                $scope.maxValue = element.attr('max');
               }
             };
           }
@@ -219,7 +226,7 @@
           link: function (scope, elm, attr, mwFormInputCtrl) {
 
             var inputName = mwFormInputCtrl.element.attr('name'),
-                parent = scope.$parent,
+                form = elm.inheritedData('$formController'),
                 invalid = false;
 
             if (!inputName) {
@@ -227,11 +234,7 @@
               throw new Error('element doesn\'t have name attribute');
             }
 
-            if (!parent.form) {
-              invalid = true;
-              throw new Error('missing form on parent scope!');
-            }
-            if (!parent.form[inputName]) {
+            if (!form[inputName]) {
               invalid = true;
               throw new Error('element ' + inputName + ' not found');
             }
@@ -240,7 +243,7 @@
               if (invalid) {
                 return false;
               } else {
-                return parent.form[inputName].$error[scope.validation];
+                return form[inputName].$error[scope.validation];
               }
             };
           }
@@ -256,8 +259,9 @@
    * Adds form specific behaviour
    *
    */
-      .directive('mwForm', function () {
+      .directive('form', function () {
         return {
+          restrict: 'E',
           link: function (scope, elm) {
             elm.addClass('form-horizontal');
             elm.attr('novalidate', 'true');
