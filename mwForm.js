@@ -45,7 +45,7 @@
    * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
    *
    */
-      .directive('mwFormInput', function () {
+      .directive('mwFormInput', function (i18n) {
         return {
           restrict: 'A',
           transclude: true,
@@ -55,8 +55,8 @@
             hideErrors: '='
           },
           templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
-          link: function(scope, elm) {
-            scope.isInvalid = function() {
+          link: function (scope, elm) {
+            scope.isInvalid = function () {
               return elm.inheritedData('$formController')[scope.elementName].$invalid;
             };
           },
@@ -67,8 +67,24 @@
               if (!that.element) {
                 that.element = element;
                 $scope.elementName = element.attr('name');
-                $scope.minValue = element.attr('min');
-                $scope.maxValue = element.attr('max');
+
+                var buildValidationValues = function () {
+                  $scope.validationValues = {
+                    required: i18n.get('errors.isRequired'),
+                    email: i18n.get('errors.hasToBeAnEmail'),
+                    pattern: i18n.get('errors.hasToMatchPattern'),
+                    url: i18n.get('errors.validUrl'),
+                    min: i18n.get('errors.minValue', { count: element.attr('min') }),
+                    minlength: i18n.get('errors.minLength', { count: element.attr('ng-minlength') }),
+                    max: i18n.get('errors.maxValue', { count: element.attr('max') }),
+                    maxlength: i18n.get('errors.maxLength', { count: element.attr('ng-maxlength') }),
+                    phone: i18n.get('errors.phoneNumber'),
+                    unique: i18n.get('errors.notUnique'),
+                    match: i18n.get('errors.doesNotMatch')
+                  };
+                };
+                buildValidationValues();
+                $scope.$on('i18n:localeChanged', buildValidationValues);
               }
             };
           }
@@ -86,58 +102,54 @@
    *
    * @scope
    *
-   * @param {string} label Label to show
-   * @param {string} tooltip Tooltip to show
    * @param {expression} model Model where the selected values should be saved in
    * @param {expression} options Options which can be selected
    *
    */
-    .directive('mwFormMultiSelect', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        scope: {
-          model: '=',
-          options: '=',
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
-        controller: function ($scope) {
+      .directive('mwFormMultiSelect', function () {
+        return {
+          restrict: 'A',
+          transclude: true,
+          scope: {
+            model: '=',
+            options: '='
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
+          controller: function ($scope) {
 
-          if (!angular.isArray($scope.model)) {
-            $scope.model = [];
-          }
-
-          if(angular.isArray($scope.options)){
-            var objOptions = {};
-            $scope.options.forEach(function(option){
-              objOptions[option] = option;
-            });
-
-            $scope.options = objOptions;
-          }
-
-          $scope.toggleKeyIntoModelArray = function (key) {
-
-            $scope.model= $scope.model || [];
-            //Check if key is already in the model array
-            //When user unselects a checkbox it will be deleted from the model array
-            if ($scope.model.indexOf(key) >= 0) {
-              // Delete key from model array
-              $scope.model.splice($scope.model.indexOf(key), 1);
-              // Delete model if no attribute is in there (for validation purposes)
-              if ($scope.model.length === 0) {
-                delete $scope.model;
-              }
-            } else {
-              $scope.model.push(key);
+            if (!angular.isArray($scope.model)) {
+              $scope.model = [];
             }
-          };
 
-        }
-      };
-    })
+            if (angular.isArray($scope.options)) {
+              var objOptions = {};
+              $scope.options.forEach(function (option) {
+                objOptions[option] = option;
+              });
+
+              $scope.options = objOptions;
+            }
+
+            $scope.toggleKeyIntoModelArray = function (key) {
+
+              $scope.model = $scope.model || [];
+              //Check if key is already in the model array
+              //When user unselects a checkbox it will be deleted from the model array
+              if ($scope.model.indexOf(key) >= 0) {
+                // Delete key from model array
+                $scope.model.splice($scope.model.indexOf(key), 1);
+                // Delete model if no attribute is in there (for validation purposes)
+                if ($scope.model.length === 0) {
+                  delete $scope.model;
+                }
+              } else {
+                $scope.model.push(key);
+              }
+            };
+
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
