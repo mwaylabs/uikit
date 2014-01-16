@@ -57,7 +57,12 @@
           templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
           link: function (scope, elm) {
             scope.isInvalid = function () {
-              return elm.inheritedData('$formController')[scope.elementName].$invalid;
+              var ctrl = elm.inheritedData('$formController'),
+                  invalid = false;
+              if (ctrl) {
+                invalid = ctrl[scope.elementName].$invalid;
+              }
+              return invalid;
             };
           },
           controller: function ($scope) {
@@ -246,13 +251,13 @@
               throw new Error('element doesn\'t have name attribute');
             }
 
-            if (!form[inputName]) {
+            if (form && !form[inputName]) {
               invalid = true;
               throw new Error('element ' + inputName + ' not found');
             }
 
             scope.isValid = function () {
-              if (invalid) {
+              if (invalid || !form) {
                 return false;
               } else {
                 return form[inputName].$error[scope.validation];
