@@ -3,6 +3,13 @@
     <nav class="navbar navbar-default" role="navigation">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header col-md-12">
+        <div ng-if="showBackButton"
+             class="back"
+             data-text="{{'common.back' | i18n}}"
+             ng-click="back()">
+          <span mw-icon="chevron-left"></span>
+        </div>
+
         <h2 class="lead pull-left">{{title}}</h2>
 
         <div class="pull-right" ng-transclude></div>
