@@ -87,13 +87,25 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwHeader', function () {
+    .directive('mwHeader', function ($location) {
       return {
         transclude: true,
         scope: {
-          title: '@'
+          title: '@',
+          url:'@',
+          showBackButton: '@'
         },
-        templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html'
+        templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
+        link:function(scope,el,attrs){
+
+          scope.back = function(){
+            if(attrs.url){
+              $location.path(attrs.url);
+            } else {
+              window.history.back();
+            }
+          };
+        }
       };
     })
 
