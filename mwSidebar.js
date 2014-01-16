@@ -93,8 +93,11 @@ angular.module('mwSidebar', [])
             if (newPos < 0) {
               newPos = 0;
               el.removeClass('affixed');
+              return;
+            } else if(!el.hasClass('affixed')){
+              offsetTop = angular.element(el).offset().top;
+              el.addClass('affixed');
             }
-            el.addClass('affixed');
             el.css('top', newPos);
           };
 
