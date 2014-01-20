@@ -1,14 +1,10 @@
-<div ng-form="form" class="mw-form">
+<div class="form-group">
+  <label ng-if="label"
+         class="col-md-3 control-label">
+    {{ label }}
+    <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
+  </label>
 
-  <div class="form-group">
-    <label ng-if="label"
-           class="col-md-3 control-label">
-      {{ label }}
-      <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
-    </label>
-
-    <div ng-class="{ true: 'col-md-9', false: 'col-md-12' }[label.length > 0]"
-         ng-transclude></div>
-  </div>
-
+  <div ng-class="{ true: 'col-md-9', false: 'col-md-12' }[label.length > 0]"
+       ng-transclude></div>
 </div>
