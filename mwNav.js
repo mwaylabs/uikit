@@ -24,9 +24,22 @@ angular.module('mwNav', [])
       replace: true,
       template: '<li><a ng-href="{{url}}" ng-transclude></a></li>',
       link: function (scope, elm) {
-        if($location.$$path === scope.url.slice(1)){
-          elm.addClass('active');
-        }
+        var setActiveClassOnUrlMatch = function(url){
+          if(scope.url && url === scope.url.slice(1)){
+            elm.addClass('active');
+          } else {
+            elm.removeClass('active');
+          }
+        };
+
+        scope.$watch('url',function(newUrlAttr){
+          if(newUrlAttr){
+            setActiveClassOnUrlMatch($location.$$path);
+          }
+        });
+
+        setActiveClassOnUrlMatch($location.$$path);
+
       }
 
     };
