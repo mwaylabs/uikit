@@ -166,5 +166,33 @@ angular.module('mwComponents', [])
           });
         }
       };
+    })
+
+
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwBadge
+ * @element span
+ * @description
+ *
+ * Wrapper for bootstrap labels.
+ *
+ * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
+ *
+ * @example
+ * <doc:example>
+ *  <doc:source>
+ *    <span mw-badge="info"></span>
+ *  </doc:source>
+ * </doc:example>
+ */
+    .directive('mwBadge', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: { mwBadge: '@' },
+        transclude: true,
+        template: '<span class="label label-{{mwBadge}}" ng-transclude></span>'
+      };
     });
 

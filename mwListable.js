@@ -161,7 +161,7 @@ angular.module('mwListable', [])
           title: '@',
           property: '@sort'
         },
-        template: '<th ng-click="toggleSortOrder()" ng-class="{ clickable: property }">' +
+        template: '<th ng-click="toggleSortOrder()" ng-class="{ clickable: property }" width="1%">' +
             '<span ng-if="property">' +
             '<i ng-if="isSelected(\'-\')" mw-icon="sort-by-attributes-alt"></i>' +
             '<i ng-if="isSelected(\'+\')" mw-icon="sort-by-attributes" ></i>' +
