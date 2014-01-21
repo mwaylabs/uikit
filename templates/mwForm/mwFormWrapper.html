@@ -5,6 +5,6 @@
     <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
   </label>
 
-  <div ng-class="{ true: 'col-md-9', false: 'col-md-12' }[label.length > 0]"
+  <div class="col-md-9" ng-class="{ false: 'col-md-offset-3' }[label.length > 0]"
        ng-transclude></div>
 </div>
