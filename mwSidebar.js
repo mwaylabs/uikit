@@ -84,26 +84,44 @@ angular.module('mwSidebar', [])
         transclude: true,
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarPanel.html',
         link: function (scope, el, attr) {
-          var offsetTop = angular.element(el).offset().top;
+          var offsetTop = angular.element(el).offset().top,
+            newOffset;
 
-          var repositionFilterPanel = function () {
-            var scrollPos = $document.scrollTop(),
-                newPos = scrollPos - offsetTop - (attr.offset * -1);
-            newPos = newPos > 0 ? newPos : 0;
-            if (newPos < 0) {
-              newPos = 0;
-              el.removeClass('affixed');
-              return;
-            } else if(!el.hasClass('affixed')){
-              offsetTop = angular.element(el).offset().top;
-              el.addClass('affixed');
+//          var repositionFilterPanel = function () {
+//            var scrollPos = $document.scrollTop(),
+//                newPos = scrollPos - offsetTop - (attr.offset * -1);
+//            newPos = newPos > 0 ? newPos : 0;
+//            if (newPos < 0) {
+//              newPos = 0;
+//              el.removeClass('affixed');
+//              return;
+//            } else if(!el.hasClass('affixed')){
+//              offsetTop = angular.element(el).offset().top;
+//              el.addClass('affixed');
+//            }
+//            el.css('top', newPos);
+//          };
+
+          var repos = function(){
+            offsetTop = angular.element(el).offset().top;
+
+            if($document.scrollTop()<attr.offset){
+              newOffset = offsetTop-$document.scrollTop();
+            } else {
+              newOffset = offsetTop-attr.offset;
             }
-            el.css('top', newPos);
+
+            angular.element(el).find('.content-container').css('top',newOffset);
+
+            if ($document.scrollTop()<1){
+              angular.element(el).find('.content-container').css('top','initial');
+            }
+
           };
 
-          if (attr.affix) {
+          if (attr.affix && attr.offset) {
             angular.element($window).scroll(function () {
-              repositionFilterPanel();
+              repos();
             });
           }
         }
