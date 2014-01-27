@@ -1,16 +1,16 @@
 <div class="form-group"
      ng-class="{'has-error': isInvalid()}">
   <label ng-if="label"
-         class="col-md-3 control-label">
+         class="col-sm-3 control-label">
     {{ label }}
     <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
   </label>
 
-  <div ng-class="{ true: 'col-md-9', false: 'col-md-12' }[label.length > 0]"
+  <div ng-class="{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]"
        ng-transclude></div>
 
   <div ng-if="!hideErrors"
-       ng-class="{ true: 'col-md-9 col-md-offset-3', false: 'col-md-12' }[label.length > 0]">
+       ng-class="{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]">
 
     <span ng-repeat="(key, label) in validationValues"
           mw-form-validation="{{ key }}">{{ label }}</span>
