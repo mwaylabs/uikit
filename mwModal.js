@@ -27,147 +27,153 @@ angular.module('mwModal', [])
  *   </doc:source>
  * </doc:example>
  */
-    .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller) {
+  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q) {
 
-      /**
-       * TODO: Modals have to be removed from the dom at some time. There are several options for this:
-       * * Don't append it to the body, but put it inside ng-view so that it will be destroyed on every location change
-       * * Remove it from the body at some point in time. The only question is when. On Modal close?
-       * * Maybe it makes sense to limit the existence in the dom to the actual display of the modal. Create it on open,
-       *   remove it on close!
-       */
+    /**
+     * TODO: Modals have to be removed from the dom at some time. There are several options for this:
+     * * Don't append it to the body, but put it inside ng-view so that it will be destroyed on every location change
+     * * Remove it from the body at some point in time. The only question is when. On Modal close?
+     * * Maybe it makes sense to limit the existence in the dom to the actual display of the modal. Create it on open,
+     *   remove it on close!
+     */
 
-      var _scope,
-          _template,
-          _cachedTemplate,
-          _modals = {},
-          that = this,
-          _body = $document.find('body').eq(0);
+    var _scope,
+      _template,
+      _cachedTemplate,
+      _modals = {},
+      that = this,
+      _body = $document.find('body').eq(0);
 
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#create
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Create and initialize the modal element in the DOM. Available options
-       *
-       * - **templateUrl**: URL to a template (_required_)
-       * - **scope**: scope that should be available in the controller
-       * - **controller**: controller instance for the modal
-       *
-       * @param {Object} modalOptions The options of the modal which are used to instantiate it
-       * @returns {String} modalId Modal identifier
-       */
-      this.create = function (modalOptions) {
-        var _modal, _modalId, _ctrl;
+    /**
+     *
+     * @ngdoc function
+     * @name mwModal.Modal#create
+     * @methodOf mwModal.Modal
+     * @function
+     * @description Create and initialize the modal element in the DOM. Available options
+     *
+     * - **templateUrl**: URL to a template (_required_)
+     * - **scope**: scope that should be available in the controller
+     * - **controller**: controller instance for the modal
+     *
+     * @param {Object} modalOptions The options of the modal which are used to instantiate it
+     * @returns {String} modalId Modal identifier
+     */
+    this.create = function (modalOptions) {
+      var _modal, _modalId, _ctrl;
 
-        if (!modalOptions.templateUrl) {
-          throw new Error('Modal service: templateUrl options is required.');
+      if (!modalOptions.templateUrl) {
+        throw new Error('Modal service: templateUrl options is required.');
+      }
+
+      // Generate modal id from templateUrl: '/url/to/myModal.html' -> 'myModal'
+      _modalId = modalOptions.templateUrl;
+
+      if (!_modals[_modalId]) {
+        // Create new scope if scope is not given in options
+        _scope = (modalOptions.scope || $rootScope).$new();
+
+        // Get template from cache
+        _cachedTemplate = $templateCache.get(modalOptions.templateUrl);
+
+        // Throw error if template with this ID/Path hasn't been found
+        if (!angular.isDefined(_cachedTemplate)) {
+          throw new Error('Modal service: template \'' + modalOptions.templateUrl + '\' has not been found. Does a template with this ID/Path exist?');
+        }
+        // Build element
+        _template = angular.element(_cachedTemplate.trim());
+
+        _modal = $compile(_template)(_scope);
+        _modals[_modalId] = _modal;
+        _body.append(_modal);
+
+        _scope.$on('$destroy', function () {
+          that.destroy(_modalId);
+        });
+
+        if (angular.isFunction(modalOptions.controller)) {
+          _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
         }
 
-        // Generate modal id from templateUrl: '/url/to/myModal.html' -> 'myModal'
-        _modalId = modalOptions.templateUrl;
+        _modal.modal({ show: false });
+      }
+      return _modalId;
+    };
 
-        if (!_modals[_modalId]) {
-          // Create new scope if scope is not given in options
-          _scope = (modalOptions.scope || $rootScope).$new();
+    /**
+     * Helper method to return modal instance from _modals
+     * @param modalId ID of the modal to return the instance from
+     * @returns {angular.element} Modal instance (DOM element)
+     */
+    var getModal = function (modalId) {
+      if (_modals[modalId]) {
+        return _modals[modalId].find('.modal');
+      } else {
+        throw new Error('Modal service: modal "' + modalId + '" not found. Please call "create" method first.');
+      }
+    };
 
-          // Get template from cache
-          _cachedTemplate = $templateCache.get(modalOptions.templateUrl);
+    /**
+     *
+     * @ngdoc function
+     * @name mwModal.Modal#show
+     * @methodOf mwModal.Modal
+     * @function
+     * @description Shows the modal
+     * @param {String} modalId Modal identifier
+     */
+    this.show = function (modalId) {
+      getModal(modalId).modal('show');
+    };
 
-          // Throw error if template with this ID/Path hasn't been found
-          if (!angular.isDefined(_cachedTemplate)) {
-            throw new Error('Modal service: template \'' + modalOptions.templateUrl + '\' has not been found. Does a template with this ID/Path exist?');
-          }
-          // Build element
-          _template = angular.element(_cachedTemplate.trim());
+    /**
+     *
+     * @ngdoc function
+     * @name mwModal.Modal#hide
+     * @methodOf mwModal.Modal
+     * @function
+     * @description Hides the modal
+     * @param {String} modalId Modal identifier
+     * @returns {Object} Promise which will be resolved when modal is successfully closed
+     */
+    this.hide = function (modalId) {
+      var dfd = $q.defer();
+      getModal(modalId).on('hidden.bs.modal', function () {
+        dfd.resolve();
+      });
+      getModal(modalId).modal('hide');
+      return dfd.promise;
+    };
 
-          _modal = $compile(_template)(_scope);
-          _modals[_modalId] = _modal;
-          _body.append(_modal);
+    /**
+     *
+     * @ngdoc function
+     * @name mwModal.Modal#toggle
+     * @methodOf mwModal.Modal
+     * @function
+     * @description Toggles the modal
+     * @param {String} modalId Modal identifier
+     */
+    this.toggle = function (modalId) {
+      getModal(modalId).modal('toggle');
+    };
 
-          _scope.$on('$destroy', function () {
-            that.destroy(_modalId);
-          });
-
-          if (angular.isFunction(modalOptions.controller)) {
-            _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
-          }
-
-          _modal.modal({ show: false });
-        }
-        return _modalId;
-      };
-
-      /**
-       * Helper method to return modal instance from _modals
-       * @param modalId ID of the modal to return the instance from
-       * @returns {angular.element} Modal instance (DOM element)
-       */
-      var getModal = function (modalId) {
-        if (_modals[modalId]) {
-          return _modals[modalId].find('.modal');
-        } else {
-          throw new Error('Modal service: modal "' + modalId + '" not found. Please call "create" method first.');
-        }
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#show
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Shows the modal
-       * @param {String} modalId Modal identifier
-       */
-      this.show = function (modalId) {
-        getModal(modalId).modal('show');
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#hide
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Hides the modal
-       * @param {String} modalId Modal identifier
-       */
-      this.hide = function (modalId) {
-        getModal(modalId).modal('hide');
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#toggle
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Toggles the modal
-       * @param {String} modalId Modal identifier
-       */
-      this.toggle = function (modalId) {
-        getModal(modalId).modal('toggle');
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#destroy
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Removes the modal from the dom
-       * @param {String} modalId Modal identifier
-       */
-      this.destroy = function (modalId) {
-        if(_modals[modalId]) {
-          _modals[modalId].remove();
-          delete _modals[modalId];
-        }
-      };
-    })
+    /**
+     *
+     * @ngdoc function
+     * @name mwModal.Modal#destroy
+     * @methodOf mwModal.Modal
+     * @function
+     * @description Removes the modal from the dom
+     * @param {String} modalId Modal identifier
+     */
+    this.destroy = function (modalId) {
+      if (_modals[modalId]) {
+        _modals[modalId].remove();
+        delete _modals[modalId];
+      }
+    };
+  })
 
 
 /**
@@ -196,16 +202,16 @@ angular.module('mwModal', [])
  * </doc:example>
  */
 
-    .directive('mwModal', function () {
-      return {
-        restrict: 'A',
-        scope: {
-          title: '@'
-        },
-        transclude: true,
-        templateUrl: 'modules/ui/templates/mwModal/mwModal.html'
-      };
-    })
+  .directive('mwModal', function () {
+    return {
+      restrict: 'A',
+      scope: {
+        title: '@'
+      },
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwModal/mwModal.html'
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -215,13 +221,13 @@ angular.module('mwModal', [])
  * Shortcut directive for Bootstraps body. See {@link mwModal.directive:mwModal `mwModal`} for more information
  * about mwModal.
  */
-    .directive('mwModalBody', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        template: '<div class="modal-body" ng-transclude></div>'
-      };
-    })
+  .directive('mwModalBody', function () {
+    return {
+      restrict: 'A',
+      transclude: true,
+      template: '<div class="modal-body" ng-transclude></div>'
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -231,13 +237,13 @@ angular.module('mwModal', [])
  * Shortcut directive for Bootstraps footer. See {@link mwModal.directive:mwModal `mwModal`} for more information
  * about mwModal.
  */
-    .directive('mwModalFooter', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        template: '<div class="modal-footer" ng-transclude></div>'
-      };
-    })
+  .directive('mwModalFooter', function () {
+    return {
+      restrict: 'A',
+      transclude: true,
+      template: '<div class="modal-footer" ng-transclude></div>'
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -252,19 +258,19 @@ angular.module('mwModal', [])
  * @param {expression} ok Expression to evaluate on click on 'ok' button
  * @param {expression} cancel Expression to evaluate on click on 'cancel' button
  */
-    .directive('mwModalConfirm', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        templateUrl: 'modules/ui/templates/mwModal/mwModalConfirm.html',
-        link: function (scope, elm, attr) {
+  .directive('mwModalConfirm', function () {
+    return {
+      restrict: 'A',
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwModal/mwModalConfirm.html',
+      link: function (scope, elm, attr) {
 
-          angular.forEach(['ok', 'cancel'], function (action) {
-            scope[action] = function () {
-              scope.$eval(attr[action]);
-            };
-          });
+        angular.forEach(['ok', 'cancel'], function (action) {
+          scope[action] = function () {
+            scope.$eval(attr[action]);
+          };
+        });
 
-        }
-      };
-    });
+      }
+    };
+  });
