@@ -9,11 +9,13 @@
 </div>
 <div ng-if="toggleFilters" ng-transclude></div>
 
-<div ng-if="toggleFilters && filterable">
-  <button
-      class="btn btn-default btn-block"
-      ng-click="filterable.resetFilters(); filterable.applyFilters()">
-    <span mw-icon="repeat"></span>
-    {{ 'common.reset' | i18n }}
-  </button>
+<div class="row" ng-if="toggleFilters && filterable">
+  <div class="col-md-12">
+    <button
+        class="btn btn-default btn-block"
+        ng-click="filterable.resetFilters(); filterable.applyFilters()">
+      <span mw-icon="repeat"></span>
+      {{ 'common.reset' | i18n }}
+    </button>
+  </div>
 </div>
