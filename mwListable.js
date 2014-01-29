@@ -210,7 +210,8 @@ angular.module('mwListable', [])
         template: '<input type="checkbox" ' +
             'ng-click="click(item, $event)" ' +
             'ng-disabled="{{ disabled || false }}"' +
-            'ng-checked="selectable.isSelected(item)">',
+            'ng-checked="selectable.isSelected(item)"' +
+            'mw-custom-checkbox>',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
           scope.click = function(item, $event) {
@@ -238,7 +239,8 @@ angular.module('mwListable', [])
         template: '<input type="checkbox" ' +
             'ng-if="!filterable || filterable.items().length > 0"' +
             'ng-click="toggleAll()" ' +
-            'ng-checked="selectable.allSelected()">',
+            'ng-checked="selectable.allSelected()"' +
+            'mw-custom-checkbox>',
         link: function (scope, elm, attr, mwListableCtrl) {
 
           scope.filterable = mwListableCtrl.getFilterable();
