@@ -188,6 +188,15 @@
       };
     })
 
+  /**
+   * @ngdoc directive
+   * @name mwForm.directive:mwCustomCheckbox
+   * @element input
+   * @description
+   *
+   * Replaces native checkbox with custom checkbox
+   *
+   */
     .directive('mwCustomCheckbox', function ($window) {
       return {
         restrict: 'A',
