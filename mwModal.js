@@ -91,7 +91,7 @@ angular.module('mwModal', [])
           that.destroy(_modalId);
         });
 
-        if (angular.isFunction(modalOptions.controller)) {
+        if (modalOptions.controller) {
           _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
         }
 
