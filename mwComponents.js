@@ -119,11 +119,13 @@ angular.module('mwComponents', [])
  * Wrapper for bootstrap glyphicons.
  *
  * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
+ * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
  *
  * @example
  * <doc:example>
  *  <doc:source>
  *    <span mw-icon="search"></span>
+ *    <span mw-icon="search" tooltip="This is a tooltip"></span>
  *  </doc:source>
  * </doc:example>
  */
@@ -132,7 +134,18 @@ angular.module('mwComponents', [])
         restrict: 'A',
         replace: true,
         scope: { mwIcon: '@' },
-        template: '<span class="glyphicon glyphicon-{{mwIcon}}"></span>'
+        template: '<span class="glyphicon glyphicon-{{mwIcon}}"></span>',
+        link: function(scope,el,attr){
+          if(attr.tooltip){
+            el.popover({
+              trigger: 'hover',
+              placement: 'bottom',
+              content: attr.tooltip,
+              container: 'body'
+            });
+          }
+
+        }
       };
     })
 
