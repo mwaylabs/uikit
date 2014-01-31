@@ -117,7 +117,8 @@
         transclude: true,
         scope: {
           model: '=',
-          options: '='
+          options: '=',
+          query: '=filter'
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
         controller: function ($scope) {
@@ -134,6 +135,16 @@
 
             $scope.options = objOptions;
           }
+
+          $scope.filter = function(items) {
+            var result = {};
+            angular.forEach(items, function(value, key) {
+              if(!$scope.query || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase()) ){
+                result[key]=value;
+              }
+            });
+            return result;
+          };
 
           $scope.toggleKeyIntoModelArray = function (key) {
 
@@ -219,7 +230,7 @@
           // to preserve the functionality of the original checkbox we just wrap it with a custom element
           // checkbox is set to opacity 0 and has to be position absolute inside the custom checkbox element hwich has to position relative
           // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
-          var render = function(){
+          var render = function () {
             var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
               customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>');
 
@@ -227,7 +238,7 @@
             customCheckboxStateIndicator.insertAfter(el);
           };
 
-          (function init(){
+          (function init() {
 
             //check the value every time the checkbox is clicked
             el.on('change', function () {

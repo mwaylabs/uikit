@@ -1,7 +1,8 @@
 <div ng-form="form" class="mw-form">
-  <div class="checkbox" ng-repeat="(key,value) in options">
+  <div class="checkbox" ng-repeat="(key,value) in filter(options)">
     <label>
       <input type="checkbox"
+             mw-custom-checkbox
              ng-checked="model.indexOf(key) >= 0"
              ng-click="toggleKeyIntoModelArray(key)"> {{ value }}
     </label>
