@@ -39,6 +39,13 @@ angular.module('mwNav', [])
           }
         });
 
+        /* FIXME ADD DISABLED URL WHICH IS NOT CLICKABLE*/
+        if(typeof scope.disabled !== 'undefined' && !scope.disabled){
+          scope.clickUrl = scope.url;
+        } else {
+          scope.clickUrl = null;
+        }
+
         setActiveClassOnUrlMatch($location.$$path);
 
       }

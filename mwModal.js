@@ -225,7 +225,7 @@ angular.module('mwModal', [])
     return {
       restrict: 'A',
       transclude: true,
-      template: '<div class="modal-body" ng-transclude></div>'
+      template: '<div class="modal-body clearfix" ng-transclude></div>'
     };
   })
 
