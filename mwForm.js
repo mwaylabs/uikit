@@ -394,14 +394,14 @@
     .directive('mwFormActions', function () {
       return {
         replace: true,
-        require: '^form',
         scope: {
           save: '&',
           cancel: '&'
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
-        link: function (scope, elm, attr, formCtrl) {
-          scope.form = formCtrl;
+        link: function (scope, elm, attr) {
+
+          scope.form = elm.inheritedData('$formController');
           scope.hasCancel = attr.cancel;
           scope.hasSave = attr.save;
         }
