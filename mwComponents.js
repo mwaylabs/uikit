@@ -98,7 +98,7 @@ angular.module('mwComponents', [])
         templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
         link:function(scope,el,attrs,ctrl,$transclude){
 
-          $transclude(scope, function (clone) {
+          $transclude(function (clone) {
             if((!clone || clone.length===0) && !scope.showBackButton){
               el.find('.navbar-header').addClass('no-buttons');
             }
