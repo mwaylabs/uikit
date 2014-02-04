@@ -136,10 +136,14 @@
             $scope.options = objOptions;
           }
 
+          $scope.getObjectSize = function(obj){
+            return _.size(obj);
+          };
+
           $scope.filter = function(items) {
             var result = {};
             angular.forEach(items, function(value, key) {
-              if(!$scope.query || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase()) ){
+              if(!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase()) ){
                 result[key]=value;
               }
             });
