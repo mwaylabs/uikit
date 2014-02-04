@@ -7,4 +7,9 @@
              ng-click="toggleKeyIntoModelArray(key)"> {{ value }}
     </label>
   </div>
+
+
+  <div ng-show="getObjectSize(filter(options))==0" ng-transclude></div>
+
+
 </div>
