@@ -221,6 +221,7 @@
         link: function (scope, el, attr, ngModel) {
 
 
+
           // set the active class on the checkbox wrapper
           var setActiveClass = function (checked) {
             if (checked) {
@@ -232,7 +233,7 @@
 
           // render custom checkbox
           // to preserve the functionality of the original checkbox we just wrap it with a custom element
-          // checkbox is set to opacity 0 and has to be position absolute inside the custom checkbox element hwich has to position relative
+          // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
           // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
           var render = function () {
             var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
@@ -249,6 +250,13 @@
               setActiveClass(el.is(':checked'));
             });
 
+            //unbind eventlistener to prevent infinite loops!
+            //after this the remaining element is removed
+            el.on('$destroy', function(){
+              el.off('$destroy');
+              el.parent('.mw-checkbox').remove();
+            });
+
             if (ngModel) {
               //when a model is defined use the value which is passed into the formatters function during initialization
               ngModel.$formatters.unshift(function (checked) {
@@ -259,7 +267,7 @@
 
             //jQuery does not trigger a change event when checkbox is checked programmatically e.g. by ng-checked
             //property hooks triggers a change event everytime the setter is called
-            //TODO find a better solution for this
+            //TODO find a angularjs solution for this
             $window.$.propHooks.checked = {
               set: function (el, value) {
 

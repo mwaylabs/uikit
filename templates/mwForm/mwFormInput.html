@@ -1,13 +1,20 @@
 <div class="form-group"
      ng-class="{'has-error': isInvalid()}">
-  <label ng-if="label"
-         class="col-sm-3 control-label">
-    {{ label }}
-    <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
-  </label>
 
-  <div ng-class="{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]"
-       ng-transclude></div>
+
+  <div class="clearfix">
+
+    <label ng-if="label"
+           class="col-sm-3 control-label">
+      {{ label }}
+      <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
+    </label>
+
+    <div ng-class="{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]"
+         ng-transclude></div>
+
+  </div>
+
 
   <div ng-if="!hideErrors"
        ng-class="{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]">
