@@ -166,7 +166,7 @@ angular.module('mwComponents', [])
  * @param {String} mwTooltip Content of the tooltip
  *
  * @example
- <span mw-tooltip="foobar">
+ <span mw-tooltip="foobar"></span>
  */
     .directive('mwTooltip', function () {
       return {
@@ -186,7 +186,6 @@ angular.module('mwComponents', [])
         }
       };
     })
-
 
 /**
  * @ngdoc directive
