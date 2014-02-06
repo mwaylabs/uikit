@@ -85,6 +85,8 @@ angular.module('mwModal', [])
 
         _modal = $compile(_template)(_scope);
         _modals[_modalId] = _modal;
+
+        _modal.addClass('mw-modal');
         _body.append(_modal);
 
         _scope.$on('$destroy', function () {
