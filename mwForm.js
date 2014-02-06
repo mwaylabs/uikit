@@ -118,7 +118,8 @@
         scope: {
           model: '=',
           options: '=',
-          query: '=filter'
+          query: '=filter',
+          required:'='
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
         controller: function ($scope) {
