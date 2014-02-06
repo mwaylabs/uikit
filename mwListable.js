@@ -166,7 +166,7 @@ angular.module('mwListable', [])
             '<i ng-if="isSelected(\'-\')" mw-icon="sort-by-attributes-alt"></i>' +
             '<i ng-if="isSelected(\'+\')" mw-icon="sort-by-attributes" ></i>' +
             '</span>' +
-            '<span>{{ title }}</span>' +
+            '<span> {{ title }}</span>' +
             '</th>',
         link: function (scope, elm, attr, mwListableCtrl) {
           var ascending = '+',
