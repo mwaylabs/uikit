@@ -48,15 +48,12 @@ angular.module('mwListable', [])
           filterable: '='
         },
         link: function (scope, elm) {
-
-
-
           var _footer = elm.find('tr#listableFooter');
 
           var compileFooterNoneFound = function () {
             _footer.prepend(
                 '<td ng-if="filterable.items().length < 1"' +
-                    'colspan="{{ columns.length + 1 }}" class="text-center">' +
+                    'colspan="{{ columns.length + 2 }}" class="text-center">' +
                     '<p class="lead">{{ \'common.noneFound\' | i18n }}</p>' +
                     '</td>');
             $compile(_footer)(scope);
@@ -65,7 +62,7 @@ angular.module('mwListable', [])
           var compileFooterLoadMore = function () {
             _footer.append(
                 '<td ng-if="filterable.items().length < filterable.total()"' +
-                    'colspan="{{ columns.length + 1 }}">' +
+                    'colspan="{{ columns.length + 2 }}">' +
                     '<button class="btn btn-default btn-lg col-md-12" ng-click="filterable.loadMore()">' +
                     '{{ \'common.loadMore\' | i18n }}' +
                     '</button>' +
