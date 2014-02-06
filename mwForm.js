@@ -80,6 +80,7 @@
                   pattern: i18n.get('errors.hasToMatchPattern'),
                   url: i18n.get('errors.validUrl'),
                   min: i18n.get('errors.minValue', { count: element.attr('min') }),
+                  number: 'foobar',
                   minlength: i18n.get('errors.minLength', { count: element.attr('ng-minlength') }),
                   max: i18n.get('errors.maxValue', { count: element.attr('max') }),
                   maxlength: i18n.get('errors.maxLength', { count: element.attr('ng-maxlength') }),
