@@ -1,7 +1,6 @@
 <div class="form-group"
      ng-class="{'has-error': isInvalid()}">
 
-
   <div class="clearfix">
 
     <label ng-if="label"
@@ -12,9 +11,7 @@
 
     <div ng-class="{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]"
          ng-transclude></div>
-
   </div>
-
 
   <div ng-if="!hideErrors"
        ng-class="{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]">
