@@ -1,0 +1,20 @@
+<div mw-modal
+     title="{{'common.confirmModal.title' | i18n}}">
+  <div mw-modal-body>
+
+
+    {{'common.confirmModal.description' | i18n }}
+  </div>
+
+  <div mw-modal-footer>
+    <button type="button"
+            class="btn btn-default"
+            ng-click="continue()">{{'common.confirmModal.continue' | i18n }}
+    </button>
+
+    <button type="button"
+            class="btn btn-primary"
+            ng-click="stay()">{{'common.confirmModal.stay' | i18n }}
+    </button>
+  </div>
+</div>
