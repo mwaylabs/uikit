@@ -51,8 +51,6 @@
           link: function (scope, elm, attr, ctrl) {
             var pwdWidget = elm.inheritedData('$formController')[attr.mwValidateMatch];
 
-//            debugger;
-
             ctrl.$parsers.push(function (value) {
               var isValid = false;
               if (value === pwdWidget.$viewValue) {
@@ -72,7 +70,50 @@
             });
           }
         };
-      });
+      })
+
+  /**
+   * @ngdoc directive
+   * @name mwFormValidators.directive:mwValidateUniqueness
+   * @element input
+   * @description
+   *
+   * Adds validation of uniqueness for a given array of strings.
+   *
+   * @param {Array.<String>} mwValidateUniqueness Array of existing items to validate against
+   *
+   * Note: this directive requires `ngModel` to be present.
+   *
+   */
+      .directive('mwValidateUniqueness', function () {
+        return {
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var existingValues;
+
+            scope.$watch(attr.mwValidateUniqueness, function (value) {
+              existingValues = value;
+            });
+
+            /**
+             * Add parser/formatter to model which checks if the model value is
+             * a value that already exists and set validation state accordingly
+             */
+            var validateUniqueness = function (value) {
+              var isValid = true;
+              if (angular.isArray(existingValues) && existingValues.length > 0 && value) {
+                isValid = (existingValues.indexOf(value) === -1);
+              }
+              ngModel.$setValidity('unique', isValid);
+              return value;
+            };
+            ngModel.$parsers.unshift(validateUniqueness);
+            ngModel.$formatters.unshift(validateUniqueness);
+          }
+        };
+      })
+
+  ;
 
 
 })();
