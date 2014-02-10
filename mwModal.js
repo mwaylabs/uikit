@@ -27,7 +27,7 @@ angular.module('mwModal', [])
  *   </doc:source>
  * </doc:example>
  */
-  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q) {
+  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $http) {
 
     /**
      * TODO: Modals have to be removed from the dom at some time. There are several options for this:
@@ -43,6 +43,31 @@ angular.module('mwModal', [])
       _modals = {},
       that = this,
       _body = $document.find('body').eq(0);
+
+    var getTemplate = function(templateId){
+      var dfd = $q.defer();
+
+      if (!templateId) {
+        throw new Error('Modal service: templateUrl options is required.');
+      }
+
+      // Get template from cache
+      _cachedTemplate = $templateCache.get(templateId);
+
+      if(!_cachedTemplate){
+        $http.get(templateId).then(function(resp){
+          $templateCache.put(templateId, resp.data);
+          dfd.resolve(resp.data);
+        },function(){
+          throw new Error('Modal service: template \'' + templateId + '\' has not been found. Does a template with this ID/Path exist?');
+        });
+      } else {
+        dfd.resolve(_cachedTemplate);
+      }
+
+      return dfd.promise;
+
+    };
 
     /**
      *
@@ -62,10 +87,6 @@ angular.module('mwModal', [])
     this.create = function (modalOptions) {
       var _modal, _modalId, _ctrl;
 
-      if (!modalOptions.templateUrl) {
-        throw new Error('Modal service: templateUrl options is required.');
-      }
-
       // Generate modal id from templateUrl: '/url/to/myModal.html' -> 'myModal'
       _modalId = modalOptions.templateUrl;
 
@@ -73,31 +94,28 @@ angular.module('mwModal', [])
         // Create new scope if scope is not given in options
         _scope = (modalOptions.scope || $rootScope).$new();
 
-        // Get template from cache
-        _cachedTemplate = $templateCache.get(modalOptions.templateUrl);
+        getTemplate(_modalId).then(function(template){
 
-        // Throw error if template with this ID/Path hasn't been found
-        if (!angular.isDefined(_cachedTemplate)) {
-          throw new Error('Modal service: template \'' + modalOptions.templateUrl + '\' has not been found. Does a template with this ID/Path exist?');
-        }
-        // Build element
-        _template = angular.element(_cachedTemplate.trim());
+          _cachedTemplate = template;
+          // Build element
+          _template = angular.element(_cachedTemplate.trim());
 
-        _modal = $compile(_template)(_scope);
-        _modals[_modalId] = _modal;
+          _modal = $compile(_template)(_scope);
+          _modals[_modalId] = _modal;
 
-        _modal.addClass('mw-modal');
-        _body.append(_modal);
+          _modal.addClass('mw-modal');
+          _body.append(_modal);
 
-        _scope.$on('$destroy', function () {
-          that.destroy(_modalId);
+          _scope.$on('$destroy', function () {
+            that.destroy(_modalId);
+          });
+
+          if (modalOptions.controller) {
+            _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
+          }
+
+          _modal.modal({ show: false });
         });
-
-        if (modalOptions.controller) {
-          _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
-        }
-
-        _modal.modal({ show: false });
       }
       return _modalId;
     };

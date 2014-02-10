@@ -120,7 +120,7 @@
           model: '=',
           options: '=',
           query: '=filter',
-          required:'='
+          required: '='
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
         controller: function ($scope) {
@@ -138,15 +138,15 @@
             $scope.options = objOptions;
           }
 
-          $scope.getObjectSize = function(obj){
+          $scope.getObjectSize = function (obj) {
             return _.size(obj);
           };
 
-          $scope.filter = function(items) {
+          $scope.filter = function (items) {
             var result = {};
-            angular.forEach(items, function(value, key) {
-              if(!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase()) ){
-                result[key]=value;
+            angular.forEach(items, function (value, key) {
+              if (!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase())) {
+                result[key] = value;
               }
             });
             return result;
@@ -254,7 +254,7 @@
 
             //unbind eventlistener to prevent infinite loops!
             //after this the remaining element is removed
-            el.on('$destroy', function(){
+            el.on('$destroy', function () {
               el.off('$destroy');
               el.parent('.mw-checkbox').remove();
             });
@@ -392,6 +392,69 @@
 
   /**
    * @ngdoc directive
+   * @name mwForm.directive:mwLeaveConfirmation
+   * @element form
+   * @description
+   *
+   * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
+   *
+   */
+
+    .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
+      return {
+        link: function (scope, elm) {
+
+          var confirmationModal = Modal.create({
+            templateUrl: 'modules/ui/templates/mwForm/mwLeaveConfirmation.html',
+            scope: scope
+          });
+
+          // Prevent the original event so the routing will not be completed
+          // Save the url where it should be navigated to in a temp variable
+          var showConfirmModal = function (ev, next) {
+            if (elm.inheritedData().$formController.$dirty) {
+              Modal.show(confirmationModal);
+              ev.preventDefault();
+              scope.next = next;
+            }
+          };
+
+          // User wants to stay on the page
+          scope.stay = function () {
+            Modal.hide(confirmationModal);
+          };
+
+          // User really wants to navigate to that page which was saved before in a temp variable
+          scope.continue = function () {
+            if (scope.next) {
+              //instead of scope.$off() we call the original eventhandler function
+              scope.changeLocation();
+
+              //hide the modal and navigate to the page
+              Modal.hide(confirmationModal).then(function () {
+                $window.document.location.href = scope.next;
+                scope.next = null;
+              });
+            }
+          };
+
+          //In case that just a hashchange event was triggered
+          //Angular has no $off event unbinding so the original eventhandler is saved in a variable
+          scope.changeLocation = scope.$on('$locationChangeStart', showConfirmModal);
+
+          //In case that the user clicks the refresh/back button or makes a hard url change
+          $window.onbeforeunload = function () {
+            if (elm.inheritedData().$formController.$dirty) {
+              return i18n.get('common.confirmModal.description');
+            }
+          };
+
+        }
+      };
+    })
+
+  /**
+   * @ngdoc directive
    * @name mwForm.directive:mwFormActions
    * @element form
    * @description
@@ -418,6 +481,16 @@
           scope.form = elm.inheritedData('$formController');
           scope.hasCancel = attr.cancel;
           scope.hasSave = attr.save;
+
+          scope.saveFacade = function(){
+            scope.form.$setPristine();
+            scope.$eval(attr.save);
+          };
+
+          scope.cancelFacade = function(){
+            scope.form.$setPristine();
+            scope.$eval(attr.cancel);
+          };
         }
       };
     })
