@@ -476,20 +476,20 @@
           cancel: '&'
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
-        link: function (scope, elm, attr) {
+        link: function (scope, elm) {
 
           scope.form = elm.inheritedData('$formController');
-          scope.hasCancel = attr.cancel;
-          scope.hasSave = attr.save;
+          scope.hasCancel = scope.cancel;
+          scope.hasSave = scope.save;
 
           scope.saveFacade = function(){
             scope.form.$setPristine();
-            scope.$eval(attr.save);
+            scope.$eval(scope.save);
           };
 
           scope.cancelFacade = function(){
             scope.form.$setPristine();
-            scope.$eval(attr.cancel);
+            scope.$eval(scope.cancel);
           };
         }
       };
