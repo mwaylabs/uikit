@@ -175,15 +175,7 @@ angular.module('mwComponents', [])
         scope: {
           mwTooltip: '@'
         },
-        template: '<span><span mw-icon="question-sign"></span></span>',
-        link: function (scope, elm) {
-          elm.popover({
-            trigger: 'hover',
-            placement: 'bottom',
-            content: scope.mwTooltip,
-            container: 'body'
-          });
-        }
+        template: '<span><span mw-icon="question-sign" tooltip="{{mwTooltip}}"></span></span>'
       };
     })
 
