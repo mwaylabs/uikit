@@ -47,64 +47,74 @@ angular.module('mwListable', [])
           selectable: '=',
           filterable: '='
         },
-        link: function (scope, elm) {
-          var _footer = elm.find('tr#listableFooter');
+        priority: 1000,
+        compile: function (elm, attr) {
 
-          var compileFooterNoneFound = function () {
-            _footer.prepend(
-                '<td ng-if="filterable.items().length < 1"' +
-                    'colspan="{{ columns.length + 2 }}" class="text-center">' +
-                    '<p class="lead">{{ \'common.noneFound\' | i18n }}</p>' +
-                    '</td>');
-            $compile(_footer)(scope);
-          };
+          if (attr.filterable) {
+            elm.append('<tfoot><tr id="listableFooter"></tr></tfoot>');
+          }
 
-          var compileFooterLoadMore = function () {
-            _footer.append(
-                '<td ng-if="filterable.items().length < filterable.total()"' +
-                    'colspan="{{ columns.length + 2 }}">' +
-                    '<button class="btn btn-default btn-lg col-md-12" ng-click="filterable.loadMore()">' +
-                    '{{ \'common.loadMore\' | i18n }}' +
-                    '</button>' +
-                    '</td>');
-            $compile(_footer)(scope);
-          };
+          return function (scope, elm) {
+            var _footer = elm.find('tr#listableFooter');
+
+            var compileFooterNoneFound = function () {
+              _footer.prepend(
+                  '<td ng-if="filterable.items().length < 1"' +
+                      'colspan="{{ columns.length + 2 }}" class="text-center">' +
+                      '<p class="lead">{{ \'common.noneFound\' | i18n }}</p>' +
+                      '</td>');
+              $compile(_footer)(scope);
+            };
+
+            var compileFooterLoadMore = function () {
+              _footer.append(
+                  '<td ng-if="filterable.items().length < filterable.total()"' +
+                      'colspan="{{ columns.length + 2 }}">' +
+                      '<button class="btn btn-default btn-lg col-md-12" ng-click="filterable.loadMore()">' +
+                      '{{ \'common.loadMore\' | i18n }}' +
+                      '</button>' +
+                      '</td>');
+              $compile(_footer)(scope);
+            };
 
 
-          elm.addClass('table table-striped mw-listable');
+            elm.addClass('table table-striped mw-listable');
 
-          /**
-           * Compile fragments of header and footer into template
-           * This has to be done this way since td/tr elements cannot be inserted via directive
-           *
-           * The basic problem behind this approach is documented here:
-           * https://github.com/angular/angular.js/issues/1459
-           */
-          compileFooterNoneFound();
-          compileFooterLoadMore();
+            /**
+             * Compile fragments of header and footer into template
+             * This has to be done this way since td/tr elements cannot be inserted via directive
+             *
+             * The basic problem behind this approach is documented here:
+             * https://github.com/angular/angular.js/issues/1459
+             */
+            compileFooterNoneFound();
+            compileFooterLoadMore();
 
-          /**
-           * Infinite scrolling
-           */
-          var w = angular.element($window);
-          var d = angular.element($document);
-          var scrollCallback = function () {
-            if (w.scrollTop() === d.height() - w.height()) {
-              if (scope.filterable) {
-                scope.filterable.loadMore();
+            /**
+             * Infinite scrolling
+             */
+            var w = angular.element($window);
+            var d = angular.element($document);
+            var scrollCallback = function () {
+              if (w.scrollTop() === d.height() - w.height()) {
+                if (scope.filterable) {
+                  scope.filterable.loadMore();
+                }
               }
-            }
-          };
-          // Register scroll callback
-          w.on('scroll', scrollCallback);
+            };
+            // Register scroll callback
+            w.on('scroll', scrollCallback);
 
-          // Deregister scroll callback if scope is destroyed
-          scope.$on('$destroy', function() {
-            w.off('scroll', scrollCallback);
-          });
+            // Deregister scroll callback if scope is destroyed
+            scope.$on('$destroy', function () {
+              w.off('scroll', scrollCallback);
+            });
+          };
         },
         controller: function ($scope) {
           var columns = $scope.columns = [];
+
+          this.actionColumns = [];
 
           this.sort = function (property, order) {
             $scope.filterable.setSortOrder(order + property);
@@ -211,7 +221,7 @@ angular.module('mwListable', [])
             'mw-custom-checkbox>',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
-          scope.click = function(item, $event) {
+          scope.click = function (item, $event) {
             $event.stopPropagation();
             scope.selectable.toggle(item);
           };
@@ -239,10 +249,84 @@ angular.module('mwListable', [])
             'ng-checked="selectable.allSelected()"' +
             'mw-custom-checkbox>',
         link: function (scope, elm, attr, mwListableCtrl) {
-
           scope.filterable = mwListableCtrl.getFilterable();
           scope.selectable = mwListableCtrl.getSelectable();
           scope.toggleAll = mwListableCtrl.toggleAll;
         }
       };
-    });
+    })
+
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwListableRow
+ * @element tr
+ * @description
+ *
+ * Directive for table row. Adds click actions.
+ */
+    .directive('mwListableBodyRow', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        priority: 1000,
+        compile: function (elm, attr) {
+          elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
+
+          elm.attr('ng-click', 'isDisabled(item) || selectable.toggle(item)');
+          elm.addClass('clickable');
+
+          elm.prepend('<td mw-listable-column-checkbox disabled="isDisabled(item)" item="item"></td>');
+
+          var actionColumns = [];
+
+          if (attr.mwListableEditLink) {
+            actionColumns.push(null);
+            var editLink = '<td>' +
+                '<a ng-href="' + attr.mwListableEditLink + '"' +
+                'class="btn btn-default btn-sm">' +
+                '<span mw-icon="pencil"></span>' +
+                '</a>' +
+                '</td>';
+            elm.append(editLink);
+          }
+
+          if (attr.mwListableShowLink) {
+            actionColumns.push(null);
+            var showLink = '<td>' +
+                '<a ng-href="' + attr.mwListableShowLink + '"' +
+                'class="btn btn-default btn-sm">' +
+                '<span mw-icon="search"></span>' +
+                '</a>' +
+                '</td>';
+            elm.append(showLink);
+          }
+
+          return function (scope, elm, attr, mwListableCtrl) {
+            angular.forEach(actionColumns, function () {
+              mwListableCtrl.actionColumns.push(null);
+            });
+
+            scope.isDisabled = function (item) {
+              return scope.$parent.$eval(attr.mwListableDisabled, { item: item });
+            };
+          };
+        }
+      };
+    })
+
+    .directive('mwListableHeaderRow', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        priority: 1000,
+        compile: function (elm) {
+          elm.prepend('<th mw-listable-header-checkbox></th>');
+          elm.append('<th colspan="{{ actionColumns.length }}"></th>');
+
+          return function (scope, elm, attr, mwListableCtrl) {
+            scope.actionColumns = mwListableCtrl.actionColumns;
+          };
+        }
+      };
+    })
+;
