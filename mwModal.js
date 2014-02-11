@@ -278,9 +278,11 @@ angular.module('mwModal', [])
     require: '?^form',
     link: function (scope, elm, attr, ctrl) {
       elm.parents('.modal').first().on('keyup', function(event){
-          if(event.keyCode === 13 && (ctrl && ctrl.$valid) || !ctrl) {
+        if(event.keyCode === 13) {
+          if((ctrl && ctrl.$valid) || !ctrl) {
             elm.click();
           }
+        }
       });
     }
   };
