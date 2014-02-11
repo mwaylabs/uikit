@@ -47,7 +47,7 @@ angular.module('mwListable', [])
           selectable: '=',
           filterable: '='
         },
-        priority: 1000,
+        priority: 599,
         compile: function (elm, attr) {
 
           if (attr.filterable) {
@@ -268,7 +268,7 @@ angular.module('mwListable', [])
       return {
         restrict: 'A',
         require: '^mwListable',
-        priority: 1000,
+        priority: 599,
         compile: function (elm, attr) {
           elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
 
@@ -318,7 +318,7 @@ angular.module('mwListable', [])
       return {
         restrict: 'A',
         require: '^mwListable',
-        priority: 1000,
+        priority: 599,
         compile: function (elm) {
           elm.prepend('<th mw-listable-header-checkbox></th>');
           elm.append('<th colspan="{{ actionColumns.length }}"></th>');
