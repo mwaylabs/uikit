@@ -2,13 +2,14 @@
   <div class="col-md-12">
 
     <div class="input-group">
-      <span class="input-group-addon"><span mw-icon="search"></span></span>
+      <span class="input-group-addon" ng-click="search()"><span mw-icon="search"></span></span>
       <input type="text"
              placeholder="{{ 'common.search' | i18n }}"
              class="form-control"
              ng-keyup="search($event)"
              ng-model="model.value"
              ng-disabled="disabled">
+      <span ng-show="searching" class="search-indicator"></span>
     </div>
   </div>
 </div>
