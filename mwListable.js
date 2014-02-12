@@ -269,7 +269,7 @@ angular.module('mwListable', [])
         restrict: 'A',
         require: '^mwListable',
         priority: 1000,
-        compile: function (elm, attr) {
+        compile: function (elm) {
           elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
 
           elm.attr('ng-click', 'isDisabled(item) || selectable.toggle(item)');
@@ -277,35 +277,7 @@ angular.module('mwListable', [])
 
           elm.prepend('<td mw-listable-column-checkbox disabled="isDisabled(item)" item="item"></td>');
 
-          var actionColumns = [];
-
-          if (attr.mwListableEditLink) {
-            actionColumns.push(null);
-            var editLink = '<td>' +
-                '<a ng-href="' + attr.mwListableEditLink + '"' +
-                'class="btn btn-default btn-sm">' +
-                '<span mw-icon="pencil"></span>' +
-                '</a>' +
-                '</td>';
-            elm.append(editLink);
-          }
-
-          if (attr.mwListableShowLink) {
-            actionColumns.push(null);
-            var showLink = '<td>' +
-                '<a ng-href="' + attr.mwListableShowLink + '"' +
-                'class="btn btn-default btn-sm">' +
-                '<span mw-icon="search"></span>' +
-                '</a>' +
-                '</td>';
-            elm.append(showLink);
-          }
-
-          return function (scope, elm, attr, mwListableCtrl) {
-            angular.forEach(actionColumns, function () {
-              mwListableCtrl.actionColumns.push(null);
-            });
-
+          return function (scope, elm, attr) {
             scope.isDisabled = function (item) {
               return scope.$parent.$eval(attr.mwListableDisabled, { item: item });
             };
@@ -326,6 +298,34 @@ angular.module('mwListable', [])
           return function (scope, elm, attr, mwListableCtrl) {
             scope.actionColumns = mwListableCtrl.actionColumns;
           };
+        }
+      };
+    })
+
+    .directive('mwListableLinkEdit', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: {
+          link: '@mwListableLinkEdit'
+        },
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="pencil"></span></a>',
+        link: function(scope, elm, attr, mwListableCtrl) {
+          mwListableCtrl.actionColumns.push(null);
+        }
+      };
+    })
+
+    .directive('mwListableLinkShow', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: {
+          link: '@mwListableLinkShow'
+        },
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="search"></span></a>',
+        link: function(scope, elm, attr, mwListableCtrl) {
+          mwListableCtrl.actionColumns.push(null);
         }
       };
     })
