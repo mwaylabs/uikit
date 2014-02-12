@@ -7,5 +7,6 @@ angular.module('mwUI', [
   'mwSidebar',
   'mwFormValidators',
   'mwNav',
-  'mwPopover'
+  'mwPopover',
+  'mwHelper'
 ]);
