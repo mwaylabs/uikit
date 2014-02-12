@@ -1,15 +1,17 @@
-<div class="row">
+<div class="row mw-filterable-search">
   <div class="col-md-12">
 
     <div class="input-group">
-      <span class="input-group-addon" ng-click="search()"><span mw-icon="search"></span></span>
       <input type="text"
              placeholder="{{ 'common.search' | i18n }}"
              class="form-control"
              ng-keyup="search($event)"
              ng-model="model.value"
              ng-disabled="disabled">
-      <span ng-show="searching" class="search-indicator"></span>
+      <span class="input-group-addon filterable-search-btn" ng-click="search()">
+        <span ng-show="searching" class="search-indicator"></span>
+        <span ng-show="!searching" mw-icon="search"></span>
+      </span>
     </div>
   </div>
 </div>
