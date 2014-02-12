@@ -35,61 +35,6 @@ angular.module('mwSidebar', [])
 
 /**
  * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarSearch
- * @element div
- * @description
- *
- * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
-    .directive('mwSidebarSearch', function ($timeout) {
-      return {
-        transclude: true,
-        scope: {
-          filterable: '=',
-          disabled: '=',
-          property: '@'
-        },
-        templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarSearch.html',
-        link: function (scope) {
-          scope.model = scope.filterable.properties[scope.property];
-
-          var timeout;
-
-          var search = function () {
-            return scope.filterable.applyFilters();
-          };
-
-          var throttler = function () {
-            scope.searching = true;
-
-            $timeout.cancel(timeout);
-
-            timeout = $timeout(function () {
-
-              search().then(function(){
-                $timeout.cancel(timeout);
-                scope.searching = false;
-              });
-
-            }, 500);
-          };
-
-          scope.search = function (event) {
-            if (event.keyCode === 13) {
-              search();
-            }
-            throttler();
-          };
-        }
-      };
-    })
-
-/**
- * @ngdoc directive
  * @name mwSidebar.directive:mwSidebarPanel
  * @element div
  * @description
@@ -162,7 +107,7 @@ angular.module('mwSidebar', [])
     .directive('mwSidebarActions', function () {
       return {
         transclude: true,
-        template: '<div ng-transclude></div>'
+        template: '<div ng-transclude></div><hr>'
       };
     })
 
