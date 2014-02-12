@@ -79,6 +79,12 @@ angular.module('mwListable', [])
               $compile(_footer)(scope);
             };
 
+            var compileFooterLoading = function () {
+              _footer.prepend(
+                '<td ng-if="!filterable.items()" colspan="{{ columns.length + 2 }}"><div rln-hide-on-load></div></td>');
+              $compile(_footer)(scope);
+            };
+
 
             /**
              * Compile fragments of header and footer into template
@@ -89,6 +95,7 @@ angular.module('mwListable', [])
              */
             compileFooterNoneFound();
             compileFooterLoadMore();
+            compileFooterLoading();
 
             /**
              * Infinite scrolling

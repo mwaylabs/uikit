@@ -143,7 +143,9 @@
 
           $scope.filter = function (items) {
             var result = {};
+
             angular.forEach(items, function (value, key) {
+
               if (!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase())) {
                 result[key] = value;
               }
