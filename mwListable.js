@@ -321,7 +321,7 @@ angular.module('mwListable', [])
         priority: 1000,
         compile: function (elm) {
           elm.prepend('<th mw-listable-header-checkbox></th>');
-          elm.append('<th colspan="{{ actionColumns.length }}"></th>');
+          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}"></th>');
 
           return function (scope, elm, attr, mwListableCtrl) {
             scope.actionColumns = mwListableCtrl.actionColumns;
