@@ -47,12 +47,14 @@ angular.module('mwListable', [])
           selectable: '=',
           filterable: '='
         },
-        priority: 599,
+        priority: 1000,
         compile: function (elm, attr) {
 
           if (attr.filterable) {
             elm.append('<tfoot><tr id="listableFooter"></tr></tfoot>');
           }
+
+          elm.addClass('table table-striped mw-listable');
 
           return function (scope, elm) {
             var _footer = elm.find('tr#listableFooter');
@@ -77,8 +79,6 @@ angular.module('mwListable', [])
               $compile(_footer)(scope);
             };
 
-
-            elm.addClass('table table-striped mw-listable');
 
             /**
              * Compile fragments of header and footer into template
@@ -268,10 +268,11 @@ angular.module('mwListable', [])
       return {
         restrict: 'A',
         require: '^mwListable',
-        priority: 599,
+        priority: 1000,
         compile: function (elm, attr) {
           elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
 
+          console.log('compiling listable');
           elm.attr('ng-click', 'isDisabled(item) || selectable.toggle(item)');
           elm.addClass('clickable');
 
@@ -318,7 +319,7 @@ angular.module('mwListable', [])
       return {
         restrict: 'A',
         require: '^mwListable',
-        priority: 599,
+        priority: 1000,
         compile: function (elm) {
           elm.prepend('<th mw-listable-header-checkbox></th>');
           elm.append('<th colspan="{{ actionColumns.length }}"></th>');
