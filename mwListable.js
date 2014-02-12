@@ -272,7 +272,6 @@ angular.module('mwListable', [])
         compile: function (elm, attr) {
           elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
 
-          console.log('compiling listable');
           elm.attr('ng-click', 'isDisabled(item) || selectable.toggle(item)');
           elm.addClass('clickable');
 
