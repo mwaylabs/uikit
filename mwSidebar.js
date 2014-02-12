@@ -45,7 +45,7 @@ angular.module('mwSidebar', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-    .directive('mwSidebarSearch', function () {
+    .directive('mwSidebarSearch', function ($timeout) {
       return {
         transclude: true,
         scope: {
@@ -57,10 +57,32 @@ angular.module('mwSidebar', [])
         link: function (scope) {
           scope.model = scope.filterable.properties[scope.property];
 
+          var timeout;
+
+          var search = function () {
+            return scope.filterable.applyFilters();
+          };
+
+          var throttler = function () {
+            scope.searching = true;
+
+            $timeout.cancel(timeout);
+
+            timeout = $timeout(function () {
+
+              search().then(function(){
+                $timeout.cancel(timeout);
+                scope.searching = false;
+              });
+
+            }, 500);
+          };
+
           scope.search = function (event) {
-            if (event === null || event.keyCode === 13) {
-              scope.filterable.applyFilters();
+            if (event.keyCode === 13) {
+              search();
             }
+            throttler();
           };
         }
       };
