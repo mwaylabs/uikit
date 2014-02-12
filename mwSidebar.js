@@ -65,12 +65,16 @@ angular.module('mwSidebar', [])
 
           var throttler = function () {
             scope.searching = true;
+
             $timeout.cancel(timeout);
+
             timeout = $timeout(function () {
+
               search().then(function(){
                 $timeout.cancel(timeout);
                 scope.searching = false;
               });
+
             }, 500);
           };
 
