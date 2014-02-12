@@ -92,20 +92,20 @@ angular.module('mwComponents', [])
         transclude: true,
         scope: {
           title: '@',
-          url:'@',
+          url: '@',
           showBackButton: '@'
         },
         templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
-        link:function(scope,el,attrs,ctrl,$transclude){
+        link: function (scope, el, attrs, ctrl, $transclude) {
 
           $transclude(function (clone) {
-            if((!clone || clone.length===0) && !scope.showBackButton){
+            if ((!clone || clone.length === 0) && !scope.showBackButton) {
               el.find('.navbar-header').addClass('no-buttons');
             }
           });
 
-          scope.back = function(){
-            if(attrs.url){
+          scope.back = function () {
+            if (attrs.url) {
               $location.path(attrs.url);
             } else {
               window.history.back();
@@ -140,9 +140,16 @@ angular.module('mwComponents', [])
         restrict: 'A',
         replace: true,
         scope: { mwIcon: '@' },
-        template: '<span class="glyphicon glyphicon-{{mwIcon}}"></span>',
-        link: function(scope,el,attr){
-          if(attr.tooltip){
+        template: function (elm, attr) {
+          var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
+          if (isBootstrap) {
+            return '<i class="fa {{mwIcon}}"></i>';
+          } else {
+            return '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
+          }
+        },
+        link: function (scope, el, attr) {
+          if (attr.tooltip) {
             el.popover({
               trigger: 'hover',
               placement: 'bottom',
