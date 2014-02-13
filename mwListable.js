@@ -81,7 +81,7 @@ angular.module('mwListable', [])
 
             var compileFooterLoading = function () {
               _footer.prepend(
-                '<td ng-if="!filterable.items()" colspan="{{ columns.length + 2 }}"><div rln-hide-on-load></div></td>');
+                  '<td ng-if="!filterable.items()" colspan="{{ columns.length + 2 }}"><div rln-hide-on-load></div></td>');
               $compile(_footer)(scope);
             };
 
@@ -275,6 +275,7 @@ angular.module('mwListable', [])
       return {
         restrict: 'A',
         require: '^mwListable',
+        scope: true,
         priority: 1000,
         compile: function (elm) {
           elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
@@ -282,9 +283,10 @@ angular.module('mwListable', [])
           elm.attr('ng-click', 'isDisabled(item) || selectable.toggle(item)');
           elm.addClass('clickable');
 
-          elm.prepend('<td mw-listable-column-checkbox disabled="isDisabled(item)" item="item"></td>');
+          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox disabled="isDisabled(item)" item="item"></td>');
 
-          return function (scope, elm, attr) {
+          return function (scope, elm, attr, mwListableCtrl) {
+            scope.selectable = mwListableCtrl.getSelectable();
             scope.isDisabled = function (item) {
               return scope.$parent.$eval(attr.mwListableDisabled, { item: item });
             };
@@ -297,12 +299,14 @@ angular.module('mwListable', [])
       return {
         restrict: 'A',
         require: '^mwListable',
+        scope: true,
         priority: 1000,
         compile: function (elm) {
-          elm.prepend('<th mw-listable-header-checkbox></th>');
+          elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox></th>');
           elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}"></th>');
 
           return function (scope, elm, attr, mwListableCtrl) {
+            scope.selectable = mwListableCtrl.getSelectable();
             scope.actionColumns = mwListableCtrl.actionColumns;
           };
         }
@@ -317,7 +321,7 @@ angular.module('mwListable', [])
           link: '@mwListableLinkEdit'
         },
         template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="pencil"></span></a>',
-        link: function(scope, elm, attr, mwListableCtrl) {
+        link: function (scope, elm, attr, mwListableCtrl) {
           mwListableCtrl.actionColumns.push(null);
         }
       };
@@ -331,7 +335,7 @@ angular.module('mwListable', [])
           link: '@mwListableLinkShow'
         },
         template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="search"></span></a>',
-        link: function(scope, elm, attr, mwListableCtrl) {
+        link: function (scope, elm, attr, mwListableCtrl) {
           mwListableCtrl.actionColumns.push(null);
         }
       };
