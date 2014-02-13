@@ -280,7 +280,15 @@ angular.module('mwListable', [])
         compile: function (elm) {
           elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
 
-          elm.attr('ng-click', 'isDisabled(item) || selectable.toggle(item)');
+          var ngClickContent = '(isDisabled(item) || selectable.toggle(item))';
+//
+//          var click = elm.attr('ng-click');
+//
+//          if(click) {
+//            ngClickContent += ' && ' + click;
+//          }
+
+          elm.attr('ng-click', ngClickContent);
           elm.addClass('clickable');
 
           elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox disabled="isDisabled(item)" item="item"></td>');
