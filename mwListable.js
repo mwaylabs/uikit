@@ -165,15 +165,15 @@ angular.module('mwListable', [])
         restrict: 'A',
         require: '^mwListable',
         scope: {
-          title: '@',
           property: '@sort'
         },
+        transclude: true,
         template: '<th ng-click="toggleSortOrder()" ng-class="{ clickable: property }" width="1%">' +
             '<span ng-if="property">' +
             '<i ng-if="isSelected(\'-\')" mw-icon="sort-by-attributes-alt"></i>' +
             '<i ng-if="isSelected(\'+\')" mw-icon="sort-by-attributes" ></i>' +
             '</span>' +
-            '<span> {{ title }}</span>' +
+            '<span ng-transclude></span>' +
             '</th>',
         link: function (scope, elm, attr, mwListableCtrl) {
           var ascending = '+',
