@@ -477,11 +477,11 @@
           cancel: '&'
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
-        link: function (scope, elm) {
+        link: function (scope, elm, attr) {
 
           scope.form = elm.inheritedData('$formController');
-          scope.hasCancel = scope.cancel;
-          scope.hasSave = scope.save;
+          scope.hasCancel = angular.isDefined(attr.cancel);
+          scope.hasSave = angular.isDefined(attr.save);
 
           scope.saveFacade = function(){
             scope.form.$setPristine();
