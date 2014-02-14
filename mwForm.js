@@ -45,56 +45,56 @@
    * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
    *
    */
-    .directive('mwFormInput', function (i18n) {
-      return {
-        restrict: 'A',
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@',
-          hideErrors: '='
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
-        link: function (scope, elm) {
-          scope.isInvalid = function () {
-            var ctrl = elm.inheritedData('$formController'),
-              invalid = false;
-            if (ctrl) {
-              invalid = ctrl[scope.elementName].$invalid;
-            }
-            return invalid;
-          };
-        },
-        controller: function ($scope) {
-          var that = this;
-          that.element = null;
-          $scope.mwFormInputRegister = function (element) {
-            if (!that.element) {
-              that.element = element;
-              $scope.elementName = element.attr('name');
+      .directive('mwFormInput', function (i18n) {
+        return {
+          restrict: 'A',
+          transclude: true,
+          scope: {
+            label: '@',
+            tooltip: '@',
+            hideErrors: '='
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
+          link: function (scope, elm) {
+            scope.isInvalid = function () {
+              var ctrl = elm.inheritedData('$formController'),
+                  invalid = false;
+              if (ctrl) {
+                invalid = ctrl[scope.elementName].$invalid;
+              }
+              return invalid;
+            };
+          },
+          controller: function ($scope) {
+            var that = this;
+            that.element = null;
+            $scope.mwFormInputRegister = function (element) {
+              if (!that.element) {
+                that.element = element;
+                $scope.elementName = element.attr('name');
 
-              var buildValidationValues = function () {
-                $scope.validationValues = {
-                  required: i18n.get('errors.isRequired'),
-                  email: i18n.get('errors.hasToBeAnEmail'),
-                  pattern: i18n.get('errors.hasToMatchPattern'),
-                  url: i18n.get('errors.validUrl'),
-                  min: i18n.get('errors.minValue', { count: element.attr('min') }),
-                  minlength: i18n.get('errors.minLength', { count: element.attr('ng-minlength') }),
-                  max: i18n.get('errors.maxValue', { count: element.attr('max') }),
-                  maxlength: i18n.get('errors.maxLength', { count: element.attr('ng-maxlength') }),
-                  phone: i18n.get('errors.phoneNumber'),
-                  unique: i18n.get('errors.notUnique'),
-                  match: i18n.get('errors.doesNotMatch')
+                var buildValidationValues = function () {
+                  $scope.validationValues = {
+                    required: i18n.get('errors.isRequired'),
+                    email: i18n.get('errors.hasToBeAnEmail'),
+                    pattern: i18n.get('errors.hasToMatchPattern'),
+                    url: i18n.get('errors.validUrl'),
+                    min: i18n.get('errors.minValue', { count: element.attr('min') }),
+                    minlength: i18n.get('errors.minLength', { count: element.attr('ng-minlength') }),
+                    max: i18n.get('errors.maxValue', { count: element.attr('max') }),
+                    maxlength: i18n.get('errors.maxLength', { count: element.attr('ng-maxlength') }),
+                    phone: i18n.get('errors.phoneNumber'),
+                    unique: i18n.get('errors.notUnique'),
+                    match: i18n.get('errors.doesNotMatch')
+                  };
                 };
-              };
-              buildValidationValues();
-              $scope.$on('i18n:localeChanged', buildValidationValues);
-            }
-          };
-        }
-      };
-    })
+                buildValidationValues();
+                $scope.$on('i18n:localeChanged', buildValidationValues);
+              }
+            };
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -111,68 +111,68 @@
    * @param {expression} options Options which can be selected
    *
    */
-    .directive('mwFormMultiSelect', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        scope: {
-          model: '=',
-          options: '=',
-          query: '=filter',
-          required: '='
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
-        controller: function ($scope) {
+      .directive('mwFormMultiSelect', function () {
+        return {
+          restrict: 'A',
+          transclude: true,
+          scope: {
+            model: '=',
+            options: '=',
+            query: '=filter',
+            required: '='
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
+          controller: function ($scope) {
 
-          if (!angular.isArray($scope.model)) {
-            $scope.model = [];
-          }
-
-          if (angular.isArray($scope.options)) {
-            var objOptions = {};
-            $scope.options.forEach(function (option) {
-              objOptions[option] = option;
-            });
-
-            $scope.options = objOptions;
-          }
-
-          $scope.getObjectSize = function (obj) {
-            return _.size(obj);
-          };
-
-          $scope.filter = function (items) {
-            var result = {};
-
-            angular.forEach(items, function (value, key) {
-
-              if (!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase())) {
-                result[key] = value;
-              }
-            });
-            return result;
-          };
-
-          $scope.toggleKeyIntoModelArray = function (key) {
-
-            $scope.model = $scope.model || [];
-            //Check if key is already in the model array
-            //When user unselects a checkbox it will be deleted from the model array
-            if ($scope.model.indexOf(key) >= 0) {
-              // Delete key from model array
-              $scope.model.splice($scope.model.indexOf(key), 1);
-              // Delete model if no attribute is in there (for validation purposes)
-              if ($scope.model.length === 0) {
-                delete $scope.model;
-              }
-            } else {
-              $scope.model.push(key);
+            if (!angular.isArray($scope.model)) {
+              $scope.model = [];
             }
-          };
 
-        }
-      };
-    })
+            if (angular.isArray($scope.options)) {
+              var objOptions = {};
+              $scope.options.forEach(function (option) {
+                objOptions[option] = option;
+              });
+
+              $scope.options = objOptions;
+            }
+
+            $scope.getObjectSize = function (obj) {
+              return _.size(obj);
+            };
+
+            $scope.filter = function (items) {
+              var result = {};
+
+              angular.forEach(items, function (value, key) {
+
+                if (!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase())) {
+                  result[key] = value;
+                }
+              });
+              return result;
+            };
+
+            $scope.toggleKeyIntoModelArray = function (key) {
+
+              $scope.model = $scope.model || [];
+              //Check if key is already in the model array
+              //When user unselects a checkbox it will be deleted from the model array
+              if ($scope.model.indexOf(key) >= 0) {
+                // Delete key from model array
+                $scope.model.splice($scope.model.indexOf(key), 1);
+                // Delete model if no attribute is in there (for validation purposes)
+                if ($scope.model.length === 0) {
+                  delete $scope.model;
+                }
+              } else {
+                $scope.model.push(key);
+              }
+            };
+
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -187,24 +187,24 @@
    * @param {string} label Label to show
    *
    */
-    .directive('mwFormCheckbox', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@',
-          badges: '@'
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
-        link: function (scope) {
-          if (scope.badges) {
-            scope.splittedBadges = scope.badges.split(',');
+      .directive('mwFormCheckbox', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          transclude: true,
+          scope: {
+            label: '@',
+            tooltip: '@',
+            badges: '@'
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
+          link: function (scope) {
+            if (scope.badges) {
+              scope.splittedBadges = scope.badges.split(',');
+            }
           }
-        }
-      };
-    })
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -215,83 +215,83 @@
    * Replaces native checkbox with custom checkbox
    *
    */
-    .directive('mwCustomCheckbox', function ($window) {
-      return {
-        restrict: 'A',
-        replace: true,
-        require: '?ngModel',
-        transclude: true,
-        link: function (scope, el, attr, ngModel) {
+      .directive('mwCustomCheckbox', function ($window) {
+        return {
+          restrict: 'A',
+          replace: true,
+          require: '?ngModel',
+          transclude: true,
+          link: function (scope, el, attr, ngModel) {
 
 
 
-          // set the active class on the checkbox wrapper
-          var setActiveClass = function (checked) {
-            if (checked) {
-              el.parent().addClass('active');
-            } else {
-              el.parent().removeClass('active');
-            }
-          };
-
-          // render custom checkbox
-          // to preserve the functionality of the original checkbox we just wrap it with a custom element
-          // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
-          // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
-          var render = function () {
-            var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
-              customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>');
-
-            el.wrap(customCheckbox);
-            customCheckboxStateIndicator.insertAfter(el);
-          };
-
-          (function init() {
-
-            //check the value every time the checkbox is clicked
-            el.on('change', function () {
-              setActiveClass(el.is(':checked'));
-            });
-
-            //unbind eventlistener to prevent infinite loops!
-            //after this the remaining element is removed
-            el.on('$destroy', function () {
-              el.off('$destroy');
-              el.parent('.mw-checkbox').remove();
-            });
-
-            if (ngModel) {
-              //when a model is defined use the value which is passed into the formatters function during initialization
-              ngModel.$formatters.unshift(function (checked) {
-                setActiveClass(checked);
-                return checked;
-              });
-            }
-
-            //jQuery does not trigger a change event when checkbox is checked programmatically e.g. by ng-checked
-            //property hooks triggers a change event everytime the setter is called
-            //TODO find a angularjs solution for this
-            $window.$.propHooks.checked = {
-              set: function (el, value) {
-
-                var trigger;
-                if (el.checked !== value) {
-                  trigger = true;
-                } else {
-                  trigger = false;
-                }
-                el.checked = value;
-                if (trigger) {
-                  $window.$(el).trigger('change');
-                }
+            // set the active class on the checkbox wrapper
+            var setActiveClass = function (checked) {
+              if (checked) {
+                el.parent().addClass('active');
+              } else {
+                el.parent().removeClass('active');
               }
             };
 
-            render();
-          }());
-        }
-      };
-    })
+            // render custom checkbox
+            // to preserve the functionality of the original checkbox we just wrap it with a custom element
+            // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
+            // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
+            var render = function () {
+              var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
+                  customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>');
+
+              el.wrap(customCheckbox);
+              customCheckboxStateIndicator.insertAfter(el);
+            };
+
+            (function init() {
+
+              //check the value every time the checkbox is clicked
+              el.on('change', function () {
+                setActiveClass(el.is(':checked'));
+              });
+
+              //unbind eventlistener to prevent infinite loops!
+              //after this the remaining element is removed
+              el.on('$destroy', function () {
+                el.off('$destroy');
+                el.parent('.mw-checkbox').remove();
+              });
+
+              if (ngModel) {
+                //when a model is defined use the value which is passed into the formatters function during initialization
+                ngModel.$formatters.unshift(function (checked) {
+                  setActiveClass(checked);
+                  return checked;
+                });
+              }
+
+              //jQuery does not trigger a change event when checkbox is checked programmatically e.g. by ng-checked
+              //property hooks triggers a change event everytime the setter is called
+              //TODO find a angularjs solution for this
+              $window.$.propHooks.checked = {
+                set: function (el, value) {
+
+                  var trigger;
+                  if (el.checked !== value) {
+                    trigger = true;
+                  } else {
+                    trigger = false;
+                  }
+                  el.checked = value;
+                  if (trigger) {
+                    $window.$(el).trigger('change');
+                  }
+                }
+              };
+
+              render();
+            }());
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -308,18 +308,18 @@
    * @param {string} tooltip Tooltip to display
    *
    */
-    .directive('mwFormWrapper', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormWrapper.html'
-      };
-    })
+      .directive('mwFormWrapper', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          transclude: true,
+          scope: {
+            label: '@',
+            tooltip: '@'
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormWrapper.html'
+        };
+      })
 
 
   /**
@@ -335,42 +335,42 @@
    *
    * @param {string} mwFormsValidation The key to validate a model
    */
-    .directive('mwFormValidation', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        require: '^mwFormInput',
-        scope: {
-          validation: '@mwFormValidation'
-        },
-        template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
-        link: function (scope, elm, attr, mwFormInputCtrl) {
+      .directive('mwFormValidation', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          transclude: true,
+          require: '^mwFormInput',
+          scope: {
+            validation: '@mwFormValidation'
+          },
+          template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
+          link: function (scope, elm, attr, mwFormInputCtrl) {
 
-          var inputName = mwFormInputCtrl.element.attr('name'),
-            form = elm.inheritedData('$formController'),
-            invalid = false;
+            var inputName = mwFormInputCtrl.element.attr('name'),
+                form = elm.inheritedData('$formController'),
+                invalid = false;
 
-          if (!inputName) {
-            invalid = true;
-            throw new Error('element doesn\'t have name attribute');
-          }
-
-          if (form && !form[inputName]) {
-            invalid = true;
-            throw new Error('element ' + inputName + ' not found');
-          }
-
-          scope.isValid = function () {
-            if (invalid || !form) {
-              return false;
-            } else {
-              return form[inputName].$error[scope.validation];
+            if (!inputName) {
+              invalid = true;
+              throw new Error('element doesn\'t have name attribute');
             }
-          };
-        }
-      };
-    })
+
+            if (form && !form[inputName]) {
+              invalid = true;
+              throw new Error('element ' + inputName + ' not found');
+            }
+
+            scope.isValid = function () {
+              if (invalid || !form) {
+                return false;
+              } else {
+                return form[inputName].$error[scope.validation];
+              }
+            };
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -381,15 +381,15 @@
    * Adds form specific behaviour
    *
    */
-    .directive('form', function () {
-      return {
-        restrict: 'E',
-        link: function (scope, elm) {
-          elm.addClass('form-horizontal');
-          elm.attr('novalidate', 'true');
-        }
-      };
-    })
+      .directive('form', function () {
+        return {
+          restrict: 'E',
+          link: function (scope, elm) {
+            elm.addClass('form-horizontal');
+            elm.attr('novalidate', 'true');
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -401,58 +401,58 @@
    *
    */
 
-    .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
-      return {
-        link: function (scope, elm) {
+      .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
+        return {
+          link: function (scope, elm) {
 
-          var confirmationModal = Modal.create({
-            templateUrl: 'modules/ui/templates/mwForm/mwLeaveConfirmation.html',
-            scope: scope
-          });
+            var confirmationModal = Modal.create({
+              templateUrl: 'modules/ui/templates/mwForm/mwLeaveConfirmation.html',
+              scope: scope
+            });
 
-          // Prevent the original event so the routing will not be completed
-          // Save the url where it should be navigated to in a temp variable
-          var showConfirmModal = function (ev, next) {
-            if (elm.inheritedData().$formController.$dirty) {
-              Modal.show(confirmationModal);
-              ev.preventDefault();
-              scope.next = next;
-            }
-          };
+            // Prevent the original event so the routing will not be completed
+            // Save the url where it should be navigated to in a temp variable
+            var showConfirmModal = function (ev, next) {
+              if (elm.inheritedData().$formController.$dirty) {
+                Modal.show(confirmationModal);
+                ev.preventDefault();
+                scope.next = next;
+              }
+            };
 
-          // User wants to stay on the page
-          scope.stay = function () {
-            Modal.hide(confirmationModal);
-          };
+            // User wants to stay on the page
+            scope.stay = function () {
+              Modal.hide(confirmationModal);
+            };
 
-          // User really wants to navigate to that page which was saved before in a temp variable
-          scope.continue = function () {
-            if (scope.next) {
-              //instead of scope.$off() we call the original eventhandler function
-              scope.changeLocation();
+            // User really wants to navigate to that page which was saved before in a temp variable
+            scope.continue = function () {
+              if (scope.next) {
+                //instead of scope.$off() we call the original eventhandler function
+                scope.changeLocation();
 
-              //hide the modal and navigate to the page
-              Modal.hide(confirmationModal).then(function () {
-                $window.document.location.href = scope.next;
-                scope.next = null;
-              });
-            }
-          };
+                //hide the modal and navigate to the page
+                Modal.hide(confirmationModal).then(function () {
+                  $window.document.location.href = scope.next;
+                  scope.next = null;
+                });
+              }
+            };
 
-          //In case that just a hashchange event was triggered
-          //Angular has no $off event unbinding so the original eventhandler is saved in a variable
-          scope.changeLocation = scope.$on('$locationChangeStart', showConfirmModal);
+            //In case that just a hashchange event was triggered
+            //Angular has no $off event unbinding so the original eventhandler is saved in a variable
+            scope.changeLocation = scope.$on('$locationChangeStart', showConfirmModal);
 
-          //In case that the user clicks the refresh/back button or makes a hard url change
-          $window.onbeforeunload = function () {
-            if (elm.inheritedData().$formController.$dirty) {
-              return i18n.get('common.confirmModal.description');
-            }
-          };
+            //In case that the user clicks the refresh/back button or makes a hard url change
+            $window.onbeforeunload = function () {
+              if (elm.inheritedData().$formController.$dirty) {
+                return i18n.get('common.confirmModal.description');
+              }
+            };
 
-        }
-      };
-    })
+          }
+        };
+      })
 
   /**
    * @ngdoc directive
@@ -469,32 +469,32 @@
    * @param {expression} cancel Expression to evaluate on click on 'cancel' button
    *
    */
-    .directive('mwFormActions', function () {
-      return {
-        replace: true,
-        scope: {
-          save: '&',
-          cancel: '&'
-        },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
-        link: function (scope, elm, attr) {
+      .directive('mwFormActions', function () {
+        return {
+          replace: true,
+          scope: {
+            save: '&',
+            cancel: '&'
+          },
+          templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
+          link: function (scope, elm, attr) {
 
-          scope.form = elm.inheritedData('$formController');
-          scope.hasCancel = angular.isDefined(attr.cancel);
-          scope.hasSave = angular.isDefined(attr.save);
+            scope.form = elm.inheritedData('$formController');
+            scope.hasCancel = angular.isDefined(attr.cancel);
+            scope.hasSave = angular.isDefined(attr.save);
 
-          scope.saveFacade = function(){
-            scope.form.$setPristine();
-            scope.$eval(scope.save);
-          };
+            scope.saveFacade = function () {
+              scope.form.$setPristine();
+              scope.$eval(scope.save);
+            };
 
-          scope.cancelFacade = function(){
-            scope.form.$setPristine();
-            scope.$eval(scope.cancel);
-          };
-        }
-      };
-    })
+            scope.cancelFacade = function () {
+              scope.form.$setPristine();
+              scope.$eval(scope.cancel);
+            };
+          }
+        };
+      })
 
 
   /**
@@ -507,7 +507,7 @@
    * it on {@link mwForm.directive:mwFormInput mwFormInput}.
    *
    */
-    .directive('select', extendHTMLElement)
+      .directive('select', extendHTMLElement)
 
 
   /**
@@ -520,7 +520,7 @@
    * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
    *
    */
-    .directive('input', extendHTMLElement)
+      .directive('input', extendHTMLElement)
 
   /**
    * @ngdoc directive
@@ -532,7 +532,7 @@
    * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
    *
    */
-    .directive('textarea', extendHTMLElement);
+      .directive('textarea', extendHTMLElement);
 
 
 })();
