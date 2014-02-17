@@ -245,6 +245,7 @@ angular.module('mwModal', [])
     return {
       restrict: 'A',
       transclude: true,
+      replace:true,
       template: '<div class="modal-body clearfix" ng-transclude></div>'
     };
   })
@@ -261,6 +262,7 @@ angular.module('mwModal', [])
     return {
       restrict: 'A',
       transclude: true,
+      replace:true,
       template: '<div class="modal-footer" ng-transclude></div>'
     };
   })
