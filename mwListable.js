@@ -32,9 +32,6 @@ angular.module('mwListable', [])
  *          <td>Column content</td>
  *        </tr>
  *      </tbody>
- *      <tfoot>
- *        <tr id="listableFooter"></tr>
- *      </tfoot>
  *    </table>
  *   </doc:source>
  * </doc:example>
@@ -47,55 +44,12 @@ angular.module('mwListable', [])
           selectable: '=',
           filterable: '='
         },
-        priority: 1000,
-        compile: function (elm, attr) {
+        compile: function  (elm) {
 
-          if (attr.filterable) {
-            elm.append('<tfoot><tr id="listableFooter"></tr></tfoot>');
-          }
-
-          elm.addClass('table table-striped mw-listable');
+          elm.append('<tfoot mw-listable-footer></tfoot>');
 
           return function (scope, elm) {
-            var _footer = elm.find('tr#listableFooter');
-
-            var compileFooterNoneFound = function () {
-              _footer.prepend(
-                  '<td ng-if="filterable.items().length < 1"' +
-                      'colspan="{{ columns.length + 2 }}" class="text-center">' +
-                      '<p class="lead">{{ \'common.noneFound\' | i18n }}</p>' +
-                      '</td>');
-              $compile(_footer)(scope);
-            };
-
-            var compileFooterLoadMore = function () {
-              _footer.append(
-                  '<td ng-if="filterable.items().length < filterable.total()"' +
-                      'colspan="{{ columns.length + 2 }}">' +
-                      '<button class="btn btn-default btn-lg col-md-12" ng-click="filterable.loadMore()">' +
-                      '{{ \'common.loadMore\' | i18n }}' +
-                      '</button>' +
-                      '</td>');
-              $compile(_footer)(scope);
-            };
-
-            var compileFooterLoading = function () {
-              _footer.prepend(
-                  '<td ng-if="!filterable.items()" colspan="{{ columns.length + 2 }}"><div rln-hide-on-load></div></td>');
-              $compile(_footer)(scope);
-            };
-
-
-            /**
-             * Compile fragments of header and footer into template
-             * This has to be done this way since td/tr elements cannot be inserted via directive
-             *
-             * The basic problem behind this approach is documented here:
-             * https://github.com/angular/angular.js/issues/1459
-             */
-            compileFooterNoneFound();
-            compileFooterLoadMore();
-            compileFooterLoading();
+            elm.addClass('table table-striped mw-listable');
 
             /**
              * Infinite scrolling
@@ -135,6 +89,10 @@ angular.module('mwListable', [])
             columns.push(scope);
           };
 
+          this.getColumns = function() {
+            return columns;
+          };
+
           this.getFilterable = function () {
             return $scope.filterable;
           };
@@ -154,6 +112,29 @@ angular.module('mwListable', [])
       };
     })
 
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwListableFooter
+ * @element tfoot
+ * @description
+ *
+ * Displays footer with:
+ * * loading spinner if list is loading
+ * * 'none found' message if filterable is empty
+ * * 'load more' button for pagination
+ *
+ */
+
+    .directive('mwListableFooter', function() {
+      return {
+        require: '^mwListable',
+        templateUrl: 'modules/ui/templates/mwListable/mwListableFooter.html',
+        link: function(scope, elm, attr, mwListableCtrl) {
+          scope.columns = mwListableCtrl.getColumns();
+        }
+      };
+    })
+
 
 /**
  * @ngdoc directive
@@ -164,7 +145,6 @@ angular.module('mwListable', [])
  * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
  * or pagination logic. Use this directive when you want to display items in a list without any hassle.
  *
- * @param {string} title Title of the table header
  * @param {string} sort Property key of the model to sort by
  */
     .directive('mwListableHeader', function () {
@@ -175,13 +155,7 @@ angular.module('mwListable', [])
           property: '@sort'
         },
         transclude: true,
-        template: '<th ng-click="toggleSortOrder()" ng-class="{ clickable: property }" width="1%">' +
-            '<span ng-if="property">' +
-            '<i ng-if="isSelected(\'-\')" mw-icon="sort-by-attributes-alt"></i>' +
-            '<i ng-if="isSelected(\'+\')" mw-icon="sort-by-attributes" ></i>' +
-            '</span>' +
-            '<span ng-transclude></span>' +
-            '</th>',
+        templateUrl: 'modules/ui/templates/mwListable/mwListableHeader.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           var ascending = '+',
               descending = '-';
@@ -212,6 +186,8 @@ angular.module('mwListable', [])
  * @description
  *
  * Directive for table to add 'Select item' checkbox in content.
+ *
+ * Note: this directive has to be nested inside an `mwListable` table.
  */
     .directive('mwListableColumnCheckbox', function () {
       return {
@@ -221,11 +197,7 @@ angular.module('mwListable', [])
           disabled: '=',
           item: '='
         },
-        template: '<input type="checkbox" ' +
-            'ng-click="click(item, $event)" ' +
-            'ng-disabled="{{ disabled || false }}"' +
-            'ng-checked="selectable.isSelected(item)"' +
-            'mw-custom-checkbox>',
+        templateUrl: 'modules/ui/templates/mwListable/mwListableColumnCheckbox.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
           scope.click = function (item, $event) {
@@ -244,17 +216,17 @@ angular.module('mwListable', [])
  * @description
  *
  * Directive for table to add 'Select all' checkbox in header.
+ *
+ * @scope
+ *
+ * Note: this directive has to be nested inside an `mwListable` table.
  */
     .directive('mwListableHeaderCheckbox', function () {
       return {
         restrict: 'A',
         require: '^mwListable',
         scope: true,
-        template: '<input type="checkbox" ' +
-            'ng-if="!filterable || filterable.items().length > 0"' +
-            'ng-click="toggleAll()" ' +
-            'ng-checked="selectable.allSelected()"' +
-            'mw-custom-checkbox>',
+        templateUrl: 'modules/ui/templates/mwListable/mwListableHeaderCheckbox.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.filterable = mwListableCtrl.getFilterable();
           scope.selectable = mwListableCtrl.getSelectable();
@@ -269,46 +241,60 @@ angular.module('mwListable', [])
  * @element tr
  * @description
  *
- * Directive for table row. Adds click actions.
+ * Directive for table row. Adds click actions. And class 'selected' if row is selected.
+ *
+ * Note: this directive has to be nested inside an `mwListable` table.
  */
     .directive('mwListableBodyRow', function () {
       return {
         restrict: 'A',
         require: '^mwListable',
-        scope: true,
-        priority: 1000,
         compile: function (elm) {
-          elm.attr('ng-class', '{ \'selected\': selectable.isSelected(item) }');
 
-          var ngClickContent = '(isDisabled(item) || selectable.toggle(item))';
-//
-//          var click = elm.attr('ng-click');
-//
-//          if(click) {
-//            ngClickContent += ' && ' + click;
-//          }
+          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox disabled="isDisabled()" item="item"></td>');
 
-          elm.attr('ng-click', ngClickContent);
-          elm.addClass('clickable');
+          return function (scope, elm, attr) {
+            var selectedClass = 'selected';
+            elm.addClass('selectable');
 
-          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox disabled="isDisabled(item)" item="item"></td>');
+            elm.on('click', function () {
+              if (!scope.isDisabled(scope.item)) {
+                scope.selectable.toggle(scope.item);
+                scope.$apply();
+              }
+            });
 
-          return function (scope, elm, attr, mwListableCtrl) {
-            scope.selectable = mwListableCtrl.getSelectable();
-            scope.isDisabled = function (item) {
-              return scope.$parent.$eval(attr.mwListableDisabled, { item: item });
+            scope.$watch('selectable.isSelected(item)', function (value) {
+              if(value) {
+                elm.addClass(selectedClass);
+              } else {
+                elm.removeClass(selectedClass);
+              }
+            });
+
+            scope.isDisabled = function () {
+              return scope.$eval(attr.mwListableDisabled, { item: scope.item });
             };
           };
         }
       };
     })
 
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwListableHeaderRow
+ * @element tr
+ * @description
+ *
+ * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
+ *
+ * Note: this directive has to be nested inside an `mwListable` table.
+ */
     .directive('mwListableHeaderRow', function () {
       return {
         restrict: 'A',
         require: '^mwListable',
         scope: true,
-        priority: 1000,
         compile: function (elm) {
           elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox></th>');
           elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}"></th>');
@@ -321,6 +307,19 @@ angular.module('mwListable', [])
       };
     })
 
+
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwListableLinkEdit
+ * @element td
+ * @description
+ *
+ * Directive to add a button link to edit a dataset.
+ *
+ * @param {string} mwListableLinkEdit URL as href
+ *
+ * Note: this directive has to be nested inside an `mwListable` table.
+ */
     .directive('mwListableLinkEdit', function () {
       return {
         restrict: 'A',
@@ -335,6 +334,18 @@ angular.module('mwListable', [])
       };
     })
 
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwListableLinkShow
+ * @element td
+ * @description
+ *
+ * Directive to add a button link to show a dataset.
+ *
+ * @param {string} mwListableLinkShow URL as href
+ *
+ * Note: this directive has to be nested inside an `mwListable` table.
+ */
     .directive('mwListableLinkShow', function () {
       return {
         restrict: 'A',
