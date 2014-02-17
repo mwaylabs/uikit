@@ -483,14 +483,17 @@
             scope.hasCancel = angular.isDefined(attr.cancel);
             scope.hasSave = angular.isDefined(attr.save);
 
-            scope.saveFacade = function () {
+            var setFormPristineAndEvaluate = function(exec){
               scope.form.$setPristine();
-              scope.$eval(scope.save);
+              scope.$eval(exec);
+            };
+
+            scope.saveFacade = function () {
+              setFormPristineAndEvaluate(scope.save);
             };
 
             scope.cancelFacade = function () {
-              scope.form.$setPristine();
-              scope.$eval(scope.cancel);
+              setFormPristineAndEvaluate(scope.cancel);
             };
           }
         };
