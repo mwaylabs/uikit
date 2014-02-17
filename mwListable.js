@@ -12,7 +12,7 @@ angular.module('mwListable', [])
  * or pagination logic. Use this directive when you want to display items in a list without any hassle.
  *
  * @param {string} selectable Instance of selectable for this listable item
- * @param {string} filterable Instance of filterable for this listable item. Needed for pagination
+ * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
  * @example
  * <doc:example>
  *   <doc:source>
@@ -21,14 +21,11 @@ angular.module('mwListable', [])
  *           filterable="filterable">
  *      <thead>
  *        <tr>
- *          <th mw-listable-header
- *          title="A column"></th>
+ *          <th mw-listable-header>A column</th>
  *        </tr>
  *      </thead>
  *      <tbody>
  *        <tr ng-repeat="item in filterable.items()">
- *          <td mw-listable-column-checkbox
- *              item="item"></td>
  *          <td>Column content</td>
  *        </tr>
  *      </tbody>
