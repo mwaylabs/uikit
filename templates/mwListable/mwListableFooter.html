@@ -1,0 +1,17 @@
+<tr>
+  <td colspan="{{ columns.length + 3 }}">
+    <div ng-if="!filterable.items()"
+         rln-hide-on-load></div>
+
+    <div ng-if="filterable.items().length < 1"
+        class="text-center">
+      <p class="lead">{{ 'common.noneFound' | i18n }}</p>
+    </div>
+
+    <button ng-if="filterable.items().length < filterable.total()"
+            class="btn btn-default btn-lg col-md-12"
+            ng-click="filterable.loadMore()">
+      {{ 'common.loadMore' | i18n }}
+    </button>
+  </td>
+</tr>
