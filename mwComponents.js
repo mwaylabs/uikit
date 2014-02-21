@@ -270,5 +270,62 @@ angular.module('mwComponents', [])
           };
         }
       };
+    })
+
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwRating
+ * @element span
+ * @description
+ *
+ * Converts a rating number into stars
+ *
+ * @param {number | expression} mwRating rating score
+ * @param {number} max the maximun number of stars
+ *
+ * @example
+ * <doc:example>
+ *  <doc:source>
+ *    <span mw-rating="3"></span>
+ *  </doc:source>
+ * </doc:example>
+ */
+    .directive('mwRating', function () {
+      return {
+        restrict: 'A',
+        scope: true,
+        template: '<i ng-repeat="star in stars" ng-class="star.state" class="fa"></i>',
+        link: function(scope, elm, attr) {
+
+          elm.addClass('mw-star-rating');
+
+          scope.stars = [];
+          var starsMax = scope.$eval(attr.max);
+
+          var buildStars = function(rating){
+            scope.stars = [];
+
+            rating = (rating > starsMax) ? starsMax : rating;
+            rating = (rating < 0) ? 0 : rating;
+
+            for(var i = 0; i < Math.floor(rating); i++) {
+              scope.stars.push({state: 'fa-star'});
+            }
+
+            if(rating - Math.floor(rating) >= 0.5) {
+              scope.stars.push({state: 'fa-star-half-full'});
+            }
+
+            while(attr.max && scope.stars.length < starsMax) {
+              scope.stars.push({state: 'fa-star-o'});
+            }
+          };
+
+          attr.$observe('mwRating', function(value){
+            buildStars(scope.$eval(value));
+          });
+
+        }
+      };
     });
 

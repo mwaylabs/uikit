@@ -352,6 +352,11 @@ angular.module('mwListable', [])
         },
         template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="search"></span></a>',
         link: function (scope, elm, attr, mwListableCtrl) {
+          if(attr.ngClick){
+            elm.find('a').click(function(event){
+              event.preventDefault();
+            });
+          }
           mwListableCtrl.actionColumns.push(null);
         }
       };
