@@ -45,8 +45,6 @@ angular.module('mwModal', [])
           _body = $document.find('body').eq(0);
 
       var getTemplate = function (templateId) {
-        var dfd = $q.defer();
-
         if (!templateId) {
           throw new Error('Modal service: templateUrl options is required.');
         }
@@ -54,19 +52,16 @@ angular.module('mwModal', [])
         // Get template from cache
         _cachedTemplate = $templateCache.get(templateId);
 
-        if (!_cachedTemplate) {
-          $http.get(templateId).then(function (resp) {
+        if (_cachedTemplate) {
+          return $q.when(_cachedTemplate);
+        } else {
+          return $http.get(templateId).then(function (resp) {
             $templateCache.put(templateId, resp.data);
-            dfd.resolve(resp.data);
+            return resp.data;
           }, function () {
             throw new Error('Modal service: template \'' + templateId + '\' has not been found. Does a template with this ID/Path exist?');
           });
-        } else {
-          dfd.resolve(_cachedTemplate);
         }
-
-        return dfd.promise;
-
       };
 
       /**
@@ -158,10 +153,10 @@ angular.module('mwModal', [])
        */
       this.hide = function (modalId) {
         var dfd = $q.defer();
+        getModal(modalId).modal('hide');
         getModal(modalId).on('hidden.bs.modal', function () {
           dfd.resolve();
         });
-        getModal(modalId).modal('hide');
         return dfd.promise;
       };
 
