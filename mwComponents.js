@@ -20,17 +20,17 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwPanel', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        title: '@mwPanel'
-      },
-      transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html'
-    };
-  })
+    .directive('mwPanel', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+          title: '@mwPanel'
+        },
+        transclude: true,
+        templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html'
+      };
+    })
 
 /**
  * @ngdoc directive
@@ -56,17 +56,17 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwAlert', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        type: '@mwAlert'
-      },
-      transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwAlert.html'
-    };
-  })
+    .directive('mwAlert', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+          type: '@mwAlert'
+        },
+        transclude: true,
+        templateUrl: 'modules/ui/templates/mwComponents/mwAlert.html'
+      };
+    })
 
 /**
  * @ngdoc directive
@@ -87,33 +87,33 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwHeader', function ($location) {
-    return {
-      transclude: true,
-      scope: {
-        title: '@',
-        url: '@',
-        showBackButton: '@'
-      },
-      templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
-      link: function (scope, el, attrs, ctrl, $transclude) {
+    .directive('mwHeader', function ($location) {
+      return {
+        transclude: true,
+        scope: {
+          title: '@',
+          url: '@',
+          showBackButton: '@'
+        },
+        templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
+        link: function (scope, el, attrs, ctrl, $transclude) {
 
-        $transclude(function (clone) {
-          if ((!clone || clone.length === 0) && !scope.showBackButton) {
-            el.find('.navbar-header').addClass('no-buttons');
-          }
-        });
+          $transclude(function (clone) {
+            if ((!clone || clone.length === 0) && !scope.showBackButton) {
+              el.find('.navbar-header').addClass('no-buttons');
+            }
+          });
 
-        scope.back = function () {
-          if (attrs.url) {
-            $location.path(attrs.url);
-          } else {
-            window.history.back();
-          }
-        };
-      }
-    };
-  })
+          scope.back = function () {
+            if (attrs.url) {
+              $location.path(attrs.url);
+            } else {
+              window.history.back();
+            }
+          };
+        }
+      };
+    })
 
 
 /**
@@ -135,32 +135,32 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwIcon', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: { mwIcon: '@' },
-      template: function (elm, attr) {
-        var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
-        if (isBootstrap) {
-          return '<i class="fa {{mwIcon}}"></i>';
-        } else {
-          return '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
-        }
-      },
-      link: function (scope, el, attr) {
-        if (attr.tooltip) {
-          el.popover({
-            trigger: 'hover',
-            placement: 'bottom',
-            content: attr.tooltip,
-            container: 'body'
-          });
-        }
+    .directive('mwIcon', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: { mwIcon: '@' },
+        template: function (elm, attr) {
+          var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
+          if (isBootstrap) {
+            return '<i class="fa {{mwIcon}}"></i>';
+          } else {
+            return '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
+          }
+        },
+        link: function (scope, el, attr) {
+          if (attr.tooltip) {
+            el.popover({
+              trigger: 'hover',
+              placement: 'bottom',
+              content: attr.tooltip,
+              container: 'body'
+            });
+          }
 
-      }
-    };
-  })
+        }
+      };
+    })
 
 /**
  * @ngdoc directive
@@ -175,16 +175,20 @@ angular.module('mwComponents', [])
  * @example
  <span mw-tooltip="foobar"></span>
  */
-  .directive('mwTooltip', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        mwTooltip: '@'
-      },
-      template: '<span><span mw-icon="question-sign" tooltip="{{mwTooltip}}"></span></span>'
-    };
-  })
+    .directive('mwTooltip', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          text: '@mwTooltip'
+        },
+        template: '<span mw-icon="question-sign" tooltip="{{ text }}"></span>',
+        compile: function (elm, attr) {
+          if (attr.mwTooltipIcon) {
+            elm.find('span').attr('mw-icon', attr.mwTooltipIcon);
+          }
+        }
+      };
+    })
 
 /**
  * @ngdoc directive
@@ -203,15 +207,15 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwBadge', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: { mwBadge: '@' },
-      transclude: true,
-      template: '<span class="label label-{{mwBadge}}" ng-transclude></span>'
-    };
-  })
+    .directive('mwBadge', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: { mwBadge: '@' },
+        transclude: true,
+        template: '<span class="label label-{{mwBadge}}" ng-transclude></span>'
+      };
+    })
 
 /**
  * @ngdoc directive
@@ -225,46 +229,46 @@ angular.module('mwComponents', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearch', function ($timeout) {
-    return {
-      transclude: true,
-      scope: {
-        filterable: '=',
-        disabled: '=',
-        property: '@'
-      },
-      templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
-      link: function (scope) {
-        scope.model = scope.filterable.properties[scope.property];
+    .directive('mwFilterableSearch', function ($timeout) {
+      return {
+        transclude: true,
+        scope: {
+          filterable: '=',
+          disabled: '=',
+          property: '@'
+        },
+        templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
+        link: function (scope) {
+          scope.model = scope.filterable.properties[scope.property];
 
-        var timeout;
+          var timeout;
 
-        var search = function () {
-          return scope.filterable.applyFilters();
-        };
+          var search = function () {
+            return scope.filterable.applyFilters();
+          };
 
-        var throttler = function () {
-          scope.searching = true;
+          var throttler = function () {
+            scope.searching = true;
 
-          $timeout.cancel(timeout);
+            $timeout.cancel(timeout);
 
-          timeout = $timeout(function () {
+            timeout = $timeout(function () {
 
-            search().then(function () {
-              $timeout.cancel(timeout);
-              scope.searching = false;
-            });
+              search().then(function () {
+                $timeout.cancel(timeout);
+                scope.searching = false;
+              });
 
-          }, 500);
-        };
+            }, 500);
+          };
 
-        scope.search = function (event) {
-          if (!event || event.keyCode === 13) {
-            search();
-          }
-          throttler();
-        };
-      }
-    };
-  });
+          scope.search = function (event) {
+            if (!event || event.keyCode === 13) {
+              search();
+            }
+            throttler();
+          };
+        }
+      };
+    });
 
