@@ -77,6 +77,14 @@ angular.module('mwNav', [])
       };
     })
 
+    .directive('mwNavbarContent', function () {
+      return {
+        transclude: true,
+        replace: true,
+        template: '<div class="navbar-collapse collapse" ng-transclude></div>'
+      };
+    })
+
     .directive('mwNavbarBrand', function () {
       return {
         transclude: true,
