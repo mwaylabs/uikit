@@ -125,7 +125,7 @@ angular.module('mwSidebar', [])
         transclude: true,
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html',
         link: function(scope) {
-          if(Filterable.hasPersistedFilters(scope.filterable)) {
+          if(scope.filterable && Filterable.hasPersistedFilters(scope.filterable)) {
             scope.toggleFilters = true;
           }
         }
