@@ -120,10 +120,15 @@ angular.module('mwSidebar', [])
  * Container for filters
  *
  */
-    .directive('mwSidebarFilters', function () {
+    .directive('mwSidebarFilters', function (Filterable) {
       return {
         transclude: true,
-        templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html'
+        templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html',
+        link: function(scope) {
+          if(Filterable.hasPersistedFilters(scope.filterable)) {
+            scope.toggleFilters = true;
+          }
+        }
       };
     });
 
