@@ -101,7 +101,7 @@
              */
             var validateUniqueness = function (value) {
               var isValid = true;
-              if (angular.isArray(existingValues) && existingValues.length > 0 && value) {
+              if (angular.isArray(existingValues) && existingValues.length > 0 && value && ngModel.$dirty) {
                 isValid = (existingValues.indexOf(value) === -1);
               }
               ngModel.$setValidity('unique', isValid);
