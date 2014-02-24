@@ -1,5 +1,6 @@
 angular.module('mwUI', [
   'mwModal',
+  'mwWizard',
   'mwListable',
   'mwForm',
   'mwComponents',
