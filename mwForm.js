@@ -445,7 +445,7 @@
 
             //In case that the user clicks the refresh/back button or makes a hard url change
             $window.onbeforeunload = function () {
-              if (elm.inheritedData().$formController.$dirty) {
+              if (elm.inheritedData() && elm.inheritedData().$formController && elm.inheritedData().$formController.$dirty) {
                 return i18n.get('common.confirmModal.description');
               }
             };
