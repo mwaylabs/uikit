@@ -7,8 +7,9 @@
         {{ label }}
       </label>
       <span ng-if="tooltip" mw-tooltip="{{ tooltip }}"></span>
-    <span ng-repeat="badge in splittedBadges"
-          class="label label-info">{{ badge }}</span>
+    <span ng-repeat="badge in typedBadges"
+          ng-class="'label-' + badge.type"
+          class="mw-badge label">{{ badge.text }}</span>
     </div>
   </div>
 </div>
