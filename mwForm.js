@@ -200,7 +200,32 @@
           templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
           link: function (scope) {
             if (scope.badges) {
-              scope.splittedBadges = scope.badges.split(',');
+              var formatBadges = function() {
+                scope.typedBadges = [];
+                var splittedBadges = scope.badges.split(',');
+                angular.forEach(splittedBadges, function(badge) {
+                  console.log(badge);
+                  var type = 'info';
+                  if(badge.toLowerCase().indexOf('android') > -1){
+                    type = 'android';
+                  }
+                  if(badge.toLowerCase().indexOf('ios') > -1) {
+                    type = 'ios';
+                  }
+                  if(badge.toLowerCase().indexOf('safe') > -1) {
+                    type = 'safe';
+                  }
+                  if(badge.toLowerCase().indexOf('safe') > -1 &&
+                     badge.toLowerCase().indexOf('android') > -1) {
+                    type = 'multi';
+                  }
+                  scope.typedBadges.push({
+                    text: badge,
+                    type: type
+                  });
+                });
+              };
+              scope.$watch('badges', formatBadges);
             }
           }
         };
