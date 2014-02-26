@@ -401,55 +401,13 @@
    *
    */
 
-      .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
+      .directive('mwFormLeaveConfirmation', function ($window, $document, $location, i18n, Modal, $compile) {
         return {
-          link: function (scope, elm) {
-
-            var confirmationModal = Modal.create({
-              templateUrl: 'modules/ui/templates/mwForm/mwLeaveConfirmation.html',
-              scope: scope
-            });
-
-            // Prevent the original event so the routing will not be completed
-            // Save the url where it should be navigated to in a temp variable
-            var showConfirmModal = function (ev, next) {
-              if (elm.inheritedData().$formController.$dirty) {
-                Modal.show(confirmationModal);
-                ev.preventDefault();
-                scope.next = next;
-              }
-            };
-
-            // User wants to stay on the page
-            scope.stay = function () {
-              Modal.hide(confirmationModal);
-            };
-
-            // User really wants to navigate to that page which was saved before in a temp variable
-            scope.continue = function () {
-              if (scope.next) {
-                //instead of scope.$off() we call the original eventhandler function
-                scope.changeLocation();
-
-                //hide the modal and navigate to the page
-                Modal.hide(confirmationModal).then(function () {
-                  $window.document.location.href = scope.next;
-                  scope.next = null;
-                });
-              }
-            };
-
-            //In case that just a hashchange event was triggered
-            //Angular has no $off event unbinding so the original eventhandler is saved in a variable
-            scope.changeLocation = scope.$on('$locationChangeStart', showConfirmModal);
-
-            //In case that the user clicks the refresh/back button or makes a hard url change
-            $window.onbeforeunload = function () {
-              if (elm.inheritedData().$formController.$dirty) {
-                return i18n.get('common.confirmModal.description');
-              }
-            };
-
+          require:'^form',
+          link: function (scope, elm, attr, form) {
+            scope.form = form;
+            var confirmation = $compile( '<div mw-leave-confirmation="form.$dirty"></div>' )( scope );
+            elm.append(confirmation);
           }
         };
       })
