@@ -124,12 +124,12 @@ angular.module('mwSidebar', [])
  * Container for filters
  *
  */
-    .directive('mwSidebarFilters', function (Filterable) {
+    .directive('mwSidebarFilters', function () {
       return {
         transclude: true,
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html',
         link: function(scope) {
-          if(scope.filterable && Filterable.hasPersistedFilters(scope.filterable)) {
+          if(scope.filterable && scope.filterable.hasSetFilters()) {
             scope.toggleFilters = true;
           }
         }
