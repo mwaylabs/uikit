@@ -560,8 +560,28 @@
    * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
    *
    */
-      .directive('textarea', extendHTMLElement);
+      .directive('textarea', extendHTMLElement)
 
+
+      .directive('textarea', function () {
+        return {
+          restrict: 'E',
+          compile: function (elm) {
+            elm.attr('maxlength', '1000');
+          }
+        };
+      })
+
+      .directive('input', function () {
+        return {
+          restrict: 'E',
+          compile: function (elm) {
+            if(elm.attr('type') === 'text'){
+              elm.attr('maxlength', '200');
+            }
+          }
+        };
+      });
 
 })();
 
