@@ -494,7 +494,7 @@
    * @param {expression} cancel Expression to evaluate on click on 'cancel' button
    *
    */
-      .directive('mwFormActions', function () {
+      .directive('mwFormActions', function (Loading) {
         return {
           replace: true,
           scope: {
@@ -503,6 +503,8 @@
           },
           templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
           link: function (scope, elm, attr) {
+
+            scope.isLoading = Loading.isLoading;
 
             scope.form = elm.inheritedData('$formController');
             scope.hasCancel = angular.isDefined(attr.cancel);
