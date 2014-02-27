@@ -37,8 +37,8 @@ angular.module('mwHelper', [])
 
   .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
     return {
-      scope:{
-        alertBeforeLeave:'=mwLeaveConfirmation'
+      scope: {
+        alertBeforeLeave: '=mwLeaveConfirmation'
       },
       link: function (scope) {
 
@@ -86,6 +86,35 @@ angular.module('mwHelper', [])
             return i18n.get('common.confirmModal.description');
           }
         };
+
+      }
+    };
+  })
+
+  .directive('mwTutorialTooltip', function ($compile, $timeout) {
+    return {
+      scope: {
+        display: '=',
+        text: '@mwTutorialTooltip'
+      },
+      link: function (scope, el) {
+
+        var customCheckbox,
+          customCheckboxStateIndicator;
+
+        var render = function () {
+          customCheckbox = angular.element('<div class="mw-tutorial clearfix btn-block"></div>');
+          customCheckboxStateIndicator = $compile('<div class="tutorial-badge-wrapper show"><span ng-if="display" class="tutorial-badge">{{text}}</span></div>')(scope);
+
+          el.wrap(customCheckbox);
+          customCheckboxStateIndicator.insertAfter(el);
+        };
+
+        $timeout(function(){
+          customCheckboxStateIndicator.removeClass('show');
+        },8000);
+
+        render();
 
       }
     };
