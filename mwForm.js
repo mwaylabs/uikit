@@ -6,19 +6,34 @@
   var extendHTMLElement = function () {
     return {
       restrict: 'E',
-      link: function (scope, elm) {
-        var skipTheFollowing = ['checkbox', 'radio'];
+      compile: function (elm, attr) {
+        var skipTheFollowing = ['checkbox', 'radio'],
+            dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
+            maxLength = 255; // for input fields of all types
 
-        if (skipTheFollowing.indexOf(elm.attr('type')) === -1 && scope.$$prevSibling) {
-          // Add default class coming from bootstrap
-          elm.addClass('form-control');
-          if (scope.$$prevSibling) {
-            // Register on mwFormInput if element is surrounded by mwFormInput
-            if (angular.isFunction(scope.$$prevSibling.mwFormInputRegister)) {
-              scope.$$prevSibling.mwFormInputRegister(elm);
+        // Add default class coming from bootstrap
+        attr.$addClass('form-control');
+
+        // use higher maxLength for textareas
+        if (elm[0].type === 'textarea') {
+          maxLength = 100000;
+        }
+
+        // Don't overwrite existing values for ngMaxlength
+        if (dontSkipIt && !attr.ngMaxlength) {
+          attr.$set('ngMaxlength', maxLength);
+        }
+
+        return function (scope, elm) {
+          if (dontSkipIt && scope.$$prevSibling) {
+            if (scope.$$prevSibling) {
+              // Register on mwFormInput if element is surrounded by mwFormInput
+              if (angular.isFunction(scope.$$prevSibling.mwFormInputRegister)) {
+                scope.$$prevSibling.mwFormInputRegister(elm);
+              }
             }
           }
-        }
+        };
       }
     };
   };
@@ -200,23 +215,23 @@
           templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
           link: function (scope) {
             if (scope.badges) {
-              var formatBadges = function() {
+              var formatBadges = function () {
                 scope.typedBadges = [];
                 var splittedBadges = scope.badges.split(',');
-                angular.forEach(splittedBadges, function(badge) {
+                angular.forEach(splittedBadges, function (badge) {
                   console.log(badge);
                   var type = 'info';
-                  if(badge.toLowerCase().indexOf('android') > -1){
+                  if (badge.toLowerCase().indexOf('android') > -1) {
                     type = 'android';
                   }
-                  if(badge.toLowerCase().indexOf('ios') > -1) {
+                  if (badge.toLowerCase().indexOf('ios') > -1) {
                     type = 'ios';
                   }
-                  if(badge.toLowerCase().indexOf('safe') > -1) {
+                  if (badge.toLowerCase().indexOf('safe') > -1) {
                     type = 'safe';
                   }
-                  if(badge.toLowerCase().indexOf('safe') > -1 &&
-                     badge.toLowerCase().indexOf('android') > -1) {
+                  if (badge.toLowerCase().indexOf('safe') > -1 &&
+                      badge.toLowerCase().indexOf('android') > -1) {
                     type = 'multi';
                   }
                   scope.typedBadges.push({
@@ -508,7 +523,7 @@
             scope.hasCancel = angular.isDefined(attr.cancel);
             scope.hasSave = angular.isDefined(attr.save);
 
-            var setFormPristineAndEvaluate = function(exec){
+            var setFormPristineAndEvaluate = function (exec) {
               scope.form.$setPristine();
               scope.$eval(exec);
             };
@@ -562,26 +577,7 @@
    */
       .directive('textarea', extendHTMLElement)
 
-
-      .directive('textarea', function () {
-        return {
-          restrict: 'E',
-          compile: function (elm) {
-            elm.attr('maxlength', '1000');
-          }
-        };
-      })
-
-      .directive('input', function () {
-        return {
-          restrict: 'E',
-          compile: function (elm) {
-            if(elm.attr('type') === 'text'){
-              elm.attr('maxlength', '200');
-            }
-          }
-        };
-      });
+  ;
 
 })();
 
