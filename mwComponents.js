@@ -213,7 +213,7 @@ angular.module('mwComponents', [])
         replace: true,
         scope: { mwBadge: '@' },
         transclude: true,
-        template: '<span class="label label-{{mwBadge}}" ng-transclude></span>'
+        template: '<span class="mw-badge label label-{{mwBadge}}" ng-transclude></span>'
       };
     })
 

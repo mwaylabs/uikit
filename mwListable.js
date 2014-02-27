@@ -51,22 +51,45 @@ angular.module('mwListable', [])
             /**
              * Infinite scrolling
              */
-            var w = angular.element($window);
-            var d = angular.element($document);
             var scrollCallback = function () {
-              if (w.scrollTop() === d.height() - w.height()) {
-                if (scope.filterable) {
+              if(scope.filterable){
+                if (w.scrollTop() === d.height() - w.height()) {
                   scope.filterable.loadMore();
                 }
               }
             };
-            // Register scroll callback
-            w.on('scroll', scrollCallback);
+            var modalScrollCallback = function () {
+              if(scope.filterable &&
+                 modalBody[0].scrollHeight > 0 &&
+                 (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
+                scope.filterable.loadMore();
+              }
+            };
 
-            // Deregister scroll callback if scope is destroyed
-            scope.$on('$destroy', function () {
-              w.off('scroll', scrollCallback);
-            });
+            if(elm.parents('.modal').length){
+              //filterable in modal
+              var modalBody = elm.parents('.modal-body');
+
+              // Register scroll callback
+              modalBody.on('scroll', modalScrollCallback);
+
+              // Deregister scroll callback if scope is destroyed
+              scope.$on('$destroy', function () {
+                modalBody.off('scroll', modalScrollCallback);
+              });
+            } else {
+              //filterable in document
+              var w = angular.element($window);
+              var d = angular.element($document);
+
+              // Register scroll callback
+              w.on('scroll', scrollCallback);
+
+              // Deregister scroll callback if scope is destroyed
+              scope.$on('$destroy', function () {
+                w.off('scroll', scrollCallback);
+              });
+            }
           };
         },
         controller: function ($scope) {

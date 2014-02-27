@@ -20,13 +20,17 @@ angular.module('mwSidebar', [])
         scope: {
           filterable: '=',
           disabled: '=',
-          property: '@'
+          property: '@',
+          persist: '='
         },
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarSelect.html',
         link: function (scope) {
           scope.$watch('filterable', function () {
             if (scope.filterable) {
               scope.model = scope.filterable.properties[scope.property];
+              if(scope.persist){
+                scope.filterable.properties[scope.property].persist = scope.persist;
+              }
             }
           });
         }
