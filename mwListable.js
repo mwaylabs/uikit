@@ -384,4 +384,25 @@ angular.module('mwListable', [])
         }
       };
     })
+
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwRowIdentifier
+ * @description
+ *
+ * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
+ *
+ * @param {string} mwRowIdentifier the title to be used
+ *
+ */
+    .directive('mwRowIdentifier', function () {
+      return {
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          if(attr.mwRowIdentifier){
+            attr.$set('title', attr.mwRowIdentifier);
+          }
+        }
+      };
+    })
 ;
