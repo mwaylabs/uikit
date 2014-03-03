@@ -38,7 +38,8 @@ angular.module('mwHelper', [])
   .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
     return {
       scope: {
-        alertBeforeLeave: '=mwLeaveConfirmation'
+        alertBeforeLeave: '=mwLeaveConfirmation',
+        text:'@'
       },
       link: function (scope) {
 
@@ -83,9 +84,13 @@ angular.module('mwHelper', [])
         //In case that the user clicks the refresh/back button or makes a hard url change
         $window.onbeforeunload = function () {
           if (scope.alertBeforeLeave) {
-            return i18n.get('common.confirmModal.description');
+            return scope.text;
           }
         };
+
+        if(!angular.isDefined(scope.text)){
+          throw new Error('Please specify a text in the text attribute');
+        }
 
       }
     };
@@ -95,7 +100,8 @@ angular.module('mwHelper', [])
     return {
       scope: {
         display: '=',
-        text: '@mwTutorialTooltip'
+        text: '@mwTutorialTooltip',
+        position: '@'
       },
       link: function (scope, el) {
 
@@ -103,16 +109,20 @@ angular.module('mwHelper', [])
           customCheckboxStateIndicator;
 
         var render = function () {
-          customCheckbox = angular.element('<div class="mw-tutorial clearfix btn-block"></div>');
+          customCheckbox = $compile('<div class="mw-tutorial clearfix btn-block" ng-class="position"></div>')(scope);
           customCheckboxStateIndicator = $compile('<div class="tutorial-badge-wrapper show"><span ng-if="display" class="tutorial-badge">{{text}}</span></div>')(scope);
+
+          if(scope.position){
+            customCheckbox.addClass(scope.position);
+          }
 
           el.wrap(customCheckbox);
           customCheckboxStateIndicator.insertAfter(el);
         };
 
-        $timeout(function(){
+        $timeout(function () {
           customCheckboxStateIndicator.removeClass('show');
-        },8000);
+        }, 8000);
 
         render();
 
