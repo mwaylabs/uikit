@@ -12,7 +12,9 @@
             maxLength = 255; // for input fields of all types
 
         // Add default class coming from bootstrap
-        attr.$addClass('form-control');
+        if(dontSkipIt){
+          attr.$addClass('form-control');
+        }
 
         // use higher maxLength for textareas
         if (elm[0].type === 'textarea') {
@@ -219,7 +221,6 @@
                 scope.typedBadges = [];
                 var splittedBadges = scope.badges.split(',');
                 angular.forEach(splittedBadges, function (badge) {
-                  console.log(badge);
                   var type = 'info';
                   if (badge.toLowerCase().indexOf('android') > -1) {
                     type = 'android';
