@@ -446,7 +446,8 @@
           require:'^form',
           link: function (scope, elm, attr, form) {
             scope.form = form;
-            var confirmation = $compile( '<div mw-leave-confirmation="form.$dirty"></div>' )( scope );
+            scope.text = i18n.get('common.confirmModal.description');
+            var confirmation = $compile( '<div mw-leave-confirmation="form.$dirty" text="{{text}}"></div>' )( scope );
             elm.append(confirmation);
           }
         };
