@@ -129,7 +129,7 @@ angular.module('mwSidebar', [])
         transclude: true,
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html',
         link: function(scope) {
-          if(scope.filterable && scope.filterable.hasSetFilters()) {
+          if(scope.filterable && scope.filterable.hasPersistedFilters()) {
             scope.toggleFilters = true;
           }
         }
