@@ -29,70 +29,49 @@ angular.module('mwModal', [])
  */
     .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $http) {
 
-      /**
-       * TODO: Modals have to be removed from the dom at some time. There are several options for this:
-       * * Don't append it to the body, but put it inside ng-view so that it will be destroyed on every location change
-       * * Remove it from the body at some point in time. The only question is when. On Modal close?
-       * * Maybe it makes sense to limit the existence in the dom to the actual display of the modal. Create it on open,
-       *   remove it on close!
-       */
-
-      var _scope,
-          _template,
-          _cachedTemplate,
-          _modals = {},
-          _compiledModals = {},
-          that = this,
-          _body = $document.find('body').eq(0);
-
-      var getTemplate = function (templateId) {
-        if (!templateId) {
-          throw new Error('Modal service: templateUrl options is required.');
-        }
-
-        // Get template from cache
-        _cachedTemplate = $templateCache.get(templateId);
-
-        if (_cachedTemplate) {
-          return $q.when(_cachedTemplate);
-        } else {
-          return $http.get(templateId).then(function (resp) {
-            $templateCache.put(templateId, resp.data);
-            return resp.data;
-          }, function () {
-            throw new Error('Modal service: template \'' + templateId + '\' has not been found. Does a template with this ID/Path exist?');
-          });
-        }
-      };
+      var body = $document.find('body').eq(0);
 
       var Modal = function(modalOptions){
 
         var _id = modalOptions.templateUrl,
             _scope = (modalOptions.scope || $rootScope).$new(),
-            _template,
+            _cachedTemplate,
             _modal,
             _bootstrapModal;
 
-        (function main(){
-          getTemplate(_id).then(function(template){
-            if (modalOptions.controller) {
-              $controller(modalOptions.controller, { $scope: _scope, modalId: _id });
-            }
+        var _getTemplate = function () {
+          if (!_id) {
+            throw new Error('Modal service: templateUrl options is required.');
+          }
 
-            _template = template;
+          // Get template from cache
+          _cachedTemplate = $templateCache.get(_id);
+
+          if (_cachedTemplate) {
+            return $q.when(_cachedTemplate);
+          } else {
+            return $http.get(_id).then(function (resp) {
+              $templateCache.put(_id, resp.data);
+              return resp.data;
+            }, function () {
+              throw new Error('Modal service: template \'' + _id + '\' has not been found. Does a template with this ID/Path exist?');
+            });
+          }
+        };
+
+        var _buildModal = function(){
+          var dfd = $q.defer();
+
+          _getTemplate().then(function(template){
+            _modal = $compile(template.trim())(_scope);
+            _scope.$on('COMPILE:FINISHED',function(){
+              _modal.addClass('mw-Modal');
+              _bootstrapModal = _modal.find('.modal');
+              dfd.resolve();
+            });
           });
 
-          _scope.$on('$destroy', function () {
-            that.destroy(_id);
-          });
-        })();
-
-        var buildModal = function(){
-          var $template = angular.element(_template.trim());
-          _modal = $compile($template)(_scope);
-          _modal.addClass('mw-Modal');
-          _bootstrapModal = _modal.find('.modal');
-          return _modal;
+          return dfd.promise;
         };
 
         /**
@@ -102,12 +81,12 @@ angular.module('mwModal', [])
          * @methodOf mwModal.Modal
          * @function
          * @description Shows the modal
-         * @param {String} modalId Modal identifier
          */
-        this.show = function (modalId) {
-          buildModal(modalId);
-          _body.append(_modal);
-          _modal.find('.modal').modal('show');
+        this.show = function () {
+          _buildModal().then(function(){
+            body.append(_modal);
+            _bootstrapModal.modal('show');
+          });
         };
 
         /**
@@ -117,7 +96,6 @@ angular.module('mwModal', [])
          * @methodOf mwModal.Modal
          * @function
          * @description Hides the modal
-         * @param {String} modalId Modal identifier
          * @returns {Object} Promise which will be resolved when modal is successfully closed
          */
         this.hide = function () {
@@ -126,7 +104,7 @@ angular.module('mwModal', [])
 
           _bootstrapModal.modal('hide');
           _bootstrapModal.on('hidden.bs.modal', function () {
-            self.remove();
+            self.destroy();
             dfd.resolve();
           });
           return dfd.promise;
@@ -152,11 +130,25 @@ angular.module('mwModal', [])
          * @methodOf mwModal.Modal
          * @function
          * @description Removes the modal from the dom
-         * @param {String} modalId Modal identifier
          */
         this.destroy = function () {
             _modal.remove();
         };
+
+        (function main(){
+
+          var self = this;
+          
+          _getTemplate();
+
+          if (modalOptions.controller) {
+            $controller(modalOptions.controller, { $scope: _scope, modalId: _id });
+          }
+
+          _scope.$on('$destroy', function () {
+            self.destroy();
+          });
+        })();
 
       };
 
@@ -173,102 +165,10 @@ angular.module('mwModal', [])
        * - **controller**: controller instance for the modal
        *
        * @param {Object} modalOptions The options of the modal which are used to instantiate it
-       * @returns {Modal} modalId Modal identifier
+       * @returns {Object} Modal
        */
       this.create = function (modalOptions) {
         return new Modal(modalOptions);
-      };
-
-      /**
-       * Helper method to return modal instance from _modals
-       * @param modalId ID of the modal to return the instance from
-       * @returns {angular.element} Modal instance (DOM element)
-       */
-      var getModal = function (modalId) {
-        if (_compiledModals[modalId]) {
-          return _compiledModals[modalId];
-        } else {
-          throw new Error('Modal service: modal "' + modalId + '" not found. Please call "create" method first.');
-        }
-      };
-
-      var buildModal = function(modalId){
-
-        _cachedTemplate = _modals[modalId];
-        // Build element
-        _template = angular.element(_cachedTemplate.trim());
-
-        var compiledModal = $compile(_template)(_scope);
-        compiledModal.addClass('mw-Modal');
-        _compiledModals[modalId] = compiledModal;
-        return compiledModal;
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#show
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Shows the modal
-       * @param {String} modalId Modal identifier
-       */
-      this.show = function (modalId) {
-        var modal = buildModal(modalId);
-        _body.append(modal);
-        modal.find('.modal').modal('show');
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#hide
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Hides the modal
-       * @param {String} modalId Modal identifier
-       * @returns {Object} Promise which will be resolved when modal is successfully closed
-       */
-      this.hide = function (modalId) {
-        var dfd = $q.defer(),
-            modal = getModal(modalId),
-            bsModal = modal.find('.modal');
-        bsModal.modal('hide');
-        bsModal.on('hidden.bs.modal', function () {
-
-          modal.remove();
-          dfd.resolve();
-        });
-        return dfd.promise;
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#toggle
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Toggles the modal
-       * @param {String} modalId Modal identifier
-       */
-      this.toggle = function (modalId) {
-        getModal(modalId).modal('toggle');
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#destroy
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Removes the modal from the dom
-       * @param {String} modalId Modal identifier
-       */
-      this.destroy = function (modalId) {
-        if (_modals[modalId]) {
-          _modals[modalId].remove();
-          delete _modals[modalId];
-        }
       };
     })
 
@@ -306,7 +206,10 @@ angular.module('mwModal', [])
           title: '@'
         },
         transclude: true,
-        templateUrl: 'modules/ui/templates/mwModal/mwModal.html'
+        templateUrl: 'modules/ui/templates/mwModal/mwModal.html',
+        link:function(scope){
+          scope.$emit('COMPILE:FINISHED');
+        }
       };
     })
 
