@@ -41,6 +41,7 @@ angular.module('mwModal', [])
           _template,
           _cachedTemplate,
           _modals = {},
+          _compiledModals = {},
           that = this,
           _body = $document.find('body').eq(0);
 
@@ -64,6 +65,101 @@ angular.module('mwModal', [])
         }
       };
 
+      var Modal = function(modalOptions){
+
+        var _id = modalOptions.templateUrl,
+            _scope = (modalOptions.scope || $rootScope).$new(),
+            _template,
+            _modal,
+            _bootstrapModal;
+
+        (function main(){
+          getTemplate(_id).then(function(template){
+            if (modalOptions.controller) {
+              $controller(modalOptions.controller, { $scope: _scope, modalId: _id });
+            }
+
+            _template = template;
+          });
+
+          _scope.$on('$destroy', function () {
+            that.destroy(_id);
+          });
+        })();
+
+        var buildModal = function(){
+          var $template = angular.element(_template.trim());
+          _modal = $compile($template)(_scope);
+          _modal.addClass('mw-Modal');
+          _bootstrapModal = _modal.find('.modal');
+          return _modal;
+        };
+
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#show
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Shows the modal
+         * @param {String} modalId Modal identifier
+         */
+        this.show = function (modalId) {
+          buildModal(modalId);
+          _body.append(_modal);
+          _modal.find('.modal').modal('show');
+        };
+
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#hide
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Hides the modal
+         * @param {String} modalId Modal identifier
+         * @returns {Object} Promise which will be resolved when modal is successfully closed
+         */
+        this.hide = function () {
+          var dfd = $q.defer(),
+            self = this;
+
+          _bootstrapModal.modal('hide');
+          _bootstrapModal.on('hidden.bs.modal', function () {
+            self.remove();
+            dfd.resolve();
+          });
+          return dfd.promise;
+        };
+
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#toggle
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Toggles the modal
+         * @param {String} modalId Modal identifier
+         */
+        this.toggle = function () {
+          _bootstrapModal.modal('toggle');
+        };
+
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#destroy
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Removes the modal from the dom
+         * @param {String} modalId Modal identifier
+         */
+        this.destroy = function () {
+            _modal.remove();
+        };
+
+      };
+
       /**
        *
        * @ngdoc function
@@ -77,42 +173,10 @@ angular.module('mwModal', [])
        * - **controller**: controller instance for the modal
        *
        * @param {Object} modalOptions The options of the modal which are used to instantiate it
-       * @returns {String} modalId Modal identifier
+       * @returns {Modal} modalId Modal identifier
        */
       this.create = function (modalOptions) {
-        var _modal, _modalId, _ctrl;
-
-        // Generate modal id from templateUrl: '/url/to/myModal.html' -> 'myModal'
-        _modalId = modalOptions.templateUrl;
-
-        if (!_modals[_modalId]) {
-          // Create new scope if scope is not given in options
-          _scope = (modalOptions.scope || $rootScope).$new();
-
-          getTemplate(_modalId).then(function (template) {
-
-            _cachedTemplate = template;
-            // Build element
-            _template = angular.element(_cachedTemplate.trim());
-
-            _modal = $compile(_template)(_scope);
-            _modals[_modalId] = _modal;
-
-            _modal.addClass('mw-modal');
-            _body.append(_modal);
-
-            _scope.$on('$destroy', function () {
-              that.destroy(_modalId);
-            });
-
-            if (modalOptions.controller) {
-              _ctrl = $controller(modalOptions.controller, { $scope: _scope, modalId: _modalId });
-            }
-
-            _modal.modal({ show: false });
-          });
-        }
-        return _modalId;
+        return new Modal(modalOptions);
       };
 
       /**
@@ -121,11 +185,23 @@ angular.module('mwModal', [])
        * @returns {angular.element} Modal instance (DOM element)
        */
       var getModal = function (modalId) {
-        if (_modals[modalId]) {
-          return _modals[modalId].find('.modal');
+        if (_compiledModals[modalId]) {
+          return _compiledModals[modalId];
         } else {
           throw new Error('Modal service: modal "' + modalId + '" not found. Please call "create" method first.');
         }
+      };
+
+      var buildModal = function(modalId){
+
+        _cachedTemplate = _modals[modalId];
+        // Build element
+        _template = angular.element(_cachedTemplate.trim());
+
+        var compiledModal = $compile(_template)(_scope);
+        compiledModal.addClass('mw-Modal');
+        _compiledModals[modalId] = compiledModal;
+        return compiledModal;
       };
 
       /**
@@ -138,7 +214,9 @@ angular.module('mwModal', [])
        * @param {String} modalId Modal identifier
        */
       this.show = function (modalId) {
-        getModal(modalId).modal('show');
+        var modal = buildModal(modalId);
+        _body.append(modal);
+        modal.find('.modal').modal('show');
       };
 
       /**
@@ -152,9 +230,13 @@ angular.module('mwModal', [])
        * @returns {Object} Promise which will be resolved when modal is successfully closed
        */
       this.hide = function (modalId) {
-        var dfd = $q.defer();
-        getModal(modalId).modal('hide');
-        getModal(modalId).on('hidden.bs.modal', function () {
+        var dfd = $q.defer(),
+            modal = getModal(modalId),
+            bsModal = modal.find('.modal');
+        bsModal.modal('hide');
+        bsModal.on('hidden.bs.modal', function () {
+
+          modal.remove();
           dfd.resolve();
         });
         return dfd.promise;
