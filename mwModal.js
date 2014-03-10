@@ -35,6 +35,8 @@ angular.module('mwModal', [])
 
         var _id = modalOptions.templateUrl,
             _scope = (modalOptions.scope || $rootScope).$new(),
+            _controller = modalOptions.controller,
+            _self = this,
             _cachedTemplate,
             _modal,
             _bootstrapModal;
@@ -59,14 +61,25 @@ angular.module('mwModal', [])
           }
         };
 
+        var _bindModalCloseEvent = function(){
+          _bootstrapModal.on('hidden.bs.modal',function(){
+            _self.destroy();
+          });
+        };
+
         var _buildModal = function(){
           var dfd = $q.defer();
+
+          if (_controller) {
+            $controller(_controller, { $scope: _scope, modalId: _id });
+          }
 
           _getTemplate().then(function(template){
             _modal = $compile(template.trim())(_scope);
             _scope.$on('COMPILE:FINISHED',function(){
               _modal.addClass('mw-Modal');
               _bootstrapModal = _modal.find('.modal');
+              _bindModalCloseEvent();
               dfd.resolve();
             });
           });
@@ -99,12 +112,11 @@ angular.module('mwModal', [])
          * @returns {Object} Promise which will be resolved when modal is successfully closed
          */
         this.hide = function () {
-          var dfd = $q.defer(),
-            self = this;
+          var dfd = $q.defer();
 
           _bootstrapModal.modal('hide');
           _bootstrapModal.on('hidden.bs.modal', function () {
-            self.destroy();
+            _self.destroy();
             dfd.resolve();
           });
           return dfd.promise;
@@ -132,22 +144,20 @@ angular.module('mwModal', [])
          * @description Removes the modal from the dom
          */
         this.destroy = function () {
+          if(_modal){
             _modal.remove();
+          }
         };
 
         (function main(){
 
-          var self = this;
-          
           _getTemplate();
 
-          if (modalOptions.controller) {
-            $controller(modalOptions.controller, { $scope: _scope, modalId: _id });
-          }
-
           _scope.$on('$destroy', function () {
-            self.destroy();
+            _self.destroy();
           });
+
+
         })();
 
       };
