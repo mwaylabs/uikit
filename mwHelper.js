@@ -52,7 +52,7 @@ angular.module('mwHelper', [])
         // Save the url where it should be navigated to in a temp variable
         var showConfirmModal = function (ev, next) {
           if (scope.alertBeforeLeave) {
-            Modal.show(confirmationModal);
+            confirmationModal.show();
             ev.preventDefault();
             scope.next = next;
           }
@@ -60,7 +60,7 @@ angular.module('mwHelper', [])
 
         // User wants to stay on the page
         scope.stay = function () {
-          Modal.hide(confirmationModal);
+          confirmationModal.hide();
         };
 
         // User really wants to navigate to that page which was saved before in a temp variable
@@ -70,7 +70,7 @@ angular.module('mwHelper', [])
             scope.changeLocation();
 
             //hide the modal and navigate to the page
-            Modal.hide(confirmationModal).then(function () {
+            confirmationModal.hide().then(function () {
               $window.document.location.href = scope.next;
               scope.next = null;
             });
