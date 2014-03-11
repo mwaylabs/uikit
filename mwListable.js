@@ -373,14 +373,30 @@ angular.module('mwListable', [])
         scope: {
           link: '@mwListableLinkShow'
         },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="search"></span></a>',
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="chevron-right"></span></a>',
         link: function (scope, elm, attr, mwListableCtrl) {
-          if(attr.ngClick){
-            elm.find('a').click(function(event){
-              event.preventDefault();
-            });
-          }
           mwListableCtrl.actionColumns.push(null);
+        }
+      };
+    })
+
+/**
+ * @ngdoc directive
+ * @name mwListable.directive:mwRowIdentifier
+ * @description
+ *
+ * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
+ *
+ * @param {string} mwRowIdentifier the title to be used
+ *
+ */
+    .directive('mwRowIdentifier', function () {
+      return {
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          if(attr.mwRowIdentifier){
+            attr.$set('title', attr.mwRowIdentifier);
+          }
         }
       };
     })
