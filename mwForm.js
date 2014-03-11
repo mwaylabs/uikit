@@ -132,6 +132,7 @@
         return {
           restrict: 'A',
           transclude: true,
+          require:'^?form',
           scope: {
             model: '=',
             options: '=',
@@ -187,6 +188,13 @@
               }
             };
 
+          },
+          link: function(scope,el,attr,form){
+            scope.setDirty = function(){
+              if(form){
+                form.$setDirty();
+              }
+            };
           }
         };
       })
