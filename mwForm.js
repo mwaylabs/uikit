@@ -6,19 +6,36 @@
   var extendHTMLElement = function () {
     return {
       restrict: 'E',
-      link: function (scope, elm) {
-        var skipTheFollowing = ['checkbox', 'radio'];
+      compile: function (elm, attr) {
+        var skipTheFollowing = ['checkbox', 'radio'],
+            dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
+            maxLength = 255; // for input fields of all types
 
-        if (skipTheFollowing.indexOf(elm.attr('type')) === -1 && scope.$$prevSibling) {
-          // Add default class coming from bootstrap
-          elm.addClass('form-control');
-          if (scope.$$prevSibling) {
-            // Register on mwFormInput if element is surrounded by mwFormInput
-            if (angular.isFunction(scope.$$prevSibling.mwFormInputRegister)) {
-              scope.$$prevSibling.mwFormInputRegister(elm);
+        // Add default class coming from bootstrap
+        if(dontSkipIt){
+          attr.$addClass('form-control');
+        }
+
+        // use higher maxLength for textareas
+        if (elm[0].type === 'textarea') {
+          maxLength = 100000;
+        }
+
+        // Don't overwrite existing values for ngMaxlength
+        if (dontSkipIt && !attr.ngMaxlength) {
+          attr.$set('ngMaxlength', maxLength);
+        }
+
+        return function (scope, elm) {
+          if (dontSkipIt && scope.$$prevSibling) {
+            if (scope.$$prevSibling) {
+              // Register on mwFormInput if element is surrounded by mwFormInput
+              if (angular.isFunction(scope.$$prevSibling.mwFormInputRegister)) {
+                scope.$$prevSibling.mwFormInputRegister(elm);
+              }
             }
           }
-        }
+        };
       }
     };
   };
@@ -115,6 +132,7 @@
         return {
           restrict: 'A',
           transclude: true,
+          require:'^?form',
           scope: {
             model: '=',
             options: '=',
@@ -170,6 +188,13 @@
               }
             };
 
+          },
+          link: function(scope,el,attr,form){
+            scope.setDirty = function(){
+              if(form){
+                form.$setDirty();
+              }
+            };
           }
         };
       })
@@ -200,23 +225,22 @@
           templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
           link: function (scope) {
             if (scope.badges) {
-              var formatBadges = function() {
+              var formatBadges = function () {
                 scope.typedBadges = [];
                 var splittedBadges = scope.badges.split(',');
-                angular.forEach(splittedBadges, function(badge) {
-                  console.log(badge);
+                angular.forEach(splittedBadges, function (badge) {
                   var type = 'info';
-                  if(badge.toLowerCase().indexOf('android') > -1){
+                  if (badge.toLowerCase().indexOf('android') > -1) {
                     type = 'android';
                   }
-                  if(badge.toLowerCase().indexOf('ios') > -1) {
+                  if (badge.toLowerCase().indexOf('ios') > -1) {
                     type = 'ios';
                   }
-                  if(badge.toLowerCase().indexOf('safe') > -1) {
+                  if (badge.toLowerCase().indexOf('safe') > -1) {
                     type = 'safe';
                   }
-                  if(badge.toLowerCase().indexOf('safe') > -1 &&
-                     badge.toLowerCase().indexOf('android') > -1) {
+                  if (badge.toLowerCase().indexOf('safe') > -1 &&
+                      badge.toLowerCase().indexOf('android') > -1) {
                     type = 'multi';
                   }
                   scope.typedBadges.push({
@@ -426,55 +450,14 @@
    *
    */
 
-      .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
+      .directive('mwFormLeaveConfirmation', function ($window, $document, $location, i18n, Modal, $compile) {
         return {
-          link: function (scope, elm) {
-
-            var confirmationModal = Modal.create({
-              templateUrl: 'modules/ui/templates/mwForm/mwLeaveConfirmation.html',
-              scope: scope
-            });
-
-            // Prevent the original event so the routing will not be completed
-            // Save the url where it should be navigated to in a temp variable
-            var showConfirmModal = function (ev, next) {
-              if (elm.inheritedData().$formController.$dirty) {
-                Modal.show(confirmationModal);
-                ev.preventDefault();
-                scope.next = next;
-              }
-            };
-
-            // User wants to stay on the page
-            scope.stay = function () {
-              Modal.hide(confirmationModal);
-            };
-
-            // User really wants to navigate to that page which was saved before in a temp variable
-            scope.continue = function () {
-              if (scope.next) {
-                //instead of scope.$off() we call the original eventhandler function
-                scope.changeLocation();
-
-                //hide the modal and navigate to the page
-                Modal.hide(confirmationModal).then(function () {
-                  $window.document.location.href = scope.next;
-                  scope.next = null;
-                });
-              }
-            };
-
-            //In case that just a hashchange event was triggered
-            //Angular has no $off event unbinding so the original eventhandler is saved in a variable
-            scope.changeLocation = scope.$on('$locationChangeStart', showConfirmModal);
-
-            //In case that the user clicks the refresh/back button or makes a hard url change
-            $window.onbeforeunload = function () {
-              if (elm.inheritedData().$formController.$dirty) {
-                return i18n.get('common.confirmModal.description');
-              }
-            };
-
+          require:'^form',
+          link: function (scope, elm, attr, form) {
+            scope.form = form;
+            scope.text = i18n.get('common.confirmModal.description');
+            var confirmation = $compile( '<div mw-leave-confirmation="form.$dirty" text="{{text}}"></div>' )( scope );
+            elm.append(confirmation);
           }
         };
       })
