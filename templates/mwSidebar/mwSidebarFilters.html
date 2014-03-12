@@ -1,21 +1,14 @@
-<div class="row text-center">
-  <a class="clickable"
-     ng-click="toggleFilters = !toggleFilters">
-    <span ng-if="toggleFilters"><span mw-icon="collapse-down"></span> Hide</span>
-    <span ng-if="!toggleFilters"><span mw-icon="expand"></span> Show</span>
-    filters
-  </a>
-</div>
+<div class="mw-sidebar-filters">
 
-<div ng-if="toggleFilters" ng-transclude></div>
-
-<div class="row" ng-if="toggleFilters && filterable">
-  <div class="col-md-12">
-    <button
-        class="btn btn-default btn-block"
-        ng-click="filterable.resetFilters(); filterable.applyFilters()">
-      <span mw-icon="repeat"></span>
-      {{ 'common.reset' | i18n }}
-    </button>
+  <div class="filter-toggler margin-top-10">
+    <a class="clickable btn btn-default btn-block"
+       ng-click="toggleFilters = !toggleFilters; resetFiltersOnClose()">
+      <span mw-icon="fa-times toggle-indicator rotate-45" ng-class="{active:toggleFilters}"></span>
+      <span ng-if="toggleFilters">{{'common.removeFilters' | i18n}}</span>
+      <span ng-if="!toggleFilters">{{'common.addFilter' | i18n}}</span>
+    </a>
   </div>
+
+  <div ng-if="toggleFilters" ng-transclude class="filters"></div>
+
 </div>
