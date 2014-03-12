@@ -87,7 +87,7 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwHeader', function ($location) {
+    .directive('mwHeader', function ($location,$route) {
       return {
         transclude: true,
         scope: {
@@ -103,6 +103,10 @@ angular.module('mwComponents', [])
               el.find('.navbar-header').addClass('no-buttons');
             }
           });
+
+          scope.refresh = function(){
+            $route.reload();
+          };
 
           scope.back = function () {
             if (attrs.url) {
