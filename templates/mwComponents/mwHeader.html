@@ -12,6 +12,16 @@
 
         <h2 class="lead pull-left clickable" ng-click="refresh()">{{title}}</h2>
 
+        <div class="pull-left header-popover"
+             data-content="{{ warningText }}"
+             style="font-size: 30px; margin-left:4px;">
+          <span ng-if="warningCondition"
+                class="text-warning"
+                mw-icon="fa-warning" ></span>
+          <span class="popover-container"
+                style="font-size: 14px;"></span>
+        </div>
+
         <div class="pull-right" ng-transclude></div>
 
       </div>

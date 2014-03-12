@@ -93,7 +93,9 @@ angular.module('mwComponents', [])
         scope: {
           title: '@',
           url: '@',
-          showBackButton: '@'
+          showBackButton: '@',
+          warningText: '@',
+          warningCondition: '='
         },
         templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
         link: function (scope, el, attrs, ctrl, $transclude) {
@@ -115,10 +117,17 @@ angular.module('mwComponents', [])
               window.history.back();
             }
           };
+
+          if(scope.warningText){
+            el.find('.header-popover').popover({
+              trigger: 'hover',
+              placement: 'bottom',
+              container: el.find('.popover-container')
+            });
+          }
         }
       };
     })
-
 
 /**
  * @ngdoc directive
