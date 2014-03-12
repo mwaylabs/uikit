@@ -191,7 +191,11 @@ angular.module('mwListable', [])
           };
 
           scope.isSelected = function (prefix) {
-            return mwListableCtrl.getSort() === prefix + scope.property;
+            if(prefix){
+              return mwListableCtrl.getSort() === prefix + scope.property;
+            } else {
+              return (mwListableCtrl.getSort() === '+' + scope.property || mwListableCtrl.getSort() === '-' + scope.property);
+            }
           };
 
           mwListableCtrl.registerColumn(scope);
