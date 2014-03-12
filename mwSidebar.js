@@ -129,6 +129,13 @@ angular.module('mwSidebar', [])
         transclude: true,
         templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html',
         link: function(scope) {
+          scope.resetFiltersOnClose = function(){
+            if(!scope.toggleFilters){
+              scope.filterable.resetFilters();
+              scope.filterable.applyFilters();
+            }
+          };
+
           if(scope.filterable && scope.filterable.hasPersistedFilters()) {
             scope.toggleFilters = true;
           }
