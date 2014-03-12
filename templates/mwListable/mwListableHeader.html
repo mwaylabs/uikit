@@ -1,4 +1,4 @@
-<th ng-click="toggleSortOrder()" ng-class="{ clickable: property, 'sort-active':(isSelected()) }" width="1%">
+<th ng-click="toggleSortOrder()" ng-class="{ clickable: property, 'sort-active':(property && isSelected()) }" width="1%">
   <span ng-if="property">
     <i ng-show="property && !isSelected()" mw-icon="fa-sort" class="sort-indicator"></i>
     <i ng-if="isSelected('-')" mw-icon="fa-sort-asc"></i>
