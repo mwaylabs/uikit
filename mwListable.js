@@ -102,7 +102,9 @@ angular.module('mwListable', [])
           };
 
           this.getSort = function () {
-            return $scope.filterable.sortOrder();
+            if($scope.filterable){
+              return $scope.filterable.sortOrder();
+            }
           };
 
           this.registerColumn = function (scope) {
