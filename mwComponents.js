@@ -351,5 +351,53 @@ angular.module('mwComponents', [])
 
         }
       };
+    })
+
+
+    .directive('mwButtonHelp', function (i18n) {
+      return {
+        restrict: 'A',
+        transclude: true,
+        templateUrl: 'modules/ui/templates/mwComponents/mwButtonHelp.html',
+        controller: function($scope){
+          $scope.registeredHints = [];
+          $scope.hintsToShow = [];
+          $scope.helpText = i18n.get('common.buttonHelp');
+          $scope.$on('i18n:localeChanged', function() {
+            $scope.helpText = i18n.get('common.buttonHelp');
+          });
+
+          var showHelp = function() {
+            $scope.hintsToShow = [];
+            angular.forEach($scope.registeredHints, function(registered){
+              if(registered.condition) {
+                $scope.hintsToShow.push(registered);
+              }
+            });
+          };
+
+            //check if any condition changes
+          this.register = function(registered) {
+            $scope.$watch(function(){
+              return registered.condition;
+            }, showHelp);
+            $scope.registeredHints.push(registered);
+          };
+        }
+      };
+    })
+
+    .directive('mwButtonHelpCondition', function () {
+      return {
+        restrict: 'A',
+        require: '^mwButtonHelp',
+        scope: {
+          condition: '=mwButtonHelpCondition',
+          text: '@mwButtonHelpText'
+        },
+        link: function(scope, elm, attr, ctrl){
+          ctrl.register(scope);
+        }
+      };
     });
 
