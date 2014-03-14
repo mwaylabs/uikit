@@ -1,7 +1,8 @@
 <tr>
   <td colspan="{{ columns.length + 4 }}">
-    <div ng-if="!filterable.items()"
-         rln-hide-on-load></div>
+    <div ng-if="!filterable.items() && filterable">
+      <div rln-spinner></div>
+    </div>
 
     <div ng-if="filterable.items().length < 1"
         class="text-center">
