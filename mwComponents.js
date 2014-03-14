@@ -358,7 +358,11 @@ angular.module('mwComponents', [])
       return {
         restrict: 'A',
         transclude: true,
+        scope: true,
         templateUrl: 'modules/ui/templates/mwComponents/mwButtonHelp.html',
+        link: function (scope, elm) {
+          elm.addClass('mwButtonHelp');
+        },
         controller: function($scope){
           $scope.registeredHints = [];
           $scope.hintsToShow = [];
