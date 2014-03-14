@@ -96,35 +96,36 @@ angular.module('mwHelper', [])
     };
   })
 
-  .directive('mwTutorialTooltip', function ($compile, $timeout) {
+  //FIXME COMMENT IN TUTORIAL BADGES FOR PRIMARY BUTTONS SOMEDAY HAVE BEEN USES IN POLICY DETAILS VIEW
+  .directive('mwTutorialTooltip', function (/*$compile, $timeout*/) {
     return {
       scope: {
         display: '=',
         text: '@mwTutorialTooltip',
         position: '@'
       },
-      link: function (scope, el) {
+      link: function (/*scope, el*/) {
 
-        var customCheckbox,
-          customCheckboxStateIndicator;
+//        var customCheckbox,
+//          customCheckboxStateIndicator;
+//
+//        var render = function () {
+//          customCheckbox = $compile('<div class="mw-tutorial clearfix btn-block" ng-class="position"></div>')(scope);
+//          customCheckboxStateIndicator = $compile('<div class="tutorial-badge-wrapper show"><span ng-if="display" class="tutorial-badge">{{text}}</span></div>')(scope);
+//
+//          if(scope.position){
+//            customCheckbox.addClass(scope.position);
+//          }
+//
+//          el.wrap(customCheckbox);
+//          customCheckboxStateIndicator.insertAfter(el);
+//        };
 
-        var render = function () {
-          customCheckbox = $compile('<div class="mw-tutorial clearfix btn-block" ng-class="position"></div>')(scope);
-          customCheckboxStateIndicator = $compile('<div class="tutorial-badge-wrapper show"><span ng-if="display" class="tutorial-badge">{{text}}</span></div>')(scope);
+//        $timeout(function () {
+//          customCheckboxStateIndicator.removeClass('show');
+//        }, 8000);
 
-          if(scope.position){
-            customCheckbox.addClass(scope.position);
-          }
-
-          el.wrap(customCheckbox);
-          customCheckboxStateIndicator.insertAfter(el);
-        };
-
-        $timeout(function () {
-          customCheckboxStateIndicator.removeClass('show');
-        }, 8000);
-
-        render();
+//        render();
 
       }
     };
