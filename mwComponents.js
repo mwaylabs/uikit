@@ -259,7 +259,8 @@ angular.module('mwComponents', [])
         scope: {
           filterable: '=',
           disabled: '=',
-          property: '@'
+          property: '@',
+          loading:'='
         },
         templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
         link: function (scope) {
