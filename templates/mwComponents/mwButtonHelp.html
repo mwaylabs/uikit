@@ -1,0 +1,10 @@
+<div class="help-icon glyphicon glyphicon-question-sign"
+     ng-if="hintsToShow.length > 0">
+  <div class="popover">{{ helpText }}:
+    <ul>
+      <li ng-repeat="hint in hintsToShow">{{hint.text}}</li>
+    </ul>
+  </div>
+</div>
+
+<div ng-transclude></div>

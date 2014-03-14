@@ -255,6 +255,20 @@
         };
       })
 
+    .directive('mwCustomSelect', function () {
+      return{
+        link: function(scope,el){
+          var render = function () {
+            var customSelectWrapper = angular.element('<span class="custom-select mw-select"></span>');
+            el.wrap(customSelectWrapper);
+            el.addClass('custom');
+          };
+          render();
+        }
+      };
+    })
+
+
   /**
    * @ngdoc directive
    * @name mwForm.directive:mwCustomCheckbox
