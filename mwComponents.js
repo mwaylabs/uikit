@@ -358,11 +358,41 @@ angular.module('mwComponents', [])
     .directive('mwButtonHelp', function (i18n) {
       return {
         restrict: 'A',
-        transclude: true,
         scope: true,
-        templateUrl: 'modules/ui/templates/mwComponents/mwButtonHelp.html',
         link: function (scope, elm) {
+          var popup;
           elm.addClass('mwButtonHelp');
+          var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign');
+          elm.prepend(helpIcon);
+
+          helpIcon.hover(function(){
+            buildPopup();
+            var targetOffset = angular.element(this).offset();
+            popup.offset({
+              top: targetOffset.top,
+              left: targetOffset.left + 40,
+            });
+            angular.element('body').append(popup);
+            console.log(popup.height());
+            popup.css('top', targetOffset.top - (popup.height()/2) + 10);
+          }, function(){
+              angular.element('body > .mwButtonPopover').remove();
+          });
+
+          var buildPopup = function(){
+            popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
+            angular.forEach(scope.hintsToShow, function(hint){
+              popup.find('ul').append('<li>' + hint.text + '</li>');
+            });
+          };
+
+          scope.$watch('hintsToShow', function(newVal){
+            if(newVal.length){
+              helpIcon.show();
+            } else {
+              helpIcon.hide();
+            }
+          });
         },
         controller: function($scope){
           $scope.registeredHints = [];
