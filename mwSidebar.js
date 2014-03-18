@@ -58,21 +58,6 @@ angular.module('mwSidebar', [])
           var offsetTop = angular.element(el).offset().top,
             newOffset;
 
-//          var repositionFilterPanel = function () {
-//            var scrollPos = $document.scrollTop(),
-//                newPos = scrollPos - offsetTop - (attr.offset * -1);
-//            newPos = newPos > 0 ? newPos : 0;
-//            if (newPos < 0) {
-//              newPos = 0;
-//              el.removeClass('affixed');
-//              return;
-//            } else if(!el.hasClass('affixed')){
-//              offsetTop = angular.element(el).offset().top;
-//              el.addClass('affixed');
-//            }
-//            el.css('top', newPos);
-//          };
-
           var repos = function(){
             offsetTop = angular.element(el).offset().top;
 
@@ -89,6 +74,18 @@ angular.module('mwSidebar', [])
             }
 
           };
+
+          var setMaxHeight = function(){
+            var containerEl = el.find('.content-container'),
+                windowHeight = angular.element(window).height(),
+                containerElOffsetTop = containerEl.offset().top,
+                footerHeight = angular.element('body > footer').height(),
+                padding = 20;
+            containerEl.css('max-height',windowHeight-containerElOffsetTop-footerHeight-padding);
+          };
+
+          angular.element($window).on('resize',_.throttle(setMaxHeight, 300));
+          setMaxHeight();
 
           if (attr.affix && attr.offset) {
             angular.element($window).scroll(function () {
