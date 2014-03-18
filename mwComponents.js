@@ -368,13 +368,9 @@ angular.module('mwComponents', [])
           helpIcon.hover(function(){
             buildPopup();
             var targetOffset = angular.element(this).offset();
-            popup.offset({
-              top: targetOffset.top,
-              left: targetOffset.left + 40,
-            });
             angular.element('body').append(popup);
-            console.log(popup.height());
-            popup.css('top', targetOffset.top - (popup.height()/2) + 10);
+            popup.css('top', targetOffset.top - (popup.height()/2) + 10 - angular.element(document).scrollTop());
+            popup.css('left', targetOffset.left + 40);
           }, function(){
               angular.element('body > .mwButtonPopover').remove();
           });
