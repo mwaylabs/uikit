@@ -20,17 +20,17 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwPanel', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        scope: {
-          title: '@mwPanel'
-        },
-        transclude: true,
-        templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html'
-      };
-    })
+  .directive('mwPanel', function () {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+        title: '@mwPanel'
+      },
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html'
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -56,17 +56,17 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwAlert', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        scope: {
-          type: '@mwAlert'
-        },
-        transclude: true,
-        templateUrl: 'modules/ui/templates/mwComponents/mwAlert.html'
-      };
-    })
+  .directive('mwAlert', function () {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+        type: '@mwAlert'
+      },
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwComponents/mwAlert.html'
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -87,47 +87,47 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwHeader', function ($location,$route) {
-      return {
-        transclude: true,
-        scope: {
-          title: '@',
-          url: '@',
-          showBackButton: '@',
-          warningText: '@',
-          warningCondition: '='
-        },
-        templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
-        link: function (scope, el, attrs, ctrl, $transclude) {
+  .directive('mwHeader', function ($location, $route) {
+    return {
+      transclude: true,
+      scope: {
+        title: '@',
+        url: '@',
+        showBackButton: '@',
+        warningText: '@',
+        warningCondition: '='
+      },
+      templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
+      link: function (scope, el, attrs, ctrl, $transclude) {
 
-          $transclude(function (clone) {
-            if ((!clone || clone.length === 0) && !scope.showBackButton) {
-              el.find('.navbar-header').addClass('no-buttons');
-            }
-          });
-
-          scope.refresh = function(){
-            $route.reload();
-          };
-
-          scope.back = function () {
-            if (attrs.url) {
-              $location.path(attrs.url);
-            } else {
-              window.history.back();
-            }
-          };
-
-          if(scope.warningText){
-            el.find('.header-popover').popover({
-              trigger: 'hover',
-              placement: 'bottom',
-              container: el.find('.popover-container')
-            });
+        $transclude(function (clone) {
+          if ((!clone || clone.length === 0) && !scope.showBackButton) {
+            el.find('.navbar-header').addClass('no-buttons');
           }
+        });
+
+        scope.refresh = function () {
+          $route.reload();
+        };
+
+        scope.back = function () {
+          if (attrs.url) {
+            $location.path(attrs.url);
+          } else {
+            window.history.back();
+          }
+        };
+
+        if (scope.warningText) {
+          el.find('.header-popover').popover({
+            trigger: 'hover',
+            placement: 'bottom',
+            container: el.find('.popover-container')
+          });
         }
-      };
-    })
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -148,32 +148,32 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwIcon', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        scope: { mwIcon: '@' },
-        template: function (elm, attr) {
-          var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
-          if (isBootstrap) {
-            return '<i class="fa {{mwIcon}}"></i>';
-          } else {
-            return '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
-          }
-        },
-        link: function (scope, el, attr) {
-          if (attr.tooltip) {
-            el.popover({
-              trigger: 'hover',
-              placement: 'bottom',
-              content: attr.tooltip,
-              container: 'body'
-            });
-          }
-
+  .directive('mwIcon', function () {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: { mwIcon: '@' },
+      template: function (elm, attr) {
+        var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
+        if (isBootstrap) {
+          return '<i class="fa {{mwIcon}}"></i>';
+        } else {
+          return '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
         }
-      };
-    })
+      },
+      link: function (scope, el, attr) {
+        if (attr.tooltip) {
+          el.popover({
+            trigger: 'hover',
+            placement: 'bottom',
+            content: attr.tooltip,
+            container: 'body'
+          });
+        }
+
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -188,20 +188,20 @@ angular.module('mwComponents', [])
  * @example
  <span mw-tooltip="foobar"></span>
  */
-    .directive('mwTooltip', function () {
-      return {
-        restrict: 'A',
-        scope: {
-          text: '@mwTooltip'
-        },
-        template: '<span mw-icon="question-sign" tooltip="{{ text }}"></span>',
-        compile: function (elm, attr) {
-          if (attr.mwTooltipIcon) {
-            elm.find('span').attr('mw-icon', attr.mwTooltipIcon);
-          }
+  .directive('mwTooltip', function () {
+    return {
+      restrict: 'A',
+      scope: {
+        text: '@mwTooltip'
+      },
+      template: '<span mw-icon="question-sign" tooltip="{{ text }}"></span>',
+      compile: function (elm, attr) {
+        if (attr.mwTooltipIcon) {
+          elm.find('span').attr('mw-icon', attr.mwTooltipIcon);
         }
-      };
-    })
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -220,15 +220,15 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwBadge', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        scope: { mwBadge: '@' },
-        transclude: true,
-        template: '<span class="mw-badge label label-{{mwBadge}}" ng-transclude></span>'
-      };
-    })
+  .directive('mwBadge', function () {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: { mwBadge: '@' },
+      transclude: true,
+      template: '<span class="mw-badge label label-{{mwBadge}}" ng-transclude></span>'
+    };
+  })
 
   .directive('mwEmptyState', function () {
     return {
@@ -253,49 +253,49 @@ angular.module('mwComponents', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-    .directive('mwFilterableSearch', function ($timeout) {
-      return {
-        transclude: true,
-        scope: {
-          filterable: '=',
-          disabled: '=',
-          property: '@',
-          loading:'='
-        },
-        templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
-        link: function (scope) {
-          scope.model = scope.filterable.properties[scope.property];
+  .directive('mwFilterableSearch', function ($timeout) {
+    return {
+      transclude: true,
+      scope: {
+        filterable: '=',
+        disabled: '=',
+        property: '@',
+        loading: '='
+      },
+      templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
+      link: function (scope) {
+        scope.model = scope.filterable.properties[scope.property];
 
-          var timeout;
+        var timeout;
 
-          var search = function () {
-            return scope.filterable.applyFilters();
-          };
+        var search = function () {
+          return scope.filterable.applyFilters();
+        };
 
-          var throttler = function () {
-            scope.searching = true;
+        var throttler = function () {
+          scope.searching = true;
 
-            $timeout.cancel(timeout);
+          $timeout.cancel(timeout);
 
-            timeout = $timeout(function () {
+          timeout = $timeout(function () {
 
-              search().then(function () {
-                $timeout.cancel(timeout);
-                scope.searching = false;
-              });
+            search().then(function () {
+              $timeout.cancel(timeout);
+              scope.searching = false;
+            });
 
-            }, 500);
-          };
+          }, 500);
+        };
 
-          scope.search = function (event) {
-            if (!event || event.keyCode === 13) {
-              search();
-            }
-            throttler();
-          };
-        }
-      };
-    })
+        scope.search = function (event) {
+          if (!event || event.keyCode === 13) {
+            search();
+          }
+          throttler();
+        };
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -315,120 +315,136 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-    .directive('mwRating', function () {
-      return {
-        restrict: 'A',
-        scope: true,
-        template: '<i ng-repeat="star in stars" ng-class="star.state" class="fa"></i>',
-        link: function(scope, elm, attr) {
+  .directive('mwRating', function () {
+    return {
+      restrict: 'A',
+      scope: true,
+      template: '<i ng-repeat="star in stars" ng-class="star.state" class="fa"></i>',
+      link: function (scope, elm, attr) {
 
-          elm.addClass('mw-star-rating');
+        elm.addClass('mw-star-rating');
 
+        scope.stars = [];
+        var starsMax = scope.$eval(attr.max);
+
+        var buildStars = function (rating) {
           scope.stars = [];
-          var starsMax = scope.$eval(attr.max);
 
-          var buildStars = function(rating){
-            scope.stars = [];
+          rating = (rating > starsMax) ? starsMax : rating;
+          rating = (rating < 0) ? 0 : rating;
 
-            rating = (rating > starsMax) ? starsMax : rating;
-            rating = (rating < 0) ? 0 : rating;
+          for (var i = 0; i < Math.floor(rating); i++) {
+            scope.stars.push({state: 'fa-star'});
+          }
 
-            for(var i = 0; i < Math.floor(rating); i++) {
-              scope.stars.push({state: 'fa-star'});
-            }
+          if (rating - Math.floor(rating) >= 0.5) {
+            scope.stars.push({state: 'fa-star-half-full'});
+          }
 
-            if(rating - Math.floor(rating) >= 0.5) {
-              scope.stars.push({state: 'fa-star-half-full'});
-            }
+          while (attr.max && scope.stars.length < starsMax) {
+            scope.stars.push({state: 'fa-star-o'});
+          }
+        };
 
-            while(attr.max && scope.stars.length < starsMax) {
-              scope.stars.push({state: 'fa-star-o'});
-            }
-          };
+        attr.$observe('mwRating', function (value) {
+          buildStars(scope.$eval(value));
+        });
 
-          attr.$observe('mwRating', function(value){
-            buildStars(scope.$eval(value));
+      }
+    };
+  })
+
+
+  .directive('mwButtonHelp', function (i18n) {
+    return {
+      restrict: 'A',
+      scope: true,
+      link: function (scope, elm) {
+        var popup;
+        elm.addClass('mwButtonHelp');
+        var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign');
+        elm.prepend(helpIcon);
+
+        helpIcon.hover(function () {
+          buildPopup();
+          var targetOffset = angular.element(this).offset();
+          angular.element('body').append(popup);
+          popup.css('top', targetOffset.top - (popup.height() / 2) + 10 - angular.element(document).scrollTop());
+          popup.css('left', targetOffset.left + 40);
+        }, function () {
+          angular.element('body > .mwButtonPopover').remove();
+        });
+
+        var buildPopup = function () {
+          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
+          angular.forEach(scope.hintsToShow, function (hint) {
+            popup.find('ul').append('<li>' + hint.text + '</li>');
           });
+        };
 
-        }
-      };
-    })
-
-
-    .directive('mwButtonHelp', function (i18n) {
-      return {
-        restrict: 'A',
-        scope: true,
-        link: function (scope, elm) {
-          var popup;
-          elm.addClass('mwButtonHelp');
-          var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign');
-          elm.prepend(helpIcon);
-
-          helpIcon.hover(function(){
-            buildPopup();
-            var targetOffset = angular.element(this).offset();
-            angular.element('body').append(popup);
-            popup.css('top', targetOffset.top - (popup.height()/2) + 10 - angular.element(document).scrollTop());
-            popup.css('left', targetOffset.left + 40);
-          }, function(){
-              angular.element('body > .mwButtonPopover').remove();
-          });
-
-          var buildPopup = function(){
-            popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
-            angular.forEach(scope.hintsToShow, function(hint){
-              popup.find('ul').append('<li>' + hint.text + '</li>');
-            });
-          };
-
-          scope.$watch('hintsToShow', function(newVal){
-            if(newVal.length){
-              helpIcon.show();
-            } else {
-              helpIcon.hide();
-            }
-          });
-        },
-        controller: function($scope){
-          $scope.registeredHints = [];
-          $scope.hintsToShow = [];
+        scope.$watch('hintsToShow', function (newVal) {
+          if (newVal.length) {
+            helpIcon.show();
+          } else {
+            helpIcon.hide();
+          }
+        });
+      },
+      controller: function ($scope) {
+        $scope.registeredHints = [];
+        $scope.hintsToShow = [];
+        $scope.helpText = i18n.get('common.buttonHelp');
+        $scope.$on('i18n:localeChanged', function () {
           $scope.helpText = i18n.get('common.buttonHelp');
-          $scope.$on('i18n:localeChanged', function() {
-            $scope.helpText = i18n.get('common.buttonHelp');
+        });
+
+        var showHelp = function () {
+          $scope.hintsToShow = [];
+          angular.forEach($scope.registeredHints, function (registered) {
+            if (registered.condition) {
+              $scope.hintsToShow.push(registered);
+            }
           });
+        };
 
-          var showHelp = function() {
-            $scope.hintsToShow = [];
-            angular.forEach($scope.registeredHints, function(registered){
-              if(registered.condition) {
-                $scope.hintsToShow.push(registered);
-              }
-            });
-          };
+        //check if any condition changes
+        this.register = function (registered) {
+          $scope.$watch(function () {
+            return registered.condition;
+          }, showHelp);
+          $scope.registeredHints.push(registered);
+        };
+      }
+    };
+  })
 
-            //check if any condition changes
-          this.register = function(registered) {
-            $scope.$watch(function(){
-              return registered.condition;
-            }, showHelp);
-            $scope.registeredHints.push(registered);
-          };
-        }
-      };
-    })
+  .directive('mwButtonHelpCondition', function () {
+    return {
+      restrict: 'A',
+      require: '^mwButtonHelp',
+      scope: {
+        condition: '=mwButtonHelpCondition',
+        text: '@mwButtonHelpText'
+      },
+      link: function (scope, elm, attr, ctrl) {
+        ctrl.register(scope);
+      }
+    };
+  })
 
-    .directive('mwButtonHelpCondition', function () {
-      return {
-        restrict: 'A',
-        require: '^mwButtonHelp',
-        scope: {
-          condition: '=mwButtonHelpCondition',
-          text: '@mwButtonHelpText'
-        },
-        link: function(scope, elm, attr, ctrl){
-          ctrl.register(scope);
-        }
-      };
-    });
+  .directive('mwOptionGroup', function () {
+    return {
+      scope: {
+        title: '@',
+        description: '@'
+      },
+      transclude:true,
+      templateUrl: 'modules/ui/templates/mwComponents/mwOptionGroup.html',
+      link: function(scope,el) {
+        scope.randomId = _.uniqueId('option_group_');
+        el.find('input').attr('id',scope.randomId);
+      }
+
+    };
+  });
 
