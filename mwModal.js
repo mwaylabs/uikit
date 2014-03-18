@@ -77,7 +77,7 @@ angular.module('mwModal', [])
           _getTemplate().then(function(template){
             _modal = $compile(template.trim())(_scope);
             _scope.$on('COMPILE:FINISHED',function(){
-              _modal.addClass('mw-Modal');
+              _modal.addClass('mw-modal');
               _bootstrapModal = _modal.find('.modal');
               _bindModalCloseEvent();
               dfd.resolve();
