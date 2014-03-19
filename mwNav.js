@@ -81,7 +81,12 @@ angular.module('mwNav', [])
       return {
         transclude: true,
         replace: true,
-        template: '<div class="navbar-collapse collapse" ng-transclude></div>'
+        template: '<div class="navbar-collapse collapse" ng-transclude></div>',
+        link: function(scope, elm) {
+          scope.uncollapse = function() {
+            elm.collapse('hide');
+          };
+        }
       };
     })
 
@@ -123,6 +128,10 @@ angular.module('mwNav', [])
           scope.isActive = function () {
             return mwNavbarCtrl.isActive(elm.find('a').attr('href'));
           };
+
+          elm.find('a').on('click', function() {
+            scope.uncollapse();
+          });
         }
       };
     })
@@ -186,6 +195,10 @@ angular.module('mwNav', [])
           scope.isActive = function () {
             return mwNavbarCtrl.isActive(link, true);
           };
+
+          elm.find('a').on('click', function() {
+            scope.uncollapse();
+          });
         }
       };
     })
