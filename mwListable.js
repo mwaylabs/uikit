@@ -174,9 +174,11 @@ angular.module('mwListable', [])
         restrict: 'A',
         require: '^mwListable',
         scope: {
-          property: '@sort'
+          property: '@sort',
+          blabla:'@'
         },
         transclude: true,
+        replace:true,
         templateUrl: 'modules/ui/templates/mwListable/mwListableHeader.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           var ascending = '+',
