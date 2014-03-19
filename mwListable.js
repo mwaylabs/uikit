@@ -324,7 +324,7 @@ angular.module('mwListable', [])
         require: '^mwListable',
         scope: true,
         compile: function (elm) {
-          elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox></th>');
+          elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
           elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}"></th>');
 
           return function (scope, elm, attr, mwListableCtrl) {
