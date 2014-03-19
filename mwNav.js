@@ -84,7 +84,9 @@ angular.module('mwNav', [])
         template: '<div class="navbar-collapse collapse" ng-transclude></div>',
         link: function(scope, elm) {
           scope.uncollapse = function() {
-            elm.collapse('hide');
+            if(elm.hasClass('in')) {
+              elm.collapse('hide');
+            }
           };
         }
       };
