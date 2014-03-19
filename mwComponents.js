@@ -282,6 +282,8 @@ angular.module('mwComponents', [])
             search().then(function () {
               $timeout.cancel(timeout);
               scope.searching = false;
+            },function(){
+              scope.searching = false;
             });
 
           }, 500);
