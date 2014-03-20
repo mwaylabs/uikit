@@ -76,7 +76,7 @@
             scope.isInvalid = function () {
               var ctrl = elm.inheritedData('$formController'),
                   invalid = false;
-              if (ctrl) {
+              if (ctrl && ctrl[scope.elementName]) {
                 invalid = ctrl[scope.elementName].$invalid;
               }
               return invalid;
@@ -159,6 +159,10 @@
               return _.size(obj);
             };
 
+            $scope.showRequiredMessage = function(){
+              return ( (!$scope.model || $scope.model.length<1) && $scope.required );
+            };
+
             $scope.filter = function (items) {
               var result = {};
 
@@ -190,6 +194,7 @@
 
           },
           link: function(scope,el,attr,form){
+
             scope.setDirty = function(){
               if(form){
                 form.$setDirty();
