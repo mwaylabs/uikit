@@ -508,7 +508,9 @@
             scope.hasSave = angular.isDefined(attr.save);
 
             var setFormPristineAndEvaluate = function(exec){
-              scope.form.$setPristine();
+              if(scope.form){
+                scope.form.$setPristine();
+              }
               scope.$eval(exec);
             };
 
