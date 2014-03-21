@@ -35,7 +35,7 @@ angular.module('mwHelper', [])
  *
  */
 
-  .directive('mwLeaveConfirmation', function ($window, $document, $location, i18n, Modal) {
+  .directive('mwLeaveConfirmation', function ($window, $document, $location, $rootScope, i18n, Modal) {
     return {
       scope: {
         alertBeforeLeave: '=mwLeaveConfirmation',
@@ -83,7 +83,7 @@ angular.module('mwHelper', [])
 
         //In case that the user clicks the refresh/back button or makes a hard url change
         $window.onbeforeunload = function () {
-          if (scope.alertBeforeLeave) {
+          if (scope.alertBeforeLeave && $rootScope.leaveConfirmationEnabled) {
             return scope.text;
           }
         };
@@ -91,6 +91,8 @@ angular.module('mwHelper', [])
         if(!angular.isDefined(scope.text)){
           throw new Error('Please specify a text in the text attribute');
         }
+
+        $rootScope.leaveConfirmationEnabled = true;
 
       }
     };
