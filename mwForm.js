@@ -101,6 +101,7 @@
                     max: i18n.get('errors.maxValue', { count: element.attr('max') }),
                     maxlength: i18n.get('errors.maxLength', { count: element.attr('ng-maxlength') }),
                     phone: i18n.get('errors.phoneNumber'),
+                    hex: i18n.get('errors.hex'),
                     unique: i18n.get('errors.notUnique'),
                     match: i18n.get('errors.doesNotMatch')
                   };
