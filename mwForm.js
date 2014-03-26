@@ -18,7 +18,7 @@
 
         // use higher maxLength for textareas
         if (elm[0].type === 'textarea') {
-          maxLength = 100000;
+          maxLength = 10000;
         }
 
         // Don't overwrite existing values for ngMaxlength
