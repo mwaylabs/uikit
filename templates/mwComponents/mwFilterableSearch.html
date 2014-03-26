@@ -1,6 +1,5 @@
 <div class="row mw-filterable-search">
   <div class="col-md-12">
-
     <div class="input-group">
       <input type="text"
              placeholder="{{ 'common.search' | i18n }}"
@@ -10,7 +9,8 @@
              ng-disabled="disabled">
       <span class="input-group-addon filterable-search-btn" ng-click="search()">
         <span ng-show="searching" class="search-indicator"></span>
-        <span ng-show="!searching" mw-icon="search"></span>
+        <span ng-hide="searching || model.value.length>0" mw-icon="search"></span>
+        <span ng-if="model.value.length>0 && !searching" mw-icon="plus" class="red rotate-45" ng-click="reset()"></span>
       </span>
     </div>
   </div>

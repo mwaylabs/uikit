@@ -3,7 +3,7 @@
   <div class="filter-toggler margin-top-10">
     <a class="clickable btn btn-default btn-block"
        ng-click="toggleFilters = !toggleFilters; resetFiltersOnClose()">
-      <span mw-icon="fa-times toggle-indicator rotate-45" ng-class="{active:toggleFilters}"></span>
+      <span mw-icon="fa-times toggle-indicator rotate-45" ng-class="{'red active':toggleFilters}"></span>
       <span ng-if="toggleFilters">{{'common.removeFilters' | i18n}}</span>
       <span ng-if="!toggleFilters">{{'common.addFilter' | i18n}}</span>
     </a>
