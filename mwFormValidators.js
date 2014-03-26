@@ -134,9 +134,6 @@
           ngModel.$formatters.unshift(validateUniqueness);
         }
       };
-    })
-
-  ;
-
+    });
 
 })();
