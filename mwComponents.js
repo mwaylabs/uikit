@@ -265,6 +265,7 @@ angular.module('mwComponents', [])
       templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
       link: function (scope) {
         scope.model = scope.filterable.properties[scope.property];
+        scope.inputLength = 0;
 
         var timeout;
 
@@ -290,10 +291,16 @@ angular.module('mwComponents', [])
         };
 
         scope.search = function (event) {
+
           if (!event || event.keyCode === 13) {
             search();
           }
           throttler();
+        };
+
+        scope.reset = function(){
+          scope.model.value='';
+          search();
         };
       }
     };
