@@ -26,6 +26,10 @@
           attr.$set('ngMaxlength', maxLength);
         }
 
+        if (attr.type === 'number' && !attr.max) {
+           attr.$set('max', 1000000);
+        }
+
         return function (scope, elm) {
           if (dontSkipIt && scope.$$prevSibling) {
             if (scope.$$prevSibling) {
