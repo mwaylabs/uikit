@@ -169,6 +169,16 @@ angular.module('mwComponents', [])
             content: attr.tooltip,
             container: 'body'
           });
+
+          attr.$observe('tooltip', function(newVal){
+            el.popover('destroy');
+            el.popover({
+              trigger: 'hover',
+              placement: 'bottom',
+              content: newVal,
+              container: 'body'
+            });
+          });
         }
 
       }
