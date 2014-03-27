@@ -160,10 +160,6 @@
               return _.size(obj);
             };
 
-            $scope.showRequiredMessage = function(){
-              return ( (!$scope.model || $scope.model.length<1) && $scope.required );
-            };
-
             $scope.filter = function (items) {
               var result = {};
 
@@ -195,6 +191,10 @@
 
           },
           link: function(scope,el,attr,form){
+
+            scope.showRequiredMessage = function(){
+              return ( (!scope.model || scope.model.length<1) && scope.required);
+            };
 
             scope.setDirty = function(){
               if(form){
@@ -309,10 +309,12 @@
             // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
             var render = function () {
               var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
-                  customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>');
+                  customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>'),
+                  customCheckboxStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
 
               el.wrap(customCheckbox);
               customCheckboxStateIndicator.insertAfter(el);
+              customCheckboxStateFocusIndicator.insertAfter(customCheckboxStateIndicator);
             };
 
             (function init() {
