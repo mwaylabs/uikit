@@ -249,6 +249,10 @@
                   if (badge.toLowerCase().indexOf('safe') > -1) {
                     type = 'safe';
                   }
+                  if (badge.toLowerCase().indexOf('-safe-') > -1) {
+                    badge = 'SAFE';
+                    type = 'notsafe';
+                  }
                   if (badge.toLowerCase().indexOf('safe') > -1 &&
                       badge.toLowerCase().indexOf('android') > -1) {
                     type = 'multi';
