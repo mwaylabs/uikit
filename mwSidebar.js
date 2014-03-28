@@ -81,7 +81,7 @@ angular.module('mwSidebar', [])
             containerElOffsetTop = containerEl.offset().top,
             footerHeight = angular.element('body > footer').height(),
             padding = 20;
-          containerEl.css('max-height', windowHeight - containerElOffsetTop - footerHeight - padding);
+            containerEl.css('max-height', windowHeight - containerElOffsetTop - footerHeight - padding);
         };
 
 

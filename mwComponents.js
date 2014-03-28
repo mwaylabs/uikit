@@ -152,7 +152,7 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       replace: true,
-      scope: { mwIcon: '@' },
+      scope: { mwIcon: '@'},
       template: function (elm, attr) {
         var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
         if (isBootstrap) {
