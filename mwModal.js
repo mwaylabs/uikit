@@ -114,11 +114,16 @@ angular.module('mwModal', [])
         this.hide = function () {
           var dfd = $q.defer();
 
-          _bootstrapModal.modal('hide');
-          _bootstrapModal.on('hidden.bs.modal', function () {
-            _self.destroy();
-            dfd.resolve();
-          });
+          if(_bootstrapModal){
+            _bootstrapModal.modal('hide');
+            _bootstrapModal.on('hidden.bs.modal', function () {
+              _self.destroy();
+              dfd.resolve();
+            });
+          } else {
+            dfd.reject();
+          }
+
           return dfd.promise;
         };
 
@@ -154,7 +159,7 @@ angular.module('mwModal', [])
           _getTemplate();
 
           _scope.$on('$destroy', function () {
-            _self.destroy();
+            _self.hide();
           });
 
 
