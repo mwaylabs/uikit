@@ -175,7 +175,7 @@ angular.module('mwListable', [])
         require: '^mwListable',
         scope: {
           property: '@sort',
-          blabla:'@'
+          width:'@'
         },
         transclude: true,
         replace:true,
@@ -325,7 +325,7 @@ angular.module('mwListable', [])
         scope: true,
         compile: function (elm) {
           elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
-          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}"></th>');
+          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%"></th>');
 
           return function (scope, elm, attr, mwListableCtrl) {
             scope.selectable = mwListableCtrl.getSelectable();

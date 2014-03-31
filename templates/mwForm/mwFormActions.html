@@ -1,4 +1,4 @@
-<div class="mw-form">
+<div class="mw-form mw-actions">
 
   <div class="btn-group">
     <button type="button"
@@ -6,7 +6,9 @@
             ng-if="hasCancel"
             ng-click="cancelFacade()">
       <span mw-icon="remove"></span>
-      {{ 'common.cancel' | i18n }}
+      <span class="action-text cancel">
+        {{ 'common.cancel' | i18n }}
+      </span>
     </button>
     <button type="button"
             class="btn btn-primary"
@@ -14,7 +16,9 @@
             ng-if="hasSave"
             ng-disabled="form.$invalid || isLoading()">
       <span mw-icon="ok"></span>
-      {{ 'common.save' | i18n }}
+      <span class="action-text save">
+        {{ 'common.save' | i18n }}
+      </span>
     </button>
   </div>
 
