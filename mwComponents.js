@@ -408,6 +408,12 @@ angular.module('mwComponents', [])
             helpIcon.hide();
           }
         });
+
+        scope.$on('$destroy', function () {
+          if(popup){
+            popup.remove();
+          }
+        });
       },
       controller: function ($scope) {
         $scope.registeredHints = [];
@@ -433,6 +439,8 @@ angular.module('mwComponents', [])
           }, showHelp);
           $scope.registeredHints.push(registered);
         };
+
+
       }
     };
   })
