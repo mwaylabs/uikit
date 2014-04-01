@@ -27,7 +27,7 @@
         }
 
         if (attr.type === 'number' && !attr.max) {
-           attr.$set('max', 1000000);
+           attr.$set('max', 2147483647);
         }
 
         return function (scope, elm) {
