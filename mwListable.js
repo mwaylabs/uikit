@@ -325,7 +325,7 @@ angular.module('mwListable', [])
         scope: true,
         compile: function (elm) {
           elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
-          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%"></th>');
+          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
 
           return function (scope, elm, attr, mwListableCtrl) {
             scope.selectable = mwListableCtrl.getSelectable();
@@ -381,7 +381,7 @@ angular.module('mwListable', [])
         scope: {
           link: '@mwListableLinkShow'
         },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="chevron-right"></span></a>',
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm action-button"><span mw-icon="chevron-right"></span></a>',
         link: function (scope, elm, attr, mwListableCtrl) {
           mwListableCtrl.actionColumns.push(null);
         }
