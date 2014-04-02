@@ -488,6 +488,10 @@
             scope.text = i18n.get('common.confirmModal.description');
             var confirmation = $compile( '<div mw-leave-confirmation="form.$dirty" text="{{text}}"></div>' )( scope );
             elm.append(confirmation);
+
+            scope.$on('$destroy',function(){
+              scope.form.$dirty = false;
+            });
           }
         };
       })
