@@ -19,7 +19,7 @@ angular.module('mwNav', [])
         restrict: 'A',
         scope: {
           url: '@mwSubNavPill',
-          disabled: '='
+          mwDisabled: '='
         },
         transclude: true,
         replace: true,

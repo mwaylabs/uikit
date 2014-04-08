@@ -268,7 +268,7 @@ angular.module('mwComponents', [])
       transclude: true,
       scope: {
         filterable: '=',
-        disabled: '=',
+        mwDisabled: '=',
         property: '@',
         loading: '='
       },

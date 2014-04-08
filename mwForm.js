@@ -142,7 +142,7 @@
             model: '=',
             options: '=',
             query: '=filter',
-            required: '='
+            mwRequired: '='
           },
           templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
           controller: function ($scope) {
