@@ -19,7 +19,7 @@ angular.module('mwSidebar', [])
       transclude: true,
       scope: {
         filterable: '=',
-        disabled: '=',
+        mwDisabled: '=',
         property: '@',
         persist: '='
       },
