@@ -1,0 +1,13 @@
+<span class="mw mw-toggle">
+
+  <button class="no toggle btn btn-link" ng-click="toggle(true)" ng-disabled="mwDisabled">
+            {{ true | humanize | i18n }}
+          </button>
+  <button class="yes toggle btn btn-link" ng-click="toggle(false)" ng-disabled="mwDisabled">
+              {{ false | humanize | i18n }}
+            </button>
+  <span class="label indicator" ng-class="{ true: 'label-success enabled', false: 'label-danger' }[mwModel]"></span>
+
+</span>
+
+

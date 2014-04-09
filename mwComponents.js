@@ -170,7 +170,7 @@ angular.module('mwComponents', [])
             container: 'body'
           });
 
-          attr.$observe('tooltip', function(newVal){
+          attr.$observe('tooltip', function (newVal) {
             el.popover('destroy');
             el.popover({
               trigger: 'hover',
@@ -293,7 +293,7 @@ angular.module('mwComponents', [])
             search().then(function () {
               $timeout.cancel(timeout);
               scope.searching = false;
-            },function(){
+            }, function () {
               scope.searching = false;
             });
 
@@ -308,8 +308,8 @@ angular.module('mwComponents', [])
           throttler();
         };
 
-        scope.reset = function(){
-          scope.model.value='';
+        scope.reset = function () {
+          scope.model.value = '';
           search();
         };
       }
@@ -410,7 +410,7 @@ angular.module('mwComponents', [])
         });
 
         scope.$on('$destroy', function () {
-          if(popup){
+          if (popup) {
             popup.remove();
           }
         });
@@ -465,13 +465,47 @@ angular.module('mwComponents', [])
         title: '@',
         description: '@'
       },
-      transclude:true,
+      transclude: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwOptionGroup.html',
-      link: function(scope,el) {
+      link: function (scope, el) {
         scope.randomId = _.uniqueId('option_group_');
-        el.find('input').attr('id',scope.randomId);
+        el.find('input').attr('id', scope.randomId);
       }
 
+    };
+  })
+
+
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwToggle
+ * @element span
+ * @description
+ *
+ * Displays a toggle button to toggle a boolean value
+ *
+ * @param {expression} mwModel model
+ * @param {function} mwChange the function which should be executed when the value has changed
+ *
+ */
+  .directive('mwToggle', function () {
+    return {
+      scope: {
+        mwModel:'=',
+        mwDisabled: '=',
+        mwChange:'&'
+      },
+      replace:true,
+      templateUrl: 'modules/ui/templates/mwComponents/mwToggle.html',
+      link: function (scope) {
+
+        scope.toggle = function(value){
+          if(scope.mwModel !== value){
+            scope.mwModel = !scope.mwModel;
+            scope.mwChange({value: scope.mwModel});
+          }
+        };
+      }
     };
   });
 
