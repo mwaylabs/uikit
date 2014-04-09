@@ -2,6 +2,14 @@
 
 (function () {
 
+  var validateRegex = function(value, regex){
+      if(value){
+        return value.match(regex);
+      } else {
+        return true;
+      }
+  };
+
   angular.module('mwFormValidators', [])
 
   /**
@@ -21,7 +29,7 @@
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          var telExpression = /^(00[1-9]\d{8,}|^\+[1-9]\d{8,})$/;
+          var regex = /^(00[1-9]\d{8,}|^\+[1-9]\d{8,})$/;
 
           var removeNonDigitValues = function (value) {
             if (value) {
@@ -31,11 +39,7 @@
           };
 
           var validateNumber = function (value) {
-            var isValid = true;
-            if (value) {
-              isValid = value.match(telExpression);
-            }
-            ngModel.$setValidity('phone', isValid);
+            ngModel.$setValidity('phone', validateRegex(value,regex));
             return value;
           };
 
@@ -50,20 +54,61 @@
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          var hexExpression = /^(0x)?([0-9A-Fa-f])+$/;
-
+          var regex = /^(0x)?([0-9A-Fa-f])+$/;
 
           var validateHex = function (value) {
-            var isValid = true;
-            if (value) {
-              isValid = value.match(hexExpression);
-            }
-            ngModel.$setValidity('hex', isValid);
+            ngModel.$setValidity('hex', validateRegex(value,regex));
             return value;
           };
 
           ngModel.$formatters.push(validateHex);
           ngModel.$parsers.push(validateHex);
+        }
+      };
+    })
+
+    .directive('mwValidatePlaceholder', function () {
+      return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, elm, attr, ngModel) {
+          var regex = /\$\{.*\}/;
+
+
+          var validatePlaceholder = function (value) {
+            ngModel.$setValidity('placeholder', validateRegex(value,regex));
+            return value;
+          };
+
+          ngModel.$formatters.push(validatePlaceholder);
+          ngModel.$parsers.push(validatePlaceholder);
+        }
+      };
+    })
+
+    .directive('mwValidatePlaceholderOrMail', function () {
+      return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, elm, attr, ngModel) {
+          var mailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*/,
+              placeholderRegex = /\$\{.+\}/;
+
+          var validatePlaceholder = function (value) {
+            var validMail = validateRegex(value,mailRegex),
+                validPlaceholder = validateRegex(value,placeholderRegex);
+            if(validMail || validPlaceholder){
+              ngModel.$setValidity('email', true);
+              ngModel.$setValidity('placeholder', true);
+            } else {
+              ngModel.$setValidity('email', validMail);
+              ngModel.$setValidity('placeholder', validPlaceholder);
+            }
+            return value;
+          };
+
+          ngModel.$formatters.push(validatePlaceholder);
+          ngModel.$parsers.push(validatePlaceholder);
         }
       };
     })
