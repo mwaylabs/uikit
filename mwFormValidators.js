@@ -91,7 +91,7 @@
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          var mailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*/,
+          var mailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+([.][a-zA-Z0-9_-]+)*[.][a-zA-Z0-9._-]+$/,
               placeholderRegex = /\$\{.+\}/;
 
           var validatePlaceholder = function (value) {
