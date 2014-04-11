@@ -39,6 +39,27 @@ angular.module('mwWizard', [])
         _steps.push(step);
       };
 
+      /*
+       * name _registerStep()
+       * @description
+       * This method should not be called manually but rather automatically by using the mwWizardStep directive
+       */
+      this._unRegisterStep = function (step) {
+        var stepIndexPosition = _.indexOf(_steps,step);
+        if(stepIndexPosition>=0){
+          _steps.splice(stepIndexPosition,0);
+        } else {
+          throw new Error('The step you tried to remove did not exist');
+        }
+      };
+
+      this.destroy = function(){
+        var self = this;
+        _steps.forEach(function(step){
+          self._unRegisterStep(step);
+        });
+      };
+
       this.getId = function () {
         return _id;
       };
@@ -76,6 +97,7 @@ angular.module('mwWizard', [])
       this.back = function () {
         this.goTo(_currentlyActive - 1);
       };
+
 
       /*
        * name goTo()
@@ -188,6 +210,10 @@ angular.module('mwWizard', [])
           wizard._registerStep(step);
         };
 
+        $scope.$on('$destroy',function(){
+          wizard.destroy();
+        });
+
       }
     };
   })
@@ -209,9 +235,13 @@ angular.module('mwWizard', [])
       transclude: true,
       require: '^mwWizard',
       template: '<div ng-transclude ng-if="_isActive" ng-transclude></div>',
-      link: function (scope, elm, attr, mwWizardCtrl) {
+      link: function (scope, el, attr, mwWizardCtrl) {
         scope._isActive = false;
         mwWizardCtrl.registerStep(scope);
+
+        scope.$on('$destroy',function(){
+          //el.remove();
+        });
       }
     };
   });
