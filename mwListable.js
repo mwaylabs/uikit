@@ -136,6 +136,41 @@ angular.module('mwListable', [])
 
 /**
  * @ngdoc directive
+ * @name mwListable.directive:mwListableHead
+ * @element thead
+ * @description
+ *
+ * Displays amount of items from filterable and the amount of selected items of the selectable
+ *
+ */
+
+  .directive('mwListableHead', function($compile) {
+    return {
+      require: '^mwListable',
+      scope:{
+        title:'@mwListableHead'
+      },
+      link: function(scope,el,attr,mwListable){
+        scope.filterable = mwListable.getFilterable();
+        scope.selectable = mwListable.getSelectable();
+
+        var tmpl = '<tr>' +
+          '<th colspan="9000" class="listable-amount" ng-if="filterable.total()">' +
+            '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} selected</span>' +
+            '<span ng-if="!selectable || selectable.selected().length<1">{{filterable.total()}} {{title}}</span>' +
+          '</th>' +
+        '</tr>',
+        $tmpl = angular.element(tmpl),
+        compiled = $compile($tmpl);
+
+        el.prepend($tmpl);
+        compiled(scope);
+      }
+    };
+  })
+
+/**
+ * @ngdoc directive
  * @name mwListable.directive:mwListableFooter
  * @element tfoot
  * @description
