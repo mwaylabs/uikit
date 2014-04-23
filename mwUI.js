@@ -9,5 +9,6 @@ angular.module('mwUI', [
   'mwFormValidators',
   'mwNav',
   'mwPopover',
-  'mwHelper'
+  'mwHelper',
+  'mwMap'
 ]);
