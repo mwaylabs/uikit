@@ -131,4 +131,39 @@ angular.module('mwHelper', [])
 
       }
     };
+  })
+
+  .service('LayoutWatcher', function ($timeout, $window, $rootScope) {
+
+    var notify = function(){
+      $rootScope.$broadcast('layout:changed');
+    };
+    angular.element('body').on('DOMSubtreeModified',_.throttle(notify, 300));
+    angular.element($window).on('resize', _.throttle(notify, 300));
+    return {};
+  })
+
+  .directive('mwSetFullScreenHeight', function () {
+    return {
+      restrict: 'A',
+      scope:{
+        'subtractElements':'='
+      },
+      link: function (scope, el) {
+
+        var setHeight = function(){
+          var height = angular.element(window).height();
+
+          scope.subtractElements.forEach(function(elIdentifier){
+            var $el = angular.element(elIdentifier);
+            if($el){
+              height -= $el.height();
+            }
+          });
+          el.css('height',height);
+        };
+        scope.$on('layout:changed',setHeight);
+        setHeight();
+      }
+    };
   });
