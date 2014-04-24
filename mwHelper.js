@@ -133,23 +133,41 @@ angular.module('mwHelper', [])
     };
   })
 
-  .service('LayoutWatcher', function ($timeout, $window, $rootScope) {
+  .service('LayoutWatcher', function ($timeout, $window) {
 
-    var notify = function(){
-      $rootScope.$broadcast('layout:changed');
+    var _callbacks = [];
+    var _notify = function(){
+      _callbacks.forEach(function(scopedCallback){
+        scopedCallback.callback.apply(scopedCallback.scope);
+      });
     };
-    angular.element('body').on('DOMSubtreeModified',_.throttle(notify, 300));
-    angular.element($window).on('resize', _.throttle(notify, 300));
-    return {};
+    angular.element('body').on('DOMSubtreeModified',_.throttle(_notify, 300));
+    angular.element($window).on('resize', _.throttle(_notify, 300));
+    $timeout(_notify,500);
+    return {
+      registerCallback: function(cb,scope){
+        if(typeof cb  === 'function'){
+          var scopedCallback = {
+            callback: cb,
+            scope: scope
+          };
+          _callbacks.push(scopedCallback);
+        } else {
+          throw new Error('Callback has to be a function');
+        }
+      }
+    };
   })
 
-  .directive('mwSetFullScreenHeight', function () {
+  .directive('mwSetFullScreenHeight', function (LayoutWatcher) {
     return {
       restrict: 'A',
       scope:{
         'subtractElements':'='
       },
       link: function (scope, el) {
+
+        el.addClass('mw-full-screen-height');
 
         var setHeight = function(){
           var height = angular.element(window).height();
@@ -162,8 +180,9 @@ angular.module('mwHelper', [])
           });
           el.css('height',height);
         };
-        scope.$on('layout:changed',setHeight);
-        setHeight();
+
+        LayoutWatcher.registerCallback(setHeight);
+
       }
     };
   });
