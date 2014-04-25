@@ -141,7 +141,8 @@ angular.module('mwHelper', [])
         scopedCallback.callback.apply(scopedCallback.scope);
       });
     };
-    angular.element('body').on('DOMSubtreeModified',_.throttle(_notify, 300));
+    angular.element('body').on('DOMNodeInserted',_.throttle(_notify, 300));
+    angular.element('body').on('DOMNodeRemoved',_.throttle(_notify, 300));
     angular.element($window).on('resize', _.throttle(_notify, 300));
     $timeout(_notify,500);
     return {
