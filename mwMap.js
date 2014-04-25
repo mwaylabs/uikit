@@ -47,7 +47,6 @@ angular.module('mwMap', [])
         };
 
         $scope.map = this.map = new openlayer.Map({
-          target: 'map',
           layers: [
             new openlayer.layer.Tile({
               source: new openlayer.source.MapQuest({layer: type})
@@ -75,6 +74,9 @@ angular.module('mwMap', [])
           $scope.map.removeLayer();
           $scope.map.removeOverlay();
         });
+      },
+      link:function(scope,el){
+        scope.map.setTarget(el.find('#map')[0]);
       }
     };
   })
@@ -132,8 +134,7 @@ angular.module('mwMap', [])
       link: function (scope,el,attr,mwMapCtrl) {
         var map = mwMapCtrl.map,
           openlayer = mwMapCtrl.openlayer,
-          coords = [scope.lng || 0, scope.lat || 0],
-          startZoomLevel = map.getView().getZoom();
+          coords = [scope.lng || 0, scope.lat || 0];
 
         var overlay = new openlayer.Overlay({
           position: openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'),
@@ -160,19 +161,6 @@ angular.module('mwMap', [])
           } else {
             map.removeOverlay(overlay);
           }
-        });
-
-        map.getView().on('change:resolution',function(){
-          var zoomLevel = map.getView().getZoom(),
-            $el = angular.element(overlay.getElement()),
-            scale = 1/startZoomLevel*(zoomLevel);
-          $el.parent()
-            .css('-webkit-transform','scale('+scale+')')
-            .css('-ms-transform','scale('+scale+')')
-            .css('-moz-transform','scale('+scale+')')
-            .css('-o-transform','scale('+scale+')')
-            .css('transform','scale('+scale+')')
-            .css('z-index',99);
         });
 
         scope.$on('$destroy',function(){
