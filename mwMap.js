@@ -70,6 +70,11 @@ angular.module('mwMap', [])
         $scope.$watch('lng',centerMap);
 
         LayoutWatcher.registerCallback(resize);
+
+        $scope.$on('$destroy',function(){
+          $scope.map.removeLayer();
+          $scope.map.removeOverlay();
+        });
       }
     };
   })
@@ -105,6 +110,10 @@ angular.module('mwMap', [])
 
         scope.$watch('lat',setPosition);
         scope.$watch('lng',setPosition);
+
+        scope.$on('$destroy',function(){
+          map.removeOverlay(marker);
+        });
       }
     };
   })
@@ -123,7 +132,8 @@ angular.module('mwMap', [])
       link: function (scope,el,attr,mwMapCtrl) {
         var map = mwMapCtrl.map,
           openlayer = mwMapCtrl.openlayer,
-          coords = [scope.lng || 0, scope.lat || 0];
+          coords = [scope.lng || 0, scope.lat || 0],
+          startZoomLevel = map.getView().getZoom();
 
         var overlay = new openlayer.Overlay({
           position: openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'),
@@ -151,6 +161,23 @@ angular.module('mwMap', [])
             map.removeOverlay(overlay);
           }
         });
+
+        map.getView().on('change:resolution',function(){
+          var zoomLevel = map.getView().getZoom(),
+            $el = angular.element(overlay.getElement()),
+            scale = 1/startZoomLevel*(zoomLevel);
+          $el.parent()
+            .css('-webkit-transform','scale('+scale+')')
+            .css('-ms-transform','scale('+scale+')')
+            .css('-moz-transform','scale('+scale+')')
+            .css('-o-transform','scale('+scale+')')
+            .css('transform','scale('+scale+')')
+            .css('z-index',99);
+        });
+
+        scope.$on('$destroy',function(){
+          map.removeOverlay(overlay);
+        });
       }
     };
   })
@@ -161,19 +188,25 @@ angular.module('mwMap', [])
       scope: {
         lat: '=',
         lng: '=',
-        radius: '='
+        radius: '=',
+        fill: '@',
+        stroke: '@',
+        strokeWidth: '@'
       },
       require: '^mwMap',
       link: function (scope,el,attr,mwMapCtrl) {
         var map = mwMapCtrl.map,
           openlayer = mwMapCtrl.openlayer,
           coords = [scope.lng || 0, scope.lat || 0],
-          radius = scope.radius || 1000;
+          radius = scope.radius || 1000,
+          fill = scope.fill || 'rgba(255, 255, 255, .5)',
+          stroke = scope.stroke || '#fff',
+          strokeWidth = scope.strokeWidth || 3;
 
         map.on('postcompose', function(evt) {
           evt.vectorContext.setFillStrokeStyle(
-            new openlayer.style.Fill({color: 'rgba(255, 0, 0, .1)'}),
-            new openlayer.style.Stroke({color: 'rgba(255, 0, 0, .8)', width: 3}));
+            new openlayer.style.Fill({color: fill}),
+            new openlayer.style.Stroke({color: stroke, width: strokeWidth}));
           evt.vectorContext.drawCircleGeometry(
             new openlayer.geom.Circle(openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'), radius));
         });
