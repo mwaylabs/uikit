@@ -24,11 +24,18 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       replace: true,
+      require: '^?dashboardModule',
       scope: {
         title: '@mwPanel'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html'
+      templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html',
+      link: function(scope, elm, attr, ctrl){
+        if(ctrl){
+          scope.isDashboardModule = true;
+          scope.closeModule = ctrl.closeModule;
+        }
+      }
     };
   })
 
