@@ -41,6 +41,36 @@ angular.module('mwComponents', [])
 
 /**
  * @ngdoc directive
+ * @name mwComponents.directive:mwSortIndicator
+ * @element span
+ * @description
+ *
+ * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
+ *
+ * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
+ * @param {boolean} isReversed display an arrow up or down
+ * @example
+ * <doc:example>
+ *  <doc:source>
+ *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
+ *  </doc:source>
+ * </doc:example>
+ */
+  .directive('mwSortIndicator', function () {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+        isActive: '=',
+        isReversed: '='
+      },
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwComponents/mwSortIndicator.html'
+    };
+  })
+
+/**
+ * @ngdoc directive
  * @name mwComponents.directive:mwAlert
  * @element div
  * @description

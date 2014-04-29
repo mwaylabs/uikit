@@ -91,10 +91,7 @@ angular.module('mwSidebar', [])
         };
 
 
-        $timeout(function () {
-          setMaxHeight();
-        }, 500);
-
+        $timeout(setMaxHeight,500);
         angular.element($window).on('resize', _.throttle(setMaxHeight, 300));
 
         if (attr.affix && attr.offset) {

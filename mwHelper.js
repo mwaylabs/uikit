@@ -131,4 +131,69 @@ angular.module('mwHelper', [])
 
       }
     };
+  })
+
+  .service('LayoutWatcher', function ($timeout, $window) {
+
+    var _callbacks = [];
+    var _notify = function(){
+      _callbacks.forEach(function(scopedCallback){
+        scopedCallback.callback.apply(scopedCallback.scope);
+      });
+    };
+    angular.element('body').on('DOMNodeInserted',_.throttle(_notify, 300));
+    angular.element('body').on('DOMNodeRemoved',_.throttle(_notify, 300));
+    angular.element($window).on('resize', _.throttle(_notify, 300));
+    $timeout(_notify,500);
+    return {
+      registerCallback: function(cb,scope){
+        if(typeof cb  === 'function'){
+          var scopedCallback = {
+            callback: cb,
+            scope: scope
+          };
+          _callbacks.push(scopedCallback);
+        } else {
+          throw new Error('Callback has to be a function');
+        }
+      }
+    };
+  })
+
+  .directive('mwSetFullScreenHeight', function (LayoutWatcher) {
+    return {
+      restrict: 'A',
+      scope:{
+        'subtractElements':'=',
+        'offset':'@'
+      },
+      link: function (scope, el) {
+
+        el.addClass('mw-full-screen-height');
+
+        var setHeight = function(){
+          var height = angular.element(window).height();
+
+          scope.subtractElements.forEach(function(elIdentifier){
+            var $el = angular.element(elIdentifier);
+            if($el){
+              var padding = {
+                    top: parseInt($el.css('padding-top'),10),
+                    bottom: parseInt($el.css('padding-bottom'),10)
+                  };
+              height -= $el.height();
+              height -= padding.top;
+              height -= padding.bottom;
+            }
+          });
+          if(scope.offset){
+            height -= scope.offset;
+          }
+          el.css('height',height);
+        };
+
+        LayoutWatcher.registerCallback(setHeight);
+
+      }
+    };
   });
