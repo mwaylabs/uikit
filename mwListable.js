@@ -98,7 +98,9 @@ angular.module('mwListable', [])
           this.actionColumns = [];
 
           this.sort = function (property, order) {
-            $scope.filterable.setSortOrder(order + property);
+            if($scope.filterable){
+              $scope.filterable.setSortOrder(order + property);
+            }
           };
 
           this.getSort = function () {
@@ -210,7 +212,8 @@ angular.module('mwListable', [])
         require: '^mwListable',
         scope: {
           property: '@sort',
-          width:'@'
+          width:'@',
+          sortActive:'='
         },
         transclude: true,
         replace:true,
@@ -220,6 +223,7 @@ angular.module('mwListable', [])
               descending = '-';
 
           scope.toggleSortOrder = function () {
+            console.log(scope.property);
             if (scope.property) {
               var sortOrder = ascending; //default
               if (mwListableCtrl.getSort() === ascending + scope.property) {
@@ -236,6 +240,10 @@ angular.module('mwListable', [])
               return (mwListableCtrl.getSort() === '+' + scope.property || mwListableCtrl.getSort() === '-' + scope.property);
             }
           };
+
+          if(scope.property){
+            elm.find('.title').on('click',scope.toggleSortOrder);
+          }
 
           mwListableCtrl.registerColumn(scope);
         }
