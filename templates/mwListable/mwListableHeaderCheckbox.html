@@ -1,5 +1,5 @@
 <input type="checkbox"
-       ng-if="!filterable || filterable.items().length > 0"
+       ng-if="!radio && (!filterable || filterable.items().length > 0)"
        ng-click="toggleAll()"
        ng-checked="selectable.allSelected()"
        ng-disabled="selectable.allDisabled()"

@@ -132,6 +132,13 @@ angular.module('mwListable', [])
               $scope.selectable.selectAll();
             }
           };
+
+          this.isRadio = function(){
+            if($scope.selectable){
+              return $scope.selectable.isRadio();
+            }
+            return false;
+          };
         }
       };
     })
@@ -271,6 +278,7 @@ angular.module('mwListable', [])
         templateUrl: 'modules/ui/templates/mwListable/mwListableColumnCheckbox.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
+          scope.radio = mwListableCtrl.isRadio();
           scope.click = function (item, $event) {
             $event.stopPropagation();
             scope.selectable.toggle(item);
@@ -299,6 +307,7 @@ angular.module('mwListable', [])
         scope: true,
         templateUrl: 'modules/ui/templates/mwListable/mwListableHeaderCheckbox.html',
         link: function (scope, elm, attr, mwListableCtrl) {
+          scope.radio = mwListableCtrl.isRadio();
           scope.filterable = mwListableCtrl.getFilterable();
           scope.selectable = mwListableCtrl.getSelectable();
           scope.toggleAll = mwListableCtrl.toggleAll;
