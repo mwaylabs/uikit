@@ -287,6 +287,9 @@
    * @ngdoc directive
    * @name mwForm.directive:mwCustomCheckbox
    * @element input
+   * @scope
+   *
+   * @param {boolean} radio If true, adds class 'round' to wrapping span element
    * @description
    *
    * Replaces native checkbox with custom checkbox
@@ -298,6 +301,9 @@
           replace: true,
           require: '?ngModel',
           transclude: true,
+          scope: {
+            radio: '='
+          },
           link: function (scope, el, attr, ngModel) {
 
 
@@ -310,6 +316,12 @@
                 el.parent().removeClass('active');
               }
             };
+
+            scope.$watch('radio', function(newVal){
+              if(newVal === true){
+                el.parent().addClass('round');
+              }
+            });
 
             // render custom checkbox
             // to preserve the functionality of the original checkbox we just wrap it with a custom element
