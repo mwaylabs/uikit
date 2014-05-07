@@ -196,4 +196,22 @@ angular.module('mwHelper', [])
 
       }
     };
+  })
+
+
+  .directive('mwInvertModelValue', function (){
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function(scope, elm, attr, ngModelCtrl){
+        var invert = function(value){
+          if(typeof(value) === 'boolean') {
+            return !value;
+          }
+          return value;
+        };
+        ngModelCtrl.$parsers.push(invert);
+        ngModelCtrl.$formatters.push(invert);
+      }
+    };
   });
