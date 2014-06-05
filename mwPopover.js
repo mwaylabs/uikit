@@ -52,15 +52,22 @@ angular.module('mwPopover', [])
     .directive('mwPopover', function (Popover) {
       return {
         restrict: 'A',
+        scope: {
+          content: '='
+        },
         link: function (scope, elm, attr) {
           var buildPopover = function () {
+            var content = Popover.contents[attr.mwPopover];
+            if(scope.content){
+              content = scope.content;
+            }
             elm.popover('destroy');
             elm.popover({
               trigger: attr.popoverTrigger,
               title: attr.popoverTitle,
               html: true,
               placement: attr.popoverPosition,
-              content: Popover.contents[attr.mwPopover]
+              content: content
             });
           };
 
