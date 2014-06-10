@@ -165,7 +165,7 @@ angular.module('mwListable', [])
 
         var tmpl = '<tr>' +
           '<th colspan="9000" class="listable-amount" ng-if="filterable.total()">' +
-            '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} selected</span>' +
+            '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
             '<span ng-if="!selectable || selectable.selected().length<1">{{filterable.total()}} {{title}}</span>' +
           '</th>' +
         '</tr>',
