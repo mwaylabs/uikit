@@ -243,25 +243,26 @@ angular.module('mwWizard', [])
   .directive('mwWizardStep', function () {
     return {
       restrict: 'A',
-      scope: {
-        title: '@'
-      },
+      scope: true,
       transclude: true,
       replace:true,
       require: '^mwWizard',
-      template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div ng-transclude ng-if="_isActive"></div></div>',
+      template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div class="mw-wizard-step-inner" ng-transclude ng-if="_isActive"></div></div>',
       link: function (scope, el, attr, mwWizardCtrl) {
         scope._isActive = false;
 
-        scope.$watch('title',function(title){
+        attr.$observe('title',function(title){
           if(title && title.length>0){
+            scope.title = title;
+            mwWizardCtrl.registerStep(scope);
+          } else if(!angular.isDefined(attr.title)) {
             mwWizardCtrl.registerStep(scope);
           }
         });
 
-        if(!angular.isDefined(scope.title)){
-          mwWizardCtrl.registerStep(scope);
-        }
+//        if(!angular.isDefined(attr.title)){
+//          mwWizardCtrl.registerStep(scope);
+//        }
 
         scope.$on('$destroy',function(){
           //el.remove();
