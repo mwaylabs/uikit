@@ -234,7 +234,7 @@ angular.module('mwWizard', [])
       scope: true,
       transclude: true,
       require: '^mwWizard',
-      template: '<div ng-transclude ng-if="_isActive" ng-transclude></div>',
+      template: '<div ng-transclude ng-if="_isActive" class="mw-wizard-step"></div>',
       link: function (scope, el, attr, mwWizardCtrl) {
         scope._isActive = false;
         mwWizardCtrl.registerStep(scope);
