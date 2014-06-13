@@ -36,6 +36,7 @@ angular.module('mwWizard', [])
         if (_steps.length < 1) {
           step._isActive = true;
         }
+        step.slideId= _.uniqueId(_id+'_');
         _steps.push(step);
       };
 
@@ -64,7 +65,15 @@ angular.module('mwWizard', [])
         return _id;
       };
 
+      this.getAllSteps = function(){
+        return _steps;
+      };
+
       this.getCurrentStep = function () {
+        return _steps[_currentlyActive];
+      };
+
+      this.getCurrentStepNumber = function () {
         return _currentlyActive;
       };
 
@@ -73,11 +82,11 @@ angular.module('mwWizard', [])
       };
 
       this.hasNextStep = function () {
-        return this.getCurrentStep() < this.getTotalStepAmount() - 1;
+        return this.getCurrentStepNumber() < this.getTotalStepAmount() - 1;
       };
 
       this.hasPreviousStep = function () {
-        return this.getCurrentStep() > 0;
+        return this.getCurrentStepNumber() > 0;
       };
 
       /*
@@ -98,6 +107,9 @@ angular.module('mwWizard', [])
         this.goTo(_currentlyActive - 1);
       };
 
+      this.gotoStep = function(step){
+        this.goTo(_.indexOf(_steps,step));
+      };
 
       /*
        * name goTo()
@@ -201,7 +213,7 @@ angular.module('mwWizard', [])
         wizard: '=mwWizard'
       },
       transclude: true,
-      template: '<div ng-transclude></div>',
+      template: '<div ng-transclude class="mw-wizard"></div>',
       controller: function ($scope) {
 
         var wizard = $scope.wizard;
@@ -231,14 +243,25 @@ angular.module('mwWizard', [])
   .directive('mwWizardStep', function () {
     return {
       restrict: 'A',
-      scope: true,
+      scope: {
+        title: '@'
+      },
       transclude: true,
       replace:true,
       require: '^mwWizard',
-      template: '<div ng-transclude class="mw-wizard-step" ng-hide="!_isActive"></div>',
+      template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div ng-transclude class="mw-wizard-step" ng-if="_isActive"></div></div>',
       link: function (scope, el, attr, mwWizardCtrl) {
         scope._isActive = false;
-        mwWizardCtrl.registerStep(scope);
+
+        scope.$watch('title',function(title){
+          if(title && title.length>0){
+            mwWizardCtrl.registerStep(scope);
+          }
+        });
+
+        if(!angular.isDefined(scope.title)){
+          mwWizardCtrl.registerStep(scope);
+        }
 
         scope.$on('$destroy',function(){
           //el.remove();
