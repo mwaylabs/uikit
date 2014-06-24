@@ -49,13 +49,14 @@ angular.module('mwMap', [])
         $scope.map = this.map = new openlayer.Map({
           layers: [
             new openlayer.layer.Tile({
-              source: new openlayer.source.MapQuest({layer: type})
+              source: new openlayer.source.MapQuest({layer: type,minZoom:6})
             })
           ],
           ol3Logo:false,
           view: new openlayer.View2D({
             center: openlayer.proj.transform(centerCoords, 'EPSG:4326', 'EPSG:3857'),
-            zoom: zoom
+            zoom: zoom,
+            minZoom: 6
           })
         });
 
