@@ -214,4 +214,29 @@ angular.module('mwHelper', [])
         ngModelCtrl.$formatters.push(invert);
       }
     };
-  });
+  })
+
+  /**
+   * @ngdoc directive
+   * @name mwHelper.directive:mwAutofillCheck
+   * @element ANY
+   *
+   * @description
+   * Workaround for Firefox auto fill bug for input directives. Place this directive on a form tag.
+   */
+  .directive('mwAutofillCheck', ['$interval', function($interval){
+    return {
+      restrict: 'A',
+      link: function( scope, elm ){
+        var inputElements = elm.find('input');
+
+        var stopInterval = $interval(function(){
+          inputElements.trigger('input').trigger('change').trigger('keydown');
+        }, 500);
+
+        scope.$on('$destroy', function(){
+          $interval.cancel(stopInterval);
+        });
+      }
+    };
+  }]);
