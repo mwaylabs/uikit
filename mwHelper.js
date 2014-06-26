@@ -229,10 +229,15 @@ angular.module('mwHelper', [])
       restrict: 'A',
       link: function( scope, elm ){
         var inputElements = elm.find('input');
+        var stopInterval = null;
 
-        var stopInterval = $interval(function(){
-          inputElements.trigger('input').trigger('change').trigger('keydown');
-        }, 500);
+        inputElements.on('keyup', function(){
+          if(stopInterval === null){
+            stopInterval = $interval(function(){
+              inputElements.trigger('input').trigger('change').trigger('keydown');
+            }, 500);
+          }
+        });
 
         scope.$on('$destroy', function(){
           $interval.cancel(stopInterval);

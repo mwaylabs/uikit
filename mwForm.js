@@ -73,7 +73,8 @@
           scope: {
             label: '@',
             tooltip: '@',
-            hideErrors: '='
+            hideErrors: '=',
+            validateWhenDirty: '='
           },
           templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
           link: function (scope, elm) {
@@ -84,6 +85,11 @@
                 invalid = ctrl[scope.elementName].$invalid;
               }
               return invalid;
+            };
+
+            scope.isDirty = function() {
+              var ctrl = elm.inheritedData('$formController');
+              return ctrl ? ctrl.$dirty : false;
             };
           },
           controller: function ($scope) {

@@ -1,5 +1,5 @@
 <div class="form-group"
-     ng-class="{'has-error': isInvalid()}">
+     ng-class="{'has-error': (validateWhenDirty ? (isInvalid() && isDirty()) : isInvalid() ) }">
 
   <div class="clearfix">
 
