@@ -53,7 +53,7 @@ angular.module('mwListable', [])
              */
             var scrollCallback = function () {
               if(scope.filterable){
-                if (w.scrollTop() === d.height() - w.height()) {
+                if (w.scrollTop() >= (d.height() - w.height())*0.8) {
                   scope.filterable.loadMore();
                 }
               }
@@ -191,11 +191,12 @@ angular.module('mwListable', [])
  *
  */
 
-    .directive('mwListableFooter', function() {
+    .directive('mwListableFooter', function(Loading) {
       return {
         require: '^mwListable',
         templateUrl: 'modules/ui/templates/mwListable/mwListableFooter.html',
         link: function(scope, elm, attr, mwListableCtrl) {
+          scope.Loading = Loading;
           scope.columns = mwListableCtrl.getColumns();
         }
       };
