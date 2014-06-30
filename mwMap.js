@@ -37,8 +37,8 @@ angular.module('mwMap', [])
             type = $scope.type || 'osm';
 
         var centerMap = function(){
-          if($scope.lat && $scope.lng){
-            $scope.map.getView().setCenter(openlayer.proj.transform([$scope.lng,$scope.lat], 'EPSG:4326', 'EPSG:3857'));
+          if($scope.centerLat && $scope.centerLng){
+            $scope.map.getView().setCenter(openlayer.proj.transform([$scope.centerLng,$scope.centerLat], 'EPSG:4326', 'EPSG:3857'));
           }
         };
 
@@ -66,8 +66,8 @@ angular.module('mwMap', [])
           }
         });
 
-        $scope.$watch('lat',centerMap);
-        $scope.$watch('lng',centerMap);
+        $scope.$watch('centerLat',centerMap);
+        $scope.$watch('centerLng',centerMap);
 
         LayoutWatcher.registerCallback(resize);
 

@@ -6,7 +6,7 @@
              class="form-control"
              ng-keyup="search($event)"
              ng-model="model.value"
-             ng-disabled="mwDisabled">
+             ng-disabled="mwDisabled || loading">
       <span class="input-group-addon filterable-search-btn" ng-click="search()">
         <span ng-show="searching" class="search-indicator"></span>
         <span ng-hide="searching || model.value.length>0" mw-icon="search"></span>
