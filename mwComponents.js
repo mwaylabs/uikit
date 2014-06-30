@@ -300,14 +300,14 @@ angular.module('mwComponents', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearch', function ($timeout) {
+  .directive('mwFilterableSearch', function ($timeout, Loading) {
     return {
       transclude: true,
       scope: {
         filterable: '=',
         mwDisabled: '=',
-        property: '@',
-        loading: '='
+        property: '@'
+//        loading: '='
       },
       templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
       link: function (scope) {
@@ -349,6 +349,12 @@ angular.module('mwComponents', [])
           scope.model.value = '';
           search();
         };
+
+        Loading.registerDoneCallback(function(){
+          scope.loading = false;
+        });
+
+        scope.loading = Loading.isLoading();
       }
     };
   })
