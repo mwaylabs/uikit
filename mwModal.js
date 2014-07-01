@@ -96,6 +96,11 @@ angular.module('mwModal', [])
          * @description Shows the modal
          */
         this.show = function () {
+          body.css({
+            height:'100%',
+            width: '100%',
+            overflow:'hidden'
+          });
           _buildModal().then(function(){
             body.append(_modal);
             _bootstrapModal.modal('show');
@@ -113,7 +118,6 @@ angular.module('mwModal', [])
          */
         this.hide = function () {
           var dfd = $q.defer();
-
           if(_bootstrapModal){
             _bootstrapModal.modal('hide');
             _bootstrapModal.on('hidden.bs.modal', function () {
@@ -149,6 +153,11 @@ angular.module('mwModal', [])
          * @description Removes the modal from the dom
          */
         this.destroy = function () {
+          body.css({
+            height:'',
+            width: '',
+            overflow:''
+          });
           if(_modal){
             _modal.remove();
           }
