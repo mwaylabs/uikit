@@ -336,10 +336,12 @@ angular.module('mwListable', [])
 
           return function (scope, elm, attr) {
             var selectedClass = 'selected';
-            elm.addClass('selectable');
+            if(scope.selectable){
+              elm.addClass('selectable');
+            }
 
             elm.on('click', function () {
-              if (!scope.isDisabled(scope.item)) {
+              if (scope.selectable && !scope.isDisabled(scope.item)) {
                 scope.selectable.toggle(scope.item);
                 scope.$apply();
               }
