@@ -283,7 +283,7 @@ angular.module('mwComponents', [])
       replace: true,
       scope: { mwBadge: '@' },
       transclude: true,
-      template: '<div class="mw-empty-state"> <img src="images/ic_list_noIcon.png"><h2 ng-transclude class="lead"></h2> </div>'
+      template: '<div class="mw-empty-state"> <img src="../../images/logo-grey.png"><h2 ng-transclude class="lead"></h2> </div>'
     };
   })
 
