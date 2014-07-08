@@ -506,7 +506,8 @@ angular.module('mwComponents', [])
     return {
       scope: {
         title: '@',
-        description: '@'
+        description: '@',
+        mwDisabled: '='
       },
       transclude: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwOptionGroup.html',
