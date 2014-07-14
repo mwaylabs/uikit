@@ -390,6 +390,88 @@
         };
       })
 
+    .directive('mwCustomRadio', function ($window) {
+      return {
+        restrict: 'A',
+        replace: true,
+        require: '?ngModel',
+        transclude: true,
+        link: function (scope, el, attr, ngModel) {
+
+          // set the active class on the checkbox wrapper
+          var setActiveClass = function (checked) {
+            if (checked) {
+              el.parent().addClass('active');
+            } else {
+              el.parent().removeClass('active');
+            }
+          };
+
+          // render custom checkbox
+          // to preserve the functionality of the original checkbox we just wrap it with a custom element
+          // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
+          // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
+          var render = function () {
+            var customRadio = angular.element('<span class="custom-radio mw-radio '+el.attr('name')+'"></span>'),
+              customRadioStateIndicator = angular.element('<span class="state-indicator"></span>'),
+              customRadioStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
+
+            el.wrap(customRadio);
+            customRadioStateIndicator.insertAfter(el);
+            customRadioStateFocusIndicator.insertAfter(customRadioStateIndicator);
+          };
+
+          (function init() {
+
+            //check the value every time the checkbox is clicked
+            el.on('change', function () {
+              var previousSelescted = angular.element('.mw-radio.'+el.attr('name')+'.active');
+              previousSelescted.removeClass('active');
+              setActiveClass(el.is(':checked'));
+            });
+
+            //unbind eventlistener to prevent infinite loops!
+            //after this the remaining element is removed
+            el.on('$destroy', function () {
+              el.off('$destroy');
+              el.parent('.mw-radio').remove();
+            });
+
+            if (ngModel) {
+              //when a model is defined use the value which is passed into the formatters function during initialization
+              ngModel.$formatters.unshift(function (value) {
+                if(value && value===el.attr('value')){
+                  setActiveClass(true);
+                }
+                return value;
+              });
+            }
+
+            //jQuery does not trigger a change event when checkbox is checked programmatically e.g. by ng-checked
+            //property hooks triggers a change event everytime the setter is called
+            //TODO find a angularjs solution for this
+            $window.$.propHooks.checked = {
+              set: function (el, value) {
+
+                var trigger;
+                if (el.checked !== value) {
+                  trigger = true;
+                } else {
+                  trigger = false;
+                }
+                el.checked = value;
+                if (trigger) {
+                  $window.$(el).trigger('change');
+                }
+              }
+            };
+
+            render();
+          }());
+        }
+      };
+    })
+
   /**
    * @ngdoc directive
    * @name mwForm.directive:mwFormWrapper
