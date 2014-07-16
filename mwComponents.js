@@ -33,6 +33,7 @@ angular.module('mwComponents', [])
       link: function(scope, elm, attr, ctrl){
         if(ctrl){
           scope.isDashboardModule = true;
+          scope.showCloseButton = ctrl.numberOfModules > 1;
           scope.closeModule = ctrl.closeModule;
         }
       }
