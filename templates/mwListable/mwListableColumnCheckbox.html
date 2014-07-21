@@ -7,6 +7,7 @@
 
 <input ng-if="radio"
        type="radio"
+       name="{{selectable.id}}"
        ng-click="click(item, $event)"
        ng-disabled="disabled || false"
        ng-checked="selectable.isSelected(item)"
