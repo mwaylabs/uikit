@@ -301,7 +301,7 @@ angular.module('mwComponents', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearch', function ($timeout, Loading) {
+  .directive('mwFilterableSearch', function ($timeout, Loading, Detect) {
     return {
       transclude: true,
       scope: {
@@ -314,6 +314,7 @@ angular.module('mwComponents', [])
       link: function (scope) {
         scope.model = scope.filterable.properties[scope.property];
         scope.inputLength = 0;
+        scope.isMobile = Detect.isMobile();
 
         var timeout;
 
@@ -342,8 +343,12 @@ angular.module('mwComponents', [])
 
           if (!event || event.keyCode === 13) {
             search();
+          } else {
+
+            if(!scope.isMobile){
+              throttler();
+            }
           }
-          throttler();
         };
 
         scope.reset = function () {
