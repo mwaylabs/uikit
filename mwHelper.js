@@ -216,6 +216,30 @@ angular.module('mwHelper', [])
     };
   })
 
+  .directive('mwRemoveXs', function(Detect){
+    return{
+      priority: 1,
+      link: function(scope,el){
+        if(Detect.isSmartphone()){
+          el.remove();
+          scope.$destroy();
+        }
+      }
+    };
+  })
+
+  .directive('mwRemoveMd', function(Detect){
+    return{
+      priority: 1,
+      link: function(scope,el){
+        if(Detect.isSmartphone() || Detect.isTablet()){
+          el.remove();
+          scope.$destroy();
+        }
+      }
+    };
+  })
+
   /**
    * @ngdoc directive
    * @name mwHelper.directive:mwAutofillCheck
