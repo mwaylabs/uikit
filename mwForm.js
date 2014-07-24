@@ -621,7 +621,7 @@
    * @param {expression} cancel Expression to evaluate on click on 'cancel' button
    *
    */
-      .directive('mwFormActions', function (Loading) {
+      .directive('mwFormActions', function (Loading, $route) {
         return {
           replace: true,
           scope: {
@@ -636,6 +636,7 @@
             scope.form = elm.inheritedData('$formController');
             scope.hasCancel = angular.isDefined(attr.cancel);
             scope.hasSave = angular.isDefined(attr.save);
+            scope.executeDefaultCancel = (attr.cancel==='true');
 
             var setFormPristineAndEvaluate = function(exec){
               if(scope.form){
@@ -649,7 +650,13 @@
             };
 
             scope.cancelFacade = function () {
-              setFormPristineAndEvaluate(scope.cancel);
+              if(scope.cancel && scope.executeDefaultCancel){
+                setFormPristineAndEvaluate(function(){
+                  $route.reload();
+                });
+              } else {
+                setFormPristineAndEvaluate(scope.cancel);
+              }
             };
           }
         };

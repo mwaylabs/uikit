@@ -4,6 +4,7 @@
     <button type="button"
             class="btn btn-danger"
             ng-if="hasCancel"
+            ng-disabled="form.$pristine && executeDefaultCancel"
             ng-click="cancelFacade()">
       <span mw-icon="remove"></span>
       <span class="action-text cancel">
@@ -14,7 +15,7 @@
             class="btn btn-primary"
             ng-click="saveFacade()"
             ng-if="hasSave"
-            ng-disabled="form.$invalid || isLoading()">
+            ng-disabled="form.$invalid || isLoading() || (form.$pristine && executeDefaultCancel)">
       <span mw-icon="ok"></span>
       <span class="action-text save">
         {{ 'common.save' | i18n }}
