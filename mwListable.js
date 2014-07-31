@@ -231,7 +231,6 @@ angular.module('mwListable', [])
               descending = '-';
 
           scope.toggleSortOrder = function () {
-            console.log(scope.property);
             if (scope.property) {
               var sortOrder = ascending; //default
               if (mwListableCtrl.getSort() === ascending + scope.property) {
