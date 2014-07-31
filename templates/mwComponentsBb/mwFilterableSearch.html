@@ -1,0 +1,31 @@
+<div class="row mw-filterable-search">
+  <div class="col-md-12">
+    <div class="input-group">
+      <input ng-if="!customUrlParameter"
+             type="text"
+             placeholder="{{ 'common.search' | i18n }}"
+             class="form-control"
+             ng-keyup="search($event)"
+             ng-model="collection.filterable.filterValues[property]"
+             ng-disabled="mwDisabled || loading">
+
+      <input ng-if="customUrlParameter"
+             type="text"
+             placeholder="{{ 'common.search' | i18n }}"
+             class="form-control"
+             ng-keyup="search($event)"
+             ng-model="collection.filterable.customUrlParams[customUrlParameter]"
+             ng-disabled="mwDisabled || loading">
+
+      <span class="input-group-addon filterable-search-btn" ng-click="search()">
+        <span ng-show="searching" class="search-indicator"></span>
+
+        <span ng-hide="hideSearchIcon()" mw-icon="search"></span>
+        <span ng-if="showResetIcon()"
+              mw-icon="plus"
+              class="red rotate-45"
+              ng-click="reset()"></span>
+      </span>
+    </div>
+  </div>
+</div>

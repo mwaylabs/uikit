@@ -1,0 +1,8 @@
+<div class="panel panel-default">
+  <div ng-if="title"
+       class="panel-heading">
+    <h3 class="panel-title">{{ title }}</h3>
+    <span ng-if="isDashboardModule && showCloseButton" ng-click="closeModule()" class="close-button glyphicon glyphicon-remove"></span>
+  </div>
+  <div class="panel-body" ng-transclude></div>
+</div>
