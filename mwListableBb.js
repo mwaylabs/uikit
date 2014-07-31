@@ -52,7 +52,7 @@ angular.module('mwListableBb', [])
              */
             var scrollCallback = function () {
               if(scope.collection && scope.collection.filterable){
-                if (w.scrollTop() === d.height() - w.height()) {
+                if (w.scrollTop() === (d.height() - w.height()* 0.8)) {
                   scope.collection.filterable.loadNextPage();
                 }
               }
@@ -139,7 +139,7 @@ angular.module('mwListableBb', [])
  *
  */
 
-  .directive('mwListableHeadBb', function(/*$compile*/) {
+  .directive('mwListableHeadBb', function($compile) {
     return {
       require: '^mwListableBb',
       scope:{
@@ -147,18 +147,18 @@ angular.module('mwListableBb', [])
       },
       link: function(scope,el,attr,mwListable){
         scope.collection = mwListable.getCollection();
-// FIXME display amount of selected items
-//        var tmpl = '<tr>' +
-//          '<th colspan="9000" class="listable-amount" ng-if="filterable.total()">' +
-//            '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} selected</span>' +
-//            '<span ng-if="!selectable || selectable.selected().length<1">{{filterable.total()}} {{title}}</span>' +
-//          '</th>' +
-//        '</tr>',
-//        $tmpl = angular.element(tmpl),
-//        compiled = $compile($tmpl);
-//
-//        el.prepend($tmpl);
-//        compiled(scope);
+
+        var tmpl = '<tr>' +
+                '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount()">' +
+                '<span ng-if="collection.selectable.allModelsSelected()>0">{{collection.selectable.allModelsSelected()}}/{{collection.filterable.getTotalAmount()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+                '<span ng-if="!collection.selectable || collection.selectable.allModelsSelected()<1">{{collection.filterable.getTotalAmount()}} {{title}}</span>' +
+                '</th>' +
+                '</tr>',
+            $tmpl = angular.element(tmpl),
+            compiled = $compile($tmpl);
+
+        el.prepend($tmpl);
+        compiled(scope);
       }
     };
   })
@@ -176,11 +176,12 @@ angular.module('mwListableBb', [])
  *
  */
 
-    .directive('mwListableFooterBb', function() {
+    .directive('mwListableFooterBb', function(Loading) {
       return {
         require: '^mwListableBb',
         templateUrl: 'modules/ui/templates/mwListableBb/mwListableFooter.html',
         link: function(scope, elm, attr, mwListableCtrl) {
+          scope.Loading = Loading;
           scope.collection = mwListableCtrl.getCollection();
           scope.columns = mwListableCtrl.getColumns();
         }
@@ -318,10 +319,13 @@ angular.module('mwListableBb', [])
 
           return function (scope, elm, attr) {
             var selectedClass = 'selected';
-            elm.addClass('selectable');
+
+            if(scope.item.selectable){
+              elm.addClass('selectable');
+            }
 
             elm.on('click', function () {
-              if (!scope.isDisabled(scope.item)) {
+              if (scope.item.selectable && !scope.isDisabled(scope.item)) {
                 scope.item.selectable.toggleSelect();
                 scope.$apply();
               }
