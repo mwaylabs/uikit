@@ -1,0 +1,19 @@
+<div ng-form>
+  <div ng-class="{'has-error': showRequiredMessage()}">
+
+    <div class="checkbox" ng-repeat="item in collection.models">
+      <label>
+        <input type="checkbox"
+               name="selectOption"
+               mw-custom-checkbox
+               ng-checked="model.indexOf(item.key()) >= 0"
+               ng-click="toggleKeyIntoModelArray(item.key()); setDirty()"> {{ item.label() }}
+      </label>
+    </div>
+
+    <div mw-form-input>
+      <input type="hidden" name="requireChecker" ng-model="model[0]" ng-required="mwRequired">
+    </div>
+
+  </div>
+</div>
