@@ -52,7 +52,7 @@ angular.module('mwListableBb', [])
              */
             var scrollCallback = function () {
               if(scope.collection && scope.collection.filterable){
-                if (w.scrollTop() === (d.height() - w.height()* 0.8)) {
+                if (w.scrollTop() >= (d.height() - w.height()* 0.8)) {
                   scope.collection.filterable.loadNextPage();
                 }
               }
