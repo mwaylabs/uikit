@@ -10,15 +10,20 @@ angular.module('mwSidebarBb', [])
  *
  * Creates a select input which provides possible values for a filtering.
  *
- * @param {collection} collection with option models. by default model.key() and model.label() functions will be called as key label
+ * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
+ * - labelTransformFn
+ * - labelProperty
+ * - translationPrefix
+ *
+ * @param {collection} collection with option models. by default model.attributes.key will be called as key label
  * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  * @param {string} placeholder The name of the default selected label with an empty value.
  * @param {expression} persist If true, filter will be saved in runtime variable
- * @param {string} keyProperty property of model to use instead of models key() method
- * @param {string | object} labelProperty property of model to use instead of models label() method. if object it will be translated with i18n service.
- * @param {function} labelTransformFn function to use instead of label() method or labelProperty. Will be called with model as parameter.
- * @param {string} translatePrefix prefix to translate the label with i18n service (prefix + '.' + model.key()).
+ * @param {string} keyProperty property of model to use instead of models.attribute.key property
+ * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
+ * @param {function} labelTransformFn function to use. Will be called with model as parameter.
+ * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
  */
   .directive('mwSidebarSelectBb', function (i18n) {
     return {
@@ -32,7 +37,7 @@ angular.module('mwSidebarBb', [])
         keyProperty: '@',
         labelProperty: '@',
         labelTransformFn: '=',
-        translatePrefix: '@',
+        translationPrefix: '@',
         customUrlParameter: '@'
       },
       templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarSelect.html',
@@ -40,7 +45,7 @@ angular.module('mwSidebarBb', [])
 
         //set key function for select key
         scope.key = function(model) {
-          return model.key();
+          return model.attributes.key;
         };
 
         if(angular.isDefined(scope.keyProperty)) {
@@ -51,11 +56,11 @@ angular.module('mwSidebarBb', [])
 
         //set label function fo select label
         scope.label = function(model){
-          //translate with i18n service if translatePrefix is defined (use key not label!)
-          if(scope.translatePrefix){
-            return i18n.get(scope.translatePrefix + '.' + model.key());
+          //translate with i18n service if translationPrefix is defined
+          if(scope.translationPrefix){
+            return i18n.get(scope.translationPrefix + '.' + scope.key(model));
           }
-          return model.label();
+          return scope.key(model);
         };
 
         if(angular.isDefined(scope.labelProperty)){

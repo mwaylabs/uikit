@@ -10,6 +10,7 @@ angular.module('mwFormBb', [])
       scope: {
         model: '=',
         collection: '=',
+        translationPrefix: '@',
         mwRequired: '='
       },
       templateUrl: 'modules/ui/templates/mwFormBb/mwFormMultiSelect.html',
