@@ -107,6 +107,13 @@ angular.module('mwModal', [])
           });
         };
 
+
+        this.setScopeAttributes = function(obj){
+          if(_.isObject(obj)){
+            _.extend(_scope, obj);
+          }
+        };
+
         /**
          *
          * @ngdoc function
