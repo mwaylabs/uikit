@@ -74,6 +74,10 @@ angular.module('mwModal', [])
             $controller(_controller, { $scope: _scope, modalId: _id });
           }
 
+          _scope.hideModal = function(){
+            return _self.hide();
+          };
+
           _getTemplate().then(function(template){
             _modal = $compile(template.trim())(_scope);
             _scope.$on('COMPILE:FINISHED',function(){
