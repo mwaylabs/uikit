@@ -1,7 +1,7 @@
 <tr>
   <td colspan="{{ columns.length + 4 }}">
 
-    <div ng-if="Loading.isLoading()">
+    <div ng-if="Loading.isLoading() && collection.filterable.hasNextPage()">
       <div rln-spinner></div>
     </div>
 
