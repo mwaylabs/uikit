@@ -45,6 +45,7 @@ angular.module('mwListableBb', [])
           elm.append('<tfoot mw-listable-footer-bb></tfoot>');
 
           return function (scope, elm) {
+            var loading = false;
             elm.addClass('table table-striped mw-listable');
 
             /**
@@ -52,14 +53,18 @@ angular.module('mwListableBb', [])
              */
             var scrollCallback = function () {
               if(scope.collection && scope.collection.filterable){
-                if (w.scrollTop() >= (d.height() - w.height()* 0.8)) {
-                  scope.collection.filterable.loadNextPage();
+                if (!loading && w.scrollTop() >= ((d.height() - w.height()) - 100) && scope.collection.filterable.hasNextPage()) {
+                  loading = true;
+                  scope.collection.filterable.loadNextPage().then(function(){
+                    loading = false;
+                  });
                 }
               }
             };
             var modalScrollCallback = function () {
               if(scope.collection &&
                  scope.collection.filterable &&
+                 scope.collection.filterable.hasNextPage() &&
                  modalBody[0].scrollHeight > 0 &&
                  (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
                 scope.collection.filterable.loadNextPage();
@@ -150,8 +155,8 @@ angular.module('mwListableBb', [])
 
         var tmpl = '<tr>' +
                 '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount()">' +
-                '<span ng-if="collection.selectable.allModelsSelected()>0">{{collection.selectable.allModelsSelected()}}/{{collection.filterable.getTotalAmount()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
-                '<span ng-if="!collection.selectable || collection.selectable.allModelsSelected()<1">{{collection.filterable.getTotalAmount()}} {{title}}</span>' +
+                '<span ng-if="collection.selectable.getSelectedModels().length > 0">{{collection.selectable.getSelectedModels().length}}/{{collection.filterable.getTotalAmount()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+                '<span ng-if="!collection.selectable || collection.selectable.getSelectedModels().length < 1">{{collection.filterable.getTotalAmount()}} {{title}}</span>' +
                 '</th>' +
                 '</tr>',
             $tmpl = angular.element(tmpl),

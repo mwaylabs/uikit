@@ -1,16 +1,20 @@
 <tr>
   <td colspan="{{ columns.length + 4 }}">
 
+    <div ng-if="Loading.isLoading()">
+      <div rln-spinner></div>
+    </div>
+
     <div ng-if="collection.models.length < 1"
         class="text-center">
       <p class="lead">{{ 'common.noneFound' | i18n }}</p>
     </div>
 
-    <button ng-if="collection.filterable.hasNextPage()"
+    <!--<button ng-if="collection.filterable.hasNextPage()"
             class="btn btn-default btn-lg col-md-12"
             ng-click="collection.filterable.loadNextPage()">
       {{ 'common.loadMore' | i18n }}
-    </button>
+    </button>-->
   </td>
 </tr>
 
