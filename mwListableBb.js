@@ -62,12 +62,17 @@ angular.module('mwListableBb', [])
               }
             };
             var modalScrollCallback = function () {
-              if(scope.collection &&
+              if(!loading &&
+                 scope.collection &&
                  scope.collection.filterable &&
                  scope.collection.filterable.hasNextPage() &&
                  modalBody[0].scrollHeight > 0 &&
-                 (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
-                scope.collection.filterable.loadNextPage();
+                 (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2))
+              {
+                loading = true;
+                scope.collection.filterable.loadNextPage().then(function(){
+                  loading = false;
+                });
               }
             };
 
