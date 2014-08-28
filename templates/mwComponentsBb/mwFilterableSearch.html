@@ -7,7 +7,7 @@
              class="form-control"
              ng-keyup="search($event)"
              ng-model="collection.filterable.filterValues[property]"
-             ng-disabled="mwDisabled || loading">
+             ng-disabled="mwDisabled">
 
       <input ng-if="customUrlParameter"
              type="text"
@@ -15,7 +15,7 @@
              class="form-control"
              ng-keyup="search($event)"
              ng-model="collection.filterable.customUrlParams[customUrlParameter]"
-             ng-disabled="mwDisabled || loading">
+             ng-disabled="mwDisabled">
 
       <span class="input-group-addon filterable-search-btn" ng-click="search()">
         <span ng-show="searching" class="search-indicator"></span>

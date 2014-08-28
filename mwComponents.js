@@ -356,11 +356,11 @@ angular.module('mwComponents', [])
           search();
         };
 
-        Loading.registerDoneCallback(function(){
-          scope.loading = false;
-        });
-
-        scope.loading = Loading.isLoading();
+//        Loading.registerDoneCallback(function(){
+//          scope.loading = false;
+//        });
+//
+//        scope.loading = Loading.isLoading();
       }
     };
   })
