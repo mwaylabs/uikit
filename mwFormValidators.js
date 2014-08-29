@@ -33,7 +33,7 @@
 
           var removeNonDigitValues = function (value) {
             if (value) {
-              value = value.replace(/[^0-9+]/g, '');
+              value = value.replace(/[^ 0-9+]/g, '');
             }
             return value;
           };
