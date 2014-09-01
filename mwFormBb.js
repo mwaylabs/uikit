@@ -11,20 +11,22 @@ angular.module('mwFormBb', [])
         model: '=',
         collection: '=',
         translationPrefix: '@',
-        mwRequired: '='
+        mwRequired: '=',
+        disabledCollection: '='
       },
       templateUrl: 'modules/ui/templates/mwFormBb/mwFormMultiSelect.html',
       link: function(scope,el,attr,form){
 
         if (!scope.collection instanceof window.mCAP.Collection) {
-          throw new Error('mwFormMultiSelect: options have to be a collection');
+          throw new Error('mwFormMultiSelect: collection attribute has to be a collection');
         }
 
-        scope.toggleKeyIntoModelArray = function (key) {
+        if (scope.disabledCollection && !scope.disabledCollection instanceof window.mCAP.Collection) {
+          throw new Error('mwFormMultiSelect: disabledCollection attribuet has to be a collection');
+        }
 
-          scope.model = scope.model || [];
-          //Check if key is already in the model array
-          //When user unselects a checkbox it will be deleted from the model array
+        //When user unselects a checkbox it will be deleted from the model array
+        var removeFromModel = function(key){
           if (scope.model.indexOf(key) >= 0) {
             // Delete key from model array
             scope.model.splice(scope.model.indexOf(key), 1);
@@ -32,7 +34,27 @@ angular.module('mwFormBb', [])
             if (scope.model.length === 0) {
               delete scope.model;
             }
-          } else {
+            return true;
+          }
+          return false;
+        };
+
+        if (scope.disabledCollection) {
+          //if a an item is in the disabledCollection it will be removed from the model
+          scope.disabledCollection.each(function(disabledModel) {
+            removeFromModel(disabledModel.get('key'));
+          });
+        }
+
+        scope.isDisabled = function(model){
+          if(scope.disabledCollection){
+            return !!scope.disabledCollection.get(model);
+          }
+        };
+
+        scope.toggleKeyIntoModelArray = function (key) {
+          scope.model = scope.model || [];
+          if(!removeFromModel(key)){
             scope.model.push(key);
           }
         };
