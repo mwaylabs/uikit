@@ -65,13 +65,23 @@ angular.module('mwNav', [])
 
             // Remove leading number sign from given path and match with current location
             // Returns true if current locations matches given path
-            var regex = '^' + path.replace(/#/g, '');
+//            var regex = '^' + path.replace(/#/g, '');
 
             // If the exact path has to be match add dollar sign to match for end of line
-            if (exact) {
-              regex += '$';
+//            if (exact) {
+//              regex += '$';
+//            }
+
+//            return $location.path().match(new RegExp(regex)) ? true : false;
+
+
+            /* tried new version without regex - much faster (this method was consuming a lot of time in devtools profiler */
+
+            var newPath = path.substring(1);
+            if(exact){
+              return $location.path() === newPath;
             }
-            return $location.path().match(new RegExp(regex)) ? true : false;
+            return $location.path().indexOf(newPath) > -1;
           };
         }
       };
