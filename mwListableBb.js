@@ -378,7 +378,11 @@ angular.module('mwListableBb', [])
 
           return function (scope, elm, attr, mwListableCtrl) {
             //empty collection is [] so ng-if would not work as expected
-            scope.hasCollection = angular.isDefined(mwListableCtrl.getCollection().length);
+            scope.hasCollection = false;
+            var collection = mwListableCtrl.getCollection();
+            if(collection){
+              scope.hasCollection = angular.isDefined(collection.length);
+            }
             scope.actionColumns = mwListableCtrl.actionColumns;
           };
         }
