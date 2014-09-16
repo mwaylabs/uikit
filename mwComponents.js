@@ -538,7 +538,7 @@ angular.module('mwComponents', [])
  * @param {function} mwChange the function which should be executed when the value has changed
  *
  */
-  .directive('mwToggle', function () {
+  .directive('mwToggle', function ($timeout) {
     return {
       scope: {
         mwModel:'=',
@@ -548,11 +548,12 @@ angular.module('mwComponents', [])
       replace:true,
       templateUrl: 'modules/ui/templates/mwComponents/mwToggle.html',
       link: function (scope) {
-
         scope.toggle = function(value){
           if(scope.mwModel !== value){
             scope.mwModel = !scope.mwModel;
-            scope.mwChange({value: scope.mwModel});
+            $timeout(function(){
+              scope.mwChange({value: scope.mwModel});
+            });
           }
         };
       }
