@@ -538,7 +538,7 @@ angular.module('mwComponents', [])
  * @param {function} mwChange the function which should be executed when the value has changed
  *
  */
-  .directive('mwToggle', function () {
+  .directive('mwToggle', function ($timeout) {
     return {
       scope: {
         mwModel: '=',
@@ -548,11 +548,12 @@ angular.module('mwComponents', [])
       replace: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwToggle.html',
       link: function (scope) {
-
         scope.toggle = function (value) {
           if (scope.mwModel !== value) {
             scope.mwModel = !scope.mwModel;
-            scope.mwChange({value: scope.mwModel});
+            $timeout(function () {
+              scope.mwChange({value: scope.mwModel});
+            });
           }
         };
       }
@@ -561,14 +562,11 @@ angular.module('mwComponents', [])
 
 /**
  * @ngdoc directive
- * @name mwComponents.directive:mwToggle
- * @element span
+ * @name mwComponents.directive:mwTimeline
+ * @element div
  * @description
  *
- * Displays a toggle button to toggle a boolean value
- *
- * @param {expression} mwModel model
- * @param {function} mwChange the function which should be executed when the value has changed
+ * Vertical timeline Is the container element for timeline entries
  *
  */
   .directive('mwTimeline', function () {
@@ -581,8 +579,8 @@ angular.module('mwComponents', [])
 
   .directive('mwTimelineFieldset', function () {
     return {
-      scope:{
-        title:'@'
+      scope: {
+        title: '@'
       },
       transclude: true,
       replace: true,
