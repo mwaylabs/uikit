@@ -30,8 +30,8 @@ angular.module('mwComponents', [])
       },
       transclude: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html',
-      link: function(scope, elm, attr, ctrl){
-        if(ctrl){
+      link: function (scope, elm, attr, ctrl) {
+        if (ctrl) {
           scope.isDashboardModule = true;
           scope.showCloseButton = ctrl.numberOfModules > 1;
           scope.closeModule = ctrl.closeModule;
@@ -345,7 +345,7 @@ angular.module('mwComponents', [])
             search();
           } else {
 
-            if(!scope.isMobile){
+            if (!scope.isMobile) {
               throttler();
             }
           }
@@ -541,21 +541,60 @@ angular.module('mwComponents', [])
   .directive('mwToggle', function () {
     return {
       scope: {
-        mwModel:'=',
+        mwModel: '=',
         mwDisabled: '=',
-        mwChange:'&'
+        mwChange: '&'
       },
-      replace:true,
+      replace: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwToggle.html',
       link: function (scope) {
 
-        scope.toggle = function(value){
-          if(scope.mwModel !== value){
+        scope.toggle = function (value) {
+          if (scope.mwModel !== value) {
             scope.mwModel = !scope.mwModel;
             scope.mwChange({value: scope.mwModel});
           }
         };
       }
+    };
+  })
+
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwToggle
+ * @element span
+ * @description
+ *
+ * Displays a toggle button to toggle a boolean value
+ *
+ * @param {expression} mwModel model
+ * @param {function} mwChange the function which should be executed when the value has changed
+ *
+ */
+  .directive('mwTimeline', function () {
+    return {
+      transclude: true,
+      replace: true,
+      template: '<div class="mw-timeline timeline clearfix"><hr class="vertical-line"><div class="content" ng-transclude></div></div>'
+    };
+  })
+
+  .directive('mwTimelineFieldset', function () {
+    return {
+      scope:{
+        title:'@'
+      },
+      transclude: true,
+      replace: true,
+      template: '<fieldset class="mw-timeline-fieldset"><legend ng-if="title">{{title}}</legend><ul class="clearfix timeline-entry-list" ng-transclude></ul></fieldset>'
+    };
+  })
+
+  .directive('mwTimelineEntry', function () {
+    return {
+      transclude: true,
+      replace: true,
+      template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>'
     };
   });
 
