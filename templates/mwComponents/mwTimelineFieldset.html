@@ -1,0 +1,9 @@
+<fieldset class="mw-timeline-fieldset" ng-class="{'entries-are-hidden':!entriesVisible}">
+  <legend ng-if="title" ng-click="toggleEntries()">
+    {{title}}
+    <span ng-if="entriesVisible" class="toggler"><i mw-icon="fa-chevron-circle-down"></i></span>
+    <span ng-if="!entriesVisible" class="toggler"><i mw-icon="fa-chevron-circle-up"></i></span>
+  </legend>
+  <div ng-show="!entriesVisible" class="hidden-entries" ng-click="toggleEntries()">{{'common.entriesHidden' | i18n:{count:entries.length} }}</div>
+  <ul class="clearfix timeline-entry-list" ng-transclude ng-show="entriesVisible"></ul>
+</fieldset>
