@@ -577,22 +577,70 @@ angular.module('mwComponents', [])
     };
   })
 
-  .directive('mwTimelineFieldset', function () {
+  .directive('mwTimelineFieldset', function ($q) {
     return {
       scope: {
         title: '@'
       },
       transclude: true,
       replace: true,
-      template: '<fieldset class="mw-timeline-fieldset"><legend ng-if="title">{{title}}</legend><ul class="clearfix timeline-entry-list" ng-transclude></ul></fieldset>'
+      templateUrl: 'modules/ui/templates/mwComponents/mwTimelineFieldset.html',
+      controller: function($scope){
+        $scope.entries = [];
+        this.register = function(entry){
+          if(!_.findWhere($scope.entries,{$id:entry.$id})){
+            $scope.entries.push(entry);
+          }
+        };
+        $scope.entriesVisible = true;
+        $scope.toggleEntries = function(){
+          var toggleEntryHideFns = [];
+          $scope.entries.forEach(function(entry){
+            if($scope.entriesVisible){
+              toggleEntryHideFns.push(entry.hide());
+            } else {
+              toggleEntryHideFns.push(entry.show());
+            }
+          });
+          if(!$scope.entriesVisible){
+            $scope.entriesVisible = !$scope.entriesVisible;
+          } else {
+            $q.all(toggleEntryHideFns).then(function(){
+              $scope.entriesVisible = !$scope.entriesVisible;
+            });
+          }
+        };
+      }
     };
   })
 
-  .directive('mwTimelineEntry', function () {
+  .directive('mwTimelineEntry', function ($q) {
     return {
       transclude: true,
       replace: true,
-      template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>'
+      template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>',
+      scope:true,
+      require: '^mwTimelineFieldset',
+      link: function(scope,el,attrs,mwTimelineFieldsetController){
+        mwTimelineFieldsetController.register(scope);
+
+        scope.hide = function(){
+          var dfd = $q.defer();
+          el.fadeOut('slow',function(){
+            dfd.resolve();
+          });
+          return dfd.promise;
+        };
+
+        scope.show = function(){
+          var dfd = $q.defer();
+          el.fadeIn('slow',function(){
+            dfd.resolve();
+          });
+          return dfd.promise;
+        };
+      }
+
     };
   });
 
