@@ -594,5 +594,129 @@ angular.module('mwComponents', [])
       replace: true,
       template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>'
     };
-  });
+  })
+
+
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwDraggable
+ * @description
+ *
+ * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
+ * The drop callback of the mwDroppable element will receive this data.
+ *
+ */
+.directive('mwDraggable', function () {
+  return {
+    restrict: 'A',
+    scope: {
+      mwDragData: '=',
+      mwDragstart: '&',
+      mwDragend: '&'
+    },
+    link: function(scope, el) {
+
+      el.attr('draggable', true);
+      el.addClass('draggable', true);
+
+      if(scope.mwDragstart){
+        el.on('dragstart', function(event){
+          event.originalEvent.dataTransfer.setData('text', JSON.stringify(scope.mwDragData));
+          scope.$apply(function() {
+            scope.mwDragstart({event: event, dragData: scope.mwDragData});
+          });
+        });
+      }
+
+      if(scope.mwDragend){
+        el.on('dragend', function(event){
+          scope.$apply(function() {
+            scope.mwDragend({event: event});
+          });
+        });
+      }
+    }
+  };
+})
+
+.directive('mwDroppable', function () {
+  return {
+    restrict: 'A',
+    scope: {
+      mwDropData: '=',
+      mwDragenter: '&',
+      mwDragleave: '&',
+      mwDragover: '&',
+      mwDrop: '&',
+      disableDrop: '='
+    },
+    link: function(scope, el) {
+
+      el.addClass('droppable');
+
+      var getDragData = function(event){
+        var text = event.originalEvent.dataTransfer.getData('text');
+        if(text){
+          return JSON.parse(text);
+        }
+      };
+
+      if(scope.mwDragenter){
+        el.on('dragenter', function(event){
+          if(scope.disableDrop !== true){
+            el.addClass('drag-over');
+          }
+          scope.$apply(function(){
+            scope.mwDragenter({event: event});
+          });
+        });
+      }
+
+      if(scope.mwDragleave){
+        el.on('dragleave', function(event){
+          el.removeClass('drag-over');
+          scope.$apply(function() {
+            scope.mwDragleave({event: event});
+          });
+        });
+      }
+
+      if(scope.mwDrop){
+        el.on('drop', function(event){
+          el.removeClass('drag-over');
+          if (event.stopPropagation) {
+            event.stopPropagation(); // stops the browser executing other event listeners which are maybe deined in parent elements.
+          }
+          scope.$apply(function() {
+            scope.mwDrop({
+              event: event,
+              dragData: getDragData(event),
+              dropData: scope.mwDropData
+            });
+          });
+          return false;
+        });
+      }
+
+      // Necessary. Allows us to drop.
+      var handleDragOver = function (ev) {
+        if(scope.disableDrop !== true){
+          if (ev.preventDefault) {
+            ev.preventDefault();
+          }
+          return false;
+        }
+      };
+      el.on('dragover', handleDragOver);
+
+      if(scope.mwDragover){
+        el.on('dragover', function(event){
+          scope.$apply(function() {
+            scope.mwDragover({event: event});
+          });
+        });
+      }
+    }
+  };
+});
 
