@@ -766,5 +766,25 @@ angular.module('mwComponents', [])
       }
     }
   };
+})
+
+.directive('mwTextCollapse', function () {
+  return {
+    restrict: 'A',
+    scope: {
+      mwTextCollapse: '@',
+      length: '='
+    },
+    template: '<span>{{  mwTextCollapse | reduceStringTo:filterLength }}' +
+              ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
+    link: function (scope) {
+      var defaultLength = 200;
+      scope._length = scope.filterLength = (scope.length && typeof scope.length === 'number') ? scope.length : defaultLength;
+      scope.showButton = scope.mwTextCollapse.length > scope._length;
+      scope.toggleLength = function(){
+        scope.filterLength = (scope.filterLength !== scope._length) ? scope._length : undefined;
+      };
+    }
+  };
 });
 
