@@ -215,6 +215,33 @@
         };
       })
 
+    .directive('mwFormMultiSelect2', function () {
+      return {
+        restrict: 'A',
+        transclude: true,
+        require:'^?form',
+        scope: {
+          mwCollection: '=',
+          mwOptionsCollection: '=',
+          mwOptionsLabelKey:'@',
+          mwOptionsLabelI18nPrefix:'@',
+          mwRequired: '='
+        },
+        templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect2.html',
+        link: function(scope){
+          scope.mwOptionsCollection.fetch();
+
+          scope.toggleModel = function(model){
+            if(scope.mwCollection.findWhere(model.toJSON())){
+              scope.mwCollection.remove(model);
+            } else {
+              scope.mwCollection.add(model);
+            }
+          };
+        }
+      };
+    })
+
   /**
    * @ngdoc directive
    * @name mwForm.directive:mwFormCheckbox
