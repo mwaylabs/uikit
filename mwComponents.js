@@ -192,7 +192,7 @@ angular.module('mwComponents', [])
       replace: true,
       scope: {
         mwIcon: '@',
-        placement:'@'
+        placement: '@'
       },
       template: function (elm, attr) {
         var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
@@ -244,9 +244,9 @@ angular.module('mwComponents', [])
       restrict: 'A',
       scope: {
         text: '@mwTooltip',
-        placement:'@'
+        placement: '@'
       },
-      replace:true,
+      replace: true,
       template: '<span class="mw-tooltip"><span mw-icon="question-sign" tooltip="{{ text }}" placement="{{ placement }}"></span></span>',
       compile: function (elm, attr) {
         if (attr.mwTooltipIcon) {
@@ -590,27 +590,27 @@ angular.module('mwComponents', [])
       transclude: true,
       replace: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwTimelineFieldset.html',
-      controller: function($scope){
+      controller: function ($scope) {
         $scope.entries = [];
-        this.register = function(entry){
-          if(!_.findWhere($scope.entries,{$id:entry.$id})){
+        this.register = function (entry) {
+          if (!_.findWhere($scope.entries, {$id: entry.$id})) {
             $scope.entries.push(entry);
           }
         };
         $scope.entriesVisible = true;
-        $scope.toggleEntries = function(){
+        $scope.toggleEntries = function () {
           var toggleEntryHideFns = [];
-          $scope.entries.forEach(function(entry){
-            if($scope.entriesVisible){
+          $scope.entries.forEach(function (entry) {
+            if ($scope.entriesVisible) {
               toggleEntryHideFns.push(entry.hide());
             } else {
               toggleEntryHideFns.push(entry.show());
             }
           });
-          if(!$scope.entriesVisible){
+          if (!$scope.entriesVisible) {
             $scope.entriesVisible = !$scope.entriesVisible;
           } else {
-            $q.all(toggleEntryHideFns).then(function(){
+            $q.all(toggleEntryHideFns).then(function () {
               $scope.entriesVisible = !$scope.entriesVisible;
             });
           }
@@ -624,22 +624,22 @@ angular.module('mwComponents', [])
       transclude: true,
       replace: true,
       template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>',
-      scope:true,
+      scope: true,
       require: '^mwTimelineFieldset',
-      link: function(scope,el,attrs,mwTimelineFieldsetController){
+      link: function (scope, el, attrs, mwTimelineFieldsetController) {
         mwTimelineFieldsetController.register(scope);
 
-        scope.hide = function(){
+        scope.hide = function () {
           var dfd = $q.defer();
-          el.fadeOut('slow',function(){
+          el.fadeOut('slow', function () {
             dfd.resolve();
           });
           return dfd.promise;
         };
 
-        scope.show = function(){
+        scope.show = function () {
           var dfd = $q.defer();
-          el.fadeIn('slow',function(){
+          el.fadeIn('slow', function () {
             dfd.resolve();
           });
           return dfd.promise;
@@ -659,137 +659,140 @@ angular.module('mwComponents', [])
  * The drop callback of the mwDroppable element will receive this data.
  *
  */
-.directive('mwDraggable', function () {
-  return {
-    restrict: 'A',
-    scope: {
-      mwDragData: '=',
-      mwDragstart: '&',
-      mwDragend: '&'
-    },
-    link: function(scope, el) {
+  .directive('mwDraggable', function ($timeout) {
+    return {
+      restrict: 'A',
+      scope: {
+        mwDragData: '=',
+        //We can not use camelcase because foo-start is a reserved word from angular!
+        mwDragstart: '&',
+        mwDragend: '&'
+      },
+      link: function (scope, el) {
 
-      el.attr('draggable', true);
-      el.addClass('draggable', true);
+        el.attr('draggable', true);
+        el.addClass('draggable', true);
 
-      if(scope.mwDragstart){
-        el.on('dragstart', function(event){
-          event.originalEvent.dataTransfer.setData('text', JSON.stringify(scope.mwDragData));
-          scope.$apply(function() {
-            scope.mwDragstart({event: event, dragData: scope.mwDragData});
-          });
-        });
-      }
-
-      if(scope.mwDragend){
-        el.on('dragend', function(event){
-          scope.$apply(function() {
-            scope.mwDragend({event: event});
-          });
-        });
-      }
-    }
-  };
-})
-
-.directive('mwDroppable', function () {
-  return {
-    restrict: 'A',
-    scope: {
-      mwDropData: '=',
-      mwDragenter: '&',
-      mwDragleave: '&',
-      mwDragover: '&',
-      mwDrop: '&',
-      disableDrop: '='
-    },
-    link: function(scope, el) {
-
-      el.addClass('droppable');
-
-      var getDragData = function(event){
-        var text = event.originalEvent.dataTransfer.getData('text');
-        if(text){
-          return JSON.parse(text);
-        }
-      };
-
-      if(scope.mwDragenter){
-        el.on('dragenter', function(event){
-          if(scope.disableDrop !== true){
-            el.addClass('drag-over');
-          }
-          scope.$apply(function(){
-            scope.mwDragenter({event: event});
-          });
-        });
-      }
-
-      if(scope.mwDragleave){
-        el.on('dragleave', function(event){
-          el.removeClass('drag-over');
-          scope.$apply(function() {
-            scope.mwDragleave({event: event});
-          });
-        });
-      }
-
-      if(scope.mwDrop){
-        el.on('drop', function(event){
-          el.removeClass('drag-over');
-          if (event.stopPropagation) {
-            event.stopPropagation(); // stops the browser executing other event listeners which are maybe deined in parent elements.
-          }
-          scope.$apply(function() {
-            scope.mwDrop({
-              event: event,
-              dragData: getDragData(event),
-              dropData: scope.mwDropData
+        if (scope.mwDragstart) {
+          el.on('dragstart', function (event) {
+            event.originalEvent.dataTransfer.setData('text', JSON.stringify(scope.mwDragData));
+            $timeout(function () {
+              scope.mwDragstart({event: event, dragData: scope.mwDragData});
+              console.log(JSON.stringify(scope.mwDragData));
             });
           });
-          return false;
-        });
-      }
-
-      // Necessary. Allows us to drop.
-      var handleDragOver = function (ev) {
-        if(scope.disableDrop !== true){
-          if (ev.preventDefault) {
-            ev.preventDefault();
-          }
-          return false;
         }
-      };
-      el.on('dragover', handleDragOver);
 
-      if(scope.mwDragover){
-        el.on('dragover', function(event){
-          scope.$apply(function() {
-            scope.mwDragover({event: event});
+        if (scope.mwDragend) {
+          el.on('dragend', function (event) {
+            $timeout(function () {
+              scope.mwDragend({event: event});
+            });
           });
-        });
+        }
       }
-    }
-  };
-})
+    };
+  })
 
-.directive('mwTextCollapse', function () {
-  return {
-    restrict: 'A',
-    scope: {
-      mwTextCollapse: '@',
-      length: '='
-    },
-    template: '<span>{{  mwTextCollapse | reduceStringTo:filterLength }}' +
-              ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
-    link: function (scope) {
-      var defaultLength = 200;
-      scope._length = scope.filterLength = (scope.length && typeof scope.length === 'number') ? scope.length : defaultLength;
-      scope.showButton = scope.mwTextCollapse.length > scope._length;
-      scope.toggleLength = function(){
-        scope.filterLength = (scope.filterLength !== scope._length) ? scope._length : undefined;
-      };
-    }
-  };
-});
+  .directive('mwDroppable', function ($timeout) {
+    return {
+      restrict: 'A',
+      scope: {
+        mwDropData: '=',
+        mwDragenter: '&',
+        mwDragleave: '&',
+        mwDragover: '&',
+        mwDrop: '&',
+        disableDrop: '='
+      },
+      link: function (scope, el) {
+
+        el.addClass('droppable');
+
+        var getDragData = function (event) {
+          var text = event.originalEvent.dataTransfer.getData('text');
+          if (text) {
+            return JSON.parse(text);
+          }
+        };
+
+        if (scope.mwDragenter) {
+          el.on('dragenter', function (event) {
+            if (scope.disableDrop !== true) {
+              el.addClass('drag-over');
+            }
+            $timeout(function () {
+              scope.mwDragenter({event: event});
+            });
+          });
+        }
+
+        if (scope.mwDragleave) {
+          el.on('dragleave', function (event) {
+            el.removeClass('drag-over');
+            $timeout(function () {
+              scope.mwDragleave({event: event});
+            });
+          });
+        }
+
+        if (scope.mwDrop) {
+          el.on('drop', function (event) {
+            el.removeClass('drag-over');
+            if (event.stopPropagation) {
+              event.stopPropagation(); // stops the browser executing other event listeners which are maybe deined in parent elements.
+            }
+            var data = getDragData(event);
+            $timeout(function () {
+              scope.mwDrop({
+                event: event,
+                dragData: data,
+                dropData: scope.mwDropData
+              });
+            });
+            return false;
+          });
+        }
+
+        // Necessary. Allows us to drop.
+        var handleDragOver = function (ev) {
+          if (scope.disableDrop !== true) {
+            if (ev.preventDefault) {
+              ev.preventDefault();
+            }
+            return false;
+          }
+        };
+        el.on('dragover', handleDragOver);
+
+        if (scope.mwDragover) {
+          el.on('dragover', function (event) {
+            $timeout(function () {
+              scope.mwDragover({event: event});
+            });
+          });
+        }
+      }
+    };
+  })
+
+  .directive('mwTextCollapse', function () {
+    return {
+      restrict: 'A',
+      scope: {
+        mwTextCollapse: '@',
+        length: '='
+      },
+      template: '<span>{{  mwTextCollapse | reduceStringTo:filterLength }}' +
+        ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
+      link: function (scope) {
+        var defaultLength = 200;
+        scope._length = scope.filterLength = (scope.length && typeof scope.length === 'number') ? scope.length : defaultLength;
+        scope.showButton = scope.mwTextCollapse.length > scope._length;
+        scope.toggleLength = function () {
+          scope.filterLength = (scope.filterLength !== scope._length) ? scope._length : undefined;
+        };
+      }
+    };
+  });
 
