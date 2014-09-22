@@ -33,7 +33,7 @@
 
         return function (scope, elm,attrs,mwFormInput) {
           if (dontSkipIt && mwFormInput) {
-            mwFormInput.mwFormInputRegister(elm);
+            mwFormInput.buildValidationMessages(elm);
           }
         };
       }
@@ -91,7 +91,7 @@
           controller: function ($scope) {
             var that = this;
             that.element = null;
-            this.mwFormInputRegister = function (element) {
+            this.buildValidationMessages = function (element) {
               if (!that.element) {
                 that.element = element;
                 $scope.elementName = element.attr('name');
