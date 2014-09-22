@@ -67,6 +67,52 @@
       };
     })
 
+    .directive('mwValidateCollectionOrModel', function () {
+      return {
+        restrict: 'A',
+        require: 'ngModel',
+        scope:{
+          mwRequired:'=mwValidateCollectionOrModel'
+        },
+        link: function (scope, elm, attrs, ngModel) {
+
+          var setRequiredValidty = function(isValid){
+            if(scope.mwRequired){
+              ngModel.$setValidity('required', isValid);
+            } else {
+              ngModel.$setValidity('required', true);
+            }
+          };
+
+          var validateCollectionOrModel = function (value) {
+           if(value instanceof window.Backbone.Collection){
+             setRequiredValidty(value.models.length>0);
+             value.on('add remove reset', function(){
+               {
+                 setRequiredValidty(value.models.length>0);
+               }
+             });
+           } else if(value instanceof window.Backbone.Model){
+             setRequiredValidty(value.get('uuid'));
+             value.on('change', function(){
+               {
+                 setRequiredValidty(value.get('uuid'));
+               }
+             });
+           }
+           return value;
+          };
+
+          scope.$watch('mwRequired',function(){
+            validateCollectionOrModel(ngModel.$modelValue);
+          });
+
+          ngModel.$formatters.push(validateCollectionOrModel);
+          ngModel.$parsers.push(validateCollectionOrModel);
+        }
+      };
+    })
+
     .directive('mwValidatePlaceholder', function () {
       return {
         restrict: 'A',
