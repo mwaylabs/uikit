@@ -190,7 +190,10 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       replace: true,
-      scope: { mwIcon: '@'},
+      scope: {
+        mwIcon: '@',
+        placement:'@'
+      },
       template: function (elm, attr) {
         var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
         if (isBootstrap) {
@@ -212,7 +215,7 @@ angular.module('mwComponents', [])
             el.popover('destroy');
             el.popover({
               trigger: 'hover',
-              placement: 'bottom',
+              placement: scope.placement || 'bottom',
               content: newVal,
               container: 'body'
             });
@@ -240,9 +243,11 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       scope: {
-        text: '@mwTooltip'
+        text: '@mwTooltip',
+        placement:'@'
       },
-      template: '<span mw-icon="question-sign" tooltip="{{ text }}"></span>',
+      replace:true,
+      template: '<span class="mw-tooltip"><span mw-icon="question-sign" tooltip="{{ text }}" placement="{{ placement }}"></span></span>',
       compile: function (elm, attr) {
         if (attr.mwTooltipIcon) {
           elm.find('span').attr('mw-icon', attr.mwTooltipIcon);
@@ -438,7 +443,7 @@ angular.module('mwComponents', [])
           var targetOffset = angular.element(this).offset();
           angular.element('body').append(popup);
           popup.css('top', targetOffset.top - (popup.height() / 2) + 10 - angular.element(document).scrollTop());
-          popup.css('left', targetOffset.left + 40);
+          popup.css('right', (targetOffset.left + 40));
         }, function () {
           angular.element('body > .mwButtonPopover').remove();
         });
