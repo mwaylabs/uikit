@@ -6,6 +6,7 @@
   var extendHTMLElement = function () {
     return {
       restrict: 'E',
+      require: '?^mwFormInput',
       compile: function (elm, attr) {
         var skipTheFollowing = ['checkbox', 'radio'],
             dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
@@ -30,14 +31,9 @@
            attr.$set('max', 2147483647);
         }
 
-        return function (scope, elm) {
-          if (dontSkipIt && scope.$$prevSibling) {
-            if (scope.$$prevSibling) {
-              // Register on mwFormInput if element is surrounded by mwFormInput
-              if (angular.isFunction(scope.$$prevSibling.mwFormInputRegister)) {
-                scope.$$prevSibling.mwFormInputRegister(elm);
-              }
-            }
+        return function (scope, elm,attrs,mwFormInput) {
+          if (dontSkipIt && mwFormInput) {
+            mwFormInput.mwFormInputRegister(elm);
           }
         };
       }
@@ -95,7 +91,7 @@
           controller: function ($scope) {
             var that = this;
             that.element = null;
-            $scope.mwFormInputRegister = function (element) {
+            this.mwFormInputRegister = function (element) {
               if (!that.element) {
                 that.element = element;
                 $scope.elementName = element.attr('name');
