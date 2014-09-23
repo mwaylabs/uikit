@@ -666,7 +666,8 @@ angular.module('mwComponents', [])
         mwDragData: '=',
         //We can not use camelcase because foo-start is a reserved word from angular!
         mwDragstart: '&',
-        mwDragend: '&'
+        mwDragend: '&',
+        mwDropEffect: '@'
       },
       link: function (scope, el) {
 
@@ -676,22 +677,23 @@ angular.module('mwComponents', [])
         if (scope.mwDragstart) {
           el.on('dragstart', function (event) {
             event.originalEvent.dataTransfer.setData('text', JSON.stringify(scope.mwDragData));
+            event.originalEvent.dataTransfer.effectAllowed = scope.mwDropEffect;
             $timeout(function () {
               scope.mwDragstart({event: event, dragData: scope.mwDragData});
-              console.log(JSON.stringify(scope.mwDragData));
             });
           });
         }
 
-        if (scope.mwDragend) {
+
           el.on('dragend', function (event) {
-            $timeout(function () {
-              scope.mwDragend({event: event});
-            });
+            if (scope.mwDragend) {
+              $timeout(function () {
+                scope.mwDragend({event: event});
+              });
+            }
           });
         }
-      }
-    };
+      };
   })
 
   .directive('mwDroppable', function ($timeout) {
