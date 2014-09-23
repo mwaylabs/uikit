@@ -7,7 +7,8 @@ angular.module('mwTabs', [])
         restrict: 'A',
         replace: true,
         scope: {
-          justified: '='
+          justified: '=',
+          activePaneNumber: '='
         },
         transclude: true,
         templateUrl: 'modules/ui/templates/mwTabs.html',
@@ -18,12 +19,19 @@ angular.module('mwTabs', [])
             angular.forEach(panes, function (p) {
               p.selected = false;
             });
+
+            if($scope.activePaneNumber){
+              $scope.activePaneNumber = _.indexOf($scope.panes,pane)+1;
+            }
+
             pane.selected = true;
           };
 
           this.registerPane = function (pane) {
-            if (!panes.length) {
+            if ( ( $scope.activePaneNumber && $scope.activePaneNumber-1 === panes.length) || (!panes.length && !$scope.activePaneNumber) ) {
+              var bak = $scope.activePaneNumber;
               $scope.select(pane);
+              $scope.activePaneNumber = bak;
             }
             panes.push(pane);
           };
