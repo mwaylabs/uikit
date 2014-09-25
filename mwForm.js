@@ -257,6 +257,7 @@
           replace: true,
           transclude: true,
           scope: {
+            mwClass: '@class',
             label: '@',
             tooltip: '@',
             badges: '@'
