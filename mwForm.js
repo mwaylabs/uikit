@@ -225,7 +225,9 @@
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect2.html',
         link: function(scope){
-          scope.mwOptionsCollection.fetch();
+          if(scope.mwOptionsCollection.length === 0){
+            scope.mwOptionsCollection.fetch();
+          }
 
           scope.toggleModel = function(model){
             if(scope.mwCollection.findWhere(model.toJSON())){
