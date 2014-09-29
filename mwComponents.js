@@ -186,7 +186,7 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwIcon', function () {
+  .directive('mwIcon', function ($compile) {
     return {
       restrict: 'A',
       replace: true,
@@ -219,6 +219,21 @@ angular.module('mwComponents', [])
               content: newVal,
               container: 'body'
             });
+          });
+        }
+
+        if(!scope.mwIcon){
+          scope.$watch('mwIcon', function(newVal){
+            if(newVal){
+              var template,
+                  isBootstrap = angular.isArray(scope.mwIcon.match(/^fa-/));
+              if (isBootstrap) {
+                 template = '<i class="fa {{mwIcon}}"></i>';
+              } else {
+                template = '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
+              }
+              el.replaceWith($compile(template)(scope));
+            }
           });
         }
 
@@ -585,7 +600,7 @@ angular.module('mwComponents', [])
   .directive('mwTimelineFieldset', function ($q) {
     return {
       scope: {
-        title: '@'
+        mwTitle: '@'
       },
       transclude: true,
       replace: true,
