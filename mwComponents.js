@@ -811,5 +811,65 @@ angular.module('mwComponents', [])
         };
       }
     };
-  });
+  })
+
+
+.directive('mwInfiniteScroll', function($window, $document) {
+  return {
+    restrict: 'A',
+    link: function(scope, el, attrs) {
+
+      var collection = scope.$eval(attrs.collection),
+          loading = false,
+          scrollFn,
+          scrollEl;
+
+      if(!collection || (collection && !collection.filterable)){
+        return;
+      }
+
+      var scrollCallback = function () {
+        if (!loading && scrollEl.scrollTop() >= ((d.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
+          loading = true;
+          collection.filterable.loadNextPage().then(function(){
+            loading = false;
+          });
+        }
+      };
+      var modalScrollCallback = function () {
+        if(!loading &&
+            collection.filterable.hasNextPage() &&
+            scrollEl[0].scrollHeight > 0 &&
+            (scrollEl[0].scrollHeight - scrollEl.scrollTop() - scrollEl[0].clientHeight < 2))
+        {
+          loading = true;
+          collection.filterable.loadNextPage().then(function(){
+            loading = false;
+          });
+        }
+      };
+
+      if(el.parents('.modal').length){
+        //element in modal
+        scrollEl = el.parents('.modal-body');
+        scrollFn = modalScrollCallback;
+      }
+      else {
+        //element in window
+        var d = angular.element($document);
+        scrollEl = angular.element($window);
+        scrollFn = scrollCallback;
+      }
+
+      // Register scroll callback
+      scrollEl.on('scroll', scrollFn);
+
+      // Deregister scroll callback if scope is destroyed
+      scope.$on('$destroy', function () {
+        scrollEl.off('scroll', scrollFn);
+      });
+
+    }
+  };
+});
 
