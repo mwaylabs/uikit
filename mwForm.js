@@ -555,15 +555,15 @@
           restrict: 'A',
           replace: true,
           transclude: true,
-          require: '^mwFormInput',
+          require: ['^mwFormInput','^form'],
           scope: {
             validation: '@mwFormValidation'
           },
           template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
-          link: function (scope, elm, attr, mwFormInputCtrl) {
-
-            var inputName = mwFormInputCtrl.element.attr('name'),
-                form = elm.inheritedData('$formController'),
+          link: function (scope, elm, attr, controllers) {
+            var mwFormInputCtrl = controllers[0],
+                inputName = mwFormInputCtrl.element.attr('name'),
+                form = controllers[1],
                 invalid = false;
 
             if (!inputName) {
