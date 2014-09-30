@@ -33,7 +33,7 @@ angular.module('mwListableBb', [])
  *   </doc:source>
  * </doc:example>
  */
-    .directive('mwListableBb', function ($compile, $window, $document) {
+    .directive('mwListableBb', function () {
 
       return {
         restrict: 'A',
@@ -41,65 +41,10 @@ angular.module('mwListableBb', [])
           collection: '='
         },
         compile: function  (elm) {
-
           elm.append('<tfoot mw-listable-footer-bb></tfoot>');
 
           return function (scope, elm) {
-            var loading = false;
             elm.addClass('table table-striped mw-listable');
-
-            /**
-             * Infinite scrolling
-             */
-            var scrollCallback = function () {
-              if(scope.collection && scope.collection.filterable){
-                if (!loading && w.scrollTop() >= ((d.height() - w.height()) - 100) && scope.collection.filterable.hasNextPage()) {
-                  loading = true;
-                  scope.collection.filterable.loadNextPage().then(function(){
-                    loading = false;
-                  });
-                }
-              }
-            };
-            var modalScrollCallback = function () {
-              if(!loading &&
-                 scope.collection &&
-                 scope.collection.filterable &&
-                 scope.collection.filterable.hasNextPage() &&
-                 modalBody[0].scrollHeight > 0 &&
-                 (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2))
-              {
-                loading = true;
-                scope.collection.filterable.loadNextPage().then(function(){
-                  loading = false;
-                });
-              }
-            };
-
-            if(elm.parents('.modal').length){
-              //filterable in modal
-              var modalBody = elm.parents('.modal-body');
-
-              // Register scroll callback
-              modalBody.on('scroll', modalScrollCallback);
-
-              // Deregister scroll callback if scope is destroyed
-              scope.$on('$destroy', function () {
-                modalBody.off('scroll', modalScrollCallback);
-              });
-            } else {
-              //filterable in document
-              var w = angular.element($window);
-              var d = angular.element($document);
-
-              // Register scroll callback
-              w.on('scroll', scrollCallback);
-
-              // Deregister scroll callback if scope is destroyed
-              scope.$on('$destroy', function () {
-                w.off('scroll', scrollCallback);
-              });
-            }
           };
         },
         controller: function ($scope) {
