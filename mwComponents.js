@@ -125,7 +125,7 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwHeader', function ($location, $route) {
+  .directive('mwHeader', function ($location, $route, $rootScope) {
     return {
       transclude: true,
       scope: {
@@ -137,6 +137,8 @@ angular.module('mwComponents', [])
       },
       templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
+
+        $rootScope.siteTitleDetails = scope.title;
 
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
