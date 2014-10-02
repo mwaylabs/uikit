@@ -460,7 +460,7 @@ angular.module('mwComponents', [])
           var targetOffset = angular.element(this).offset();
           angular.element('body').append(popup);
           popup.css('top', targetOffset.top - (popup.height() / 2) + 10 - angular.element(document).scrollTop());
-          popup.css('right', (targetOffset.left + 40));
+          popup.css('left', (targetOffset.left + 40));
         }, function () {
           angular.element('body > .mwButtonPopover').remove();
         });
