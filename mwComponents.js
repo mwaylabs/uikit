@@ -151,8 +151,8 @@ angular.module('mwComponents', [])
         };
 
         scope.back = function () {
-          if (attrs.url) {
-            $location.path(attrs.url);
+          if (scope.url) {
+            $location.path(scope.url);
           } else {
             window.history.back();
           }
