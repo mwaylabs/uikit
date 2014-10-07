@@ -151,8 +151,8 @@ angular.module('mwComponents', [])
         };
 
         scope.back = function () {
-          if (attrs.url) {
-            $location.path(attrs.url);
+          if (scope.url) {
+            $location.path(scope.url);
           } else {
             window.history.back();
           }
@@ -871,6 +871,31 @@ angular.module('mwComponents', [])
         scrollEl.off('scroll', scrollFn);
       });
 
+    }
+  };
+})
+
+
+.directive('mwViewChangeLoader', function ($rootScope) {
+  return {
+    replace: true,
+    template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
+    link: function (scope, el) {
+      //not for IE because version 6-10 do not support pointer-events css property
+      var isIE = !!window.ActiveXObject;
+      if(isIE){
+        angular.element('.mw-view-change-loader').css('height', '0');
+        return ;
+      }
+      $rootScope.$on('$routeChangeStart', function(){
+        el.addClass('loading');
+      });
+      $rootScope.$on('$routeChangeSuccess', function(){
+        el.removeClass('loading');
+      });
+      $rootScope.$on('$routeChangeError', function(){
+        el.removeClass('loading');
+      });
     }
   };
 });
