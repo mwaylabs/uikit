@@ -681,7 +681,7 @@ angular.module('mwComponents', [])
       restrict: 'A',
       scope: {
         mwDragData: '=',
-        //We can not use camelcase because foo-start is a reserved word from angular!
+        //We can not use camelcase because *-start is a reserved word from angular!
         mwDragstart: '&',
         mwDragend: '&',
         mwDropEffect: '@'
