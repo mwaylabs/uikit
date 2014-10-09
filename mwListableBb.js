@@ -163,8 +163,7 @@ angular.module('mwListableBb', [])
         restrict: 'A',
         require: '^mwListableBb',
         scope: {
-          property: '@sort',
-          blabla:'@'
+          property: '@sort'
         },
         transclude: true,
         replace:true,
@@ -273,17 +272,19 @@ angular.module('mwListableBb', [])
         require: '^mwListableBb',
         compile: function (elm) {
 
-          elm.prepend('<td  ng-if="item.selectable" mw-listable-column-checkbox-bb disabled="isDisabled()" item="item"></td>');
+          elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb disabled="isDisabled()" item="item"></td>');
 
-          return function (scope, elm, attr) {
-            var selectedClass = 'selected';
+          return function (scope, elm, attr, ctrl) {
+            var selectedClass = 'selected',
+                collection = ctrl.getCollection();
+
 
             if(scope.item.selectable){
               elm.addClass('selectable');
             }
 
             elm.on('click', function () {
-              if (scope.item.selectable && !scope.isDisabled(scope.item)) {
+              if (collection.selectable && scope.item.selectable && !scope.isDisabled(scope.item)) {
                 scope.item.selectable.toggleSelect();
                 scope.$apply();
               }
@@ -326,10 +327,11 @@ angular.module('mwListableBb', [])
 
           return function (scope, elm, attr, mwListableCtrl) {
             //empty collection is [] so ng-if would not work as expected
+            //we also have to check if the collection has a selectable
             scope.hasCollection = false;
             var collection = mwListableCtrl.getCollection();
             if(collection){
-              scope.hasCollection = angular.isDefined(collection.length);
+              scope.hasCollection = angular.isDefined(collection.length) && collection.selectable;
             }
             scope.actionColumns = mwListableCtrl.actionColumns;
           };
