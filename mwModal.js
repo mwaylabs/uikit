@@ -91,6 +91,10 @@ angular.module('mwModal', [])
           return dfd.promise;
         };
 
+        this.getScope = function(){
+          return _scope;
+        };
+
         /**
          *
          * @ngdoc function
