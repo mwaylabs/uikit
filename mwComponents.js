@@ -602,7 +602,8 @@ angular.module('mwComponents', [])
   .directive('mwTimelineFieldset', function ($q) {
     return {
       scope: {
-        mwTitle: '@'
+        mwTitle: '@',
+        collapsable: '='
       },
       transclude: true,
       replace: true,
@@ -616,6 +617,9 @@ angular.module('mwComponents', [])
         };
         $scope.entriesVisible = true;
         $scope.toggleEntries = function () {
+          if(!$scope.collapsable){
+            return;
+          }
           var toggleEntryHideFns = [];
           $scope.entries.forEach(function (entry) {
             if ($scope.entriesVisible) {
