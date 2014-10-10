@@ -885,20 +885,29 @@ angular.module('mwComponents', [])
     replace: true,
     template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
     link: function (scope, el) {
-      //not for IE because version 6-10 do not support pointer-events css property
-      var isIE = !!window.ActiveXObject;
-      if(isIE){
-        angular.element('.mw-view-change-loader').css('height', '0');
-        return ;
-      }
-      $rootScope.$on('$routeChangeStart', function(){
-        el.addClass('loading');
+
+      var addDoneListener = function(current){
+        if(current.disableLoader){
+          return;
+        }
+        el.addClass('loading-out');
+        el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function(){
+          el.removeClass('loading-in');
+          el.removeClass('loading-out');
+        });
+      };
+
+      $rootScope.$on('$routeChangeStart', function(event, current){
+        if(current.disableLoader){
+          return;
+        }
+        el.addClass('loading-in');
       });
-      $rootScope.$on('$routeChangeSuccess', function(){
-        el.removeClass('loading');
+      $rootScope.$on('$routeChangeSuccess', function(event, current){
+        addDoneListener(current);
       });
-      $rootScope.$on('$routeChangeError', function(){
-        el.removeClass('loading');
+      $rootScope.$on('$routeChangeError', function(event, current){
+        addDoneListener(current);
       });
     }
   };
