@@ -224,13 +224,13 @@ angular.module('mwComponents', [])
           });
         }
 
-        if(!scope.mwIcon){
-          scope.$watch('mwIcon', function(newVal){
-            if(newVal){
+        if (!scope.mwIcon) {
+          scope.$watch('mwIcon', function (newVal) {
+            if (newVal) {
               var template,
-                  isBootstrap = angular.isArray(scope.mwIcon.match(/^fa-/));
+                isBootstrap = angular.isArray(scope.mwIcon.match(/^fa-/));
               if (isBootstrap) {
-                 template = '<i class="fa {{mwIcon}}"></i>';
+                template = '<i class="fa {{mwIcon}}"></i>';
               } else {
                 template = '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
               }
@@ -617,7 +617,7 @@ angular.module('mwComponents', [])
         };
         $scope.entriesVisible = true;
         $scope.toggleEntries = function () {
-          if(!$scope.collapsable){
+          if (!$scope.collapsable) {
             return;
           }
           var toggleEntryHideFns = [];
@@ -706,15 +706,15 @@ angular.module('mwComponents', [])
         }
 
 
-          el.on('dragend', function (event) {
-            if (scope.mwDragend) {
-              $timeout(function () {
-                scope.mwDragend({event: event});
-              });
-            }
-          });
-        }
-      };
+        el.on('dragend', function (event) {
+          if (scope.mwDragend) {
+            $timeout(function () {
+              scope.mwDragend({event: event});
+            });
+          }
+        });
+      }
+    };
   })
 
   .directive('mwDroppable', function ($timeout) {
@@ -820,96 +820,95 @@ angular.module('mwComponents', [])
   })
 
 
-.directive('mwInfiniteScroll', function($window, $document) {
-  return {
-    restrict: 'A',
-    link: function(scope, el, attrs) {
+  .directive('mwInfiniteScroll', function ($window, $document) {
+    return {
+      restrict: 'A',
+      link: function (scope, el, attrs) {
 
-      var collection = scope.$eval(attrs.collection),
+        var collection = scope.$eval(attrs.collection),
           loading = false,
           scrollFn,
           scrollEl;
 
-      if(!collection || (collection && !collection.filterable)){
-        return;
-      }
-
-      var scrollCallback = function () {
-        if (!loading && scrollEl.scrollTop() >= ((d.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
-          loading = true;
-          collection.filterable.loadNextPage().then(function(){
-            loading = false;
-          });
+        if (!collection || (collection && !collection.filterable)) {
+          return;
         }
-      };
-      var modalScrollCallback = function () {
-        if(!loading &&
+
+        var scrollCallback = function () {
+          if (!loading && scrollEl.scrollTop() >= ((d.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
+            loading = true;
+            collection.filterable.loadNextPage().then(function () {
+              loading = false;
+            });
+          }
+        };
+        var modalScrollCallback = function () {
+          if (!loading &&
             collection.filterable.hasNextPage() &&
             scrollEl[0].scrollHeight > 0 &&
-            (scrollEl[0].scrollHeight - scrollEl.scrollTop() - scrollEl[0].clientHeight < 2))
-        {
-          loading = true;
-          collection.filterable.loadNextPage().then(function(){
-            loading = false;
-          });
+            (scrollEl[0].scrollHeight - scrollEl.scrollTop() - scrollEl[0].clientHeight < 2)) {
+            loading = true;
+            collection.filterable.loadNextPage().then(function () {
+              loading = false;
+            });
+          }
+        };
+
+        if (el.parents('.modal').length) {
+          //element in modal
+          scrollEl = el.parents('.modal-body');
+          scrollFn = modalScrollCallback;
         }
-      };
-
-      if(el.parents('.modal').length){
-        //element in modal
-        scrollEl = el.parents('.modal-body');
-        scrollFn = modalScrollCallback;
-      }
-      else {
-        //element in window
-        var d = angular.element($document);
-        scrollEl = angular.element($window);
-        scrollFn = scrollCallback;
-      }
-
-      // Register scroll callback
-      scrollEl.on('scroll', scrollFn);
-
-      // Deregister scroll callback if scope is destroyed
-      scope.$on('$destroy', function () {
-        scrollEl.off('scroll', scrollFn);
-      });
-
-    }
-  };
-})
-
-
-.directive('mwViewChangeLoader', function ($rootScope) {
-  return {
-    replace: true,
-    template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
-    link: function (scope, el) {
-
-      var addDoneListener = function(current){
-        if(current.disableLoader){
-          return;
+        else {
+          //element in window
+          var d = angular.element($document);
+          scrollEl = angular.element($window);
+          scrollFn = scrollCallback;
         }
-        el.addClass('loading-out');
-        el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function(){
-          el.removeClass('loading-in');
-          el.removeClass('loading-out');
+
+        // Register scroll callback
+        scrollEl.on('scroll', scrollFn);
+
+        // Deregister scroll callback if scope is destroyed
+        scope.$on('$destroy', function () {
+          scrollEl.off('scroll', scrollFn);
         });
-      };
 
-      $rootScope.$on('$routeChangeStart', function(event, current){
-        if(current.disableLoader){
-          return;
-        }
-        el.addClass('loading-in');
-      });
-      $rootScope.$on('$routeChangeSuccess', function(event, current){
-        addDoneListener(current);
-      });
-      $rootScope.$on('$routeChangeError', function(event, current){
-        addDoneListener(current);
-      });
-    }
-  };
-});
+      }
+    };
+  })
+
+
+  .directive('mwViewChangeLoader', function ($rootScope) {
+    return {
+      replace: true,
+      template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
+      link: function (scope, el) {
+
+        var addDoneListener = function (current) {
+          if (current.disableLoader) {
+            return;
+          }
+          el.addClass('loading-out');
+          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
+            el.removeClass('loading-in');
+            el.removeClass('loading-out');
+          });
+        };
+
+        $rootScope.$on('$routeChangeStart', function (event, current) {
+          if (current.disableLoader) {
+            return;
+          }
+          el.addClass('loading-in');
+        });
+        $rootScope.$on('$routeChangeSuccess', function (event, current) {
+          addDoneListener(current);
+        });
+        $rootScope.$on('$routeChangeError', function (event, current) {
+          addDoneListener(current);
+        });
+      }
+    };
+  });
 
