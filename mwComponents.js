@@ -878,7 +878,6 @@ angular.module('mwComponents', [])
     };
   })
 
-
   .directive('mwViewChangeLoader', function ($rootScope) {
     return {
       replace: true,
@@ -886,18 +885,21 @@ angular.module('mwComponents', [])
       link: function (scope, el) {
 
         var addDoneListener = function (current) {
-          if (current.disableLoader) {
+          if (current.disableLoader || current.redirectTo) {
             return;
           }
           el.addClass('loading-out');
-          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
-            el.removeClass('loading-in');
-            el.removeClass('loading-out');
+          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function handleAimationEvent() {
+            if (el.hasClass('loading-out')) {
+              el.off('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', handleAimationEvent);
+              el.removeClass('loading-in');
+              el.removeClass('loading-out');
+            }
           });
         };
 
         $rootScope.$on('$routeChangeStart', function (event, current) {
-          if (current.disableLoader) {
+          if (current.disableLoader || current.redirectTo) {
             return;
           }
           el.addClass('loading-in');
@@ -911,4 +913,5 @@ angular.module('mwComponents', [])
       }
     };
   });
+
 
