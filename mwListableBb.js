@@ -33,7 +33,7 @@ angular.module('mwListableBb', [])
  *   </doc:source>
  * </doc:example>
  */
-    .directive('mwListableBb', function () {
+    .directive('mwListableBb', function (Persistance) {
 
       return {
         restrict: 'A',
@@ -53,7 +53,9 @@ angular.module('mwListableBb', [])
           this.actionColumns = [];
 
           this.sort = function (property, order) {
-            $scope.collection.filterable.setSortOrder(order + property);
+            var sortOrder = order + property;
+            Persistance.saveSortOrder(sortOrder, $scope.collection);
+            $scope.collection.filterable.setSortOrder(sortOrder);
             $scope.collection.fetch();
           };
 
