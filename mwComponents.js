@@ -884,29 +884,42 @@ angular.module('mwComponents', [])
       template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
       link: function (scope, el) {
 
-        var requestAnimFrame = (function(){
-          return  window.requestAnimationFrame       ||
+        var ieVersion = (function () {
+          if (new RegExp(/MSIE ([0-9]{1,}[\.0-9]{0,})/).exec(navigator.userAgent) !== null) {
+            return parseFloat(RegExp.$1);
+          } else {
+            return false;
+          }
+        })();
+
+        var requestAnimFrame = (function () {
+          return  window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            function( callback ){
+            window.mozRequestAnimationFrame ||
+            function (callback) {
               window.setTimeout(callback, 1000 / 60);
             };
         })();
 
         var loadingInAnimationIsInProgress = false,
-            loadingOutAnimationIsInProgress = false,
-            routeChangeDone = false;
+          loadingOutAnimationIsInProgress = false,
+          routeChangeDone = false;
+
+        /* ie 9 does not support transation events and therefor it does not work*/
+        if(ieVersion===9){
+          return;
+        }
 
         var addLoadingOutClass = function () {
           if (!el.hasClass('loading-in') || loadingOutAnimationIsInProgress || loadingInAnimationIsInProgress) {
             return;
           }
           el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
-              loadingOutAnimationIsInProgress=false;
-              el.removeClass('loading-in');
-              el.removeClass('loading-out');
+            loadingOutAnimationIsInProgress = false;
+            el.removeClass('loading-in');
+            el.removeClass('loading-out');
           });
-          requestAnimFrame(function(){
+          requestAnimFrame(function () {
             loadingOutAnimationIsInProgress = true;
             el.addClass('loading-out');
           });
@@ -918,13 +931,13 @@ angular.module('mwComponents', [])
           }
           el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
             loadingInAnimationIsInProgress = false;
-            if(routeChangeDone){
+            if (routeChangeDone) {
               addLoadingOutClass();
             }
           });
           routeChangeDone = false;
-          requestAnimFrame(function(){
-            loadingInAnimationIsInProgress=true;
+          loadingInAnimationIsInProgress = true;
+          requestAnimFrame(function () {
             el.addClass('loading-in');
           });
         });
