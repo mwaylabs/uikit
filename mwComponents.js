@@ -884,18 +884,18 @@ angular.module('mwComponents', [])
       template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
       link: function (scope, el) {
 
-        var addDoneListener = function (current) {
+        el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function handleAimationEvent() {
+          if (el.hasClass('loading-out')) {
+            el.removeClass('loading-in');
+            el.removeClass('loading-out');
+          }
+        });
+
+        var addLoadingOutClass = function (current) {
           if (current.disableLoader || current.redirectTo) {
             return;
           }
           el.addClass('loading-out');
-          el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function handleAimationEvent() {
-            if (el.hasClass('loading-out')) {
-              el.off('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', handleAimationEvent);
-              el.removeClass('loading-in');
-              el.removeClass('loading-out');
-            }
-          });
         };
 
         $rootScope.$on('$routeChangeStart', function (event, current) {
@@ -905,10 +905,10 @@ angular.module('mwComponents', [])
           el.addClass('loading-in');
         });
         $rootScope.$on('$routeChangeSuccess', function (event, current) {
-          addDoneListener(current);
+          addLoadingOutClass(current);
         });
         $rootScope.$on('$routeChangeError', function (event, current) {
-          addDoneListener(current);
+          addLoadingOutClass(current);
         });
       }
     };
