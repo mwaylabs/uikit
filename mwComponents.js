@@ -884,31 +884,57 @@ angular.module('mwComponents', [])
       template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
       link: function (scope, el) {
 
-        el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function handleAimationEvent() {
-          if (el.hasClass('loading-out')) {
-            el.removeClass('loading-in');
-            el.removeClass('loading-out');
-          }
-        });
+        var requestAnimFrame = (function(){
+          return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            function( callback ){
+              window.setTimeout(callback, 1000 / 60);
+            };
+        })();
 
-        var addLoadingOutClass = function (current) {
-          if (current.disableLoader || current.redirectTo) {
+        var loadingInAnimationIsInProgress = false,
+            loadingOutAnimationIsInProgress = false,
+            routeChangeDone = false;
+
+        var addLoadingOutClass = function () {
+          if (!el.hasClass('loading-in') || loadingOutAnimationIsInProgress || loadingInAnimationIsInProgress) {
             return;
           }
-          el.addClass('loading-out');
+          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
+              loadingOutAnimationIsInProgress=false;
+              el.removeClass('loading-in');
+              el.removeClass('loading-out');
+          });
+          requestAnimFrame(function(){
+            loadingOutAnimationIsInProgress = true;
+            el.addClass('loading-out');
+          });
         };
 
         $rootScope.$on('$routeChangeStart', function (event, current) {
-          if (current.disableLoader || current.redirectTo) {
+          if (current.disableLoader || loadingInAnimationIsInProgress || loadingOutAnimationIsInProgress) {
             return;
           }
-          el.addClass('loading-in');
+          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
+            loadingInAnimationIsInProgress = false;
+            if(routeChangeDone){
+              addLoadingOutClass();
+            }
+          });
+          routeChangeDone = false;
+          requestAnimFrame(function(){
+            loadingInAnimationIsInProgress=true;
+            el.addClass('loading-in');
+          });
         });
-        $rootScope.$on('$routeChangeSuccess', function (event, current) {
-          addLoadingOutClass(current);
+        $rootScope.$on('$routeChangeSuccess', function () {
+          routeChangeDone = true;
+          addLoadingOutClass();
         });
-        $rootScope.$on('$routeChangeError', function (event, current) {
-          addLoadingOutClass(current);
+        $rootScope.$on('$routeChangeError', function () {
+          routeChangeDone = true;
+          addLoadingOutClass();
         });
       }
     };
