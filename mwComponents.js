@@ -889,7 +889,7 @@ angular.module('mwComponents', [])
             return;
           }
           el.addClass('loading-out');
-          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function handleAimationEvent() {
+          el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function handleAimationEvent() {
             if (el.hasClass('loading-out')) {
               el.off('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', handleAimationEvent);
               el.removeClass('loading-in');
