@@ -919,8 +919,8 @@ angular.module('mwComponents', [])
             el.removeClass('loading-in');
             el.removeClass('loading-out');
           });
+          loadingOutAnimationIsInProgress = true;
           requestAnimFrame(function () {
-            loadingOutAnimationIsInProgress = true;
             el.addClass('loading-out');
           });
         };
