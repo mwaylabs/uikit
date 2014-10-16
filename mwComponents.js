@@ -901,33 +901,44 @@ angular.module('mwComponents', [])
             };
         })();
 
-        console.log(requestAnimFrame, ieVersion);
-
         var loadingInAnimationIsInProgress = false,
-          routeChangeDone = false;
+          routeChangeDone = false,
+          transitionDuration = el.css('transition-duration') || el.css('-moz-transition-duration') || el.css('-webkit-transition-duration') || el.css('-o-transition-duration') || 1;
+
+        transitionDuration = parseFloat(transitionDuration,10);
 
         /* ie 9 does not support transation events and therefor it does not work*/
         if(ieVersion===9){
           return;
         }
 
+        var forceClassRemoval = function(){
+          setTimeout(function(){
+            if(el.hasClass('loading-out') || el.hasClass('loading-in')){
+              console.log('[ADD_LOADING_OUT_CLASS:SETTIMOUT'+(transitionDuration*1000)+']','FORCE CLASS REMOVAL',transitionDuration*1000+(transitionDuration*200));
+            }
+            el.removeClass('loading-in');
+            el.removeClass('loading-out');
+            loadingInAnimationIsInProgress = false;
+          },transitionDuration*1000+(transitionDuration*100));
+        };
+
         var addLoadingOutClass = function () {
           if (!el.hasClass('loading-in') || loadingInAnimationIsInProgress) {
             console.log('[ADD_LOADING_OUT_CLASS:if condition failed]',!el.hasClass('loading-in')?'Has no loading-in class':'--',loadingInAnimationIsInProgress?'Loading-in animation is arleady in progress':'');
             return;
           }
-          setTimeout(function () {
+          el.addClass('loading-out');
+          requestAnimFrame(function () {
             console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
-            el.addClass('loading-out');
-          },10);
+            el.removeClass('loading-in');
+            forceClassRemoval();
+          });
         };
-
-        console.log(el.css('-moz-transition-duration'));
 
         el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
           if(el.hasClass('loading-out')){
             console.log('[TRANSITION_END_EVENT]','Loading-out class is set and im removing loading-in and loading-out class now');
-            el.removeClass('loading-in');
             el.removeClass('loading-out');
           } else if(el.hasClass('loading-in')){
             console.log('[TRANSITION_END_EVENT]','Loading-in class is set and ' +(routeChangeDone?'routechange is done so im calling addLoadingOutClass':'routechange is not ready yet so im doing nothing'));
@@ -936,7 +947,7 @@ angular.module('mwComponents', [])
               addLoadingOutClass();
             }
           } else {
-            console.log('[TRANSITION_END_EVENT]','Neither loading-in nor loading-out class is set :(');
+            console.log('[TRANSITION_END_EVENT]','Neither loading-in nor loading-out class is set');
           }
         });
 
