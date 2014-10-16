@@ -25,7 +25,7 @@ angular.module('mwSidebarBb', [])
  * @param {function} labelTransformFn function to use. Will be called with model as parameter.
  * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
  */
-  .directive('mwSidebarSelectBb', function (i18n) {
+  .directive('mwSidebarSelectBb', function (i18n, Persistance) {
     return {
       require: '^mwSidebarFiltersBb',
       scope: {
@@ -79,15 +79,10 @@ angular.module('mwSidebarBb', [])
 
         scope.collection = ctrl.getCollection();
 
-        //TODO implement filter persistance
-        /*scope.$watch('filterable', function () {
-          if (scope.filterable) {
-            scope.model = scope.filterable.properties[scope.property];
-            if (scope.persist) {
-              scope.filterable.properties[scope.property].persist = scope.persist;
-            }
-          }
-        });*/
+        scope.changed = function(){
+          Persistance.saveFilterValues(scope.collection);
+          scope.collection.fetch();
+        };
       }
     };
   })
@@ -101,7 +96,7 @@ angular.module('mwSidebarBb', [])
  * Container for filters
  *
  */
-  .directive('mwSidebarFiltersBb', function () {
+  .directive('mwSidebarFiltersBb', function (Persistance) {
     return {
       transclude: true,
       templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarFilters.html',
@@ -115,13 +110,15 @@ angular.module('mwSidebarBb', [])
         scope.resetFiltersOnClose = function () {
           if (!scope.toggleFilters) {
             scope.collection.filterable.resetFilters();
+            Persistance.clearFilterValues(scope.collection);
             scope.collection.fetch();
           }
         };
 
-        /*if (scope.collection.hasPersistedFilters()) {
+        //open filters when there are persisted filters saved
+        if(Persistance.getFilterValues(scope.collection)){
           scope.toggleFilters = true;
-        }*/
+        }
       },
       controller: function($scope){
         this.getCollection = function(){

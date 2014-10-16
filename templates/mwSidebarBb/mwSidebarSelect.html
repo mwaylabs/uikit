@@ -4,7 +4,7 @@
             class="form-control"
             mw-custom-select
             ng-model="collection.filterable.filterValues[property]"
-            ng-change="collection.fetch()"
+            ng-change="changed()"
             ng-options="key(model) as label(model) for model in options.models"
             ng-disabled="mwDisabled">
       <option value="">{{ placeholder }}</option>
@@ -14,7 +14,7 @@
             class="form-control"
             mw-custom-select
             ng-model="collection.filterable.customUrlParams[customUrlParameter]"
-            ng-change="collection.fetch()"
+            ng-change="changed()"
             ng-options="key(model) as label(model) for model in options.models"
             ng-disabled="mwDisabled">
       <option value="">{{ placeholder }}</option>
