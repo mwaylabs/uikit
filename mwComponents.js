@@ -902,7 +902,6 @@ angular.module('mwComponents', [])
         })();
 
         var loadingInAnimationIsInProgress = false,
-          loadingOutAnimationIsInProgress = false,
           routeChangeDone = false;
 
         /* ie 9 does not support transation events and therefor it does not work*/
@@ -911,33 +910,37 @@ angular.module('mwComponents', [])
         }
 
         var addLoadingOutClass = function () {
-          if (!el.hasClass('loading-in') || loadingOutAnimationIsInProgress || loadingInAnimationIsInProgress) {
+          if (!el.hasClass('loading-in') || loadingInAnimationIsInProgress) {
             return;
           }
-          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
-            loadingOutAnimationIsInProgress = false;
-            el.removeClass('loading-in');
-            el.removeClass('loading-out');
-          });
-          loadingOutAnimationIsInProgress = true;
           requestAnimFrame(function () {
+            console.log('OUT:START');
             el.addClass('loading-out');
           });
         };
 
-        $rootScope.$on('$routeChangeStart', function (event, current) {
-          if (current.disableLoader || loadingInAnimationIsInProgress || loadingOutAnimationIsInProgress) {
-            return;
-          }
-          el.one('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
+        el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
+          if(el.hasClass('loading-out')){
+            el.removeClass('loading-in');
+            el.removeClass('loading-out');
+            console.log('OUT:DONE');
+          } else if(el.hasClass('loading-in')){
+            console.log('IN:DONE');
             loadingInAnimationIsInProgress = false;
             if (routeChangeDone) {
               addLoadingOutClass();
             }
-          });
+          }
+        });
+
+        $rootScope.$on('$routeChangeStart', function (event, current) {
+          if (current.disableLoader || loadingInAnimationIsInProgress) {
+            return;
+          }
           routeChangeDone = false;
           loadingInAnimationIsInProgress = true;
           requestAnimFrame(function () {
+            console.log('IN:START');
             el.addClass('loading-in');
           });
         });
