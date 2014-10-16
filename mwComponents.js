@@ -916,11 +916,13 @@ angular.module('mwComponents', [])
             console.log('[ADD_LOADING_OUT_CLASS:if condition failed]',!el.hasClass('loading-in')?'Has no loading-in class':'--',loadingInAnimationIsInProgress?'Loading-in animation is arleady in progress':'');
             return;
           }
-          requestAnimFrame(function () {
+          setTimeout(function () {
             console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
             el.addClass('loading-out');
-          });
+          },10);
         };
+
+        console.log(el.css('-moz-transition-duration'));
 
         el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
           if(el.hasClass('loading-out')){
