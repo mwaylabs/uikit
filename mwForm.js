@@ -448,21 +448,19 @@
           };
 
           (function init() {
-
             //check the value every time the checkbox is clicked
             el.on('change', function () {
               var previousSelescted = angular.element('.mw-radio.active');
-
               //check if the previous selected is an item of the current selected for the case that multiple radio groups are on one page
               //unselect all elements which are currently active from this name group
               previousSelescted.each(function(){
                 var $el = angular.element(this);
                 if($el.find('input[name='+el.attr('name')+']').length>0){
-                  $el.removeClass('active');
+                  if(!$el.find('input[type=radio]').is(':checked')){
+                    $el.removeClass('active');
+                  }
                 }
-
               });
-
               setActiveClass(el.is(':checked'));
             });
 
