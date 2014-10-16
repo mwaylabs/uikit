@@ -901,6 +901,8 @@ angular.module('mwComponents', [])
             };
         })();
 
+        console.log(requestAnimFrame, ieVersion);
+
         var loadingInAnimationIsInProgress = false,
           routeChangeDone = false;
 
@@ -911,44 +913,51 @@ angular.module('mwComponents', [])
 
         var addLoadingOutClass = function () {
           if (!el.hasClass('loading-in') || loadingInAnimationIsInProgress) {
+            console.log('[ADD_LOADING_OUT_CLASS:if condition failed]',!el.hasClass('loading-in')?'Has no loading-in class':'--',loadingInAnimationIsInProgress?'Loading-in animation is arleady in progress':'');
             return;
           }
           requestAnimFrame(function () {
-            console.log('OUT:START');
+            console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
             el.addClass('loading-out');
           });
         };
 
         el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
           if(el.hasClass('loading-out')){
+            console.log('[TRANSITION_END_EVENT]','Loading-out class is set and im removing loading-in and loading-out class now');
             el.removeClass('loading-in');
             el.removeClass('loading-out');
-            console.log('OUT:DONE');
           } else if(el.hasClass('loading-in')){
-            console.log('IN:DONE');
+            console.log('[TRANSITION_END_EVENT]','Loading-in class is set and ' +(routeChangeDone?'routechange is done so im calling addLoadingOutClass':'routechange is not ready yet so im doing nothing'));
             loadingInAnimationIsInProgress = false;
             if (routeChangeDone) {
               addLoadingOutClass();
             }
+          } else {
+            console.log('[TRANSITION_END_EVENT]','Neither loading-in nor loading-out class is set :(');
           }
         });
 
         $rootScope.$on('$routeChangeStart', function (event, current) {
+          console.log('--------------------');
           if (current.disableLoader || loadingInAnimationIsInProgress) {
+            console.log('[ROUTE_CHANGE_START_EVENT:if condition failed]',current.disableLoader?'Loader is disabled':'--',loadingInAnimationIsInProgress?'Loading-in animation is already running':'');
             return;
           }
           routeChangeDone = false;
           loadingInAnimationIsInProgress = true;
           requestAnimFrame(function () {
-            console.log('IN:START');
+            console.log('[ROUTE_CHANGE_START_EVENT]','Adding loading-in class');
             el.addClass('loading-in');
           });
         });
         $rootScope.$on('$routeChangeSuccess', function () {
+          console.log('[ROUTE_CHANGE_DONE_EVENT]');
           routeChangeDone = true;
           addLoadingOutClass();
         });
         $rootScope.$on('$routeChangeError', function () {
+          console.log('[ROUTE_CHANGE_ERROR_EVENT]');
           routeChangeDone = true;
           addLoadingOutClass();
         });
