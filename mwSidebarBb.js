@@ -88,11 +88,9 @@ angular.module('mwSidebarBb', [])
           Persistance.saveFilterValues(scope.collection);
 
           //fetch data and reset filtered property for this selectbox if the filter value or customUrlParameter is empty
+          var searchValue = scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
           scope.collection.fetch().then(function(collection){
-            if(!scope.customUrlParameter && !collection.filterable.filterValues[scope.property]){
-              EmptyState.removeFilter(collection, property);
-            }
-            if(scope.customUrlParameter && !collection.filterable.customUrlParams[scope.customUrlParameter]){
+            if(!searchValue){
               EmptyState.removeFilter(collection, property);
             }
           });
