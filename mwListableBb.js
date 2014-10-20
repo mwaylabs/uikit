@@ -277,16 +277,18 @@ angular.module('mwListableBb', [])
           elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb disabled="isDisabled()" item="item"></td>');
 
           return function (scope, elm, attr, ctrl) {
-            var selectedClass = 'selected',
-                collection = ctrl.getCollection();
+            var selectedClass = 'selected';
 
+            scope.collection = ctrl.getCollection();
 
-            if(scope.item.selectable){
+            if(scope.item && scope.item.selectable){
               elm.addClass('selectable');
+            } else {
+              console.warn('No item available in the list!');
             }
 
             elm.on('click', function () {
-              if (collection.selectable && scope.item.selectable && !scope.isDisabled(scope.item)) {
+              if (scope.collection.selectable && scope.item.selectable && !scope.isDisabled(scope.item)) {
                 scope.item.selectable.toggleSelect();
                 scope.$apply();
               }
