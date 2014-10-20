@@ -14,7 +14,7 @@ angular.module('mwComponentsBb', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearchBb', function ($timeout, Loading, Detect) {
+  .directive('mwFilterableSearchBb', function ($timeout, Loading, Detect, EmptyState) {
     return {
       transclude: true,
       scope: {
@@ -32,7 +32,17 @@ angular.module('mwComponentsBb', [])
         var timeout;
 
         var search = function () {
-          return scope.collection.fetch();
+          //set property to setted filters on collection
+          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          EmptyState.pushFilter(scope.collection, property);
+
+          //backup searched text to reset after fetch complete in case of search text was empty
+          var searchText = scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
+          return scope.collection.fetch().then(function(collection){
+            if(searchText === ''){
+              EmptyState.removeFilter(collection, property);
+            }
+          });
         };
 
         var throttler = function () {
@@ -100,6 +110,23 @@ angular.module('mwComponentsBb', [])
     };
   })
 
+  .directive('mwEmptyStateBb', function (EmptyState) {
+    return {
+      restrict: 'A',
+      replace: true,
+      scope: {
+        collection: '=',
+        text: '@mwEmptyStateBb'
+      },
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwComponentsBb/mwEmptyStateBb.html',
+      link: function(scope){
+        scope.showEmptyState = function(){
+          return scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection);
+        };
+      }
+    };
+  })
 ;
 
 
