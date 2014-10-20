@@ -25,7 +25,7 @@ angular.module('mwSidebarBb', [])
  * @param {function} labelTransformFn function to use. Will be called with model as parameter.
  * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
  */
-  .directive('mwSidebarSelectBb', function (i18n, Persistance) {
+  .directive('mwSidebarSelectBb', function (i18n, Persistance, EmptyState) {
     return {
       require: '^mwSidebarFiltersBb',
       scope: {
@@ -80,8 +80,22 @@ angular.module('mwSidebarBb', [])
         scope.collection = ctrl.getCollection();
 
         scope.changed = function(){
+          //add property to setted filters on collection for empty state
+          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          EmptyState.pushFilter(scope.collection, property);
+
+          //persist filter values
           Persistance.saveFilterValues(scope.collection);
-          scope.collection.fetch();
+
+          //fetch data and reset filtered property for this selectbox if the filter value or customUrlParameter is empty
+          scope.collection.fetch().then(function(collection){
+            if(!scope.customUrlParameter && !collection.filterable.filterValues[scope.property]){
+              EmptyState.removeFilter(collection, property);
+            }
+            if(scope.customUrlParameter && !collection.filterable.customUrlParams[scope.customUrlParameter]){
+              EmptyState.removeFilter(collection, property);
+            }
+          });
         };
       }
     };
@@ -96,7 +110,7 @@ angular.module('mwSidebarBb', [])
  * Container for filters
  *
  */
-  .directive('mwSidebarFiltersBb', function (Persistance) {
+  .directive('mwSidebarFiltersBb', function (Persistance, EmptyState) {
     return {
       transclude: true,
       templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarFilters.html',
@@ -111,7 +125,9 @@ angular.module('mwSidebarBb', [])
           if (!scope.toggleFilters) {
             scope.collection.filterable.resetFilters();
             Persistance.clearFilterValues(scope.collection);
-            scope.collection.fetch();
+            scope.collection.fetch().then(function(collection){
+              EmptyState.resetFilter(collection);
+            });
           }
         };
 
