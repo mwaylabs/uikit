@@ -27,35 +27,37 @@ angular.module('mwComponentsBb', [])
       link: function (scope) {
 
         scope.inputLength = 0;
-        scope.isMobile = Detect.isMobile();
+        var timeout,
+            isMobile = Detect.isMobile();
 
-        var timeout;
+        var getSearchText = function(){
+          return scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
+        };
 
         var search = function () {
+          //show search icon
+          scope.searching = true;
+
           //set property to setted filters on collection
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
           EmptyState.pushFilter(scope.collection, property);
 
           //backup searched text to reset after fetch complete in case of search text was empty
-          var searchText = scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
-          return scope.collection.fetch().then(function(collection){
-            if(searchText === ''){
-              EmptyState.removeFilter(collection, property);
-            }
-          });
+          return scope.collection.fetch()
+              .then(function(collection){
+                if(getSearchText() === ''){
+                  EmptyState.removeFilter(collection, property);
+                }
+              }).finally(function(){
+                scope.searching = false;
+              });
         };
 
         var throttler = function () {
-          scope.searching = true;
-
           $timeout.cancel(timeout);
-
           timeout = $timeout(function () {
             search().then(function () {
               $timeout.cancel(timeout);
-              scope.searching = false;
-            }, function () {
-              scope.searching = false;
             });
           }, 500);
         };
@@ -65,7 +67,7 @@ angular.module('mwComponentsBb', [])
             search();
           } else {
 
-            if(!scope.isMobile){
+            if(!isMobile){
               throttler();
             }
           }
@@ -79,33 +81,21 @@ angular.module('mwComponentsBb', [])
           }
         };
 
-        scope.hideSearchIcon = function() {
-          if(!scope.collection){
-            return false;
-          }
-          var filterable = scope.collection.filterable;
-          if(scope.searching || scope.isMobile) {
-            return true;
-          }
-          return scope.customUrlParameter ? filterable.customUrlParams[scope.customUrlParameter].length > 0 : filterable.filterValues[scope.property].length > 0;
-        };
-
         scope.showResetIcon = function() {
-          if(!scope.collection || scope.isMobile){
+          //never show icon on mobile
+          if(!scope.collection || isMobile){
             return false;
           }
-          if(scope.customUrlParameter){
-            return scope.collection.filterable.customUrlParams[scope.customUrlParameter].length > 0 && !scope.searching;
-          } else {
-            return scope.collection.filterable.filterValues[scope.property].length > 0 && !scope.searching;
-          }
+          //show icon when searchText is there
+          return getSearchText().length > 0;
         };
 
-//        Loading.registerDoneCallback(function(){
-//          scope.loading = false;
-//        });
-//
-//        scope.loading = Loading.isLoading();
+        scope.performAction = function(){
+          if(scope.showResetIcon() && !scope.searching) {
+            scope.reset();
+          }
+          scope.search();
+        };
       }
     };
   })

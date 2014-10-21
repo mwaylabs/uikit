@@ -17,14 +17,12 @@
              ng-model="collection.filterable.customUrlParams[customUrlParameter]"
              ng-disabled="mwDisabled">
 
-      <span class="input-group-addon filterable-search-btn" ng-click="search()">
+      <span class="input-group-addon filterable-search-btn" ng-click="performAction()">
         <span ng-show="searching" class="search-indicator"></span>
-
-        <span ng-hide="hideSearchIcon()" mw-icon="search"></span>
-        <span ng-if="showResetIcon()"
+        <span ng-hide="searching || showResetIcon()" mw-icon="search"></span>
+        <span ng-if="showResetIcon() && !searching"
               mw-icon="plus"
-              class="red rotate-45"
-              ng-click="reset()"></span>
+              class="red rotate-45"></span>
       </span>
     </div>
   </div>
