@@ -49,7 +49,7 @@ angular.module('mwSidebar', [])
  * @param {number} offset If needed an offset to the top for example when a nav bar is over the sidebar that is not fixed.
  *
  */
-  .directive('mwSidebarPanel', function ($document, $window, $timeout) {
+  .directive('mwSidebarPanel', function ($document, $window) {
     return {
       replace: true,
       transclude: true,
@@ -78,11 +78,10 @@ angular.module('mwSidebar', [])
         var setMaxHeight = function () {
           var containerEl = el.find('.content-container'),
             windowHeight = angular.element(window).height(),
-            containerElOffsetTop = containerEl.offset().top,
+            containerElOffsetTop = el.offset().top,
             footerHeight = angular.element('body > footer').height(),
             padding = 20,
             maxHeight = windowHeight - containerElOffsetTop - footerHeight - padding;
-
             if(maxHeight>0){
               containerEl.css('max-height', maxHeight);
             } else {
@@ -90,9 +89,9 @@ angular.module('mwSidebar', [])
             }
         };
 
-
-        $timeout(setMaxHeight,500);
-        angular.element($window).on('resize', _.throttle(setMaxHeight, 300));
+        window.requestAnimFrame(setMaxHeight);
+        setTimeout(setMaxHeight,500);
+        angular.element($window).on('resize', _.throttle(setMaxHeight, 500));
 
         if (attr.affix && attr.offset) {
           angular.element($window).scroll(function () {

@@ -884,22 +884,7 @@ angular.module('mwComponents', [])
       template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
       link: function (scope, el) {
 
-        var ieVersion = (function () {
-          if (new RegExp(/MSIE ([0-9]{1,}[\.0-9]{0,})/).exec(navigator.userAgent) !== null) {
-            return parseFloat(RegExp.$1);
-          } else {
-            return false;
-          }
-        })();
 
-        var requestAnimFrame = (function () {
-          return  window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame ||
-            function (callback) {
-              window.setTimeout(callback, 1000 / 60);
-            };
-        })();
 
         var loadingInAnimationIsInProgress = false,
           routeChangeDone = false,
@@ -908,7 +893,7 @@ angular.module('mwComponents', [])
         transitionDuration = parseFloat(transitionDuration,10);
 
         /* ie 9 does not support transation events and therefor it does not work*/
-        if(ieVersion===9){
+        if(window.ieVersion===9){
           return;
         }
 
@@ -929,7 +914,7 @@ angular.module('mwComponents', [])
             return;
           }
           el.addClass('loading-out');
-          requestAnimFrame(function () {
+          window.requestAnimFrame(function () {
             console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
             el.removeClass('loading-in');
             forceClassRemoval();
@@ -959,7 +944,7 @@ angular.module('mwComponents', [])
           }
           routeChangeDone = false;
           loadingInAnimationIsInProgress = true;
-          requestAnimFrame(function () {
+          window.requestAnimFrame(function () {
             console.log('[ROUTE_CHANGE_START_EVENT]','Adding loading-in class');
             el.addClass('loading-in');
           });

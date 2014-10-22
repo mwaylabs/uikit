@@ -230,10 +230,11 @@
           }
 
           scope.toggleModel = function(model){
-            if(scope.mwCollection.findWhere(model.toJSON())){
-              scope.mwCollection.remove(model);
+            var existingModel = scope.mwCollection.findWhere(model.toJSON());
+            if(existingModel){
+              scope.mwCollection.remove(existingModel);
             } else {
-              scope.mwCollection.add(model);
+              scope.mwCollection.add(model.toJSON());
             }
           };
         }
