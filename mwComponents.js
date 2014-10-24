@@ -806,7 +806,7 @@ angular.module('mwComponents', [])
         mwTextCollapse: '@',
         length: '='
       },
-      template: '<span>{{  mwTextCollapse | reduceStringTo:filterLength }}' +
+      template: '<span>{{ mwTextCollapse | reduceStringTo:filterLength }}' +
         ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
       link: function (scope) {
         var defaultLength = 200;
