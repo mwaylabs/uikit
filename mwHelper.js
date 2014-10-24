@@ -25,6 +25,118 @@ angular.module('mwHelper', [])
     };
   })
 
+  .directive('mwPreventDefault', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, elm, attr) {
+        if (!attr.mwPreventDefault) {
+          throw new Error('Directive mwPreventDefault: This directive must have an event name as attribute e.g. mw-prevent-default="click"');
+        }
+        elm.on(attr.mwPreventDefault, function (event) {
+          event.preventDefault();
+        });
+      }
+    };
+  })
+
+  .service('mwDefaultFocusService', function(){
+    var MwDefaultFocusService = function(){
+        var _registeredFocusFields = [];
+        this.register = function(id, el){
+          _registeredFocusFields.push({
+            id: id,
+            el: el,
+            active: false
+          });
+        };
+
+        var update = function(id, newObj){
+          var inputField = _.findWhere(_registeredFocusFields,{id:id}),
+            index = _.indexOf(_registeredFocusFields,inputField);
+            if(index>=0){
+              _registeredFocusFields[index] = newObj;
+            }
+        };
+
+        this.setFocus = function(id){
+          var inputField = _.findWhere(_registeredFocusFields,{id:id});
+          if(this.getFocusedField() && this.getFocusedField().id !== id){
+            console.warn('There can be only one focused field');
+          }
+          if(inputField){
+            inputField.active = true;
+            update(inputField);
+          }
+        };
+
+        this.removeFocus = function(id){
+          var inputField = _.findWhere(_registeredFocusFields,{id:id});
+          if (inputField){
+            inputField.active = false;
+            update(inputField);
+          }
+        };
+
+        this.toggleFocus = function(id){
+          var inputField = _.findWhere(_registeredFocusFields,{id:id});
+          if(inputField){
+            inputField.active = !inputField.active;
+            update(inputField);
+          }
+        };
+
+        this.getFocusedField = function(){
+          return _.findWhere(_registeredFocusFields,{active:true});
+        };
+
+        this.remove = function(id){
+          var inputField = _.findWhere(_registeredFocusFields,{id:id}),
+              index = _.indexOf(_registeredFocusFields,inputField);
+          if(index>=0){
+            _registeredFocusFields.splice(index,1);
+          }
+        };
+    };
+
+    return new MwDefaultFocusService();
+  })
+
+  .directive('mwDefaultFocus', function (mwDefaultFocusService) {
+    return {
+      restrict: 'A',
+      scope:{
+        isFocused: '=mwDefaultFocus'
+      },
+      link: function (scope, el) {
+        var id = _.uniqueId('focus_field');
+        mwDefaultFocusService.register(id, el);
+
+        var setFocus = function(){
+          if(el.is(':focus')){
+            return;
+          } else {
+            mwDefaultFocusService.setFocus(id);
+            el[0].focus();
+            window.requestAnimFrame(setFocus);
+          }
+        };
+
+        scope.$watch('isFocused',function(isFocused){
+          if(isFocused){
+            window.requestAnimFrame(setFocus);
+          } else {
+            el[0].blur();
+            mwDefaultFocusService.removeFocus(id);
+          }
+        });
+
+        scope.$on('$destroy',function(){
+          mwDefaultFocusService.remove(id);
+        });
+      }
+    };
+  })
+
 /**
  * @ngdoc directive
  * @name mwForm.directive:mwLeaveConfirmation

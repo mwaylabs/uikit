@@ -239,6 +239,12 @@ angular.module('mwComponents', [])
           });
         }
 
+        scope.$on('$destroy',function(){
+          if (attr.tooltip) {
+            el.popover('destroy');
+          }
+        });
+
       }
     };
   })
