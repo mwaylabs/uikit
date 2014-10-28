@@ -23,7 +23,7 @@ angular.module('mwNav', [])
         },
         transclude: true,
         replace: true,
-        template: '<li><a ng-href="{{url}}" ng-transclude></a></li>',
+        template: '<li><button ng-transclude class="btn btn-link" ng-disabled="mwDisabled" ng-click="navigate(url)"></button></li>',
         link: function (scope, elm) {
           var setActiveClassOnUrlMatch = function (url) {
             if (scope.url && url === scope.url.slice(1)) {
@@ -39,12 +39,12 @@ angular.module('mwNav', [])
             }
           });
 
-          /* FIXME ADD DISABLED URL WHICH IS NOT CLICKABLE*/
-//        if(typeof scope.disabled !== 'undefined' && !scope.disabled){
-//          scope.clickUrl = scope.url;
-//        } else {
-//          scope.clickUrl = null;
-//        }
+          scope.navigate = function(url){
+            url = url.replace(/#\//,'');
+            if(!scope.mwDisabled){
+              $location.path(url);
+            }
+          };
 
           setActiveClassOnUrlMatch($location.$$path);
 
