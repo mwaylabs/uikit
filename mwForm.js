@@ -224,7 +224,7 @@
           mwRequired: '='
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect2.html',
-        link: function(scope){
+        link: function(scope, elm, attr, formCtrl){
           if(scope.mwOptionsCollection.length === 0){
             scope.mwOptionsCollection.fetch();
           }
@@ -235,6 +235,9 @@
               scope.mwCollection.remove(existingModel);
             } else {
               scope.mwCollection.add(model.toJSON());
+            }
+            if(formCtrl){
+              formCtrl.$setDirty();
             }
           };
         }
