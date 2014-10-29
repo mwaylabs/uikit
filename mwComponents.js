@@ -906,7 +906,7 @@ angular.module('mwComponents', [])
         var forceClassRemoval = function(){
           setTimeout(function(){
             if(el.hasClass('loading-out') || el.hasClass('loading-in')){
-              console.log('[ADD_LOADING_OUT_CLASS:SETTIMOUT'+(transitionDuration*1000)+']','FORCE CLASS REMOVAL',transitionDuration*1000+(transitionDuration*200));
+              //console.log('[ADD_LOADING_OUT_CLASS:SETTIMOUT'+(transitionDuration*1000)+']','FORCE CLASS REMOVAL',transitionDuration*1000+(transitionDuration*200));
             }
             el.removeClass('loading-in');
             el.removeClass('loading-out');
@@ -916,12 +916,12 @@ angular.module('mwComponents', [])
 
         var addLoadingOutClass = function () {
           if (!el.hasClass('loading-in') || loadingInAnimationIsInProgress) {
-            console.log('[ADD_LOADING_OUT_CLASS:if condition failed]',!el.hasClass('loading-in')?'Has no loading-in class':'--',loadingInAnimationIsInProgress?'Loading-in animation is arleady in progress':'');
+            //console.log('[ADD_LOADING_OUT_CLASS:if condition failed]',!el.hasClass('loading-in')?'Has no loading-in class':'--',loadingInAnimationIsInProgress?'Loading-in animation is arleady in progress':'');
             return;
           }
           el.addClass('loading-out');
           window.requestAnimFrame(function () {
-            console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
+            //console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
             el.removeClass('loading-in');
             forceClassRemoval();
           });
@@ -929,10 +929,10 @@ angular.module('mwComponents', [])
 
         el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
           if(el.hasClass('loading-out')){
-            console.log('[TRANSITION_END_EVENT]','Loading-out class is set and im removing loading-in and loading-out class now');
+            //console.log('[TRANSITION_END_EVENT]','Loading-out class is set and im removing loading-in and loading-out class now');
             el.removeClass('loading-out');
           } else if(el.hasClass('loading-in')){
-            console.log('[TRANSITION_END_EVENT]','Loading-in class is set and ' +(routeChangeDone?'routechange is done so im calling addLoadingOutClass':'routechange is not ready yet so im doing nothing'));
+            //console.log('[TRANSITION_END_EVENT]','Loading-in class is set and ' +(routeChangeDone?'routechange is done so im calling addLoadingOutClass':'routechange is not ready yet so im doing nothing'));
             loadingInAnimationIsInProgress = false;
             if (routeChangeDone) {
               addLoadingOutClass();
@@ -943,25 +943,25 @@ angular.module('mwComponents', [])
         });
 
         $rootScope.$on('$routeChangeStart', function (event, current) {
-          console.log('--------------------');
+          //console.log('--------------------');
           if (current.disableLoader || loadingInAnimationIsInProgress) {
-            console.log('[ROUTE_CHANGE_START_EVENT:if condition failed]',current.disableLoader?'Loader is disabled':'--',loadingInAnimationIsInProgress?'Loading-in animation is already running':'');
+            //console.log('[ROUTE_CHANGE_START_EVENT:if condition failed]',current.disableLoader?'Loader is disabled':'--',loadingInAnimationIsInProgress?'Loading-in animation is already running':'');
             return;
           }
           routeChangeDone = false;
           loadingInAnimationIsInProgress = true;
           window.requestAnimFrame(function () {
-            console.log('[ROUTE_CHANGE_START_EVENT]','Adding loading-in class');
+            //console.log('[ROUTE_CHANGE_START_EVENT]','Adding loading-in class');
             el.addClass('loading-in');
           });
         });
         $rootScope.$on('$routeChangeSuccess', function () {
-          console.log('[ROUTE_CHANGE_DONE_EVENT]');
+          //console.log('[ROUTE_CHANGE_DONE_EVENT]');
           routeChangeDone = true;
           addLoadingOutClass();
         });
         $rootScope.$on('$routeChangeError', function () {
-          console.log('[ROUTE_CHANGE_ERROR_EVENT]');
+          //console.log('[ROUTE_CHANGE_ERROR_EVENT]');
           routeChangeDone = true;
           addLoadingOutClass();
         });
