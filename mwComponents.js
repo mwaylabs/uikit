@@ -201,7 +201,7 @@ angular.module('mwComponents', [])
         if (isBootstrap) {
           return '<i class="fa {{mwIcon}}"></i>';
         } else {
-          return '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
+          return '<i class="glyphicon glyphicon-{{mwIcon}}"></i>';
         }
       },
       link: function (scope, el, attr) {
@@ -232,7 +232,7 @@ angular.module('mwComponents', [])
               if (isBootstrap) {
                 template = '<i class="fa {{mwIcon}}"></i>';
               } else {
-                template = '<span class="glyphicon glyphicon-{{mwIcon}}"></span>';
+                template = '<i class="glyphicon glyphicon-{{mwIcon}}"></i>';
               }
               el.replaceWith($compile(template)(scope));
             }
