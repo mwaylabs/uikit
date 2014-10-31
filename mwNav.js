@@ -195,6 +195,7 @@ angular.module('mwNav', [])
       return {
         transclude: true,
         replace: true,
+        scope: true,
         require: ['^mwNavbarDropdown', '^mwNavbar'],
         template: '<li ng-class="{ true: \'active\' }[isActive()]" ng-transclude></li>',
         link: function (scope, elm, attr, ctrls) {
@@ -202,10 +203,17 @@ angular.module('mwNav', [])
               mwNavbarDropdownItemsCtrl = ctrls[0],
               mwNavbarCtrl = ctrls[1];
 
-          mwNavbarDropdownItemsCtrl.register(link);
+          if(mwNavbarDropdownItemsCtrl){
+            mwNavbarDropdownItemsCtrl.register(link);
+          }
 
           scope.isActive = function () {
-            return mwNavbarCtrl.isActive(link, true);
+            if(mwNavbarCtrl){
+              return mwNavbarCtrl.isActive(link, true);
+            } else {
+              return false;
+            }
+
           };
 
           elm.find('a').on('click', function() {
