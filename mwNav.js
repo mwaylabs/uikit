@@ -62,21 +62,6 @@ angular.module('mwNav', [])
             if(!path) {
               return false;
             }
-
-            // Remove leading number sign from given path and match with current location
-            // Returns true if current locations matches given path
-//            var regex = '^' + path.replace(/#/g, '');
-
-            // If the exact path has to be match add dollar sign to match for end of line
-//            if (exact) {
-//              regex += '$';
-//            }
-
-//            return $location.path().match(new RegExp(regex)) ? true : false;
-
-
-            /* tried new version without regex - much faster (this method was consuming a lot of time in devtools profiler */
-
             var newPath = path.substring(1);
             if(exact){
               return $location.path() === newPath;
@@ -130,16 +115,18 @@ angular.module('mwNav', [])
       };
     })
 
-    .directive('mwNavbarItem', function () {
+    .directive('mwNavbarItem', function ($rootScope) {
       return {
         transclude: true,
         replace: true,
         require: '^mwNavbar',
-        template: '<li ng-class="{ true: \'active\' }[isActive()]" ng-transclude></li>',
+        template: '<li ng-class="{active: isActive}" ng-transclude></li>',
         link: function (scope, elm, attr, mwNavbarCtrl) {
-          scope.isActive = function () {
-            return mwNavbarCtrl.isActive(elm.find('a').attr('href'));
+          var isActive = function () {
+            scope.isActive = mwNavbarCtrl.isActive(elm.find('a').attr('href'));
           };
+          isActive();
+          $rootScope.$on('$routeChangeSuccess', isActive);
 
           elm.find('a').on('click', function() {
             scope.uncollapse();
@@ -148,22 +135,24 @@ angular.module('mwNav', [])
       };
     })
 
-    .directive('mwNavbarDropdown', function () {
+    .directive('mwNavbarDropdown', function ($rootScope) {
       return {
         replace: true,
         require: '^mwNavbar',
         transclude: true,
-        template: '<li ng-class="{ true: \'active\' }[isActive()]" class="dropdown" ng-transclude></li>',
+        template: '<li ng-class="{active: isActive}" class="dropdown" ng-transclude></li>',
         link: function (scope, elm, attr, mwNavbarCtrl) {
-          scope.isActive = function () {
-            var isActive = false;
+          var isActive = function () {
+            var active = false;
             angular.forEach(scope.dropdownItems, function (path) {
-              if (!isActive) {
-                isActive = mwNavbarCtrl.isActive(path);
+              if (!active) {
+                active = mwNavbarCtrl.isActive(path);
               }
             });
-            return isActive;
+            scope.isActive = active;
           };
+          isActive();
+          $rootScope.$on('$routeChangeSuccess', isActive);
         },
         controller: function ($scope) {
           var dropdownItems = $scope.dropdownItems = [];
@@ -191,13 +180,13 @@ angular.module('mwNav', [])
     })
 
 
-    .directive('mwNavbarDropdownItem', function () {
+    .directive('mwNavbarDropdownItem', function ($rootScope) {
       return {
         transclude: true,
         replace: true,
         scope: true,
         require: ['^mwNavbarDropdown', '^mwNavbar'],
-        template: '<li ng-class="{ true: \'active\' }[isActive()]" ng-transclude></li>',
+        template: '<li ng-class="{active: isActive}" ng-transclude></li>',
         link: function (scope, elm, attr, ctrls) {
           var link = elm.find('a').attr('href'),
               mwNavbarDropdownItemsCtrl = ctrls[0],
@@ -207,14 +196,12 @@ angular.module('mwNav', [])
             mwNavbarDropdownItemsCtrl.register(link);
           }
 
-          scope.isActive = function () {
-            if(mwNavbarCtrl){
-              return mwNavbarCtrl.isActive(link, true);
-            } else {
-              return false;
-            }
-
+          var isActive = function () {
+            scope.isActive = mwNavbarCtrl ? mwNavbarCtrl.isActive(link, true) : false;
           };
+          isActive();
+
+          $rootScope.$on('$routeChangeSuccess', isActive);
 
           elm.find('a').on('click', function() {
             scope.uncollapse();
