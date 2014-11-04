@@ -72,9 +72,12 @@
         restrict: 'A',
         require: 'ngModel',
         scope:{
-          mwRequired:'=mwValidateCollectionOrModel'
+          mwRequired:'=mwValidateCollectionOrModel',
+          mwKey:'@'
         },
         link: function (scope, elm, attrs, ngModel) {
+
+          var key = scope.mwKey || 'uuid';
 
           var setRequiredValidty = function(isValid){
             if(scope.mwRequired){
@@ -93,10 +96,10 @@
                }
              });
            } else if(value instanceof window.Backbone.Model){
-             setRequiredValidty(value.get('uuid'));
+             setRequiredValidty(value.get(key));
              value.on('change', function(){
                {
-                 setRequiredValidty(value.get('uuid'));
+                 setRequiredValidty(value.get(key));
                }
              });
            }
