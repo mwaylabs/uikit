@@ -14,7 +14,7 @@ angular.module('mwComponentsBb', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearchBb', function ($timeout, Loading, Detect, EmptyState) {
+  .directive('mwFilterableSearchBb', function ($timeout, Loading, Detect, EmptyState, Persistance) {
     return {
       transclude: true,
       scope: {
@@ -37,6 +37,9 @@ angular.module('mwComponentsBb', [])
         var search = function () {
           //show search icon
           scope.searching = true;
+
+          //persist filter values
+          Persistance.saveFilterValues(scope.collection);
 
           //set property to setted filters on collection
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
