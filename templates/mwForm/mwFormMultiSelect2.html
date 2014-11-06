@@ -5,6 +5,7 @@
       <label>
         <input type="checkbox"
                name="selectOption"
+               ng-disabled="mwDisabled"
                mw-custom-checkbox
                ng-checked="mwCollection.findWhere(model.toJSON())"
                ng-click="toggleModel(model); setDirty()">
