@@ -221,7 +221,8 @@
           mwOptionsCollection: '=',
           mwOptionsLabelKey:'@',
           mwOptionsLabelI18nPrefix:'@',
-          mwRequired: '='
+          mwRequired: '=',
+          mwDisabled: '='
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect2.html',
         link: function(scope, elm, attr, formCtrl){
