@@ -33,7 +33,6 @@ angular.module('mwSidebarBb', [])
         options: '=',
         placeholder: '@',
         mwDisabled: '=',
-        persist: '=',
         keyProperty: '@',
         labelProperty: '@',
         labelTransformFn: '=',
