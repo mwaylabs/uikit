@@ -938,7 +938,7 @@ angular.module('mwComponents', [])
               addLoadingOutClass();
             }
           } else {
-            console.log('[TRANSITION_END_EVENT]','Neither loading-in nor loading-out class is set');
+            //console.log('[TRANSITION_END_EVENT]','Neither loading-in nor loading-out class is set');
           }
         });
 
