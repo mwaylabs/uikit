@@ -53,7 +53,7 @@ angular.module('mwMap', [])
             })
           ],
           ol3Logo:false,
-          view: new openlayer.View2D({
+          view: new openlayer.View({
             center: openlayer.proj.transform(centerCoords, 'EPSG:4326', 'EPSG:3857'),
             zoom: zoom,
             minZoom: 6
