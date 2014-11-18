@@ -458,15 +458,18 @@
               var previousSelescted = angular.element('.mw-radio.active');
               //check if the previous selected is an item of the current selected for the case that multiple radio groups are on one page
               //unselect all elements which are currently active from this name group
-              previousSelescted.each(function(){
-                var $el = angular.element(this);
-                if($el.find('input[name='+el.attr('name')+']').length>0){
-                  if(!$el.find('input[type=radio]').is(':checked')){
-                    $el.removeClass('active');
+
+                previousSelescted.each(function(){
+                  var $el = angular.element(this);
+                  if($el.find('input[name='+el.attr('name')+']').length>0){
+                    if(!$el.find('input[type=radio]').is(':checked')){
+                      $el.removeClass('active');
+                    }
                   }
-                }
-              });
-              setActiveClass(el.is(':checked'));
+                });
+              if(el.is(':checked')){
+                setActiveClass(el.is(':checked'));
+              }
             });
 
             //unbind eventlistener to prevent infinite loops!
@@ -506,6 +509,11 @@
             };
 
             render();
+
+            window.setTimeout(function(){
+              $window.$(el).trigger('change');
+            },0);
+
           }());
         }
       };
