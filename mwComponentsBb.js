@@ -89,6 +89,10 @@ angular.module('mwComponentsBb', [])
           if(!scope.collection || isMobile){
             return false;
           }
+          //return true if search text is undefined (ng-model is invalid e..g text is too long)
+          if(angular.isUndefined(getSearchText())){
+            return true;
+          }
           //show icon when searchText is there
           return getSearchText().length > 0;
         };
