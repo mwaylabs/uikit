@@ -272,7 +272,7 @@ angular.module('mwListable', [])
         restrict: 'A',
         require: '^mwListable',
         scope: {
-          disabled: '=',
+          mwDisabled: '=',
           item: '='
         },
         templateUrl: 'modules/ui/templates/mwListable/mwListableColumnCheckbox.html',
@@ -331,7 +331,7 @@ angular.module('mwListable', [])
         require: '^mwListable',
         compile: function (elm) {
 
-          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox disabled="isDisabled()" item="item"></td>');
+          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox mw-disabled="isDisabled()" item="item"></td>');
 
           return function (scope, elm, attr) {
             var selectedClass = 'selected';

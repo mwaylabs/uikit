@@ -1,7 +1,7 @@
 <input ng-if="!radio"
        type="checkbox"
        ng-click="click(item, $event)"
-       ng-disabled="disabled || false"
+       ng-disabled="mwDisabled || false"
        ng-checked="selectable.isSelected(item)"
        mw-custom-checkbox>
 
@@ -9,6 +9,6 @@
        type="radio"
        name="{{selectable.id}}"
        ng-click="click(item, $event)"
-       ng-disabled="disabled || false"
+       ng-disabled="mwDisabled || false"
        ng-checked="selectable.isSelected(item)"
        mw-custom-radio>
