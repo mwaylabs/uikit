@@ -216,7 +216,6 @@ angular.module('mwListableBb', [])
         restrict: 'A',
         require: '^mwListableBb',
         scope: {
-          disabled: '=',
           item: '='
         },
         templateUrl: 'modules/ui/templates/mwListableBb/mwListableColumnCheckbox.html',
@@ -268,13 +267,13 @@ angular.module('mwListableBb', [])
  *
  * Note: this directive has to be nested inside an `mwListable` table.
  */
-    .directive('mwListableBodyRowBb', function () {
+    .directive('mwListableBodyRowBb', function ($timeout) {
       return {
         restrict: 'A',
         require: '^mwListableBb',
         compile: function (elm) {
 
-          elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb disabled="isDisabled()" item="item"></td>');
+          elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb item="item"></td>');
 
           return function (scope, elm, attr, ctrl) {
             var selectedClass = 'selected';
@@ -288,9 +287,10 @@ angular.module('mwListableBb', [])
             }
 
             elm.on('click', function () {
-              if (scope.collection.selectable && scope.item.selectable && !scope.isDisabled(scope.item)) {
-                scope.item.selectable.toggleSelect();
-                scope.$apply();
+              if (scope.collection.selectable && scope.item.selectable && !scope.item.selectable.isDisabled()) {
+                $timeout(function(){
+                  scope.item.selectable.toggleSelect();
+                });
               }
             });
 
@@ -301,10 +301,6 @@ angular.module('mwListableBb', [])
                 elm.removeClass(selectedClass);
               }
             });
-
-            scope.isDisabled = function () {
-              return scope.$eval(attr.mwListableDisabled, { item: scope.item });
-            };
           };
         }
       };
