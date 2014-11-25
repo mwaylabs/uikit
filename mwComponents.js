@@ -212,7 +212,9 @@ angular.module('mwComponents', [])
             content: attr.tooltip,
             container: 'body'
           });
+        }
 
+        if(attr.tooltip !== undefined) {
           attr.$observe('tooltip', function (newVal) {
             el.popover('destroy');
             el.popover({
