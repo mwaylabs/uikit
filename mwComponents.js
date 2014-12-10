@@ -886,22 +886,22 @@ angular.module('mwComponents', [])
     };
   })
 
-  .directive('mwViewChangeLoader', function ($rootScope) {
+  .directive('mwViewChangeLoader', function ($rootScope, Detect) {
     return {
       replace: true,
       template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
       link: function (scope, el) {
 
-
-
         var loadingInAnimationIsInProgress = false,
           routeChangeDone = false,
-          transitionDuration = el.css('transition-duration') || el.css('-moz-transition-duration') || el.css('-webkit-transition-duration') || el.css('-o-transition-duration') || 1;
+          transitionDuration = el.css('transition-duration') || el.css('-moz-transition-duration') || el.css('-webkit-transition-duration') || el.css('-o-transition-duration') || 0;
+
 
         transitionDuration = parseFloat(transitionDuration,10);
-
+        transitionDuration = Math.floor(transitionDuration*10)/10;
+        
         /* ie 9 does not support transation events and therefor it does not work*/
-        if(window.ieVersion===9){
+        if(window.ieVersion===9 || transitionDuration === 0 || (Detect.isIOS() && parseInt(Detect.getDeviceDetails().deviceOSVersion,10)<7)){
           return;
         }
 
