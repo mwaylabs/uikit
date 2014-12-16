@@ -7,35 +7,56 @@
     return {
       restrict: 'E',
       require: '?^mwFormInput',
-      compile: function (elm, attr) {
-        var skipTheFollowing = ['checkbox', 'radio'],
-            dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
-            maxLength = 255; // for input fields of all types
+      link: function(scope, elm, attr, ctrl) {
+        var formInputController = ctrl,
+            skipTheFollowing = ['checkbox', 'radio'],
+            dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1;
 
         // Add default class coming from bootstrap
         if(dontSkipIt){
-          attr.$addClass('form-control');
+          elm.addClass('form-control');
         }
 
+        //append validation messages to element
+        if (dontSkipIt && formInputController) {
+          formInputController.buildValidationMessages(elm);
+        }
+      }
+    };
+  };
+
+  var addDefaultValidations = function(){
+    return {
+      restrict: 'E',
+      require: '?ngModel',
+      link: function (scope, elm, attr, ctrl) {
+
+        var ngModelController = ctrl,
+          skipTheFollowing = ['checkbox', 'radio'],
+          dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
+          _maxlength = 255, // for input fields of all types
+          _maxIntValue = 2147483647;
+
         // use higher maxLength for textareas
-        if (elm[0].type === 'textarea') {
-          maxLength = 10000;
+        if (!attr.type) {
+          _maxlength = 10000;
         }
 
         // Don't overwrite existing values for ngMaxlength
-        if (dontSkipIt && !attr.ngMaxlength) {
-          attr.$set('ngMaxlength', maxLength);
+        if (attr.type !== 'number' && ngModelController && dontSkipIt && !ngModelController.$validators.maxlength) {
+          attr.$set('ngMaxlength', _maxlength);
+          ngModelController.$validators.maxlength = function (modelValue, viewValue) {
+            return (_maxlength < 0) || ngModelController.$isEmpty(modelValue) || (viewValue.length <= _maxlength);
+          };
         }
 
-        if (attr.type === 'number' && !attr.max) {
-           attr.$set('max', 2147483647);
+        //set max value for number fields
+        if (attr.type === 'number' && !ctrl.$validators.max) {
+          attr.$set('max', _maxIntValue);
+          ctrl.$validators.max = function(value) {
+            return ctrl.$isEmpty(value) || angular.isUndefined(_maxIntValue) || value <= _maxIntValue;
+          };
         }
-
-        return function (scope, elm,attrs,mwFormInput) {
-          if (dontSkipIt && mwFormInput) {
-            mwFormInput.buildValidationMessages(elm);
-          }
-        };
       }
     };
   };
@@ -724,6 +745,7 @@
    *
    */
       .directive('input', extendHTMLElement)
+      .directive('input', addDefaultValidations)
 
   /**
    * @ngdoc directive
@@ -735,7 +757,8 @@
    * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
    *
    */
-      .directive('textarea', extendHTMLElement);
+      .directive('textarea', extendHTMLElement)
+      .directive('textarea', addDefaultValidations);
 
 
 })();
