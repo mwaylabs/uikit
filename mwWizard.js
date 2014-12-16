@@ -251,13 +251,14 @@ angular.module('mwWizard', [])
       link: function (scope, el, attr, mwWizardCtrl) {
         scope._isActive = false;
 
+        //we need to set a default value here, see
+        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+        attr.title = attr.title || 'noname';
         attr.$observe('title',function(title){
           if(title && title.length>0){
             scope.title = title;
-            mwWizardCtrl.registerStep(scope);
-          } else if(!angular.isDefined(attr.title)) {
-            mwWizardCtrl.registerStep(scope);
           }
+          mwWizardCtrl.registerStep(scope);
         });
 
 //        if(!angular.isDefined(attr.title)){

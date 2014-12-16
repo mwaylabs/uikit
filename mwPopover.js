@@ -76,6 +76,10 @@ angular.module('mwPopover', [])
           });
 
           buildPopover();
+
+          //we need to set a default value here, see
+          //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+          attr.popoverTitle = attr.popoverTitle || 'popoverTitle';
           attr.$observe('popoverTitle', buildPopover);
         }
       };
