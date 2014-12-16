@@ -14,9 +14,8 @@ angular.module('mwComponentsBb', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearchBb', function ($timeout, Loading, Detect, EmptyState, Persistance) {
+  .directive('mwFilterableSearchBb', function ($timeout, $animate, Loading, Detect, EmptyState, Persistance) {
     return {
-      transclude: true,
       scope: {
         collection: '=',
         property: '@',
@@ -24,7 +23,8 @@ angular.module('mwComponentsBb', [])
         mwDisabled: '='
       },
       templateUrl: 'modules/ui/templates/mwComponentsBb/mwFilterableSearch.html',
-      link: function (scope) {
+      link: function (scope, elm) {
+        $animate.enabled(false, elm.find('.search-indicator'));
 
         scope.inputLength = 0;
         var timeout,

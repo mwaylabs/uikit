@@ -331,9 +331,8 @@ angular.module('mwComponents', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearch', function ($timeout, Loading, Detect) {
+  .directive('mwFilterableSearch', function ($timeout, $animate, Loading, Detect) {
     return {
-      transclude: true,
       scope: {
         filterable: '=',
         mwDisabled: '=',
@@ -341,7 +340,8 @@ angular.module('mwComponents', [])
 //        loading: '='
       },
       templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
-      link: function (scope) {
+      link: function (scope, elm) {
+        $animate.enabled(false, elm.find('.search-indicator'));
         scope.model = scope.filterable.properties[scope.property];
         scope.inputLength = 0;
         scope.isMobile = Detect.isMobile();
@@ -444,6 +444,9 @@ angular.module('mwComponents', [])
           }
         };
 
+        //we need to set a default value here, see
+        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+        attr.mwRating = attr.mwRating || 0;
         attr.$observe('mwRating', function (value) {
           buildStars(scope.$eval(value));
         });
@@ -899,7 +902,7 @@ angular.module('mwComponents', [])
 
         transitionDuration = parseFloat(transitionDuration,10);
         transitionDuration = Math.floor(transitionDuration*10)/10;
-        
+
         /* ie 9 does not support transation events and therefor it does not work*/
         if(window.ieVersion===9 || transitionDuration === 0 || (Detect.isIOS() && parseInt(Detect.getDeviceDetails().deviceOSVersion,10)<7)){
           return;
