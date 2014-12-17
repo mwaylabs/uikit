@@ -47,7 +47,7 @@ angular.module('mwNav', [])
             }
           };
 
-          setActiveClassOnUrlMatch($location.$$path)
+          setActiveClassOnUrlMatch($location.$$path);
 
         }
       };
