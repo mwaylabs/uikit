@@ -150,12 +150,12 @@ angular.module('mwComponents', [])
           $route.reload();
         };
 
+        if(scope.url){
+          console.info('Url attribute in header directive is deprectaed. It will use js back functionality now! url:',scope.url);
+        }
+
         scope.back = function () {
-          if (scope.url) {
-            $location.path(scope.url);
-          } else {
-            window.history.back();
-          }
+          window.history.back();
         };
 
         if (scope.warningText) {

@@ -43,6 +43,7 @@ angular.module('mwNav', [])
             url = url.replace(/#\//,'');
             if(!scope.mwDisabled){
               $location.path(url);
+              $location.replace();
             }
           };
 
