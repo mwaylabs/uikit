@@ -43,10 +43,11 @@ angular.module('mwNav', [])
             url = url.replace(/#\//,'');
             if(!scope.mwDisabled){
               $location.path(url);
+              $location.replace();
             }
           };
 
-          setActiveClassOnUrlMatch($location.$$path);
+          setActiveClassOnUrlMatch($location.$$path)
 
         }
       };
