@@ -1,7 +1,6 @@
-<div class="nav-bar-holder">
+<div class="nav-bar-holder mwHeader">
   <div class="nav-bar-fixer">
     <nav class="navbar navbar-default" role="navigation">
-      <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header col-xs-12">
         <div ng-if="showBackButton"
              class="back"
@@ -10,8 +9,13 @@
           <span mw-icon="chevron-left"></span>
         </div>
 
-        <h2 class="lead pull-left clickable" ng-click="refresh()">{{title}}</h2>
-
+        <h2 class="lead pull-left clearfix">
+          <div ng-repeat="breadCrumb in mwBreadCrumbs" class="hidden-xs pull-left mw-bread-crumbs">
+            <a ng-href="{{breadCrumb.url}}" class="bread-crumb">{{breadCrumb.title}}</a>
+            <i mw-icon="fa-caret-right" class="arrow"></i>
+          </div>
+          <div class="pull-left" ng-click="refresh()">{{title}}</div>
+        </h2>
 
         <div class="pull-left header-popover"
              data-content="{{ warningText }}"

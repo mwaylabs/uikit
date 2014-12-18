@@ -130,10 +130,10 @@ angular.module('mwComponents', [])
       transclude: true,
       scope: {
         title: '@',
-        url: '@',
         showBackButton: '@',
         warningText: '@',
-        warningCondition: '='
+        warningCondition: '=',
+        mwBreadCrumbs: '='
       },
       templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
