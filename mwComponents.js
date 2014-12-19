@@ -130,6 +130,7 @@ angular.module('mwComponents', [])
       transclude: true,
       scope: {
         title: '@',
+        mwTitleIcon: '@',
         showBackButton: '@',
         warningText: '@',
         warningCondition: '=',
@@ -194,17 +195,13 @@ angular.module('mwComponents', [])
       replace: true,
       scope: {
         mwIcon: '@',
-        placement: '@'
+        placement: '@',
+        additionalClass: '@class',
+        style: '@'
       },
-      template: function (elm, attr) {
-        var isBootstrap = angular.isArray(attr.mwIcon.match(/^fa-/));
-        if (isBootstrap) {
-          return '<i class="fa {{mwIcon}}"></i>';
-        } else {
-          return '<i class="glyphicon glyphicon-{{mwIcon}}"></i>';
-        }
-      },
+      template: '<i></i>',
       link: function (scope, el, attr) {
+
         if (attr.tooltip) {
           el.popover({
             trigger: 'hover',
@@ -226,20 +223,24 @@ angular.module('mwComponents', [])
           });
         }
 
-        if (!scope.mwIcon) {
+        //if (!scope.mwIcon) {
           scope.$watch('mwIcon', function (newVal) {
             if (newVal) {
               var template,
-                isBootstrap = angular.isArray(scope.mwIcon.match(/^fa-/));
-              if (isBootstrap) {
-                template = '<i class="fa {{mwIcon}}"></i>';
+                isBootstrap = angular.isArray(scope.mwIcon.match(/^fa-/)),
+                isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/));
+
+              if(isIcConf){
+                template = '<i class="icon-ic_conf {{mwIcon}}" ng-class="additionalClass" style="{{style}}"></i>';
+              } else if (isBootstrap) {
+                template = '<i class="fa {{mwIcon}}" ng-class="additionalClass" style="{{style}}"></i>';
               } else {
-                template = '<i class="glyphicon glyphicon-{{mwIcon}}"></i>';
+                template = '<i class="glyphicon glyphicon-{{mwIcon}}" ng-class="additionalClass" style="{{style}}"></i>';
               }
               el.replaceWith($compile(template)(scope));
             }
           });
-        }
+        //}
 
         scope.$on('$destroy',function(){
           if (attr.tooltip) {
