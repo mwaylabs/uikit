@@ -10,6 +10,7 @@
         </div>
 
         <h2 class="lead pull-left clearfix">
+          <i mw-icon="{{mwTitleIcon}}" class="pull-left header-icon" ng-if="mwTitleIcon"></i>
           <div ng-repeat="breadCrumb in mwBreadCrumbs" class="hidden-xs pull-left mw-bread-crumbs">
             <a ng-href="{{breadCrumb.url}}" class="bread-crumb">{{breadCrumb.title}}</a>
             <i mw-icon="fa-caret-right" class="arrow"></i>
