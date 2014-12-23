@@ -2,12 +2,12 @@
 
 (function () {
 
-  var validateRegex = function(value, regex){
-      if(value){
-        return value.match(regex);
-      } else {
-        return true;
-      }
+  var validateRegex = function (value, regex) {
+    if (value) {
+      return value.match(regex);
+    } else {
+      return true;
+    }
   };
 
   angular.module('mwFormValidators', [])
@@ -39,7 +39,7 @@
           };
 
           var validateNumber = function (value) {
-            ngModel.$setValidity('phone', validateRegex(value,regex));
+            ngModel.$setValidity('phone', validateRegex(value, regex));
             return value;
           };
 
@@ -57,7 +57,7 @@
           var regex = /^(0x)?([0-9A-Fa-f])+$/;
 
           var validateHex = function (value) {
-            ngModel.$setValidity('hex', validateRegex(value,regex));
+            ngModel.$setValidity('hex', validateRegex(value, regex));
             return value;
           };
 
@@ -118,7 +118,7 @@
 
 
           var validatePlaceholder = function (value) {
-            ngModel.$setValidity('placeholder', validateRegex(value,regex));
+            ngModel.$setValidity('placeholder', validateRegex(value, regex));
             return value;
           };
 
@@ -134,12 +134,12 @@
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
           var mailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+([.][a-zA-Z0-9_-]+)*[.][a-zA-Z0-9._-]+$/,
-              placeholderRegex = /\$\{.+\}/;
+            placeholderRegex = /\$\{.+\}/;
 
           var validatePlaceholder = function (value) {
-            var validMail = validateRegex(value,mailRegex),
-                validPlaceholder = validateRegex(value,placeholderRegex);
-            if(validMail || validPlaceholder){
+            var validMail = validateRegex(value, mailRegex),
+              validPlaceholder = validateRegex(value, placeholderRegex);
+            if (validMail || validPlaceholder) {
               ngModel.$setValidity('email', true);
               ngModel.$setValidity('placeholder', true);
             } else {
