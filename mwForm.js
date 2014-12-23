@@ -32,7 +32,7 @@
       link: function (scope, elm, attr, ctrl) {
 
         var ngModelController = ctrl,
-          skipTheFollowing = ['checkbox', 'radio'],
+          skipTheFollowing = ['checkbox', 'radio', 'hidden', 'file'],
           dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
           _maxlength = 255, // for input fields of all types
           _maxIntValue = 2147483647;
