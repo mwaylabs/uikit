@@ -71,47 +71,40 @@
       return {
         restrict: 'A',
         require: 'ngModel',
-        scope:{
-          mwRequired:'=mwValidateCollectionOrModel',
-          mwKey:'@'
+        scope: {
+          mwRequired: '=mwValidateCollectionOrModel',
+          mwKey: '@'
         },
         link: function (scope, elm, attrs, ngModel) {
 
           var key = scope.mwKey || 'uuid';
 
-          var setRequiredValidty = function(isValid){
-            if(scope.mwRequired){
-              ngModel.$setValidity('required', isValid);
-            } else {
-              ngModel.$setValidity('required', true);
+          var unwatch = scope.$watch('ngModel.$modelValue', function () {
+            var val = ngModel.$modelValue;
+            if (val) {
+              if (val instanceof window.Backbone.Collection) {
+                val.on('add remove reset', function () {
+                  ngModel.$validate();
+                });
+              } else if (val instanceof window.Backbone.Model) {
+                val.on('change:' + key, function () {
+                  ngModel.$validate();
+                });
+              } else {
+                throw new Error('Value is neither a model nor a collection! Make its one of them', val);
+              }
+              unwatch();
             }
-          };
-
-          var validateCollectionOrModel = function (value) {
-           if(value instanceof window.Backbone.Collection){
-             setRequiredValidty(value.models.length>0);
-             value.on('add remove reset', function(){
-               {
-                 setRequiredValidty(value.models.length>0);
-               }
-             });
-           } else if(value instanceof window.Backbone.Model){
-             setRequiredValidty(value.get(key));
-             value.on('change', function(){
-               {
-                 setRequiredValidty(value.get(key));
-               }
-             });
-           }
-           return value;
-          };
-
-          scope.$watch('mwRequired',function(){
-            validateCollectionOrModel(ngModel.$modelValue);
           });
 
-          ngModel.$formatters.push(validateCollectionOrModel);
-          ngModel.$parsers.push(validateCollectionOrModel);
+          ngModel.$validators.required = function (value) {
+            if (value instanceof window.Backbone.Collection) {
+              return (value.models.length > 0);
+            } else if (value instanceof window.Backbone.Model) {
+              return value.get(key) ? true : false;
+            }
+            return false;
+          };
         }
       };
     })
