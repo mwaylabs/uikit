@@ -34,12 +34,15 @@ angular.module('mwModal', [])
       var Modal = function(modalOptions){
 
         var _id = modalOptions.templateUrl,
-            _scope = (modalOptions.scope || $rootScope).$new(),
+            _scope = modalOptions.scope || $rootScope,
+            _scopeAttributes = modalOptions.scopeAttributes || {},
             _controller = modalOptions.controller,
             _self = this,
             _cachedTemplate,
             _modal,
+            _usedScope,
             _bootstrapModal;
+
 
         var _getTemplate = function () {
           if (!_id) {
@@ -70,8 +73,12 @@ angular.module('mwModal', [])
         var _buildModal = function(){
           var dfd = $q.defer();
 
+          _usedScope = _scope.$new();
+
+          _.extend(_usedScope, _scopeAttributes);
+
           if (_controller) {
-            $controller(_controller, { $scope: _scope, modalId: _id });
+            $controller(_controller, { $scope: _usedScope, modalId: _id });
           }
 
           _scope.hideModal = function(){
@@ -79,8 +86,8 @@ angular.module('mwModal', [])
           };
 
           _getTemplate().then(function(template){
-            _modal = $compile(template.trim())(_scope);
-            _scope.$on('COMPILE:FINISHED',function(){
+            _modal = $compile(template.trim())(_usedScope);
+            _usedScope.$on('COMPILE:FINISHED',function(){
               _modal.addClass('mw-modal');
               _bootstrapModal = _modal.find('.modal');
               _bindModalCloseEvent();
@@ -118,7 +125,7 @@ angular.module('mwModal', [])
 
         this.setScopeAttributes = function(obj){
           if(_.isObject(obj)){
-            _.extend(_scope, obj);
+            _.extend(_scopeAttributes, obj);
           }
         };
 
@@ -136,6 +143,7 @@ angular.module('mwModal', [])
           if(_bootstrapModal){
             _bootstrapModal.modal('hide');
             _bootstrapModal.on('hidden.bs.modal', function () {
+              _bootstrapModal.off();
               _self.destroy();
               dfd.resolve();
             });
@@ -174,6 +182,7 @@ angular.module('mwModal', [])
             overflow:''
           });
           if(_modal){
+            _usedScope.$destroy();
             _modal.remove();
           }
         };
