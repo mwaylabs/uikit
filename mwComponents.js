@@ -890,86 +890,25 @@ angular.module('mwComponents', [])
     };
   })
 
-  .directive('mwViewChangeLoader', function ($rootScope, Detect) {
+  .directive('mwViewChangeLoader', function ($rootScope) {
     return {
       replace: true,
-      template: '<div class="mw-view-change-loader"><div class="spinner"></div></div>',
-      link: function (scope, el) {
-
-        var loadingInAnimationIsInProgress = false,
-          routeChangeDone = false,
-          transitionDuration = el.css('transition-duration') || el.css('-moz-transition-duration') || el.css('-webkit-transition-duration') || el.css('-o-transition-duration') || 0;
-
-
-        transitionDuration = parseFloat(transitionDuration,10);
-        transitionDuration = Math.floor(transitionDuration*10)/10;
-
-        /* ie 9 does not support transation events and therefor it does not work*/
-        if(window.ieVersion===9 || transitionDuration === 0 || (Detect.isIOS() && parseInt(Detect.getDeviceDetails().deviceOSVersion,10)<7)){
-          return;
-        }
-
-        var forceClassRemoval = function(){
-          setTimeout(function(){
-            if(el.hasClass('loading-out') || el.hasClass('loading-in')){
-              //console.log('[ADD_LOADING_OUT_CLASS:SETTIMOUT'+(transitionDuration*1000)+']','FORCE CLASS REMOVAL',transitionDuration*1000+(transitionDuration*200));
-            }
-            el.removeClass('loading-in');
-            el.removeClass('loading-out');
-            loadingInAnimationIsInProgress = false;
-          },transitionDuration*1000+(transitionDuration*100));
+      template: '<div class="mw-view-change-loader" ng-if="model.loading"><div class="spinner"></div></div>',
+      link: function (scope) {
+        scope.model = {
+          loading: false
         };
 
-        var addLoadingOutClass = function () {
-          if (!el.hasClass('loading-in') || loadingInAnimationIsInProgress) {
-            //console.log('[ADD_LOADING_OUT_CLASS:if condition failed]',!el.hasClass('loading-in')?'Has no loading-in class':'--',loadingInAnimationIsInProgress?'Loading-in animation is arleady in progress':'');
-            return;
-          }
-          el.addClass('loading-out');
-          window.requestAnimFrame(function () {
-            //console.log('[ADD_LOADING_OUT_CLASS]','Adding loading-out class');
-            el.removeClass('loading-in');
-            forceClassRemoval();
-          });
-        };
-
-        el.on('transitionend WebkitTransitionEnd otransitionend oTransitionEnd', function () {
-          if(el.hasClass('loading-out')){
-            //console.log('[TRANSITION_END_EVENT]','Loading-out class is set and im removing loading-in and loading-out class now');
-            el.removeClass('loading-out');
-          } else if(el.hasClass('loading-in')){
-            //console.log('[TRANSITION_END_EVENT]','Loading-in class is set and ' +(routeChangeDone?'routechange is done so im calling addLoadingOutClass':'routechange is not ready yet so im doing nothing'));
-            loadingInAnimationIsInProgress = false;
-            if (routeChangeDone) {
-              addLoadingOutClass();
-            }
-          } else {
-            //console.log('[TRANSITION_END_EVENT]','Neither loading-in nor loading-out class is set');
-          }
+        $rootScope.$on('$locationChangeSuccess', function () {
+          scope.model.loading = true;
         });
 
-        $rootScope.$on('$locationChangeSuccess', function (event, current) {
-          //console.log('--------------------');
-          if (current.disableLoader || loadingInAnimationIsInProgress) {
-            //console.log('[ROUTE_CHANGE_START_EVENT:if condition failed]',current.disableLoader?'Loader is disabled':'--',loadingInAnimationIsInProgress?'Loading-in animation is already running':'');
-            return;
-          }
-          routeChangeDone = false;
-          loadingInAnimationIsInProgress = true;
-          window.requestAnimFrame(function () {
-            //console.log('[ROUTE_CHANGE_START_EVENT]','Adding loading-in class');
-            el.addClass('loading-in');
-          });
-        });
         $rootScope.$on('$routeChangeSuccess', function () {
-          //console.log('[ROUTE_CHANGE_DONE_EVENT]');
-          routeChangeDone = true;
-          addLoadingOutClass();
+          scope.model.loading = false;
         });
+
         $rootScope.$on('$routeChangeError', function () {
-          //console.log('[ROUTE_CHANGE_ERROR_EVENT]');
-          routeChangeDone = true;
-          addLoadingOutClass();
+          scope.model.loading = false;
         });
       }
     };
