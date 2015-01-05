@@ -179,19 +179,19 @@ angular.module('mwHelper', [])
         scope.continue = function () {
           if (scope.next) {
             //instead of scope.$off() we call the original eventhandler function
-            scope.changeLocation();
+            scope.changeLocationOff();
 
             //hide the modal and navigate to the page
             confirmationModal.hide().then(function () {
-              $window.document.location.href = scope.next;
-              scope.next = null;
+                $location.path($location.url(scope.next).hash());
+                scope.next = null;
             });
           }
         };
 
         //In case that just a hashchange event was triggered
         //Angular has no $off event unbinding so the original eventhandler is saved in a variable
-        scope.changeLocation = scope.$on('$locationChangeStart', showConfirmModal);
+        scope.changeLocationOff = $rootScope.$on('$locationChangeStart', showConfirmModal);
 
         //In case that the user clicks the refresh/back button or makes a hard url change
         $window.onbeforeunload = function () {
