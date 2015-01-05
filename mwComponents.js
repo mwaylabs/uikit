@@ -948,7 +948,7 @@ angular.module('mwComponents', [])
           }
         });
 
-        $rootScope.$on('$routeChangeStart', function (event, current) {
+        $rootScope.$on('$locationChangeSuccess', function (event, current) {
           //console.log('--------------------');
           if (current.disableLoader || loadingInAnimationIsInProgress) {
             //console.log('[ROUTE_CHANGE_START_EVENT:if condition failed]',current.disableLoader?'Loader is disabled':'--',loadingInAnimationIsInProgress?'Loading-in animation is already running':'');
