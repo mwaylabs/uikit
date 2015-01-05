@@ -189,29 +189,34 @@ angular.module('mwComponents', [])
  *  </doc:source>
  * </doc:example>
  */
-  .directive('mwIcon', function ($compile) {
+  .directive('mwIcon', function () {
     return {
       restrict: 'A',
-      replace: true,
       scope: {
         mwIcon: '@',
         placement: '@',
-        additionalClass: '@class',
         style: '@'
       },
-      template: '<i></i>',
+      template: '<i ng-class="iconClasses" style="{{style}}"></i>',
       link: function (scope, el, attr) {
 
-        if (attr.tooltip) {
-          el.popover({
-            trigger: 'hover',
-            placement: 'bottom',
-            content: attr.tooltip,
-            container: 'body'
-          });
-        }
+        //set icon classes
+        scope.$watch('mwIcon', function (newVal) {
+          if(newVal){
+            var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
+                isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/));
+            if(isFontAwesome){
+              scope.iconClasses = 'fa ' + scope.mwIcon;
+            } else if (isIcConf){
+              scope.iconClasses = 'icon-ic_conf ' + scope.mwIcon;
+            } else {
+              scope.iconClasses = 'glyphicon glyphicon-' + scope.mwIcon;
+            }
+          }
+        });
 
-        if(attr.tooltip !== undefined) {
+        //set tooltip
+        if(attr.tooltip) {
           attr.$observe('tooltip', function (newVal) {
             el.popover('destroy');
             el.popover({
@@ -223,25 +228,7 @@ angular.module('mwComponents', [])
           });
         }
 
-        //if (!scope.mwIcon) {
-          scope.$watch('mwIcon', function (newVal) {
-            if (newVal) {
-              var template,
-                isBootstrap = angular.isArray(scope.mwIcon.match(/^fa-/)),
-                isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/));
-
-              if(isIcConf){
-                template = '<i class="icon-ic_conf {{mwIcon}}" ng-class="additionalClass" style="{{style}}"></i>';
-              } else if (isBootstrap) {
-                template = '<i class="fa {{mwIcon}}" ng-class="additionalClass" style="{{style}}"></i>';
-              } else {
-                template = '<i class="glyphicon glyphicon-{{mwIcon}}" ng-class="additionalClass" style="{{style}}"></i>';
-              }
-              el.replaceWith($compile(template)(scope));
-            }
-          });
-        //}
-
+        //remove tooltip on destroy
         scope.$on('$destroy',function(){
           if (attr.tooltip) {
             el.popover('destroy');
