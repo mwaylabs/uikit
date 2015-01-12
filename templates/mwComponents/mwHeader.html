@@ -10,12 +10,12 @@
         </div>
 
         <h2 class="lead pull-left clearfix">
-          <i mw-icon="{{mwTitleIcon}}" class="pull-left header-icon" ng-if="mwTitleIcon"></i>
-          <div ng-repeat="breadCrumb in mwBreadCrumbs" class="hidden-xs pull-left mw-bread-crumbs">
+          <span mw-icon="{{mwTitleIcon}}" class="header-icon" ng-if="mwTitleIcon"></span>
+          <div ng-repeat="breadCrumb in mwBreadCrumbs" class="mw-bread-crumbs">
             <a ng-href="{{breadCrumb.url}}" class="bread-crumb">{{breadCrumb.title}}</a>
             <i mw-icon="fa-caret-right" class="arrow"></i>
           </div>
-          <div class="pull-left" ng-click="refresh()">{{title}}</div>
+          <div class="page-title" ng-click="refresh()">{{title}}</div>
         </h2>
 
         <div class="pull-left header-popover"
