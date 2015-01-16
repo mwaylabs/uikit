@@ -1,5 +1,5 @@
-<div class="clearfix mw-tabs">
-  <ul class="nav nav-tabs" ng-class="{ true: 'nav-justified' }[justified]">
+<div class="clearfix mw-tabs" ng-class="{justified: justified}">
+  <ul class="nav nav-tabs" ng-class="{ 'nav-justified': justified }">
     <li ng-repeat="pane in panes" ng-class="{ active: pane.selected }">
       <a ng-class="{ 'has-error': pane.isInvalid }" ng-click="select(pane)">{{ pane.title }}</a>
     </li>
