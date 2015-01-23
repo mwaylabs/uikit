@@ -1,0 +1,15 @@
+<div class="col-xs-7 col-sm-8 col-md-9">
+  <select ng-options="getLabel(item) for item in collectionWithoutSelected(privateCollection.models[$index]).models track by item.id"
+          ng-model="privateCollection.models[$index]"
+          ng-change="change()"
+          ng-disabled="mwDisabled"></select>
+</div>
+<div class="col-xs-5 col-sm-4 col-md-3">
+  <button ng-click="remove(model)"
+          ng-disabled="mwDisabled"
+          class="btn btn-default remove"><span mw-icon="minus"></span></button>
+  <button ng-if="$last === true"
+          ng-click="add()"
+          ng-disabled="privateCollection.models[$index].id === undefined ||  privateCollection.length === inputCollection.length || mwDisabled"
+          class="btn btn-default add"><span mw-icon="plus"></span></button>
+</div>
