@@ -1,0 +1,17 @@
+<form class="mw-form mw-form-radio-group">
+
+  <div ng-repeat="option in mwOptionsCollection.models">
+    <label>
+      <input type="radio" name="radio_group_item" ng-value="option.get(optionsKey)" mw-custom-radio ng-model="$parent.mwModel" ng-disabled="mwDisabled">
+      <span ng-if="option.get(mwOptionsLabelKey) && !mwOptionsLabelI18nPrefix">
+        {{option.get(mwOptionsLabelKey)}}
+      </span>
+      <span ng-if="option.get(mwOptionsLabelKey) && mwOptionsLabelI18nPrefix">
+        {{mwOptionsLabelI18nPrefix+'.'+option.get(mwOptionsLabelKey) | i18n}}
+      </span>
+    </label>
+  </div>
+
+</form>
+
+<input type="hidden" name="{{name}}" ng-model="mwModel" required>
