@@ -70,4 +70,51 @@ angular.module('mwFormBb', [])
         };
       }
     };
+  })
+
+  .directive('mwMultiSelectBoxes', function($timeout){
+    return {
+      restrict: 'A',
+      scope: {
+        inputCollection: '=mwMultiSelectBoxes',
+        selectedCollection: '=',
+        mwRequired: '=',
+        mwDisabled: '='
+      },
+      templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBoxes.html',
+      link: function (scope) {
+        scope.privateCollection = scope.selectedCollection.clone();
+        if(scope.privateCollection.length === 0){
+          var emptyClone = scope.inputCollection.first().clone().clear();
+          scope.privateCollection.add(emptyClone);
+        }
+
+        $timeout(function(){
+          console.log(scope.privateCollection.models);
+        }, 2000);
+
+/*        scope.$watch(scope.privateCollection.pluck('name'), function(newVal){
+          console.log(newVal);
+        });*/
+      }
+    };
+  })
+
+  .directive('mwMultiSelectBox', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        optionsCollection: '=mwMultiSelectBox',
+        model: '=',
+        last: '='
+      },
+      templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBox.html',
+      link: function (scope) {
+/*        scope.change = function(){
+          console.log(scope.model.get('name'));
+        };*/
+
+        scope.model.set('name', 'HELLLLOOO');
+      }
+    };
   });
