@@ -72,30 +72,87 @@ angular.module('mwFormBb', [])
     };
   })
 
-  .directive('mwMultiSelectBoxes', function($timeout){
+  .directive('mwMultiSelectBoxes', function(i18n){
     return {
       restrict: 'A',
       scope: {
-        inputCollection: '=mwMultiSelectBoxes',
-        selectedCollection: '=',
+        inputCollection: '=mwOptionCollection',
+        selectedCollection: '=mwCollection',
+        labelProperty: '@mwOptionLabel',
+        i18nPrefix: '@mwOptionLabelI18nPrefix',
         mwRequired: '=',
-        mwDisabled: '='
+        mwDisabled: '=',
+        name: '@hiddenFormElementName'
       },
       templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBoxes.html',
       link: function (scope) {
+
+        //init collection with given values or one empty model if no data is provided
         scope.privateCollection = scope.selectedCollection.clone();
         if(scope.privateCollection.length === 0){
           var emptyClone = scope.inputCollection.first().clone().clear();
           scope.privateCollection.add(emptyClone);
         }
 
-        $timeout(function(){
-          console.log(scope.privateCollection.models);
-        }, 2000);
+        //add empty model on + button
+        scope.add = function(){
+          var emptyClone = scope.inputCollection.first().clone().clear();
+          scope.privateCollection.add(emptyClone);
+        };
 
-/*        scope.$watch(scope.privateCollection.pluck('name'), function(newVal){
-          console.log(newVal);
-        });*/
+        //remove the specific model or the last (empty) one if model is not found
+        scope.remove = function(model){
+          correctIds();
+          if(!model.id){
+            scope.privateCollection.pop();
+          }
+          scope.privateCollection.remove(scope.privateCollection.get(model.id));
+          if(scope.privateCollection.length === 0){
+            scope.add();
+          }
+          scope.change();
+        };
+
+        //only show the available models in options
+        scope.collectionWithoutSelected = function(model){
+          //the current selected model should not be removed from the options
+          var notInOptionsCollection = scope.privateCollection.clone();
+          notInOptionsCollection.remove(model);
+
+          //remove all already chosen models from options
+          var filteredOptionsCollection = scope.inputCollection.clone();
+          filteredOptionsCollection.remove(notInOptionsCollection.models);
+          return filteredOptionsCollection;
+        };
+
+        //reset selected collection on every change
+        scope.change = function(){
+          scope.selectedCollection.reset(scope.privateCollection.models, {silent: true});
+          scope.selectedCollection.each(function(model){
+            if(!model.id){
+              scope.selectedCollection.pop();
+            }
+          });
+          scope.requiredValue = scope.selectedCollection.length ? true : null;
+        };
+
+        //get label to show in select boxes
+        scope.getLabel = function(model){
+          var label = scope.labelProperty ? model.get(scope.labelProperty) : model.get('key');
+          if(scope.i18nPrefix){
+            return i18n.get(scope.i18nPrefix + '.' + label);
+          }
+        };
+
+        //helper method to reset the collections ids (we need this because the ng-model of the select directly replaces the model
+        //and does not use the collections set function
+        var correctIds = function(){
+          var byId = {};
+          scope.privateCollection.each(function(model){
+            byId[model.id] = model;
+          });
+          scope.privateCollection._byId = byId;
+        };
       }
     };
   })
@@ -103,18 +160,6 @@ angular.module('mwFormBb', [])
   .directive('mwMultiSelectBox', function(){
     return {
       restrict: 'A',
-      scope: {
-        optionsCollection: '=mwMultiSelectBox',
-        model: '=',
-        last: '='
-      },
-      templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBox.html',
-      link: function (scope) {
-/*        scope.change = function(){
-          console.log(scope.model.get('name'));
-        };*/
-
-        scope.model.set('name', 'HELLLLOOO');
-      }
+      templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBox.html'
     };
   });

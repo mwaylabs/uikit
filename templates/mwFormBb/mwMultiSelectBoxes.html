@@ -1,8 +1,7 @@
 <div>
-  <div ng-repeat="pmodel in privateCollection.models"
-       mw-multi-select-box="inputCollection"
-       model="pmodel"
-       last="$last">
+  <div mw-multi-select-box
+       class="row" ng-class="{true: 'margin-top-5'}[!$first]"
+       ng-repeat="model in privateCollection.models">
   </div>
-
+  <input type="hidden" ng-model="requiredValue" ng-required="mwRequired" name="{{hiddenFormElementName || 'mwMultiSelectBoxes'}}"/>
 </div>
