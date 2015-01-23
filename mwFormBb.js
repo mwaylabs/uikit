@@ -144,10 +144,10 @@ angular.module('mwFormBb', [])
     return {
       restrict: 'A',
       scope: {
-        inputCollection: '=mwOptionCollection',
+        inputCollection: '=mwOptionsCollection',
         selectedCollection: '=mwCollection',
-        labelProperty: '@mwOptionLabel',
-        i18nPrefix: '@mwOptionLabelI18nPrefix',
+        labelProperty: '@mwOptionsLabelKey',
+        i18nPrefix: '@mwOptionsLabelI18nPrefix',
         mwRequired: '=',
         mwDisabled: '=',
         name: '@hiddenFormElementName'
