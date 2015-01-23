@@ -108,6 +108,8 @@
               var ctrl = elm.inheritedData('$formController');
               return ctrl ? ctrl.$dirty : false;
             };
+
+            scope.$watch('elementName', scope.isInvalid);
           },
           controller: function ($scope) {
             var that = this;
@@ -115,7 +117,12 @@
             this.buildValidationMessages = function (element) {
               if (!that.element) {
                 that.element = element;
-                $scope.elementName = element.attr('name');
+
+                $scope.$watch(function(){
+                  return element.attr('name');
+                }, function(){
+                  $scope.elementName = element.attr('name');
+                });
 
                 var buildValidationValues = function () {
                   $scope.validationValues = {
