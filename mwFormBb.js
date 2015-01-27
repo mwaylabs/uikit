@@ -221,6 +221,8 @@ angular.module('mwFormBb', [])
           });
           scope.privateCollection._byId = byId;
         };
+
+        scope.change();
       }
     };
   })
