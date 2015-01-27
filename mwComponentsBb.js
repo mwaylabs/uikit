@@ -124,7 +124,26 @@ angular.module('mwComponentsBb', [])
       }
     };
   })
-;
+
+
+.directive('mwVersionSelector', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        currentVersionModel: '=',
+        versionCollection: '=',
+        versionNumberKey: '@',
+        url: '@'
+      },
+      templateUrl: 'modules/ui/templates/mwComponentsBb/mwVersionSelector.html',
+      link: function(scope){
+        scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
+        scope.getUrl = function(uuid){
+          return scope.url.replace('VERSION_UUID', uuid);
+        };
+      }
+    };
+  });
 
 
 
