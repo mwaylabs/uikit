@@ -98,7 +98,7 @@
             scope.isInvalid = function () {
               var ctrl = elm.inheritedData('$formController'),
                   invalid = false;
-              if (ctrl && ctrl[scope.elementName]) {
+              if (scope.elementName && ctrl && ctrl[scope.elementName]) {
                 invalid = ctrl[scope.elementName].$invalid;
               }
               return invalid;
@@ -114,14 +114,17 @@
           controller: function ($scope) {
             var that = this;
             that.element = null;
+
             this.buildValidationMessages = function (element) {
               if (!that.element) {
                 that.element = element;
 
                 $scope.$watch(function(){
                   return element.attr('name');
-                }, function(){
-                  $scope.elementName = element.attr('name');
+                }, function(val){
+                  if(val){
+                    $scope.elementName = val;
+                  }
                 });
 
                 var buildValidationValues = function () {
@@ -619,7 +622,9 @@
               if (invalid || !form) {
                 return false;
               } else {
-                return form[inputName].$error[scope.validation];
+                if(form[inputName]){
+                  return form[inputName].$error[scope.validation];
+                }
               }
             };
           }
