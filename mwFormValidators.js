@@ -91,7 +91,6 @@
                   ngModel.$validate();
                 });
               } else {
-                debugger;
                 throw new Error('Value is neither a model nor a collection! Make its one of them', val);
               }
               unwatch();
