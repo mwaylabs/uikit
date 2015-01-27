@@ -91,6 +91,7 @@
                   ngModel.$validate();
                 });
               } else {
+                debugger;
                 throw new Error('Value is neither a model nor a collection! Make its one of them', val);
               }
               unwatch();
@@ -98,12 +99,17 @@
           });
 
           ngModel.$validators.required = function (value) {
-            if (value instanceof window.Backbone.Collection) {
-              return (value.models.length > 0);
-            } else if (value instanceof window.Backbone.Model) {
-              return value.get(key) ? true : false;
+            if(scope.mwRequired){
+              if (value instanceof window.Backbone.Collection) {
+                return (value.models.length > 0);
+              } else if (value instanceof window.Backbone.Model) {
+                return value.get(key) ? true : false;
+              } else {
+                return false;
+              }
+            } else {
+              return true;
             }
-            return false;
           };
         }
       };
