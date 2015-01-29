@@ -70,25 +70,29 @@
     .directive('mwValidateCollectionOrModel', function () {
       return {
         restrict: 'A',
-        require: 'ngModel',
         scope: {
-          mwRequired: '=mwValidateCollectionOrModel',
+          mwModel: '=mwValidateCollectionOrModel',
+          mwRequired: '=',
           mwKey: '@'
         },
-        link: function (scope, elm, attrs, ngModel) {
+        template: '<input type="hidden" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}">',
+        link: function (scope) {
 
           var key = scope.mwKey || 'uuid';
 
-          var unwatch = scope.$watch('ngModel.$modelValue', function () {
-            var val = ngModel.$modelValue;
+          scope.model = {};
+          scope.uId = _.uniqueId('validator_');
+
+          var unwatch = scope.$watch('mwModel', function () {
+            var val = scope.mwModel;
             if (val) {
               if (val instanceof window.Backbone.Collection) {
                 val.on('add remove reset', function () {
-                  ngModel.$validate();
+                  scope.model.tmp = val.pluck(key);
                 });
               } else if (val instanceof window.Backbone.Model) {
                 val.on('change:' + key, function () {
-                  ngModel.$validate();
+                  scope.model.tmp = val.get(key);
                 });
               } else {
                 throw new Error('Value is neither a model nor a collection! Make its one of them', val);
@@ -96,20 +100,6 @@
               unwatch();
             }
           });
-
-          ngModel.$validators.required = function (value) {
-            if(scope.mwRequired){
-              if (value instanceof window.Backbone.Collection) {
-                return (value.models.length > 0);
-              } else if (value instanceof window.Backbone.Model) {
-                return value.get(key) ? true : false;
-              } else {
-                return false;
-              }
-            } else {
-              return true;
-            }
-          };
         }
       };
     })
