@@ -6,6 +6,6 @@
         ng-disabled="mwDisabled"
         ng-required="mwRequired"
         name="{{name}}">
-  <option value="" ng-if="placeholder">{{ placeholder }}</option>
+  <option value="" ng-if="placeholder" ng-disabled="mwRequired" selected>{{ placeholder }}</option>
 </select>
 
