@@ -150,7 +150,8 @@ angular.module('mwFormBb', [])
         i18nPrefix: '@mwOptionsLabelI18nPrefix',
         mwRequired: '=',
         mwDisabled: '=',
-        name: '@hiddenFormElementName'
+        name: '@hiddenFormElementName',
+        placeholder: '@'
       },
       templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBoxes.html',
       link: function (scope) {
