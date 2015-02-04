@@ -137,7 +137,8 @@
                     phone: i18n.get('errors.phoneNumber'),
                     hex: i18n.get('errors.hex'),
                     unique: i18n.get('errors.notUnique'),
-                    match: i18n.get('errors.doesNotMatch')
+                    match: i18n.get('errors.doesNotMatch'),
+                    emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder')
                   };
                 };
                 buildValidationValues();
