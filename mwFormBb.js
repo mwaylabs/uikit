@@ -134,6 +134,9 @@ angular.module('mwFormBb', [])
         };
 
         scope.getLabel = function(optionModel){
+          if(scope.mwOptionsLabelKey){
+            return optionModel.get(scope.mwOptionsLabelKey);
+          }
           return i18n.get(scope.mwOptionsLabelI18nPrefix+'.'+scope.getKey(optionModel));
         };
       }
