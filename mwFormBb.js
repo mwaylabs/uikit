@@ -114,8 +114,8 @@ angular.module('mwFormBb', [])
         mwRequired: '=',
         mwDisabled: '=',
         mwChange: '&',
-        name: '@',
-        placeholder: '@'
+        mwPlaceholder: '@placeholder',
+        name: '@'
       },
       templateUrl: 'modules/ui/templates/mwFormBb/mwFormSelect.html',
       link: function (scope ) {
@@ -139,6 +139,16 @@ angular.module('mwFormBb', [])
           }
           return i18n.get(scope.mwOptionsLabelI18nPrefix+'.'+scope.getKey(optionModel));
         };
+
+        if(!scope.mwPlaceholder && scope.mwRequired){
+          if(scope.mwOptionsCollection.length>0){
+            scope.mwModel = scope.mwOptionsCollection.first().get(scope.optionsKey);
+          } else {
+            scope.mwOptionsCollection.once('add', function(model){
+              scope.mwModel = model.get(scope.optionsKey);
+            });
+          }
+        }
       }
     };
   });
