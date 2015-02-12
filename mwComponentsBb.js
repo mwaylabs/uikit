@@ -119,7 +119,7 @@ angular.module('mwComponentsBb', [])
       templateUrl: 'modules/ui/templates/mwComponentsBb/mwEmptyStateBb.html',
       link: function(scope){
         scope.showEmptyState = function(){
-          return scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection);
+          return !scope.collection || (scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection));
         };
       }
     };
