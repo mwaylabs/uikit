@@ -142,10 +142,14 @@ angular.module('mwFormBb', [])
 
         if(!scope.mwPlaceholder && scope.mwRequired){
           if(scope.mwOptionsCollection.length>0){
-            scope.mwModel = scope.mwOptionsCollection.first().get(scope.optionsKey);
+            if(_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)) {
+              scope.mwModel = scope.mwOptionsCollection.first().get(scope.optionsKey);
+            }
           } else {
             scope.mwOptionsCollection.once('add', function(model){
-              scope.mwModel = model.get(scope.optionsKey);
+              if(_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)){
+                scope.mwModel = model.get(scope.optionsKey);
+              }
             });
           }
         }
