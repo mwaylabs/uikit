@@ -133,21 +133,9 @@
           var mailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+([.][a-zA-Z0-9_-]+)*[.][a-zA-Z0-9._-]+$/,
             placeholderRegex = /\$\{.+\}/;
 
-          var validatePlaceholder = function (value) {
-            var validMail = validateRegex(value, mailRegex),
-              validPlaceholder = validateRegex(value, placeholderRegex);
-            if (validMail || validPlaceholder) {
-              ngModel.$setValidity('email', true);
-              ngModel.$setValidity('placeholder', true);
-            } else {
-              ngModel.$setValidity('email', validMail);
-              ngModel.$setValidity('placeholder', validPlaceholder);
-            }
-            return value;
+          ngModel.$validators.emailOrPlaceholder = function(value){
+            return !!(validateRegex(value, mailRegex) || validateRegex(value, placeholderRegex));
           };
-
-          ngModel.$formatters.push(validatePlaceholder);
-          ngModel.$parsers.push(validatePlaceholder);
         }
       };
     })
