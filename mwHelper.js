@@ -39,6 +39,21 @@ angular.module('mwHelper', [])
     };
   })
 
+
+  .directive('mwSetDirtyOnModelChange', function(){
+    return {
+      restrict: 'A',
+      require: '^ngModel',
+      link: function (scope, elm, attr, modelCtrl) {
+        scope.$watch(function(){
+            return modelCtrl.$modelValue;
+          }, function(){
+           modelCtrl.$setDirty();
+        });
+      }
+    };
+  })
+
   .service('mwDefaultFocusService', function(){
     var MwDefaultFocusService = function(){
         var _registeredFocusFields = [];
