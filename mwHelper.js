@@ -40,15 +40,16 @@ angular.module('mwHelper', [])
   })
 
 
-  .directive('mwSetDirtyOnModelChange', function(){
+  .directive('mwSetDirtyOn', function(){
     return {
       restrict: 'A',
-      require: '^ngModel',
-      link: function (scope, elm, attr, modelCtrl) {
-        scope.$watch(function(){
-            return modelCtrl.$modelValue;
-          }, function(){
-           modelCtrl.$setDirty();
+      scope: {
+        mwSetDirtyOn: '@'
+      },
+      require: '^form',
+      link: function (scope, elm, attr, formCtrl) {
+        elm.on(scope.mwSetDirtyOn, function(){
+          formCtrl.$setDirty();
         });
       }
     };
