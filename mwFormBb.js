@@ -134,7 +134,7 @@ angular.module('mwFormBb', [])
         };
 
         scope.getLabel = function(optionModel){
-          if(scope.mwOptionsLabelKey){
+          if(!scope.mwOptionsLabelI18nPrefix){
             return optionModel.get(scope.mwOptionsLabelKey);
           }
           return i18n.get(scope.mwOptionsLabelI18nPrefix+'.'+scope.getKey(optionModel));
@@ -175,7 +175,7 @@ angular.module('mwFormBb', [])
 
         //init collection with given values or one empty model if no data is provided
         scope.privateCollection = scope.selectedCollection.clone();
-        if (scope.privateCollection.length === 0) {
+        if (scope.privateCollection.length === 0 && scope.inputCollection.first()) {
           var emptyClone = scope.inputCollection.first().clone().clear();
           scope.privateCollection.add(emptyClone);
         }
