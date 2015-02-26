@@ -75,7 +75,7 @@
           mwRequired: '=',
           mwKey: '@'
         },
-        template: '<input type="hidden" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}">',
+        template: '<input type="text" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}" style="display: none">',
         link: function (scope) {
 
           var key = scope.mwKey || 'uuid';
@@ -90,8 +90,9 @@
                 val.on('add remove reset', function () {
                   scope.model.tmp = val.pluck(key);
                 });
+                scope.model.tmp = val.pluck(key);
               } else if (val instanceof window.Backbone.Model) {
-                val.on('change:'+key, function () {
+                val.on('change:' + key, function () {
                   scope.model.tmp = val.get(key);
                 });
                 scope.model.tmp = val.get(key);
