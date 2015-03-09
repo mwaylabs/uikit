@@ -3,7 +3,7 @@
   <div class="btn-group">
     <button type="button"
             class="btn btn-danger"
-            ng-if="hasCancel"
+            ng-if="hasCancel && _showCancel"
             ng-disabled="form.$pristine && executeDefaultCancel"
             ng-click="cancelFacade()">
       <span mw-icon="remove"></span>
@@ -14,7 +14,7 @@
     <button type="button"
             class="btn btn-primary"
             ng-click="saveFacade()"
-            ng-if="hasSave"
+            ng-if="hasSave && _showSave"
             ng-disabled="form.$invalid || isLoading() || (form.$pristine && executeDefaultCancel)">
       <span mw-icon="ok"></span>
       <span class="action-text save">
