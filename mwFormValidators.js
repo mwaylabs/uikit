@@ -4,7 +4,7 @@
 
   var validateRegex = function (value, regex) {
     if (value) {
-      return value.match(regex);
+      return !!value.match(regex);
     } else {
       return true;
     }
@@ -39,12 +39,11 @@
           };
 
           var validateNumber = function (value) {
-            ngModel.$setValidity('phone', validateRegex(value, regex));
-            return value;
+            return validateRegex(value, regex);
           };
 
-          ngModel.$formatters.push(validateNumber, removeNonDigitValues);
-          ngModel.$parsers.push(validateNumber);
+          ngModel.$validators.phone = validateNumber;
+          ngModel.$formatters.push(removeNonDigitValues);
         }
       };
     })
