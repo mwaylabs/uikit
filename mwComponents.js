@@ -448,7 +448,7 @@ angular.module('mwComponents', [])
       link: function (scope, elm) {
         var popup;
         elm.addClass('mwButtonHelp');
-        var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign');
+        var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign hidden-sm');
         elm.prepend(helpIcon);
 
         helpIcon.hover(function () {
