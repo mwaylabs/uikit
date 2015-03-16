@@ -39,6 +39,22 @@ angular.module('mwHelper', [])
     };
   })
 
+
+  .directive('mwSetDirtyOn', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        mwSetDirtyOn: '@'
+      },
+      require: '^form',
+      link: function (scope, elm, attr, formCtrl) {
+        elm.on(scope.mwSetDirtyOn, function(){
+          formCtrl.$setDirty();
+        });
+      }
+    };
+  })
+
   .service('mwDefaultFocusService', function(){
     var MwDefaultFocusService = function(){
         var _registeredFocusFields = [];

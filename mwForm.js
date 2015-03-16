@@ -713,7 +713,9 @@
         replace: true,
         scope: {
           save: '&',
-          cancel: '&'
+          cancel: '&',
+          showSave: '=',
+          showCancel: '='
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
         link: function (scope, elm, attr) {
@@ -723,7 +725,21 @@
           scope.form = elm.inheritedData('$formController');
           scope.hasCancel = angular.isDefined(attr.cancel);
           scope.hasSave = angular.isDefined(attr.save);
+          scope._showSave = true;
+          scope._showCancel = true;
           scope.executeDefaultCancel = (attr.cancel === 'true');
+
+          scope.$watch('showSave', function(val){
+            if(angular.isDefined(val)){
+              scope._showSave = val;
+            }
+          });
+
+          scope.$watch('showCancel', function(val){
+            if(angular.isDefined(val)){
+              scope._showCancel = val;
+            }
+          });
 
           var setFormPristineAndEvaluate = function (exec) {
             if (scope.form) {
