@@ -151,12 +151,17 @@ angular.module('mwComponents', [])
           $route.reload();
         };
 
-        if(scope.url){
-          console.info('Url attribute in header directive is deprectaed. It will use js back functionality now! url:',scope.url);
+        if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
+          scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
+          scope.url = scope.url.replace('#', '');
+        } else {
+          if (scope.showBackButton) {
+            console.error('Url attribute in header is missing!!');
+          }
         }
 
         scope.back = function () {
-          window.history.back();
+          $location.path(scope.url);
         };
 
         if (scope.warningText) {
@@ -194,50 +199,31 @@ angular.module('mwComponents', [])
       restrict: 'A',
       scope: {
         mwIcon: '@',
+        tooltip: '@',
         placement: '@',
         style: '@'
       },
-      template: '<i ng-class="iconClasses" style="{{style}}"></i>',
-      link: function (scope, el, attr) {
+      template: '<i ng-class="iconClasses" style="{{style}}" mw-tooltip="{{tooltip}}" placement="{{placement}}"></i>',
+      link: function (scope, el) {
 
+        el.addClass('mw-icon');
         //set icon classes
         scope.$watch('mwIcon', function (newVal) {
-          if(newVal){
+          if (newVal) {
             var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
-                isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/)),
-                isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
-            if(isFontAwesome){
+              isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/)),
+              isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
+            if (isFontAwesome) {
               scope.iconClasses = 'fa ' + scope.mwIcon;
-            } else if (isIcConf){
+            } else if (isIcConf) {
               scope.iconClasses = 'icon-ic_conf ' + scope.mwIcon;
-            } else if (isRlnIcon){
+            } else if (isRlnIcon) {
               scope.iconClasses = 'rln-icon ' + scope.mwIcon;
             } else {
               scope.iconClasses = 'glyphicon glyphicon-' + scope.mwIcon;
             }
           }
         });
-
-        //set tooltip
-        if(attr.tooltip) {
-          attr.$observe('tooltip', function (newVal) {
-            el.popover('destroy');
-            el.popover({
-              trigger: 'hover',
-              placement: scope.placement || 'bottom',
-              content: newVal,
-              container: 'body'
-            });
-          });
-        }
-
-        //remove tooltip on destroy
-        scope.$on('$destroy',function(){
-          if (attr.tooltip) {
-            el.popover('destroy');
-          }
-        });
-
       }
     };
   })
@@ -262,12 +248,20 @@ angular.module('mwComponents', [])
         text: '@mwTooltip',
         placement: '@'
       },
-      replace: true,
-      template: '<span class="mw-tooltip"><span mw-icon="question-sign" tooltip="{{ text }}" placement="{{ placement }}"></span></span>',
-      compile: function (elm, attr) {
-        if (attr.mwTooltipIcon) {
-          elm.find('span').attr('mw-icon', attr.mwTooltipIcon);
-        }
+      link: function (scope, el, attr) {
+        scope.$watch('text', function (newVal) {
+          el.popover('destroy');
+          el.popover({
+            trigger: 'hover',
+            placement: scope.placement || 'bottom',
+            content: newVal,
+            container: 'body'
+          });
+
+          scope.$on('$destroy', function () {
+            el.popover('destroy');
+          });
+        });
       }
     };
   })
@@ -293,7 +287,7 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       replace: true,
-      scope: { mwBadge: '@' },
+      scope: {mwBadge: '@'},
       transclude: true,
       template: '<span class="mw-badge label label-{{mwBadge}}" ng-transclude></span>'
     };
@@ -303,7 +297,7 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       replace: true,
-      scope: { mwBadge: '@' },
+      scope: {mwBadge: '@'},
       transclude: true,
       template: '<div class="mw-empty-state"> <img src="images/logo-grey.png"><h2 ng-transclude class="lead"></h2> </div>'
     };
@@ -810,7 +804,7 @@ angular.module('mwComponents', [])
         length: '='
       },
       template: '<span>{{ mwTextCollapse | reduceStringTo:filterLength }}' +
-        ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
+      ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
       link: function (scope) {
         var defaultLength = 200;
         scope._length = scope.filterLength = (scope.length && typeof scope.length === 'number') ? scope.length : defaultLength;
