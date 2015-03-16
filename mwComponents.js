@@ -248,7 +248,7 @@ angular.module('mwComponents', [])
         text: '@mwTooltip',
         placement: '@'
       },
-      link: function (scope, el, attr) {
+      link: function (scope, el) {
         scope.$watch('text', function (newVal) {
           el.popover('destroy');
           el.popover({
