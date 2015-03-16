@@ -113,7 +113,9 @@ angular.module('mwComponentsBb', [])
       replace: true,
       scope: {
         collection: '=',
-        text: '@mwEmptyStateBb'
+        text: '@mwEmptyStateBb',
+        button: '&',
+        buttonText: '@'
       },
       transclude: true,
       templateUrl: 'modules/ui/templates/mwComponentsBb/mwEmptyStateBb.html',
