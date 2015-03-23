@@ -87,9 +87,17 @@
             if (val) {
               if (val instanceof window.Backbone.Collection) {
                 val.on('add remove reset', function () {
-                  scope.model.tmp = val.pluck(key);
+                  if(val.length > 0){
+                    scope.model.tmp = val.first().get(key);
+                  } else {
+                    scope.model.tmp = undefined;
+                  }
                 });
-                scope.model.tmp = val.pluck(key);
+                if(val.length > 0){
+                  scope.model.tmp = val.first().get(key);
+                } else {
+                  scope.model.tmp = undefined;
+                }
               } else if (val instanceof window.Backbone.Model) {
                 val.on('change:' + key, function () {
                   scope.model.tmp = val.get(key);
