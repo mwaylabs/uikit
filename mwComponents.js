@@ -40,6 +40,14 @@ angular.module('mwComponents', [])
     };
   })
 
+
+  .directive('mwContentHeader', function () {
+    return {
+      transclude: true,
+      template: '<div class="mw-content-header" ng-transclude></div>'
+    };
+  })
+
 /**
  * @ngdoc directive
  * @name mwComponents.directive:mwSortIndicator
