@@ -58,9 +58,6 @@ angular.module('mwSidebarBb', [])
         scope.label = function(model){
           //translate with i18n service if translationPrefix is defined
           var label = scope.key(model);
-          if(scope.translationPrefix){
-            label = i18n.get(scope.translationPrefix + '.' + scope.key(model));
-          }
           if(scope.translationPrefix && scope.translationSuffix){
             label = i18n.get(scope.translationPrefix + '.' + scope.key(model) + '.'+scope.translationSuffix);
           } else if(scope.translationSuffix){
