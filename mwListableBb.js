@@ -227,6 +227,12 @@ angular.module('mwListableBb', [])
               item.selectable.toggleSelect();
             }
           };
+
+          scope.$watch('item.selectable.isDisabled()', function(isDisabled){
+            if(isDisabled){
+              scope.item.selectable.unSelect();
+            }
+          });
         }
       };
     })
