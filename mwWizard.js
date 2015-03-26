@@ -32,11 +32,11 @@ angular.module('mwWizard', [])
        * @description
        * This method should not be called manually but rather automatically by using the mwWizardStep directive
        */
-      this._registerStep = function (step) {
+      this._registerStep = function (step, id) {
         if (_steps.length < 1) {
           step._isActive = true;
         }
-        step.slideId= _.uniqueId(_id+'_');
+        step.slideId = id || _.uniqueId(_id+'_');
         _steps.push(step);
       };
 
@@ -77,6 +77,10 @@ angular.module('mwWizard', [])
         return _currentlyActive;
       };
 
+      this.getCurrentStepId = function(){
+        return _steps[_currentlyActive].slideId;
+      };
+
       this.getTotalStepAmount = function () {
         return _steps.length;
       };
@@ -108,6 +112,11 @@ angular.module('mwWizard', [])
       };
 
       this.gotoStep = function(step){
+
+        if(typeof step=== 'string'){
+          step = _.findWhere(_steps,{slideId:step});
+        }
+
         this.goTo(_.indexOf(_steps,step));
       };
 
@@ -218,8 +227,8 @@ angular.module('mwWizard', [])
 
         var wizard = $scope.wizard;
 
-        this.registerStep = function (step) {
-          wizard._registerStep(step);
+        this.registerStep = function (step, id) {
+          wizard._registerStep(step, id);
         };
 
         $scope.$on('$destroy',function(){
@@ -258,7 +267,7 @@ angular.module('mwWizard', [])
           if(title && title.length>0){
             scope.title = title;
           }
-          mwWizardCtrl.registerStep(scope);
+          mwWizardCtrl.registerStep(scope, attr.id);
         });
 
 //        if(!angular.isDefined(attr.title)){
