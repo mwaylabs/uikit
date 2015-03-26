@@ -37,6 +37,7 @@ angular.module('mwModal', [])
             _scope = modalOptions.scope || $rootScope,
             _scopeAttributes = modalOptions.scopeAttributes || {},
             _controller = modalOptions.controller,
+            _holderEl = modalOptions.el?modalOptions.el:'body [ng-view]',
             _self = this,
             _cachedTemplate,
             _modal,
@@ -117,7 +118,7 @@ angular.module('mwModal', [])
             overflow:'hidden'
           });
           _buildModal().then(function(){
-            body.append(_modal);
+            angular.element(_holderEl).append(_modal);
             _bootstrapModal.modal('show');
           });
         };
