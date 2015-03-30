@@ -37,7 +37,8 @@ angular.module('mwModal', [])
             _scope = modalOptions.scope || $rootScope,
             _scopeAttributes = modalOptions.scopeAttributes || {},
             _controller = modalOptions.controller,
-            _holderEl = modalOptions.el?modalOptions.el:'body [ng-view]',
+            _class = modalOptions.class || '',
+            _holderEl = modalOptions.el || 'body div[ng-view]',
             _self = this,
             _cachedTemplate,
             _modal,
@@ -90,6 +91,7 @@ angular.module('mwModal', [])
             _modal = $compile(template.trim())(_usedScope);
             _usedScope.$on('COMPILE:FINISHED',function(){
               _modal.addClass('mw-modal');
+              _modal.addClass(_class);
               _bootstrapModal = _modal.find('.modal');
               _bindModalCloseEvent();
               dfd.resolve();
@@ -142,12 +144,12 @@ angular.module('mwModal', [])
         this.hide = function () {
           var dfd = $q.defer();
           if(_bootstrapModal){
-            _bootstrapModal.modal('hide');
-            _bootstrapModal.on('hidden.bs.modal', function () {
+            _bootstrapModal.one('hidden.bs.modal', function () {
               _bootstrapModal.off();
               _self.destroy();
               dfd.resolve();
             });
+            _bootstrapModal.modal('hide');
           } else {
             dfd.reject();
           }
@@ -196,6 +198,11 @@ angular.module('mwModal', [])
             _self.hide();
           });
 
+          $rootScope.$on('$routeChangeSuccess', function(){
+            if(_bootstrapModal && _bootstrapModal.data('bs.modal')){
+              _bootstrapModal.data('bs.modal').hideModal();
+            }
+          });
 
         })();
 
