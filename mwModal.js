@@ -203,6 +203,7 @@ angular.module('mwModal', [])
         if (_modal) {
           _usedScope.$destroy();
           _modal.remove();
+          _modalOpened = false;
         }
       };
 
