@@ -937,6 +937,19 @@ angular.module('mwComponents', [])
         };
       }
     };
+  })
+
+
+  .directive('mwMarkdownPreview', function(){
+    return {
+      scope: {
+        mwModel: '=mwMarkdownPreview'
+      },
+      templateUrl: 'modules/ui/templates/mwComponents/mwMarkdownPreview.html',
+      link: function(scope, elm){
+        elm.addClass('mw-markdown-preview');
+      }
+    };
   });
 
 
