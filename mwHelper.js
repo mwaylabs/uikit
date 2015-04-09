@@ -199,7 +199,7 @@ angular.module('mwHelper', [])
 
             //hide the modal and navigate to the page
             confirmationModal.hide().then(function () {
-                $location.path($location.url(scope.next).hash());
+                document.location.href=scope.next;
                 scope.next = null;
             });
           }

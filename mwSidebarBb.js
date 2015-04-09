@@ -37,6 +37,7 @@ angular.module('mwSidebarBb', [])
         labelProperty: '@',
         labelTransformFn: '=',
         translationPrefix: '@',
+        translationSuffix: '@',
         customUrlParameter: '@'
       },
       templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarSelect.html',
@@ -56,10 +57,15 @@ angular.module('mwSidebarBb', [])
         //set label function fo select label
         scope.label = function(model){
           //translate with i18n service if translationPrefix is defined
-          if(scope.translationPrefix){
-            return i18n.get(scope.translationPrefix + '.' + scope.key(model));
+          var label = scope.key(model);
+          if(scope.translationPrefix && scope.translationSuffix){
+            label = i18n.get(scope.translationPrefix + '.' + scope.key(model) + '.'+scope.translationSuffix);
+          } else if(scope.translationSuffix){
+            label = i18n.get(scope.key(model)+'.'+scope.translationSuffix);
+          } else if(scope.translationPrefix){
+            label = i18n.get(scope.translationPrefix + '.' + scope.key(model));
           }
-          return scope.key(model);
+          return label;
         };
 
         if(angular.isDefined(scope.labelProperty)){
