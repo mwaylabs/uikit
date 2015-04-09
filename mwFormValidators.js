@@ -4,7 +4,7 @@
 
   var validateRegex = function (value, regex) {
     if (value) {
-      return value.match(regex);
+      return !!value.match(regex);
     } else {
       return true;
     }
@@ -39,12 +39,11 @@
           };
 
           var validateNumber = function (value) {
-            ngModel.$setValidity('phone', validateRegex(value, regex));
-            return value;
+            return validateRegex(value, regex);
           };
 
-          ngModel.$formatters.push(validateNumber, removeNonDigitValues);
-          ngModel.$parsers.push(validateNumber);
+          ngModel.$validators.phone = validateNumber;
+          ngModel.$formatters.push(removeNonDigitValues);
         }
       };
     })
@@ -88,9 +87,17 @@
             if (val) {
               if (val instanceof window.Backbone.Collection) {
                 val.on('add remove reset', function () {
-                  scope.model.tmp = val.pluck(key);
+                  if(val.length > 0){
+                    scope.model.tmp = val.first().get(key);
+                  } else {
+                    scope.model.tmp = undefined;
+                  }
                 });
-                scope.model.tmp = val.pluck(key);
+                if(val.length > 0){
+                  scope.model.tmp = val.first().get(key);
+                } else {
+                  scope.model.tmp = undefined;
+                }
               } else if (val instanceof window.Backbone.Model) {
                 val.on('change:' + key, function () {
                   scope.model.tmp = val.get(key);

@@ -108,9 +108,9 @@ angular.module('mwListableBb', [])
 
         if(angular.isUndefined(scope.noCounter)) {
           var tmpl = '<tr>' +
-                  '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount()">' +
-                  '<span ng-if="collection.selectable.getSelectedModels().length > 0">{{collection.selectable.getSelectedModels().length}}/{{collection.filterable.getTotalAmount()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
-                  '<span ng-if="!collection.selectable || collection.selectable.getSelectedModels().length<1">{{collection.filterable.getTotalAmount()}} {{title}}</span>' +
+                  '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount() || collection.length>0">' +
+                  '<span ng-if="collection.selectable.getSelectedModels().length > 0">{{collection.selectable.getSelectedModels().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+                  '<span ng-if="!collection.selectable || collection.selectable.getSelectedModels().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
                   '</th>' +
                   '</tr>',
               $tmpl = angular.element(tmpl),
@@ -227,6 +227,12 @@ angular.module('mwListableBb', [])
               item.selectable.toggleSelect();
             }
           };
+
+          scope.$watch('item.selectable.isDisabled()', function(isDisabled){
+            if(isDisabled){
+              scope.item.selectable.unSelect();
+            }
+          });
         }
       };
     })

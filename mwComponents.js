@@ -40,6 +40,14 @@ angular.module('mwComponents', [])
     };
   })
 
+
+  .directive('mwContentHeader', function () {
+    return {
+      transclude: true,
+      template: '<div class="mw-content-header" ng-transclude></div>'
+    };
+  })
+
 /**
  * @ngdoc directive
  * @name mwComponents.directive:mwSortIndicator
@@ -895,6 +903,33 @@ angular.module('mwComponents', [])
         $rootScope.$on('$routeChangeError', function () {
           scope.model.loading = false;
         });
+      }
+    };
+  })
+
+
+  .directive('mwCollapsable', function(){
+    return {
+      transclude: true,
+      scope: {
+        mwCollapsable: '=',
+        title: '@mwTitle'
+      },
+      templateUrl: 'modules/ui/templates/mwComponents/mwCollapsable.html',
+      link: function (scope, elm) {
+        scope.viewModel = {};
+        scope.viewModel.collapsed = false;
+        if(scope.mwCollapsable === false){
+          scope.viewModel.collapsed = true;
+        }
+        var level = elm.parents('.mw-collapsable').length;
+        if(level){
+          elm.css('margin-left', level*20+'px');
+        }
+
+        scope.toggle = function(){
+          scope.viewModel.collapsed = !scope.viewModel.collapsed;
+        };
       }
     };
   });
