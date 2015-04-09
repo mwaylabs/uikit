@@ -950,6 +950,28 @@ angular.module('mwComponents', [])
         elm.addClass('mw-markdown-preview');
       }
     };
-  });
+  })
+
+
+  .directive('mwMarkdown', ['$sanitize', 'markdownConverter', function ($sanitize, markdownConverter) {
+    return {
+      restrict: 'AE',
+      link: function (scope, element, attrs) {
+        if (attrs.mwMarkdown) {
+          scope.$watch(attrs.mwMarkdown, function (newVal) {
+            try {
+              var html = newVal ? $sanitize(markdownConverter.makeHtml(newVal)) : '';
+              element.html(html);
+            } catch (e) {
+              element.text(newVal);
+            }
+          });
+        } else {
+          var html = $sanitize(markdownConverter.makeHtml(element.text()));
+          element.html(html);
+        }
+      }
+    };
+  }]);
 
 
