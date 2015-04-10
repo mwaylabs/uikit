@@ -99,7 +99,8 @@
                   scope.model.tmp = undefined;
                 }
               } else if (val instanceof window.Backbone.Model) {
-                val.on('change:' + key, function () {
+                key = scope.mwKey || val.idAttribute;
+                val.on('change:'+key, function () {
                   scope.model.tmp = val.get(key);
                 });
                 scope.model.tmp = val.get(key);
