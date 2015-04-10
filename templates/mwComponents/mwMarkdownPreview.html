@@ -1,6 +1,9 @@
-<div ng-click="showPreview = !showPreview"
-     class="toggler text-right text-muted"
-     title="Show Markdown Preview">{{ showPreview ? 'common.hidePreview' : 'common.showPreview' | i18n }}</div>
+<div class="toggler text-right text-muted">
+  <span ng-click="showPreview = !showPreview"
+        title="Show Markdown Preview">{{ showPreview ? 'common.hidePreview' : 'common.showMarkdownPreview' | i18n }}
+  </span>
+  <a href="http://google.de" target="_blank"><span mw-icon="fa-question-circle" tooltip="xxx"></span></a>
+</div>
 <div ng-if="showPreview"
      class="preview"
      mw-markdown="mwModel"></div>
