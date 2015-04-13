@@ -391,7 +391,7 @@ angular.module('mwListableBb', [])
         scope: {
           link: '@mwListableLinkShowBb'
         },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm action-button"><span mw-icon="chevron-right"></span></a>',
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm action-button"><span mw-icon="fa-angle-right"></span></a>',
         link: function (scope, elm, attr, mwListableCtrl) {
           mwListableCtrl.actionColumns.push(null);
         }
