@@ -33,18 +33,18 @@ angular.module('mwModal', [])
 
     var Modal = function (modalOptions) {
 
-      var _id = modalOptions.templateUrl,
-        _scope = modalOptions.scope || $rootScope,
-        _scopeAttributes = modalOptions.scopeAttributes || {},
-        _controller = modalOptions.controller,
-        _class = modalOptions.class || '',
-        _holderEl = modalOptions.el || 'body div[ng-view]',
-        _modalOpened = false,
-        _self = this,
-        _cachedTemplate,
-        _modal,
-        _usedScope,
-        _bootstrapModal;
+        var _id = modalOptions.templateUrl,
+            _scope = modalOptions.scope || $rootScope,
+            _scopeAttributes = modalOptions.scopeAttributes || {},
+            _controller = modalOptions.controller,
+            _class = modalOptions.class || '',
+            _holderEl = modalOptions.el?modalOptions.el:'body [ng-view]',
+            _modalOpened = false,
+            _self = this,
+            _cachedTemplate,
+            _modal,
+            _usedScope,
+            _bootstrapModal;
 
 
       var _getTemplate = function () {

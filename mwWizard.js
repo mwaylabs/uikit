@@ -254,12 +254,11 @@ angular.module('mwWizard', [])
       restrict: 'A',
       scope: true,
       transclude: true,
-      replace:true,
+      replace: true,
       require: '^mwWizard',
       template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div class="mw-wizard-step-inner" ng-transclude ng-if="_isActive"></div></div>',
       link: function (scope, el, attr, mwWizardCtrl) {
         scope._isActive = false;
-
         //we need to set a default value here, see
         //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
         attr.title = attr.title || 'noname';
@@ -269,10 +268,6 @@ angular.module('mwWizard', [])
           }
           mwWizardCtrl.registerStep(scope, attr.id);
         });
-
-//        if(!angular.isDefined(attr.title)){
-//          mwWizardCtrl.registerStep(scope);
-//        }
 
         scope.$on('$destroy',function(){
           //el.remove();
