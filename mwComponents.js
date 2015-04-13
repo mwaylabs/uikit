@@ -456,7 +456,7 @@ angular.module('mwComponents', [])
       link: function (scope, elm) {
         var popup;
         elm.addClass('mwButtonHelp');
-        var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign hidden-sm');
+        var helpIcon = angular.element('<div>').addClass('help-icon rln-icon support hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
         helpIcon.hover(function () {
@@ -478,9 +478,9 @@ angular.module('mwComponents', [])
 
         scope.$watch('hintsToShow', function (newVal) {
           if (newVal.length) {
-            helpIcon.show();
+            helpIcon.removeClass('hidden');
           } else {
-            helpIcon.hide();
+            helpIcon.addClass('hidden');
           }
         });
 
