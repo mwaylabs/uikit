@@ -804,21 +804,26 @@ angular.module('mwComponents', [])
     };
   })
 
-  .directive('mwTextCollapse', function () {
+  .directive('mwTextCollapse', function ($filter) {
     return {
       restrict: 'A',
       scope: {
         mwTextCollapse: '@',
-        length: '='
+        length: '=',
+        markdown: '='
       },
-      template: '<span>{{ mwTextCollapse | reduceStringTo:filterLength }}' +
-      ' <a ng-if="showButton" ng-click="toggleLength()" style=\"cursor: pointer\">{{ ((_length !== filterLength) ? \'common.showLess\' : \'common.showMore\') | i18n}}</a></span>',
+      templateUrl: 'modules/ui/templates/mwComponents/mwTextCollapse.html',
       link: function (scope) {
         var defaultLength = 200;
         scope._length = scope.filterLength = (scope.length && typeof scope.length === 'number') ? scope.length : defaultLength;
         scope.showButton = scope.mwTextCollapse.length > scope._length;
         scope.toggleLength = function () {
           scope.filterLength = (scope.filterLength !== scope._length) ? scope._length : undefined;
+          scope.shortenedText = $filter('reduceStringTo')(scope.mwTextCollapse, scope.filterLength);
+        };
+
+        scope.text = function(){
+          return $filter('reduceStringTo')(scope.mwTextCollapse, scope.filterLength);
         };
       }
     };
@@ -932,6 +937,41 @@ angular.module('mwComponents', [])
         };
       }
     };
-  });
+  })
+
+
+  .directive('mwMarkdownPreview', function(){
+    return {
+      scope: {
+        mwModel: '=mwMarkdownPreview'
+      },
+      templateUrl: 'modules/ui/templates/mwComponents/mwMarkdownPreview.html',
+      link: function(scope, elm){
+        elm.addClass('mw-markdown-preview');
+      }
+    };
+  })
+
+
+  .directive('mwMarkdown', ['$sanitize', 'markdownConverter', function ($sanitize, markdownConverter) {
+    return {
+      restrict: 'AE',
+      link: function (scope, element, attrs) {
+        if (attrs.mwMarkdown) {
+          scope.$watch(attrs.mwMarkdown, function (newVal) {
+            try {
+              var html = newVal ? $sanitize(markdownConverter.makeHtml(newVal)) : '';
+              element.html(html);
+            } catch (e) {
+              element.text(newVal);
+            }
+          });
+        } else {
+          var html = $sanitize(markdownConverter.makeHtml(element.text()));
+          element.html(html);
+        }
+      }
+    };
+  }]);
 
 

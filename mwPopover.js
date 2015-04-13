@@ -22,13 +22,13 @@ angular.module('mwPopover', [])
  * @example
  <div mw-popover-content="anID">Content of the popover</div>
  */
-    .directive('mwPopoverContent', function (Popover) {
+    .directive('mwPopoverContent', function ($compile, Popover) {
 
       return {
         restrict: 'A',
         link: function (scope, elm, attr) {
           elm.css('display', 'none');
-          Popover.contents[attr.mwPopoverContent] = elm.html();
+          Popover.contents[attr.mwPopoverContent] = $compile(elm.html())(scope);
         }
       };
     })
