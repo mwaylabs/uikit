@@ -138,6 +138,7 @@ angular.module('mwComponents', [])
       transclude: true,
       scope: {
         title: '@',
+        url: '@',
         mwTitleIcon: '@',
         showBackButton: '@',
         warningText: '@',
@@ -162,10 +163,8 @@ angular.module('mwComponents', [])
         if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
           scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
           scope.url = scope.url.replace('#', '');
-        } else {
-          if (scope.showBackButton) {
-            console.error('Url attribute in header is missing!!');
-          }
+        } else if(!scope.url && scope.showBackButton){
+          console.error('Url attribute in header is missing!!');
         }
 
         scope.back = function () {
