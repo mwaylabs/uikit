@@ -534,6 +534,16 @@ angular.module('mwComponents', [])
     };
   })
 
+  .directive('mwLinkShow', function () {
+    return {
+      restrict: 'A',
+      scope: {
+        link: '@mwLinkShow'
+      },
+      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show"><span mw-icon="fa-angle-right"></span></a>'
+    };
+  })
+
   .directive('mwOptionGroup', function () {
     return {
       scope: {
