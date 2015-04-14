@@ -214,6 +214,21 @@
           ngModel.$formatters.unshift(validateUniqueness);
         }
       };
+    })
+
+    .directive('mwValidateWithoutChar', function(){
+      return {
+        require: 'ngModel',
+        link: function (scope, elm, attr, ngModel) {
+          ngModel.$validators.withoutChar = function(value){
+            if(_.isString(value)){
+              return value.indexOf(attr.mwValidateWithoutChar) < 0;
+            } else {
+              return true;
+            }
+          };
+        }
+      };
     });
 
 })();
