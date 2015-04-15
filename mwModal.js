@@ -27,7 +27,7 @@ angular.module('mwModal', [])
  *   </doc:source>
  * </doc:example>
  */
-  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $http) {
+  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest) {
 
     var body = $document.find('body').eq(0);
 
@@ -41,7 +41,6 @@ angular.module('mwModal', [])
             _holderEl = modalOptions.el?modalOptions.el:'body [ng-view]',
             _modalOpened = false,
             _self = this,
-            _cachedTemplate,
             _modal,
             _usedScope,
             _bootstrapModal;
@@ -51,20 +50,7 @@ angular.module('mwModal', [])
         if (!_id) {
           throw new Error('Modal service: templateUrl options is required.');
         }
-
-        // Get template from cache
-        _cachedTemplate = $templateCache.get(_id);
-
-        if (_cachedTemplate) {
-          return $q.when(_cachedTemplate);
-        } else {
-          return $http.get(_id).then(function (resp) {
-            $templateCache.put(_id, resp.data);
-            return resp.data;
-          }, function () {
-            throw new Error('Modal service: template \'' + _id + '\' has not been found. Does a template with this ID/Path exist?');
-          });
-        }
+        return $templateRequest(_id);
       };
 
       var _bindModalCloseEvent = function () {
