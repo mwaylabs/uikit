@@ -5,9 +5,9 @@ angular.module('mwPopover', [])
 /**
  * Helper service for internal use to communicate between popover directives
  */
-    .service('Popover', function () {
-      this.contents = [];
-    })
+  .service('Popover', function () {
+    this.contents = [];
+  })
 
 /**
  * @ngdoc directive
@@ -22,16 +22,16 @@ angular.module('mwPopover', [])
  * @example
  <div mw-popover-content="anID">Content of the popover</div>
  */
-    .directive('mwPopoverContent', function ($compile, Popover) {
+  .directive('mwPopoverContent', function ($compile, Popover) {
 
-      return {
-        restrict: 'A',
-        link: function (scope, elm, attr) {
-          elm.css('display', 'none');
-          Popover.contents[attr.mwPopoverContent] = $compile(elm.html())(scope);
-        }
-      };
-    })
+    return {
+      restrict: 'A',
+      link: function (scope, elm, attr) {
+        elm.css('display', 'none');
+        Popover.contents[attr.mwPopoverContent] = $compile(elm.html())(scope);
+      }
+    };
+  })
 
 
 /**
@@ -49,40 +49,55 @@ angular.module('mwPopover', [])
  * @example
  <div mw-popover-button="Click me to open the popover">Content of the popover</div>
  */
-    .directive('mwPopover', function (Popover) {
-      return {
-        restrict: 'A',
-        scope: {
-          content: '='
-        },
-        link: function (scope, elm, attr) {
-          var buildPopover = function () {
-            var content = Popover.contents[attr.mwPopover];
-            if(scope.content){
-              content = scope.content;
-            }
-            elm.popover('destroy');
-            elm.popover({
-              trigger: attr.popoverTrigger,
-              title: attr.popoverTitle,
-              html: true,
-              placement: attr.popoverPosition,
-              content: content
-            });
-          };
+  .directive('mwPopover', function ($templateRequest, $compile) {
+    return {
+      restrict: 'A',
+      link: function (scope, el, attr) {
 
-          elm.on('blur', function () {
-            elm.popover('hide');
+        var visible = false,
+          content = '';
+
+        var buildPopover = function () {
+          el.popover('destroy');
+          el.popover({
+            trigger: attr.popoverTrigger,
+            title: attr.popoverTitle,
+            html: true,
+            placement: attr.popoverPosition,
+            content: $compile(content.trim())(scope)
           });
 
-          buildPopover();
+          el.on('show.bs.popover', function () {
+            visible = true;
+          });
+        };
 
-          //we need to set a default value here, see
-          //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
-          attr.popoverTitle = attr.popoverTitle || 'popoverTitle';
-          attr.$observe('popoverTitle', buildPopover);
+        el.on('blur', function () {
+          el.popover('hide');
+        });
+
+        //we need to set a default value here, see
+        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+        attr.popoverTitle = attr.popoverTitle || 'popoverTitle';
+        attr.$observe('popoverTitle', buildPopover);
+
+        if (attr.popoverUrl) {
+          content = '<span rln-spinner></span>';
+          $templateRequest(attr.popoverUrl).then(function (template) {
+            content = template;
+            buildPopover();
+          });
+          buildPopover();
         }
-      };
-    })
+
+        attr.$observe('content', function (val) {
+          if (val) {
+            content = val;
+            buildPopover();
+          }
+        });
+      }
+    };
+  })
 
 ;
