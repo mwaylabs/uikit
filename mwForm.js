@@ -141,7 +141,8 @@
                   hex: i18n.get('errors.hex'),
                   unique: i18n.get('errors.notUnique'),
                   match: i18n.get('errors.doesNotMatch'),
-                  emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder')
+                  emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
+                  withoutChar: i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')})
                 };
               };
               buildValidationValues();
