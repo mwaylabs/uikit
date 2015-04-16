@@ -409,7 +409,7 @@ angular.module('mwListable', [])
         scope: {
           link: '@mwListableLinkEdit'
         },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="pencil"></span></a>',
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
         link: function (scope, elm, attr, mwListableCtrl) {
           mwListableCtrl.actionColumns.push(null);
         }
@@ -435,7 +435,7 @@ angular.module('mwListable', [])
         scope: {
           link: '@mwListableLinkShow'
         },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm action-button"><span mw-icon="chevron-right"></span></a>',
+        template: '<span mw-link-show="{{link}}"></span>',
         link: function (scope, elm, attr, mwListableCtrl) {
           mwListableCtrl.actionColumns.push(null);
         }

@@ -455,7 +455,7 @@ angular.module('mwComponents', [])
       link: function (scope, elm) {
         var popup;
         elm.addClass('mwButtonHelp');
-        var helpIcon = angular.element('<div>').addClass('help-icon glyphicon glyphicon-question-sign hidden-sm');
+        var helpIcon = angular.element('<div>').addClass('help-icon rln-icon support hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
         helpIcon.hover(function () {
@@ -477,9 +477,9 @@ angular.module('mwComponents', [])
 
         scope.$watch('hintsToShow', function (newVal) {
           if (newVal.length) {
-            helpIcon.show();
+            helpIcon.removeClass('hidden');
           } else {
-            helpIcon.hide();
+            helpIcon.addClass('hidden');
           }
         });
 
@@ -530,6 +530,16 @@ angular.module('mwComponents', [])
       link: function (scope, elm, attr, ctrl) {
         ctrl.register(scope);
       }
+    };
+  })
+
+  .directive('mwLinkShow', function () {
+    return {
+      restrict: 'A',
+      scope: {
+        link: '@mwLinkShow'
+      },
+      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show"><span mw-icon="fa-angle-right"></span></a>'
     };
   })
 
