@@ -4,6 +4,7 @@
   </span>
   <a href="http://daringfireball.net/projects/markdown/syntax" target="_blank">
     <span mw-popover="markdownTooltip"
+          popover-url="modules/ui/templates/mwComponents/_mwMarkdownPreviewPopoper.html"
           popover-trigger="hover"
           popover-position="bottom"
           popover-title="Markdown Syntax">
@@ -11,23 +12,7 @@
     </span>
   </a>
 </div>
-<div mw-popover-content="markdownTooltip">
-  <p>{{ 'markdownTooltip.description' | i18n }}</p>
-  <h1>#{{ 'markdownTooltip.level1Header' | i18n }}</h1>
-  <h2>##{{ 'markdownTooltip.level2Header' | i18n }}</h2>
-  {{ 'markdownTooltip.list' | i18n }}
-  <ul>
-    <li>* {{ 'markdownTooltip.item' | i18n }} 1</li>
-    <li>* {{ 'markdownTooltip.item' | i18n }} 2</li>
-    <li>* {{ 'markdownTooltip.item' | i18n }} 3</li>
-  </ul>
-  <ol>
-    <li>1. {{ 'markdownTooltip.item' | i18n }}</li>
-    <li>2. {{ 'markdownTooltip.item' | i18n }}</li>
-    <li>3. {{ 'markdownTooltip.item' | i18n }}</li>
-  </ol>
-  <p>{{ 'markdownTooltip.link' | i18n }}</p>
-</div>
+
 <div ng-if="showPreview"
      class="preview"
      mw-markdown="mwModel"></div>
