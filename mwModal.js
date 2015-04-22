@@ -223,6 +223,13 @@ angular.module('mwModal', [])
     this.create = function (modalOptions) {
       return new Modal(modalOptions);
     };
+
+    this.prepare = function(modalOptions){
+      var ModalDefinition = function(){
+        return new Modal(modalOptions);
+      };
+      return ModalDefinition;
+    };
   })
 
 
