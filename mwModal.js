@@ -38,7 +38,7 @@ angular.module('mwModal', [])
             _scopeAttributes = modalOptions.scopeAttributes || {},
             _controller = modalOptions.controller,
             _class = modalOptions.class || '',
-            _holderEl = modalOptions.el?modalOptions.el:'body [ng-view]',
+            _holderEl = modalOptions.el?modalOptions.el:'body .module-page',
             _modalOpened = false,
             _self = this,
             _modal,
