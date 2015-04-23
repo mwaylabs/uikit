@@ -39,7 +39,7 @@
 
         // use higher maxLength for textareas
         if (!attr.type) {
-          _maxlength = 10000;
+          _maxlength = 4000;
         }
 
         // Don't overwrite existing values for ngMaxlength
