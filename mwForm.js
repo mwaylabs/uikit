@@ -43,7 +43,7 @@
         }
 
         // Don't overwrite existing values for ngMaxlength
-        if (attr.type !== 'number' && ngModelController && dontSkipIt && !ngModelController.$validators.maxlength) {
+        if (attr.type !== 'number' && ngModelController && dontSkipIt && !ngModelController.$validators.maxlength && !attr.ngMaxlength) {
           attr.$set('ngMaxlength', _maxlength);
           ngModelController.$validators.maxlength = function (modelValue, viewValue) {
             return (_maxlength < 0) || ngModelController.$isEmpty(modelValue) || (viewValue.length <= _maxlength);
