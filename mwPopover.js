@@ -49,7 +49,7 @@ angular.module('mwPopover', [])
  * @example
  <div mw-popover-button="Click me to open the popover">Content of the popover</div>
  */
-  .directive('mwPopover', function ($templateRequest, $compile) {
+  .directive('mwPopover', function ($rootScope, $templateRequest, $compile) {
     return {
       restrict: 'A',
       link: function (scope, el, attr) {
@@ -95,6 +95,13 @@ angular.module('mwPopover', [])
             content = val;
             buildPopover();
           }
+        });
+
+        scope.$on('$destroy', function () {
+          var popover = el.data('bs.popover');
+          if(popover && popover.tip()){
+            popover.tip().detach().remove();
+          };
         });
       }
     };

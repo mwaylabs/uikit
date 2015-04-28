@@ -256,7 +256,7 @@ angular.module('mwComponents', [])
         placement: '@'
       },
       link: function (scope, el) {
-        scope.$watch('text', function (newVal) {
+        var offText = scope.$watch('text', function (newVal) {
           el.popover('destroy');
           el.popover({
             trigger: 'hover',
@@ -264,10 +264,14 @@ angular.module('mwComponents', [])
             content: newVal,
             container: 'body'
           });
+        });
 
-          scope.$on('$destroy', function () {
-            el.popover('destroy');
-          });
+        scope.$on('$destroy', function () {
+          var popover = el.data('bs.popover');
+          if (popover && popover.tip()) {
+            popover.tip().detach().remove();
+          }
+          offText();
         });
       }
     };
