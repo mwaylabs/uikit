@@ -101,7 +101,7 @@ angular.module('mwPopover', [])
           var popover = el.data('bs.popover');
           if(popover && popover.tip()){
             popover.tip().detach().remove();
-          };
+          }
         });
       }
     };
