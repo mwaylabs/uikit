@@ -29,7 +29,7 @@
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          var regex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+          var regex = /^\+(?:[0-9]){6,14}[0-9]$/;
 
           var removeNonDigitValues = function (value) {
             if (value) {
