@@ -910,16 +910,22 @@ angular.module('mwComponents', [])
           loading: false
         };
 
-        $rootScope.$on('$locationChangeSuccess', function () {
+        var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function () {
           scope.model.loading = true;
         });
 
-        $rootScope.$on('$routeChangeSuccess', function () {
+        var routeChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
           scope.model.loading = false;
         });
 
-        $rootScope.$on('$routeChangeError', function () {
+        var routeChangeErrorListener = $rootScope.$on('$routeChangeError', function () {
           scope.model.loading = false;
+        });
+
+        scope.$on('$destroy', function(){
+          locationChangeSuccessListener();
+          routeChangeSuccessListener();
+          routeChangeErrorListener();
         });
       }
     };

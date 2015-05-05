@@ -67,6 +67,8 @@ angular.module('mwModal', [])
               document.location.href=newUrl;
               changeLocationOff();
             });
+          } else {
+            changeLocationOff();
           }
         });
       };
