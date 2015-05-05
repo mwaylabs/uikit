@@ -183,6 +183,8 @@ angular.module('mwHelper', [])
             confirmationModal.show();
             ev.preventDefault();
             scope.next = next;
+          } else {
+            scope.changeLocationOff();
           }
         };
 
@@ -221,7 +223,6 @@ angular.module('mwHelper', [])
         }
 
         $rootScope.leaveConfirmationEnabled = true;
-
       }
     };
   })
