@@ -187,9 +187,12 @@ angular.module('mwModal', [])
           overflow: ''
         });
         if (_modal) {
-          _usedScope.$destroy();
           _modal.remove();
           _modalOpened = false;
+        }
+
+        if(_usedScope){
+          _usedScope.$destroy();
         }
       };
 
