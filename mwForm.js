@@ -354,7 +354,7 @@
             function () {
               return ngModel.$modelValue;
             },
-            function(val){
+            function (val) {
               if (angular.isUndefined(val)) {
                 el.addClass('default-selected');
               } else {
@@ -381,29 +381,11 @@
    * Replaces native checkbox with custom checkbox
    *
    */
-    .directive('mwCustomCheckbox', function ($window) {
+    .directive('mwCustomCheckbox', function () {
       return {
         restrict: 'A',
-        replace: true,
-        require: '?ngModel',
-        transclude: true,
-        scope: {
-          radio: '='
-        },
-        link: function (scope, el, attr, ngModel) {
-
-
-
-          // set the active class on the checkbox wrapper
-          var setActiveClass = function (checked) {
-            if (checked) {
-              el.parent().addClass('active');
-            } else {
-              el.parent().removeClass('active');
-            }
-          };
-
-          scope.$watch('radio', function (newVal) {
+        link: function (scope, el, attr) {
+          attr.$observe('radio', function (newVal) {
             if (newVal === true) {
               el.parent().addClass('round');
             }
@@ -424,69 +406,23 @@
           };
 
           (function init() {
-
-            //check the value every time the checkbox is clicked
-            el.on('change', function () {
-              setActiveClass(el.is(':checked'));
-            });
-
-            //unbind eventlistener to prevent infinite loops!
             //after this the remaining element is removed
-            el.on('$destroy', function () {
-              el.off('$destroy');
+            scope.$on('$destroy', function () {
+              el.off();
               el.parent('.mw-checkbox').remove();
             });
 
-            if (ngModel) {
-              //when a model is defined use the value which is passed into the formatters function during initialization
-              ngModel.$formatters.unshift(function (checked) {
-                setActiveClass(checked);
-                return checked;
-              });
-            }
-
-            //jQuery does not trigger a change event when checkbox is checked programmatically e.g. by ng-checked
-            //property hooks triggers a change event everytime the setter is called
-            //TODO find a angularjs solution for this
-            $window.$.propHooks.checked = {
-              set: function (el, value) {
-
-                var trigger;
-                if (el.checked !== value) {
-                  trigger = true;
-                } else {
-                  trigger = false;
-                }
-                el.checked = value;
-                if (trigger) {
-                  $window.$(el).trigger('change');
-                }
-              }
-            };
-
             render();
+
           }());
         }
       };
     })
 
-    .directive('mwCustomRadio', function ($window) {
+    .directive('mwCustomRadio', function () {
       return {
         restrict: 'A',
-        replace: true,
-        require: '?ngModel',
-        transclude: true,
-        link: function (scope, el, attr, ngModel) {
-
-          // set the active class on the checkbox wrapper
-          var setActiveClass = function (checked) {
-            if (checked) {
-              el.parent().addClass('active');
-            } else {
-              el.parent().removeClass('active');
-            }
-          };
-
+        link: function (scope, el) {
           // render custom checkbox
           // to preserve the functionality of the original checkbox we just wrap it with a custom element
           // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
@@ -502,66 +438,13 @@
           };
 
           (function init() {
-            //check the value every time the checkbox is clicked
-            el.on('change', function () {
-              var previousSelescted = angular.element('.mw-radio.active');
-              //check if the previous selected is an item of the current selected for the case that multiple radio groups are on one page
-              //unselect all elements which are currently active from this name group
-
-              previousSelescted.each(function () {
-                var $el = angular.element(this);
-                if ($el.find('input[name=' + el.attr('name') + ']').length > 0) {
-                  if (!$el.find('input[type=radio]').is(':checked')) {
-                    $el.removeClass('active');
-                  }
-                }
-              });
-              if (el.is(':checked')) {
-                setActiveClass(el.is(':checked'));
-              }
-            });
-
-            //unbind eventlistener to prevent infinite loops!
             //after this the remaining element is removed
-            el.on('$destroy', function () {
-              el.off('$destroy');
+            scope.$on('$destroy', function () {
+              el.off();
               el.parent('.mw-radio').remove();
             });
 
-            if (ngModel) {
-              //when a model is defined use the value which is passed into the formatters function during initialization
-              ngModel.$formatters.unshift(function (value) {
-                if (value && value === el.attr('value')) {
-                  setActiveClass(true);
-                }
-                return value;
-              });
-            }
-
-            //jQuery does not trigger a change event when checkbox is checked programmatically e.g. by ng-checked
-            //property hooks triggers a change event everytime the setter is called
-            //TODO find a angularjs solution for this
-            $window.$.propHooks.checked = {
-              set: function (el, value) {
-
-                var trigger;
-                if (el.checked !== value) {
-                  trigger = true;
-                } else {
-                  trigger = false;
-                }
-                el.checked = value;
-                if (trigger) {
-                  $window.$(el).trigger('change');
-                }
-              }
-            };
-
             render();
-
-            window.setTimeout(function () {
-              $window.$(el).trigger('change');
-            }, 0);
 
           }());
         }
@@ -730,14 +613,14 @@
           scope._showCancel = true;
           scope.executeDefaultCancel = (attr.cancel === 'true');
 
-          scope.$watch('showSave', function(val){
-            if(angular.isDefined(val)){
+          scope.$watch('showSave', function (val) {
+            if (angular.isDefined(val)) {
               scope._showSave = val;
             }
           });
 
-          scope.$watch('showCancel', function(val){
-            if(angular.isDefined(val)){
+          scope.$watch('showCancel', function (val) {
+            if (angular.isDefined(val)) {
               scope._showCancel = val;
             }
           });
