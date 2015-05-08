@@ -687,8 +687,50 @@
    *
    */
     .directive('textarea', extendHTMLElement)
-    .directive('textarea', addDefaultValidations);
+    .directive('textarea', addDefaultValidations)
 
+  /**
+   * @ngdoc directive
+   * @name mwForm.directive:mwPasswordToggler
+   * @element input
+   * @description
+   *
+   * Adds an eye button for password fields to show the password in clear text
+   *
+   */
+    .directive('mwPasswordToggler', function ($compile) {
+    return {
+      restrict: 'A',
+      link: function (scope, el) {
+
+        var render = function () {
+          var passwordWrapper = angular.element('<div class="mw-password-toggler input-group"></div>'),
+            passwordToggleBtn = $compile(
+              '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()">' +
+                '<span ng-if="isPassword()" mw-icon="fa-eye"></span>' +
+                '<span ng-if="!isPassword()" mw-icon="fa-eye-slash"></span>' +
+              '</span>')(scope);
+
+          el.wrap(passwordWrapper);
+          passwordToggleBtn.insertAfter(el);
+        };
+
+        scope.isPassword = function(){
+          return el.attr('type')==='password';
+        };
+
+        scope.togglePassword = function(){
+          if(scope.isPassword()){
+            el.attr('type', 'text');
+          } else {
+            el.attr('type', 'password');
+          }
+        };
+
+        render();
+      }
+    };
+  });
 
 })();
 
