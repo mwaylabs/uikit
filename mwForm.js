@@ -544,9 +544,17 @@
     .directive('form', function () {
       return {
         restrict: 'E',
-        link: function (scope, elm) {
-          elm.addClass('form-horizontal');
-          elm.attr('novalidate', 'true');
+        link: function (scope, el) {
+          el.addClass('form-horizontal');
+          el.attr('novalidate', 'true');
+
+          var noPasswordAutocomplete = angular.element(
+            '<!-- fake fields are a workaround for chrome autofill getting the wrong fields -->' +
+            '<input style="display:none" type="text" name="fakeusernameremembered"/>' +
+            '<input style="display:none" type="password" name="fakepasswordremembered"/>'
+          );
+
+          el.prepend(noPasswordAutocomplete);
         }
       };
     })
