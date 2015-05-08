@@ -48,7 +48,8 @@ angular.module('mwListableBb', [])
           };
         },
         controller: function ($scope) {
-          var columns = $scope.columns = [];
+          var columns = $scope.columns = [],
+              self = this;
 
           this.actionColumns = [];
 
@@ -67,6 +68,17 @@ angular.module('mwListableBb', [])
             columns.push(scope);
           };
 
+          this.unRegisterColumn = function (scope) {
+            if(scope && scope.$id){
+              var scopeInArray = _.findWhere(columns,{$id:scope.$id}),
+                  indexOfScope = _.indexOf(columns,scopeInArray);
+
+              if(indexOfScope>-1){
+                columns.splice(indexOfScope,1);
+              }
+            }
+          };
+
           this.getColumns = function() {
             return columns;
           };
@@ -82,6 +94,9 @@ angular.module('mwListableBb', [])
             return false;
           };
 
+          $scope.$on('$destroy', function(){
+            self.actionColumns = [];
+          });
         }
       };
     })
@@ -197,6 +212,10 @@ angular.module('mwListableBb', [])
           }
 
           mwListableCtrl.registerColumn(scope);
+
+          scope.$on('$destroy', function(){
+            mwListableCtrl.unRegisterColumn(scope);
+          });
         }
       };
     })
