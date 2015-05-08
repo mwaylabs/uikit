@@ -813,6 +813,10 @@ angular.module('mwComponents', [])
             });
           });
         }
+
+        scope.$on('$destroy', function(){
+          el.off();
+        });
       }
     };
   })
