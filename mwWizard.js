@@ -36,7 +36,7 @@ angular.module('mwWizard', [])
         if (_steps.length < 1) {
           step._isActive = true;
         }
-        step.slideId = id || _.uniqueId(_id+'_');
+        step.slideId = id || _.uniqueId(_id + '_');
         _steps.push(step);
       };
 
@@ -45,18 +45,19 @@ angular.module('mwWizard', [])
        * @description
        * This method should not be called manually but rather automatically by using the mwWizardStep directive
        */
-      this._unRegisterStep = function (step) {
-        var stepIndexPosition = _.indexOf(_steps,step);
-        if(stepIndexPosition>=0){
-          _steps.splice(stepIndexPosition,0);
-        } else {
-          throw new Error('The step you tried to remove did not exist');
+      this._unRegisterStep = function (scope) {
+        var scopeInArray = _.findWhere(_steps, {$id: scope.$id}),
+          indexOfScope = _.indexOf(_steps, scopeInArray);
+
+        if (indexOfScope > -1) {
+          _steps.splice(indexOfScope, 1);
+          console.log(_steps.length);
         }
       };
 
-      this.destroy = function(){
+      this.destroy = function () {
         var self = this;
-        _steps.forEach(function(step){
+        _steps.forEach(function (step) {
           self._unRegisterStep(step);
         });
       };
@@ -65,7 +66,7 @@ angular.module('mwWizard', [])
         return _id;
       };
 
-      this.getAllSteps = function(){
+      this.getAllSteps = function () {
         return _steps;
       };
 
@@ -77,7 +78,7 @@ angular.module('mwWizard', [])
         return _currentlyActive;
       };
 
-      this.getCurrentStepId = function(){
+      this.getCurrentStepId = function () {
         return _steps[_currentlyActive].slideId;
       };
 
@@ -111,13 +112,13 @@ angular.module('mwWizard', [])
         this.goTo(_currentlyActive - 1);
       };
 
-      this.gotoStep = function(step){
+      this.gotoStep = function (step) {
 
-        if(typeof step=== 'string'){
-          step = _.findWhere(_steps,{slideId:step});
+        if (typeof step === 'string') {
+          step = _.findWhere(_steps, {slideId: step});
         }
 
-        this.goTo(_.indexOf(_steps,step));
+        this.goTo(_.indexOf(_steps, step));
       };
 
       /*
@@ -227,11 +228,15 @@ angular.module('mwWizard', [])
 
         var wizard = $scope.wizard;
 
-        this.registerStep = function (step, id) {
-          wizard._registerStep(step, id);
+        this.registerStep = function (scope, id) {
+          wizard._registerStep(scope, id);
         };
 
-        $scope.$on('$destroy',function(){
+        this.unRegisterStep = function (scope) {
+          wizard._unRegisterStep(scope);
+        };
+
+        $scope.$on('$destroy', function () {
           wizard.destroy();
         });
 
@@ -262,15 +267,15 @@ angular.module('mwWizard', [])
         //we need to set a default value here, see
         //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
         attr.title = attr.title || 'noname';
-        attr.$observe('title',function(title){
-          if(title && title.length>0){
+        attr.$observe('title', function (title) {
+          if (title && title.length > 0) {
             scope.title = title;
           }
           mwWizardCtrl.registerStep(scope, attr.id);
         });
 
-        scope.$on('$destroy',function(){
-          //el.remove();
+        scope.$on('$destroy', function () {
+          mwWizardCtrl.unRegisterStep(scope);
         });
       }
     };
