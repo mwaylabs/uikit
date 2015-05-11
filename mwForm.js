@@ -127,6 +127,14 @@
                 }
               });
 
+              $scope.$watch(function () {
+                return element.attr('mw-validation-message');
+              }, function (val) {
+                if (val) {
+                  buildValidationValues();
+                }
+              });
+
               var buildValidationValues = function () {
                 $scope.validationValues = {
                   required: i18n.get('errors.isRequired'),
@@ -142,7 +150,7 @@
                   unique: i18n.get('errors.notUnique'),
                   match: i18n.get('errors.doesNotMatch'),
                   emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                  withoutChar: i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')})
+                  withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')})
                 };
               };
               buildValidationValues();
