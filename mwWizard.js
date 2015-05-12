@@ -51,7 +51,6 @@ angular.module('mwWizard', [])
 
         if (indexOfScope > -1) {
           _steps.splice(indexOfScope, 1);
-          console.log(_steps.length);
         }
       };
 
