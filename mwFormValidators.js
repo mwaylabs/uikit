@@ -229,6 +229,18 @@
           };
         }
       };
+    })
+
+    .directive('mwValidateItunesOrHttpLink', function(){
+      return {
+        require: 'ngModel',
+        link: function (scope, elm, attr, ngModel) {
+          var itunesOrHttpLinkRegex = /^(https?|itms|itms-apps):\/\/.+$/;
+          ngModel.$validators.itunesOrHttpLink = function(value){
+            return validateRegex(value, itunesOrHttpLinkRegex);
+          };
+        }
+      };
     });
 
 })();
