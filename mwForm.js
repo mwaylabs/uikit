@@ -150,7 +150,8 @@
                   unique: i18n.get('errors.notUnique'),
                   match: i18n.get('errors.doesNotMatch'),
                   emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                  withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')})
+                  withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')}),
+                  itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
                 };
               };
               buildValidationValues();
