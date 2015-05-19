@@ -305,9 +305,9 @@ angular.module('mwListableBb', [])
 
             scope.collection = ctrl.getCollection();
 
-            if(scope.item && scope.item.selectable){
+            if(scope.item && scope.collection.selectable){
               elm.addClass('selectable');
-            } else {
+            } else if(!scope.item) {
               console.warn('No item available in the list!');
             }
 
