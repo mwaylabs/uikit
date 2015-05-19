@@ -319,6 +319,12 @@ angular.module('mwListableBb', [])
               }
             });
 
+            elm.on('dblclick', function(){
+              if(ctrl.actionColumns && ctrl.actionColumns[0]){
+                document.location.href=ctrl.actionColumns[0];
+              }
+            });
+
             scope.$watch('item.selectable.isSelected()', function (value) {
               if(value) {
                 elm.addClass(selectedClass);
@@ -386,7 +392,7 @@ angular.module('mwListableBb', [])
         },
         template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
         link: function (scope, elm, attr, mwListableCtrl) {
-          mwListableCtrl.actionColumns.push(null);
+          mwListableCtrl.actionColumns.push(scope.link);
         }
       };
     })
@@ -412,7 +418,7 @@ angular.module('mwListableBb', [])
         },
         template: '<span mw-link-show="{{link}}"></span>',
         link: function (scope, elm, attr, mwListableCtrl) {
-          mwListableCtrl.actionColumns.push(null);
+          mwListableCtrl.actionColumns.push(scope.link);
         }
       };
     })
