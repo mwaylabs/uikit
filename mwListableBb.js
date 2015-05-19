@@ -311,6 +311,10 @@ angular.module('mwListableBb', [])
               console.warn('No item available in the list!');
             }
 
+            if(ctrl.actionColumns && ctrl.actionColumns.length>0){
+              elm.addClass('clickable');
+            }
+
             elm.on('click', function () {
               if (scope.collection.selectable && scope.item.selectable && !scope.item.selectable.isDisabled()) {
                 $timeout(function(){
