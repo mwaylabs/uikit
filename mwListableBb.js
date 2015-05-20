@@ -324,8 +324,8 @@ angular.module('mwListableBb', [])
             });
 
             elm.on('dblclick', function(){
-              if(ctrl.actionColumns && ctrl.actionColumns[0]){
-                document.location.href=ctrl.actionColumns[0];
+              if(ctrl.actionColumns && angular.isNumber(scope.$index) && ctrl.actionColumns[scope.$index]){
+                document.location.href=ctrl.actionColumns[scope.$index];
               }
             });
 
@@ -370,33 +370,6 @@ angular.module('mwListableBb', [])
             }
             scope.actionColumns = mwListableCtrl.actionColumns;
           };
-        }
-      };
-    })
-
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableLinkEdit
- * @element td
- * @description
- *
- * Directive to add a button link to edit a dataset.
- *
- * @param {string} mwListableLinkEdit URL as href
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableLinkEditBb', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        scope: {
-          link: '@mwListableLinkEdit'
-        },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          mwListableCtrl.actionColumns.push(scope.link);
         }
       };
     })
