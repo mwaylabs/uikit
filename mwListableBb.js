@@ -305,13 +305,13 @@ angular.module('mwListableBb', [])
 
             scope.collection = ctrl.getCollection();
 
-            if(scope.item && scope.collection.selectable){
-              elm.addClass('selectable');
-            } else if(!scope.item) {
-              console.warn('No item available in the list!');
+            if(!scope.item) {
+              throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');
             }
 
-            if(ctrl.actionColumns && ctrl.actionColumns.length>0){
+            if(scope.item && scope.collection.selectable){
+              elm.addClass('selectable clickable');
+            } else if (ctrl.actionColumns && ctrl.actionColumns.length>0) {
               elm.addClass('clickable');
             }
 
