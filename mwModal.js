@@ -146,7 +146,7 @@ angular.module('mwModal', [])
        */
       this.hide = function () {
         var dfd = $q.defer();
-        if (_bootstrapModal) {
+        if (_bootstrapModal && _modalOpened) {
           _bootstrapModal.one('hidden.bs.modal', function () {
             _bootstrapModal.off();
             _self.destroy();
@@ -155,7 +155,7 @@ angular.module('mwModal', [])
           });
           _bootstrapModal.modal('hide');
         } else {
-          dfd.reject();
+          dfd.resolve();
         }
 
         return dfd.promise;
