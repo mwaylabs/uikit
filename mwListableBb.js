@@ -309,7 +309,7 @@ angular.module('mwListableBb', [])
               throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');
             }
 
-            if(scope.item && scope.collection.selectable){
+            if(scope.item && scope.collection.selectable && !scope.item.selectable.isDisabled()){
               elm.addClass('selectable clickable');
             } else if (ctrl.actionColumns && ctrl.actionColumns.length>0) {
               elm.addClass('clickable');
