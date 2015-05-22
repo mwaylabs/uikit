@@ -744,7 +744,9 @@
           }
         };
 
-        render();
+        if(!el.is(':disabled')){
+          render();
+        }
       }
     };
   });
