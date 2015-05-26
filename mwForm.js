@@ -723,7 +723,7 @@
         var render = function () {
           var passwordWrapper = angular.element('<div class="mw-password-toggler input-group"></div>'),
             passwordToggleBtn = $compile(
-              '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()">' +
+              '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()" ng-if="showToggler()">' +
                 '<span ng-if="isPassword()" mw-icon="fa-eye"></span>' +
                 '<span ng-if="!isPassword()" mw-icon="fa-eye-slash"></span>' +
               '</span>')(scope);
@@ -744,9 +744,12 @@
           }
         };
 
-        if(!el.is(':disabled')){
-          render();
-        }
+
+        scope.showToggler = function(){
+          return !el.is(':disabled');
+        };
+
+        render();
       }
     };
   });
