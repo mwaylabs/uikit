@@ -749,6 +749,16 @@
           return !el.is(':disabled');
         };
 
+        // remove input group class when input is disabled so it is displaaed like a normal input element
+        scope.$watch(scope.showToggler, function(showToggler){
+          var passwordWrapper = el.parent('.mw-password-toggler');
+          if(showToggler){
+            passwordWrapper.addClass('input-group');
+          } else {
+            passwordWrapper.removeClass('input-group');
+          }
+        });
+
         render();
       }
     };
