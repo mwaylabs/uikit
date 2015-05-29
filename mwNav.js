@@ -23,7 +23,7 @@ angular.module('mwNav', [])
         },
         transclude: true,
         replace: true,
-        template: '<li ng-class="{mwDisabled: mwDisabled}"><button ng-transclude class="btn btn-link" ng-disabled="mwDisabled" ng-click="navigate(url)"></button></li>',
+        template: '<li ng-class="{mwDisabled: mwDisabled}"><div ng-transclude class="btn btn-link" ng-disabled="mwDisabled" ng-click="navigate(url)"></div></li>',
         link: function (scope, elm) {
           var setActiveClassOnUrlMatch = function (url) {
             if (scope.url && url === scope.url.slice(1)) {
@@ -40,8 +40,8 @@ angular.module('mwNav', [])
           });
 
           scope.navigate = function(url){
-            url = url.replace(/#\//,'');
             if(!scope.mwDisabled){
+              url = url.replace(/#\//,'');
               $location.path(url);
               $location.replace();
             }
