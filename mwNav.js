@@ -120,6 +120,7 @@ angular.module('mwNav', [])
       return {
         transclude: true,
         replace: true,
+        scope: true,
         require: '^mwNavbar',
         template: '<li ng-class="{active: isActive}" ng-transclude></li>',
         link: function (scope, elm, attr, mwNavbarCtrl) {
