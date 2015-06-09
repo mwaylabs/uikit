@@ -60,7 +60,7 @@ angular.module('mwPopover', [])
         var buildPopover = function () {
           el.popover('destroy');
           el.popover({
-            trigger: attr.popoverTrigger,
+            trigger: attr.popoverTrigger || 'hover',
             title: attr.popoverTitle,
             html: true,
             placement: attr.popoverPosition,
