@@ -206,12 +206,9 @@ angular.module('mwComponents', [])
         scope.$watch('mwIcon', function (newVal) {
           if (newVal) {
             var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
-              isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/)),
               isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
             if (isFontAwesome) {
               scope.iconClasses = 'fa ' + scope.mwIcon;
-            } else if (isIcConf) {
-              scope.iconClasses = 'icon-ic_conf ' + scope.mwIcon;
             } else if (isRlnIcon) {
               scope.iconClasses = 'rln-icon ' + scope.mwIcon;
             } else {
