@@ -104,6 +104,63 @@ angular.module('mwSidebarBb', [])
     };
   })
 
+
+/**
+ * @ngdoc directive
+ * @name mwSidebar.directive:mwSidebarNumberInputBb
+ * @element div
+ * @description
+ *
+ * Creates a number input to filter for integer values.
+ *
+ * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+ * @param {string} property The name of the property on which the filtering should happen.
+ * @param {string} placeholder The name of the default selected label with an empty value.
+ * @param {expression} persist If true, filter will be saved in runtime variable
+ * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+ */
+
+  .directive('mwSidebarNumberInputBb', function (Persistance, EmptyState) {
+    return {
+      require: '^mwSidebarFiltersBb',
+      scope: {
+        property: '@',
+        placeholder: '@',
+        mwDisabled: '=',
+        customUrlParameter: '@',
+        min: '@',
+        max: '@'
+      },
+      templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarNumberInput.html',
+      link: function (scope, elm, attr, ctrl) {
+
+        scope.collection = ctrl.getCollection();
+
+        scope.isValid = function(){
+          return elm.find('input').first().hasClass('ng-valid');
+        };
+
+        scope.changed = function(){
+          //add property to setted filters on collection for empty state
+          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          EmptyState.pushFilter(scope.collection, property);
+
+          //persist filter values
+          Persistance.saveFilterValues(scope.collection);
+
+          //fetch data and reset filtered property for this selectbox if the filter value or customUrlParameter is empty
+          var searchValue = scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
+
+          scope.collection.fetch().then(function(collection){
+            if(!searchValue){
+              EmptyState.removeFilter(collection, property);
+            }
+          });
+        };
+      }
+    };
+  })
+
 /**
  * @ngdoc directive
  * @name mwSidebar.directive:mwSidebarFilters
