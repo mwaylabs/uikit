@@ -14,7 +14,7 @@ angular.module('mwComponents', [])
  * @example
  * <doc:example>
  *  <doc:source>
- *    <div mw-panel="Panel title">
+ *    <div mw-panel>
  *      Panel content
  *    </div>
  *  </doc:source>
@@ -23,20 +23,8 @@ angular.module('mwComponents', [])
   .directive('mwPanel', function () {
     return {
       restrict: 'A',
-      replace: true,
-      require: '^?dashboardModule',
-      scope: {
-        title: '@mwPanel'
-      },
       transclude: true,
       templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html',
-      link: function (scope, elm, attr, ctrl) {
-        if (ctrl) {
-          scope.isDashboardModule = true;
-          scope.showCloseButton = ctrl.numberOfModules > 1;
-          scope.closeModule = ctrl.closeModule;
-        }
-      }
     };
   })
 
@@ -218,12 +206,9 @@ angular.module('mwComponents', [])
         scope.$watch('mwIcon', function (newVal) {
           if (newVal) {
             var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
-              isIcConf = angular.isArray(scope.mwIcon.match(/icon-ic_conf/)),
               isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
             if (isFontAwesome) {
               scope.iconClasses = 'fa ' + scope.mwIcon;
-            } else if (isIcConf) {
-              scope.iconClasses = 'icon-ic_conf ' + scope.mwIcon;
             } else if (isRlnIcon) {
               scope.iconClasses = 'rln-icon ' + scope.mwIcon;
             } else {
@@ -419,13 +404,20 @@ angular.module('mwComponents', [])
         elm.addClass('mw-star-rating');
 
         scope.stars = [];
-        var starsMax = scope.$eval(attr.max);
 
-        var buildStars = function (rating) {
+        var buildStars = function () {
           scope.stars = [];
 
-          rating = (rating > starsMax) ? starsMax : rating;
-          rating = (rating < 0) ? 0 : rating;
+          var rating = scope.$eval(attr.mwRating) || 0;
+          var starsMax = scope.$eval(attr.max) || 5;
+
+          if (rating > starsMax){
+            rating = starsMax;
+          }
+
+          if (rating < 0){
+            rating = 0;
+          }
 
           for (var i = 0; i < Math.floor(rating); i++) {
             scope.stars.push({state: 'fa-star'});
@@ -440,13 +432,13 @@ angular.module('mwComponents', [])
           }
         };
 
-        //we need to set a default value here, see
-        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
-        attr.mwRating = attr.mwRating || 0;
-        attr.$observe('mwRating', function (value) {
-          buildStars(scope.$eval(value));
+        attr.$observe('mwRating', function () {
+          buildStars();
         });
 
+        attr.$observe('max', function () {
+          buildStars();
+        });
       }
     };
   })
