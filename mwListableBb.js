@@ -33,73 +33,73 @@ angular.module('mwListableBb', [])
  *   </doc:source>
  * </doc:example>
  */
-    .directive('mwListableBb', function (Persistance) {
+  .directive('mwListableBb', function (Persistance) {
 
-      return {
-        restrict: 'A',
-        scope: {
-          collection: '='
-        },
-        compile: function  (elm) {
-          elm.append('<tfoot mw-listable-footer-bb></tfoot>');
+    return {
+      restrict: 'A',
+      scope: {
+        collection: '='
+      },
+      compile: function (elm) {
+        elm.append('<tfoot mw-listable-footer-bb></tfoot>');
 
-          return function (scope, elm) {
-            elm.addClass('table table-striped mw-listable');
-          };
-        },
-        controller: function ($scope) {
-          var columns = $scope.columns = [],
-              self = this;
+        return function (scope, elm) {
+          elm.addClass('table table-striped mw-listable');
+        };
+      },
+      controller: function ($scope) {
+        var columns = $scope.columns = [],
+          self = this;
 
-          this.actionColumns = [];
+        this.actionColumns = [];
 
-          this.sort = function (property, order) {
-            var sortOrder = order + property;
-            Persistance.saveSortOrder(sortOrder, $scope.collection);
-            $scope.collection.filterable.setSortOrder(sortOrder);
-            $scope.collection.fetch();
-          };
+        this.sort = function (property, order) {
+          var sortOrder = order + property;
+          Persistance.saveSortOrder(sortOrder, $scope.collection);
+          $scope.collection.filterable.setSortOrder(sortOrder);
+          $scope.collection.fetch();
+        };
 
-          this.getSortOrder = function () {
-            return $scope.collection.filterable.getSortOrder();
-          };
+        this.getSortOrder = function () {
+          return $scope.collection.filterable.getSortOrder();
+        };
 
-          this.registerColumn = function (scope) {
-            columns.push(scope);
-          };
+        this.registerColumn = function (scope) {
+          columns.push(scope);
+        };
 
-          this.unRegisterColumn = function (scope) {
-            if(scope && scope.$id){
-              var scopeInArray = _.findWhere(columns,{$id:scope.$id}),
-                  indexOfScope = _.indexOf(columns,scopeInArray);
+        this.unRegisterColumn = function (scope) {
+          if (scope && scope.$id) {
+            var scopeInArray = _.findWhere(columns, {$id: scope.$id}),
+              indexOfScope = _.indexOf(columns, scopeInArray);
 
-              if(indexOfScope>-1){
-                columns.splice(indexOfScope,1);
-              }
+            if (indexOfScope > -1) {
+              columns.splice(indexOfScope, 1);
             }
-          };
+          }
+        };
 
-          this.getColumns = function() {
-            return columns;
-          };
+        this.getColumns = function () {
+          return columns;
+        };
 
-          this.getCollection = function () {
-            return $scope.collection;
-          };
+        this.getCollection = function () {
+          return $scope.collection;
+        };
 
-          this.isRadio = function(){
-            if($scope.collection && $scope.collection.selectable){
-              return $scope.collection.selectable.isRadio();
-            }
-            return false;
-          };
+        this.isRadio = function () {
+          if ($scope.collection && $scope.collection.selectable) {
+            return $scope.collection.selectable.isRadio();
+          }
+          return false;
+        };
 
-          $scope.$on('$destroy', function(){
-            self.actionColumns = [];
-          });
-        }
-      };
-    })
+        $scope.$on('$destroy', function () {
+          self.actionColumns = [];
+        });
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -111,25 +111,25 @@ angular.module('mwListableBb', [])
  *
  */
 
-  .directive('mwListableHeadBb', function($compile) {
+  .directive('mwListableHeadBb', function ($compile) {
     return {
       require: '^mwListableBb',
-      scope:{
-        title:'@mwListableHeadBb',
+      scope: {
+        title: '@mwListableHeadBb',
         noCounter: '='
       },
-      link: function(scope,el,attr,mwListable){
+      link: function (scope, el, attr, mwListable) {
         scope.collection = mwListable.getCollection();
 
-        if(angular.isUndefined(scope.noCounter)) {
+        if (angular.isUndefined(scope.noCounter)) {
           var tmpl = '<tr>' +
-                  '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount() || collection.length>0">' +
-                  '<span ng-if="collection.selectable.getSelectedModels().length > 0">{{collection.selectable.getSelectedModels().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
-                  '<span ng-if="!collection.selectable || collection.selectable.getSelectedModels().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
-                  '</th>' +
-                  '</tr>',
-              $tmpl = angular.element(tmpl),
-              compiled = $compile($tmpl);
+              '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount() || collection.length>0">' +
+              '<span ng-if="collection.selectable.getSelectedModels().length > 0">{{collection.selectable.getSelectedModels().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+              '<span ng-if="!collection.selectable || collection.selectable.getSelectedModels().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
+              '</th>' +
+              '</tr>',
+            $tmpl = angular.element(tmpl),
+            compiled = $compile($tmpl);
 
           el.prepend($tmpl);
           compiled(scope);
@@ -151,17 +151,17 @@ angular.module('mwListableBb', [])
  *
  */
 
-    .directive('mwListableFooterBb', function(Loading) {
-      return {
-        require: '^mwListableBb',
-        templateUrl: 'modules/ui/templates/mwListableBb/mwListableFooter.html',
-        link: function(scope, elm, attr, mwListableCtrl) {
-          scope.Loading = Loading;
-          scope.collection = mwListableCtrl.getCollection();
-          scope.columns = mwListableCtrl.getColumns();
-        }
-      };
-    })
+  .directive('mwListableFooterBb', function (Loading) {
+    return {
+      require: '^mwListableBb',
+      templateUrl: 'modules/ui/templates/mwListableBb/mwListableFooter.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        scope.Loading = Loading;
+        scope.collection = mwListableCtrl.getCollection();
+        scope.columns = mwListableCtrl.getColumns();
+      }
+    };
+  })
 
 
 /**
@@ -175,50 +175,50 @@ angular.module('mwListableBb', [])
  *
  * @param {string} sort Property key of the model to sort by
  */
-    .directive('mwListableHeaderBb', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        scope: {
-          property: '@sort'
-        },
-        transclude: true,
-        replace:true,
-        templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeader.html',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          var ascending = '+',
-              descending = '-';
+  .directive('mwListableHeaderBb', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListableBb',
+      scope: {
+        property: '@sort'
+      },
+      transclude: true,
+      replace: true,
+      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeader.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        var ascending = '+',
+          descending = '-';
 
-          scope.toggleSortOrder = function () {
-            if (scope.property) {
-              var sortOrder = ascending; //default
-              if (mwListableCtrl.getSortOrder() === ascending + scope.property) {
-                sortOrder = descending;
-              }
-              mwListableCtrl.sort(scope.property, sortOrder);
+        scope.toggleSortOrder = function () {
+          if (scope.property) {
+            var sortOrder = ascending; //default
+            if (mwListableCtrl.getSortOrder() === ascending + scope.property) {
+              sortOrder = descending;
             }
-          };
-
-          scope.isSelected = function (prefix) {
-            if (prefix) {
-              return mwListableCtrl.getSortOrder() === prefix + scope.property;
-            } else {
-              return (mwListableCtrl.getSortOrder() === '+' + scope.property || mwListableCtrl.getSortOrder() === '-' + scope.property);
-            }
-          };
-
-          if(scope.property){
-            elm.find('.title').on('click',scope.toggleSortOrder);
+            mwListableCtrl.sort(scope.property, sortOrder);
           }
+        };
 
-          mwListableCtrl.registerColumn(scope);
+        scope.isSelected = function (prefix) {
+          if (prefix) {
+            return mwListableCtrl.getSortOrder() === prefix + scope.property;
+          } else {
+            return (mwListableCtrl.getSortOrder() === '+' + scope.property || mwListableCtrl.getSortOrder() === '-' + scope.property);
+          }
+        };
 
-          scope.$on('$destroy', function(){
-            mwListableCtrl.unRegisterColumn(scope);
-          });
+        if (scope.property) {
+          elm.find('.title').on('click', scope.toggleSortOrder);
         }
-      };
-    })
+
+        mwListableCtrl.registerColumn(scope);
+
+        scope.$on('$destroy', function () {
+          mwListableCtrl.unRegisterColumn(scope);
+        });
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -230,31 +230,31 @@ angular.module('mwListableBb', [])
  *
  * Note: this directive has to be nested inside an `mwListable` table.
  */
-    .directive('mwListableColumnCheckboxBb', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        scope: {
-          item: '='
-        },
-        templateUrl: 'modules/ui/templates/mwListableBb/mwListableColumnCheckbox.html',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          scope.radio = mwListableCtrl.isRadio();
-          scope.click = function (item, $event) {
-            $event.stopPropagation();
-            if(item.selectable){
-              item.selectable.toggleSelect();
-            }
-          };
+  .directive('mwListableColumnCheckboxBb', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListableBb',
+      scope: {
+        item: '='
+      },
+      templateUrl: 'modules/ui/templates/mwListableBb/mwListableColumnCheckbox.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        scope.radio = mwListableCtrl.isRadio();
+        scope.click = function (item, $event) {
+          $event.stopPropagation();
+          if (item.selectable) {
+            item.selectable.toggleSelect();
+          }
+        };
 
-          scope.$watch('item.selectable.isDisabled()', function(isDisabled){
-            if(isDisabled){
-              scope.item.selectable.unSelect();
-            }
-          });
-        }
-      };
-    })
+        scope.$watch('item.selectable.isDisabled()', function (isDisabled) {
+          if (isDisabled) {
+            scope.item.selectable.unSelect();
+          }
+        });
+      }
+    };
+  })
 
 
 /**
@@ -269,18 +269,18 @@ angular.module('mwListableBb', [])
  *
  * Note: this directive has to be nested inside an `mwListable` table.
  */
-    .directive('mwListableHeaderCheckboxBb', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        scope: true,
-        templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeaderCheckbox.html',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          scope.radio = mwListableCtrl.isRadio();
-          scope.collection = mwListableCtrl.getCollection();
-        }
-      };
-    })
+  .directive('mwListableHeaderCheckboxBb', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListableBb',
+      scope: true,
+      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeaderCheckbox.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        scope.radio = mwListableCtrl.isRadio();
+        scope.collection = mwListableCtrl.getCollection();
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -292,54 +292,54 @@ angular.module('mwListableBb', [])
  *
  * Note: this directive has to be nested inside an `mwListable` table.
  */
-    .directive('mwListableBodyRowBb', function ($timeout) {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        compile: function (elm) {
+  .directive('mwListableBodyRowBb', function ($timeout) {
+    return {
+      restrict: 'A',
+      require: '^mwListableBb',
+      compile: function (elm) {
 
-          elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb item="item"></td>');
+        elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb item="item"></td>');
 
-          return function (scope, elm, attr, ctrl) {
-            var selectedClass = 'selected';
+        return function (scope, elm, attr, ctrl) {
+          var selectedClass = 'selected';
 
-            scope.collection = ctrl.getCollection();
+          scope.collection = ctrl.getCollection();
 
-            if(!scope.item) {
-              throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');
+          if (!scope.item) {
+            throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');
+          }
+
+          if (scope.item && scope.item.selectable && !scope.item.selectable.isDisabled()) {
+            elm.addClass('selectable clickable');
+          } else if (ctrl.actionColumns && ctrl.actionColumns.length > 0) {
+            elm.addClass('clickable');
+          }
+
+          elm.on('click', function () {
+            if (scope.item && scope.item.selectable && !scope.item.selectable.isDisabled()) {
+              $timeout(function () {
+                scope.item.selectable.toggleSelect();
+              });
             }
+          });
 
-            if(scope.item && scope.collection.selectable && !scope.item.selectable.isDisabled()){
-              elm.addClass('selectable clickable');
-            } else if (ctrl.actionColumns && ctrl.actionColumns.length>0) {
-              elm.addClass('clickable');
+          elm.on('dblclick', function () {
+            if (ctrl.actionColumns && angular.isNumber(scope.$index) && ctrl.actionColumns[scope.$index]) {
+              document.location.href = ctrl.actionColumns[scope.$index];
             }
+          });
 
-            elm.on('click', function () {
-              if (scope.collection.selectable && scope.item.selectable && !scope.item.selectable.isDisabled()) {
-                $timeout(function(){
-                  scope.item.selectable.toggleSelect();
-                });
-              }
-            });
-
-            elm.on('dblclick', function(){
-              if(ctrl.actionColumns && angular.isNumber(scope.$index) && ctrl.actionColumns[scope.$index]){
-                document.location.href=ctrl.actionColumns[scope.$index];
-              }
-            });
-
-            scope.$watch('item.selectable.isSelected()', function (value) {
-              if(value) {
-                elm.addClass(selectedClass);
-              } else {
-                elm.removeClass(selectedClass);
-              }
-            });
-          };
-        }
-      };
-    })
+          scope.$watch('item.selectable.isSelected()', function (value) {
+            if (value) {
+              elm.addClass(selectedClass);
+            } else {
+              elm.removeClass(selectedClass);
+            }
+          });
+        };
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -351,28 +351,28 @@ angular.module('mwListableBb', [])
  *
  * Note: this directive has to be nested inside an `mwListable` table.
  */
-    .directive('mwListableHeaderRowBb', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        scope: true,
-        compile: function (elm) {
-          elm.prepend('<th ng-if="hasCollection" mw-listable-header-checkbox-bb width="1%"></th>');
-          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
+  .directive('mwListableHeaderRowBb', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListableBb',
+      scope: true,
+      compile: function (elm) {
+        elm.prepend('<th ng-if="hasCollection" mw-listable-header-checkbox-bb width="1%"></th>');
+        elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
 
-          return function (scope, elm, attr, mwListableCtrl) {
-            //empty collection is [] so ng-if would not work as expected
-            //we also have to check if the collection has a selectable
-            scope.hasCollection = false;
-            var collection = mwListableCtrl.getCollection();
-            if(collection){
-              scope.hasCollection = angular.isDefined(collection.length) && collection.selectable;
-            }
-            scope.actionColumns = mwListableCtrl.actionColumns;
-          };
-        }
-      };
-    })
+        return function (scope, elm, attr, mwListableCtrl) {
+          //empty collection is [] so ng-if would not work as expected
+          //we also have to check if the collection has a selectable
+          scope.hasCollection = false;
+          var collection = mwListableCtrl.getCollection();
+          if (collection) {
+            scope.hasCollection = angular.isDefined(collection.length) && collection.selectable;
+          }
+          scope.actionColumns = mwListableCtrl.actionColumns;
+        };
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -386,19 +386,19 @@ angular.module('mwListableBb', [])
  *
  * Note: this directive has to be nested inside an `mwListable` table.
  */
-    .directive('mwListableLinkShowBb', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListableBb',
-        scope: {
-          link: '@mwListableLinkShowBb'
-        },
-        template: '<span mw-link-show="{{link}}"></span>',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          mwListableCtrl.actionColumns.push(scope.link);
-        }
-      };
-    })
+  .directive('mwListableLinkShowBb', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListableBb',
+      scope: {
+        link: '@mwListableLinkShowBb'
+      },
+      template: '<span mw-link-show="{{link}}"></span>',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        mwListableCtrl.actionColumns.push(scope.link);
+      }
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -410,14 +410,14 @@ angular.module('mwListableBb', [])
  * @param {string} mwRowIdentifier the title to be used
  *
  */
-    .directive('mwRowIdentifierBb', function () {
-      return {
-        restrict: 'A',
-        link: function (scope, elm, attr) {
-          if(attr.mwRowIdentifier){
-            attr.$set('title', attr.mwRowIdentifier);
-          }
+  .directive('mwRowIdentifierBb', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, elm, attr) {
+        if (attr.mwRowIdentifier) {
+          attr.$set('title', attr.mwRowIdentifier);
         }
-      };
-    })
+      }
+    };
+  })
 ;
