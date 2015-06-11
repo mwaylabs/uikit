@@ -813,30 +813,60 @@ angular.module('mwComponents', [])
     };
   })
 
-  .directive('mwTextCollapse', function ($filter) {
-    return {
-      restrict: 'A',
-      scope: {
-        mwTextCollapse: '@',
-        length: '=',
-        markdown: '='
-      },
-      templateUrl: 'modules/ui/templates/mwComponents/mwTextCollapse.html',
-      link: function (scope) {
-        var defaultLength = 200;
-        scope._length = scope.filterLength = (scope.length && typeof scope.length === 'number') ? scope.length : defaultLength;
-        scope.showButton = scope.mwTextCollapse.length > scope._length;
-        scope.toggleLength = function () {
-          scope.filterLength = (scope.filterLength !== scope._length) ? scope._length : undefined;
-          scope.shortenedText = $filter('reduceStringTo')(scope.mwTextCollapse, scope.filterLength);
-        };
+    .directive('mwTextCollapse', function ($filter) {
+      return {
+        restrict: 'A',
+        scope: {
+          mwTextCollapse: '@',
+          length: '=',
+          markdown: '='
+        },
+        templateUrl: 'modules/ui/templates/mwComponents/mwTextCollapse.html',
+        link: function (scope) {
 
-        scope.text = function(){
-          return $filter('reduceStringTo')(scope.mwTextCollapse, scope.filterLength);
-        };
-      }
-    };
-  })
+          // set default length
+          if( scope.length && typeof scope.length === 'number' ) {
+            scope.defaultLength = scope.length;
+          } else {
+            scope.defaultLength = 200;
+          }
+
+          // set start length for filter
+          scope.filterLength = scope.defaultLength;
+
+          // apply filter length to text
+          scope.text = function(){
+            return $filter('reduceStringTo')(
+              scope.mwTextCollapse, scope.filterLength
+            );
+          };
+
+          // show Button if text is longer than desired
+          scope.showButton = false;
+          if( scope.mwTextCollapse.length > scope.defaultLength ) {
+            scope.showButton = true;
+          }
+
+          // set button to "show more" or "show less"
+          scope.showLessOrMore = function () {
+            if( scope.filterLength === scope.defaultLength ){
+              return 'common.showMore';
+            } else {
+              return 'common.showLess';
+            }
+          };
+
+          // collapse/expand text by setting filter length
+          scope.toggleLength = function () {
+            if( scope.filterLength === scope.defaultLength ) {
+              delete scope.filterLength;
+            } else {
+              scope.filterLength = scope.defaultLength;
+            }
+          };
+        }
+      };
+    })
 
 
   .directive('mwInfiniteScroll', function ($window, $document) {

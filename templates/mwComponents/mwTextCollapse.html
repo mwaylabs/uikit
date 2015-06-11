@@ -2,13 +2,13 @@
   <div mw-markdown="text()"></div>
   <a ng-if="showButton"
      ng-click="toggleLength()"
-     style="cursor: pointer">{{ ((_length !== filterLength) ? 'common.showLess' : 'common.showMore') | i18n }}</a>
+     style="cursor: pointer">{{ showLessOrMore() | i18n }}</a>
 </div>
 
 <div ng-if="!markdown">
   <span class="line-break">{{ text() }}</span>
   <a ng-if="showButton"
      ng-click="toggleLength()"
-     style="cursor: pointer">{{ ((_length !== filterLength) ? 'common.showLess' : 'common.showMore') | i18n }}</a>
+     style="cursor: pointer">{{ showLessOrMore() | i18n }}</a>
 </div>
 
