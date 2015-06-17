@@ -241,7 +241,7 @@ angular.module('mwComponents', [])
         placement: '@'
       },
       link: function (scope, el) {
-        var offText = scope.$watch('text', function () {
+        scope.$watch('text', function () {
           el.data('bs.popover').setContent();
         });
 
@@ -263,7 +263,6 @@ angular.module('mwComponents', [])
 
         scope.$on('$destroy', function () {
           destroyPopOver();
-          offText();
         });
       }
     };
