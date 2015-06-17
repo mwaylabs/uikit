@@ -16,8 +16,9 @@
   <div ng-if="hideErrors !== true"
        ng-class="{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]">
 
-    <span ng-repeat="(key, label) in validationValues"
-          ng-if="hideErrors !== true && hideErrors !== key"
-          mw-form-validation="{{ key }}">{{ label }}</span>
+    <span ng-if="hideErrors !== true && hideErrors !== key"
+          ng-repeat="(key, value) in getAllErrors()"
+          mw-form-validation="{{ key }}">{{ validationValues[key] }}
+    </span>
   </div>
 </div>

@@ -95,9 +95,11 @@
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
         link: function (scope, elm) {
+
+          var ctrl = elm.inheritedData('$formController');
+
           scope.isInvalid = function () {
-            var ctrl = elm.inheritedData('$formController'),
-              invalid = false;
+            var invalid = false;
             if (scope.elementName && ctrl && ctrl[scope.elementName]) {
               invalid = ctrl[scope.elementName].$invalid;
             }
@@ -105,11 +107,14 @@
           };
 
           scope.isDirty = function () {
-            var ctrl = elm.inheritedData('$formController');
             return ctrl ? ctrl.$dirty : false;
           };
 
           scope.$watch('elementName', scope.isInvalid);
+
+          scope.getAllErrors = function(){
+            return (ctrl && ctrl[scope.elementName]) ? ctrl[scope.elementName].$error : undefined;
+          };
         },
         controller: function ($scope) {
           var that = this;
