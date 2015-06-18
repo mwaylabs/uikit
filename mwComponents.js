@@ -151,7 +151,7 @@ angular.module('mwComponents', [])
         if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
           scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
           scope.url = scope.url.replace('#', '');
-        } else if(!scope.url && scope.showBackButton){
+        } else if (!scope.url && scope.showBackButton) {
           console.error('Url attribute in header is missing!!');
         }
 
@@ -241,22 +241,28 @@ angular.module('mwComponents', [])
         placement: '@'
       },
       link: function (scope, el) {
-        var offText = scope.$watch('text', function (newVal) {
-          el.popover('destroy');
-          el.popover({
-            trigger: 'hover',
-            placement: scope.placement || 'bottom',
-            content: newVal,
-            container: 'body'
-          });
+        scope.$watch('text', function () {
+          el.data('bs.popover').setContent();
         });
 
-        scope.$on('$destroy', function () {
+        el.popover({
+          trigger: 'hover',
+          placement: scope.placement || 'bottom',
+          content: function(){
+            return scope.text;
+          },
+          container: 'body'
+        });
+
+        var destroyPopOver = function(){
           var popover = el.data('bs.popover');
           if (popover && popover.tip()) {
             popover.tip().detach().remove();
           }
-          offText();
+        };
+
+        scope.$on('$destroy', function () {
+          destroyPopOver();
         });
       }
     };
@@ -411,11 +417,11 @@ angular.module('mwComponents', [])
           var rating = scope.$eval(attr.mwRating) || 0;
           var starsMax = scope.$eval(attr.max) || 5;
 
-          if (rating > starsMax){
+          if (rating > starsMax) {
             rating = starsMax;
           }
 
-          if (rating < 0){
+          if (rating < 0) {
             rating = 0;
           }
 
@@ -535,7 +541,7 @@ angular.module('mwComponents', [])
       scope: {
         link: '@mwLinkShow'
       },
-      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show"><span mw-icon="fa-angle-right"></span></a>'
+      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show" mw-stop-propagation="click"><span mw-icon="fa-angle-right"></span></a>'
     };
   })
 
@@ -806,67 +812,67 @@ angular.module('mwComponents', [])
           });
         }
 
-        scope.$on('$destroy', function(){
+        scope.$on('$destroy', function () {
           el.off();
         });
       }
     };
   })
 
-    .directive('mwTextCollapse', function ($filter) {
-      return {
-        restrict: 'A',
-        scope: {
-          mwTextCollapse: '@',
-          length: '=',
-          markdown: '='
-        },
-        templateUrl: 'modules/ui/templates/mwComponents/mwTextCollapse.html',
-        link: function (scope) {
+  .directive('mwTextCollapse', function ($filter) {
+    return {
+      restrict: 'A',
+      scope: {
+        mwTextCollapse: '@',
+        length: '=',
+        markdown: '='
+      },
+      templateUrl: 'modules/ui/templates/mwComponents/mwTextCollapse.html',
+      link: function (scope) {
 
-          // set default length
-          if( scope.length && typeof scope.length === 'number' ) {
-            scope.defaultLength = scope.length;
-          } else {
-            scope.defaultLength = 200;
-          }
-
-          // set start length for filter
-          scope.filterLength = scope.defaultLength;
-
-          // apply filter length to text
-          scope.text = function(){
-            return $filter('reduceStringTo')(
-              scope.mwTextCollapse, scope.filterLength
-            );
-          };
-
-          // show Button if text is longer than desired
-          scope.showButton = false;
-          if( scope.mwTextCollapse.length > scope.defaultLength ) {
-            scope.showButton = true;
-          }
-
-          // set button to "show more" or "show less"
-          scope.showLessOrMore = function () {
-            if( scope.filterLength === scope.defaultLength ){
-              return 'common.showMore';
-            } else {
-              return 'common.showLess';
-            }
-          };
-
-          // collapse/expand text by setting filter length
-          scope.toggleLength = function () {
-            if( scope.filterLength === scope.defaultLength ) {
-              delete scope.filterLength;
-            } else {
-              scope.filterLength = scope.defaultLength;
-            }
-          };
+        // set default length
+        if (scope.length && typeof scope.length === 'number') {
+          scope.defaultLength = scope.length;
+        } else {
+          scope.defaultLength = 200;
         }
-      };
-    })
+
+        // set start length for filter
+        scope.filterLength = scope.defaultLength;
+
+        // apply filter length to text
+        scope.text = function () {
+          return $filter('reduceStringTo')(
+            scope.mwTextCollapse, scope.filterLength
+          );
+        };
+
+        // show Button if text is longer than desired
+        scope.showButton = false;
+        if (scope.mwTextCollapse.length > scope.defaultLength) {
+          scope.showButton = true;
+        }
+
+        // set button to "show more" or "show less"
+        scope.showLessOrMore = function () {
+          if (scope.filterLength === scope.defaultLength) {
+            return 'common.showMore';
+          } else {
+            return 'common.showLess';
+          }
+        };
+
+        // collapse/expand text by setting filter length
+        scope.toggleLength = function () {
+          if (scope.filterLength === scope.defaultLength) {
+            delete scope.filterLength;
+          } else {
+            scope.filterLength = scope.defaultLength;
+          }
+        };
+      }
+    };
+  })
 
 
   .directive('mwInfiniteScroll', function ($window, $document) {
@@ -948,7 +954,7 @@ angular.module('mwComponents', [])
           scope.model.loading = false;
         });
 
-        scope.$on('$destroy', function(){
+        scope.$on('$destroy', function () {
           locationChangeSuccessListener();
           routeChangeSuccessListener();
           routeChangeErrorListener();
@@ -958,7 +964,7 @@ angular.module('mwComponents', [])
   })
 
 
-  .directive('mwCollapsable', function(){
+  .directive('mwCollapsable', function () {
     return {
       transclude: true,
       scope: {
@@ -969,15 +975,15 @@ angular.module('mwComponents', [])
       link: function (scope, elm) {
         scope.viewModel = {};
         scope.viewModel.collapsed = false;
-        if(scope.mwCollapsable === false){
+        if (scope.mwCollapsable === false) {
           scope.viewModel.collapsed = true;
         }
         var level = elm.parents('.mw-collapsable').length;
-        if(level){
-          elm.css('margin-left', level*20+'px');
+        if (level) {
+          elm.css('margin-left', level * 20 + 'px');
         }
 
-        scope.toggle = function(){
+        scope.toggle = function () {
           scope.viewModel.collapsed = !scope.viewModel.collapsed;
         };
       }
@@ -985,13 +991,13 @@ angular.module('mwComponents', [])
   })
 
 
-  .directive('mwMarkdownPreview', function(){
+  .directive('mwMarkdownPreview', function () {
     return {
       scope: {
         mwModel: '=mwMarkdownPreview'
       },
       templateUrl: 'modules/ui/templates/mwComponents/mwMarkdownPreview.html',
-      link: function(scope, elm){
+      link: function (scope, elm) {
         elm.addClass('mw-markdown-preview');
       }
     };
