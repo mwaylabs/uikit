@@ -87,6 +87,7 @@
       return {
         restrict: 'A',
         transclude: true,
+        require: '^form',
         scope: {
           label: '@',
           tooltip: '@',
@@ -94,25 +95,17 @@
           validateWhenDirty: '='
         },
         templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
-        link: function (scope, elm) {
-
-          var ctrl = elm.inheritedData('$formController');
+        link: function (scope, elm, attr, ctrl) {
 
           scope.isInvalid = function () {
-            var invalid = false;
-            if (scope.elementName && ctrl && ctrl[scope.elementName]) {
-              invalid = ctrl[scope.elementName].$invalid;
-            }
-            return invalid;
+            return (ctrl && scope.elementName && ctrl[scope.elementName]) ? ctrl[scope.elementName].$invalid : false;
           };
 
           scope.isDirty = function () {
             return ctrl ? ctrl.$dirty : false;
           };
 
-          scope.$watch('elementName', scope.isInvalid);
-
-          scope.getAllErrors = function(){
+          scope.getCurrentErrors = function(){
             return (ctrl && ctrl[scope.elementName]) ? ctrl[scope.elementName].$error : undefined;
           };
         },
