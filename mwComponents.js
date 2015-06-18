@@ -541,7 +541,7 @@ angular.module('mwComponents', [])
       scope: {
         link: '@mwLinkShow'
       },
-      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show"><span mw-icon="fa-angle-right"></span></a>'
+      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show" mw-stop-propagation="click"><span mw-icon="fa-angle-right"></span></a>'
     };
   })
 
