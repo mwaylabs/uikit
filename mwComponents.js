@@ -650,7 +650,7 @@ angular.module('mwComponents', [])
             $q.all(toggleEntryHideFns).then(function () {
               $scope.entriesVisible = !$scope.entriesVisible;
             });
-          };
+          }
         };
         $scope.hiddenEntriesText = function () {
           if ($scope.entries.length > 1) {
