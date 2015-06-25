@@ -6,16 +6,23 @@ angular.module('mwResponseHandler', [])
 
   .provider('ResponseHandler', function () {
 
-    var _routeHandlersContainer = [];
+    var _routeHandlersPerMethodContainer = {
+        POST: [],
+        PUT: [],
+        GET: [],
+        DELETE: [],
+        PATCH: []
+      };
 
-    var RouteHandler = function(route){
+    var _methodIsInValidError = function(){
+      return new Error('Method is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
+    };
 
-      var _methods = {
-        POST: {},
-        PUT: {},
-        GET: {},
-        DELETE: {},
-        PATCH: {}
+    var RouteHandler = function (route) {
+
+      var _codes = {
+          ERROR: [],
+          SUCCESS: []
         },
         _route = route,
         _routeRegex = null,
@@ -24,141 +31,137 @@ angular.module('mwResponseHandler', [])
         _splatParam = /\*\w?/g,
         _escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
 
-      var _throwMethodNotAvailableError = function(method){
-        throw new Error('The method '+method+'is not available. Available methods are: '+_methods.join(','));
-      };
 
-      var _routeToRegExp = function(route) {
+      var _routeToRegExp = function (route) {
         route = route.replace(_escapeRegExp, '\\$&')
           .replace(_optionalParam, '(?:$1)?')
-          .replace(_namedParam, function(match, optional) {
+          .replace(_namedParam, function (match, optional) {
             return optional ? match : '([^/?]+)';
           })
           .replace(_splatParam, '([^?]*?)');
         return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
       };
 
-      var _registerCallbackForType = function(method, type, callback){
-        if(_methods[method]){
-          var existingCallbacks = _methods[method][type],
-            callbacks = existingCallbacks || [];
+      var _registerCallbackForCode = function (code, callback) {
 
-          callbacks.push(callback);
+        var existingCallbacks = _codes[code],
+          callbacks = existingCallbacks || [];
 
-          _methods[method][type] = callbacks;
-        } else {
-          _throwMethodNotAvailableError(method);
-        }
+        callbacks.push(callback);
+
+        _codes[code] = callbacks;
       };
 
-      var _getCallbackForType = function(method, type){
-        if(_methods[method]){
-         return  _methods[method][type];
-        } else {
-          _throwMethodNotAvailableError(method);
-        }
+      var _getCallbackForCode = function (code) {
+        return _codes[code];
       };
 
-      this.matchesUrl = function(url){
+      this.matchesUrl = function (url) {
         return url.match(_routeRegex);
       };
 
-      this.registerCallbackForStatusCodes = function(method, statusCodes, callback){
-        statusCodes.forEach(function(statusCode){
-          _registerCallbackForType(method, statusCode, callback);
+      this.registerCallbackForStatusCodes = function (statusCodes, callback) {
+        statusCodes.forEach(function (statusCode) {
+          _registerCallbackForCode(statusCode, callback);
         }, this);
       };
 
-      this.registerCallbackForSuccess = function(method, callback){
-        _registerCallbackForType(method, 'SUCCESS', callback);
+      this.registerCallbackForSuccess = function (callback) {
+        _registerCallbackForCode('SUCCESS', callback);
       };
 
-      this.registerCallbackForError = function(method, callback){
-        _registerCallbackForType(method, 'ERROR', callback);
+      this.registerCallbackForError = function (callback) {
+        _registerCallbackForCode('ERROR', callback);
       };
 
-      this.getCallbacksForStatusCode = function(method, statusCode){
-        return _getCallbackForType(method, statusCode);
+      this.getCallbacksForStatusCode = function (statusCode) {
+        return _getCallbackForCode(statusCode);
       };
 
-      this.getCallbacksForSuccess = function(method){
-        return _getCallbackForType(method, 'SUCCESS');
+      this.getCallbacksForSuccess = function () {
+        return _getCallbackForCode('SUCCESS');
       };
 
-      this.getCallbacksForError = function(method){
-        return _getCallbackForType(method, 'ERROR');
+      this.getCallbacksForError = function () {
+        return _getCallbackForCode('ERROR');
       };
 
-      var main = function(){
+      var main = function () {
         _routeRegex = _routeToRegExp(_route);
       };
 
       main.call(this);
     };
 
-    this.registerAction = function(route, callback, options){
+    this.registerAction = function (route, callback, options) {
       options = options || {};
 
-      if( ( options.onError && options.onSuccess ) || ( (options.onError || options.onSuccess) && options.statusCodes ) ){
+      if (( options.onError && options.onSuccess ) || ( (options.onError || options.onSuccess) && options.statusCodes )) {
         throw new Error('Definition is too imprecise');
       }
-      if(!_.isArray(options.methods) || options.methods.length<1){
-        throw new Error('Methods have to be defined in options as an array e.g methods: ["POST"]');
+      if (!options.method) {
+        throw new Error('Method has to be defined in options e.g method: "POST"');
       }
 
-      var existingRouteHandlerContainer = _.findWhere(_routeHandlersContainer, {id: route}),
-          routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
-          routeHandler = routeHandlerContainer.handler;
+      if (!_routeHandlersPerMethodContainer[options.method]) {
+        throw _methodIsInValidError();
+      }
 
-      options.methods.forEach(function(method){
-        if(options.statusCodes){
-          routeHandler.registerCallbackForStatusCodes(method, options.statusCodes, callback);
-        } else if(options.onSuccess){
-          routeHandler.registerCallbackForSuccess(method, callback);
-        } else if(options.onError){
-          routeHandler.registerCallbackForError(method, callback);
-        }
-      });
+      var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[options.method], {id: route}),
+        routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
+        routeHandler = routeHandlerContainer.handler;
 
-      if(!existingRouteHandlerContainer){
-        _routeHandlersContainer.push(routeHandlerContainer);
+      if (options.statusCodes) {
+        routeHandler.registerCallbackForStatusCodes(options.statusCodes, callback);
+      } else if (options.onSuccess) {
+        routeHandler.registerCallbackForSuccess(callback);
+      } else if (options.onError) {
+        routeHandler.registerCallbackForError(callback);
+      }
+
+      if (!existingRouteHandlerContainer) {
+        _routeHandlersPerMethodContainer[options.method].push(routeHandlerContainer);
       }
 
       return routeHandler;
     };
 
-    this.registerSuccessAction = function(route, callback, methods){
+    this.registerSuccessAction = function (route, callback, method) {
       return this.registerAction(route, callback, {
-        methods: methods,
+        method: method,
         onSuccess: true
       });
     };
 
-    this.registerErrorAction = function(route, callback, methods){
+    this.registerErrorAction = function (route, callback, method) {
       return this.registerAction(route, callback, {
-        methods: methods,
+        method: method,
         onError: true
       });
     };
 
     this.$get = function ($injector) {
 
-      var _executeCallback = function(callbacks, response){
-        callbacks.forEach(function(callback){
-          callback = angular.isString(callback) ? $injector.get(callback) : $injector.invoke(callback);
+      var _executeCallback = function (callbacks, response) {
+        callbacks.forEach(function (callback) {
+          callback = angular.isString(callback) ? $injector.get(callback) : callback;
           callback.call(this, response);
         }, this);
       };
 
       return {
-        getHandlerForUrl: function(url){
+        getHandlerForUrl: function (method, url) {
           var _returnHandler;
 
-          _routeHandlersContainer.forEach(function(routeHandlerContainer) {
+          if (!_routeHandlersPerMethodContainer[method]) {
+            throw _methodIsInValidError();
+          }
+
+          _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
             var handler = routeHandlerContainer.handler;
-              if(!_returnHandler && handler.matchesUrl(url)){
-                _returnHandler = handler;
-              }
+            if (!_returnHandler && handler.matchesUrl(url)) {
+              _returnHandler = handler;
+            }
           });
 
           return _returnHandler;
@@ -167,18 +170,18 @@ angular.module('mwResponseHandler', [])
           var url = response.config.url,
             method = response.config.method,
             statusCode = response.status,
-            handler = this.getHandlerForUrl(url);
+            handler = this.getHandlerForUrl(method, url);
 
-          if(handler){
-            var statusCodeCallback = handler.getCallbacksForStatusCode(method, statusCode);
-
-            if(statusCodeCallback){
+          if (handler) {
+            var statusCodeCallback = handler.getCallbacksForStatusCode(statusCode);
+            
+            if (statusCodeCallback) {
               _executeCallback(statusCodeCallback, response);
-            } else if(isError){
-              var isErrorCallback = handler.getCallbacksForSuccess(method);
+            } else if (isError) {
+              var isErrorCallback = handler.getCallbacksForError();
               _executeCallback(isErrorCallback, response);
             } else {
-              var isSuccessCallback = handler.getCallbacksForSuccess(method);
+              var isSuccessCallback = handler.getCallbacksForSuccess();
               _executeCallback(isSuccessCallback, response);
             }
           }
@@ -187,15 +190,15 @@ angular.module('mwResponseHandler', [])
     };
   })
 
-  .config(function($provide, $httpProvider){
+  .config(function ($provide, $httpProvider) {
 
     $provide.factory('requestInterceptorForHandling', function (ResponseHandler) {
       return {
-        response: function(response){
+        response: function (response) {
           ResponseHandler.handle(response, false);
           return response;
         },
-        responseError: function(response){
+        responseError: function (response) {
           ResponseHandler.handle(response, true);
           return response;
         }
