@@ -2,33 +2,51 @@
   <div class="nav-bar-fixer">
     <nav class="navbar navbar-default" role="navigation">
       <div class="navbar-header col-xs-12">
+
         <div ng-if="showBackButton"
              class="back"
              data-text="{{'common.back' | i18n}}"
              ng-click="back()">
-          <span mw-icon="fa-angle-left"></span>
+          <span mw-icon="fa-angle-left">
+          </span>
         </div>
 
         <h2 class="lead pull-left clearfix">
-          <span mw-icon="{{mwTitleIcon}}" class="header-icon" ng-if="mwTitleIcon"></span>
-          <div ng-repeat="breadCrumb in mwBreadCrumbs" class="mw-bread-crumbs">
-            <a ng-href="{{breadCrumb.url}}" class="bread-crumb">{{breadCrumb.title}}</a>
-            <i mw-icon="fa-caret-right" class="arrow"></i>
+          <span mw-icon="{{mwTitleIcon}}"
+                class="header-icon"
+                ng-if="mwTitleIcon">
+          </span>
+          <div ng-repeat="breadCrumb in mwBreadCrumbs"
+               class="mw-bread-crumbs">
+            <a ng-href="{{breadCrumb.url}}"
+               class="bread-crumb">
+              {{breadCrumb.title}}
+            </a>
+            <i mw-icon="fa-caret-right"
+               class="arrow">
+            </i>
           </div>
-          <div class="page-title" ng-click="refresh()">{{title}}</div>
+          <div class="page-title"
+               ng-click="refresh()">
+            {{title}}
+          </div>
         </h2>
 
         <div class="pull-right header-popover"
-             data-content="{{ warningText }}"
+             mw-tooltip="{{ warningText }}"
              style="font-size: 30px; margin-left:4px;">
           <span ng-if="warningCondition"
                 class="text-warning"
-                mw-icon="fa-warning" ></span>
+                mw-icon="fa-warning">
+          </span>
           <span class="popover-container"
-                style="font-size: 14px;"></span>
+                style="font-size: 14px;">
+          </span>
         </div>
 
-        <div class="pull-right" ng-transclude></div>
+        <div class="pull-right"
+             ng-transclude>
+        </div>
 
       </div>
     </nav>
