@@ -87,9 +87,9 @@ angular.module('mwListableBb', [])
           return $scope.collection;
         };
 
-        this.isRadio = function () {
+        this.isSingleSelection = function () {
           if ($scope.collection && $scope.collection.selectable) {
-            return $scope.collection.selectable.isRadio();
+            return $scope.collection.selectable.isSingleSelection();
           }
           return false;
         };
@@ -123,9 +123,9 @@ angular.module('mwListableBb', [])
 
         if (angular.isUndefined(scope.noCounter)) {
           var tmpl = '<tr>' +
-              '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount() || collection.length>0">' +
-              '<span ng-if="collection.selectable.getSelectedModels().length > 0">{{collection.selectable.getSelectedModels().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
-              '<span ng-if="!collection.selectable || collection.selectable.getSelectedModels().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
+              '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount()">' +
+              '<span ng-if="collection.selectable.getSelected().length > 0">{{collection.selectable.getSelected().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+              '<span ng-if="!collection.selectable || collection.selectable.getSelected().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
               '</th>' +
               '</tr>',
             $tmpl = angular.element(tmpl),
@@ -239,7 +239,7 @@ angular.module('mwListableBb', [])
       },
       templateUrl: 'modules/ui/templates/mwListableBb/mwListableColumnCheckbox.html',
       link: function (scope, elm, attr, mwListableCtrl) {
-        scope.radio = mwListableCtrl.isRadio();
+        scope.isSingleSelection = mwListableCtrl.isSingleSelection();
         scope.click = function (item, $event) {
           $event.stopPropagation();
           if (item.selectable) {
@@ -276,7 +276,7 @@ angular.module('mwListableBb', [])
       scope: true,
       templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeaderCheckbox.html',
       link: function (scope, elm, attr, mwListableCtrl) {
-        scope.radio = mwListableCtrl.isRadio();
+        scope.isSingleSelection = mwListableCtrl.isSingleSelection();
         scope.collection = mwListableCtrl.getCollection();
       }
     };
