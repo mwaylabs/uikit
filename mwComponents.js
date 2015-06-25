@@ -128,14 +128,13 @@ angular.module('mwComponents', [])
         title: '@',
         url: '@',
         mwTitleIcon: '@',
-        showBackButton: '@',
+        showBackButton: '=',
         warningText: '@',
         warningCondition: '=',
         mwBreadCrumbs: '='
       },
       templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
-
         $rootScope.siteTitleDetails = scope.title;
 
         $transclude(function (clone) {
@@ -159,13 +158,6 @@ angular.module('mwComponents', [])
           $location.path(scope.url);
         };
 
-        if (scope.warningText) {
-          el.find('.header-popover').popover({
-            trigger: 'hover',
-            placement: 'bottom',
-            container: el.find('.popover-container')
-          });
-        }
       }
     };
   })
