@@ -15,7 +15,8 @@ angular.module('mwUI', [
   'mwPopover',
   'mwHelper',
   'mwMap',
-  'mwI18n'
+  'mwI18n',
+  'mwResponseHandler'
 ]).config(function(){
   'use strict';
   window.requestAnimFrame = (function () {
