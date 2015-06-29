@@ -1,11 +1,11 @@
-<input ng-if="!radio"
+<input ng-if="!isSingleSelection"
        type="checkbox"
        ng-click="click(item, $event)"
        ng-disabled="item.selectable.isDisabled()"
        ng-checked="item.selectable.isSelected()"
        mw-custom-checkbox>
 
-<input ng-if="radio"
+<input ng-if="isSingleSelection"
        type="radio"
        name="{{selectable.id}}"
        ng-click="click(item, $event)"
