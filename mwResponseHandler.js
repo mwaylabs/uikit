@@ -14,8 +14,8 @@ angular.module('mwResponseHandler', [])
         PATCH: []
       };
 
-    var _methodIsInValidError = function(){
-      return new Error('Method is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
+    var _methodIsInValidError = function(method){
+      return new Error('Method '+method+' is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
     };
 
     var RouteHandler = function (route) {
@@ -104,7 +104,7 @@ angular.module('mwResponseHandler', [])
       }
 
       if (!_routeHandlersPerMethodContainer[options.method]) {
-        throw _methodIsInValidError();
+        throw _methodIsInValidError(options.method);
       }
 
       var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[options.method], {id: route}),
@@ -140,6 +140,25 @@ angular.module('mwResponseHandler', [])
       });
     };
 
+    this.registerDefaultAction = function(callback, options){
+      options = options || {};
+      return this.registerAction('*', callback, options);
+    };
+
+    this.registerDefaultSuccessAction = function (callback, method) {
+      return this.registerAction('*', callback, {
+        method: method,
+        onSuccess: true
+      });
+    };
+
+    this.registerDefaultErrorAction = function (callback, method) {
+      return this.registerAction('*', callback, {
+        method: method,
+        onError: true
+      });
+    };
+
     this.$get = function ($injector) {
 
       var _executeCallback = function (callbacks, response) {
@@ -154,7 +173,7 @@ angular.module('mwResponseHandler', [])
           var _returnHandler;
 
           if (!_routeHandlersPerMethodContainer[method]) {
-            throw _methodIsInValidError();
+            throw _methodIsInValidError(method);
           }
 
           _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
@@ -174,7 +193,7 @@ angular.module('mwResponseHandler', [])
 
           if (handler) {
             var statusCodeCallback = handler.getCallbacksForStatusCode(statusCode);
-            
+
             if (statusCodeCallback) {
               _executeCallback(statusCodeCallback, response);
             } else if (isError) {
