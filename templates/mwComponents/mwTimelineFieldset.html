@@ -1,9 +1,23 @@
-<fieldset class="mw-timeline-fieldset" ng-class="{'entries-are-hidden':!entriesVisible, 'collapsable': collapsable}">
-  <div ng-if="mwTitle" ng-click="toggleEntries()" class="legend">
+<fieldset class="mw-timeline-fieldset"
+          ng-class="{'entries-are-hidden':!entriesVisible, 'collapsable': collapsable}">
+  <div ng-if="mwTitle"
+       ng-click="toggleEntries()"
+       class="legend">
     {{mwTitle}}
-    <span ng-if="collapsable && entriesVisible" class="toggler"><i mw-icon="fa-chevron-circle-down"></i></span>
-    <span ng-if="collapsable && !entriesVisible" class="toggler"><i mw-icon="fa-chevron-circle-up"></i></span>
+    <span ng-if="collapsable && entriesVisible" class="toggler">
+      <i mw-icon="fa-chevron-circle-down"></i>
+    </span>
+    <span ng-if="collapsable && !entriesVisible" class="toggler">
+      <i mw-icon="fa-chevron-circle-up"></i>
+    </span>
   </div>
-  <div ng-show="!entriesVisible" class="hidden-entries" ng-click="toggleEntries()">{{'common.entriesHidden' | i18n:{count:entries.length} }}</div>
-  <ul class="clearfix timeline-entry-list" ng-transclude ng-show="entriesVisible"></ul>
+  <div ng-show="!entriesVisible"
+       class="hidden-entries"
+       ng-click="toggleEntries()">
+    {{ hiddenEntriesText() | i18n:{count:entries.length} }}
+  </div>
+  <ul class="clearfix timeline-entry-list"
+      ng-transclude
+      ng-show="entriesVisible">
+  </ul>
 </fieldset>
