@@ -81,7 +81,7 @@ angular.module('mwI18n', [])
      */
     var _getUsedPlaceholdersInTranslationStr = function(str){
 
-      var re = /{{(\w+)}}/g,
+      var re = /{{([a-zA-Z0-9$_]+)}}/g,
           usedPlaceHolders = [],
           matches;
 
