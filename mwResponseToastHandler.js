@@ -109,8 +109,40 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
       });
 
     };
+
+    this.registerSuccessToast = function (route, messages, method, toastType) {
+      this.registerToast(route, messages, {
+        method: method,
+        toastType: toastType,
+        onSuccess: true
+      });
     };
 
-    this.$get = function () {};
+    this.registerErrorToast = function (route, messages, method, toastType) {
+      this.registerToast(route, messages, {
+        method: method,
+        toastType: toastType,
+        onError: true
+      });
+    };
+
+    this.registerDefaultSuccessToast = function (messages, method, toastType) {
+      return this.registerToast('*', messages, {
+        method: method,
+        toastType: toastType,
+        onSuccess: true
+      });
+    };
+
+    this.registerDefaultErrorToast = function (messages, method, toastType) {
+      return this.registerToast('*', messages, {
+        method: method,
+        toastType: toastType,
+        onError: true
+      });
+    };
+
+    this.$get = function () {
+    };
 
   });
