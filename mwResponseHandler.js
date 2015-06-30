@@ -96,34 +96,42 @@ angular.module('mwResponseHandler', [])
     this.registerAction = function (route, callback, options) {
       options = options || {};
 
+      if(!options.onError && !options.onSuccess && !options.statusCodes){
+        throw new Error('You have to specify either some statusCodes or set onSuccess or onError to true in the options parameter object');
+      }
+
       if (( options.onError && options.onSuccess ) || ( (options.onError || options.onSuccess) && options.statusCodes )) {
         throw new Error('Definition is too imprecise');
       }
-      if (!options.method) {
-        throw new Error('Method has to be defined in options e.g method: "POST"');
+      if (!options.method && !options.methods) {
+        throw new Error('Method has to be defined in options e.g method: "POST" or methods:["POST"]');
       }
 
-      if (!_routeHandlersPerMethodContainer[options.method]) {
-        throw _methodIsInValidError(options.method);
-      }
+      options.methods = options.methods || [options.method];
 
-      var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[options.method], {id: route}),
-        routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
-        routeHandler = routeHandlerContainer.handler;
+      options.methods.forEach(function(method){
 
-      if (options.statusCodes) {
-        routeHandler.registerCallbackForStatusCodes(options.statusCodes, callback);
-      } else if (options.onSuccess) {
-        routeHandler.registerCallbackForSuccess(callback);
-      } else if (options.onError) {
-        routeHandler.registerCallbackForError(callback);
-      }
+        if (!_routeHandlersPerMethodContainer[method]) {
+          throw _methodIsInValidError(method);
+        }
 
-      if (!existingRouteHandlerContainer) {
-        _routeHandlersPerMethodContainer[options.method].push(routeHandlerContainer);
-      }
+        var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[method], {id: route}),
+          routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
+          routeHandler = routeHandlerContainer.handler;
 
-      return routeHandler;
+        if (options.statusCodes) {
+          routeHandler.registerCallbackForStatusCodes(options.statusCodes, callback);
+        } else if (options.onSuccess) {
+          routeHandler.registerCallbackForSuccess(callback);
+        } else if (options.onError) {
+          routeHandler.registerCallbackForError(callback);
+        }
+
+        if (!existingRouteHandlerContainer) {
+          _routeHandlersPerMethodContainer[method].push(routeHandlerContainer);
+        }
+
+      });
     };
 
     this.registerSuccessAction = function (route, callback, method) {
