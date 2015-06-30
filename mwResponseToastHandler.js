@@ -30,24 +30,40 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
               id: id
             };
 
-          data.$count = prevToast ? prevToast.replaceCount+1 : 0;
+          if (!!prevToast && messages.plural) {
+            messageStr = messages.plural;
+          } else if (messages.singular) {
+            messageStr = messages.singular;
+          }
+
+          if (!_.isObject(data)) {
+            data = {message: data};
+          }
+
+          data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
           data.$count++;
 
-          if(options.preProcess && typeof options.preProcess=== 'function'){
+          if (options.preProcess && typeof options.preProcess === 'function') {
             message = options.preProcess.call(this, messageStr, data, i18n);
           } else {
-            if(data.results && data.results.length > 0 ){
+            if (data.results && data.results.length > 0) {
               data = data.results[0];
             }
+
+            if (response.config.instance && typeof response.config.instance.toJSON === 'function') {
+              var json = response.config.instance.toJSON();
+              _.extend(data, json);
+            }
+
             message = i18n.get(messageStr, data);
           }
 
-          if(options.toastType){
+          if (options.toastType) {
             var opts = _registeredToastOptions[options.toastType];
-            if(opts){
+            if (opts) {
               _.extend(toastOptions, opts);
             } else {
-              throw new Error('Type '+options.toastType+' is not available. Make sure you have configured it first')
+              throw new Error('Type ' + options.toastType + ' is not available. Make sure you have configured it first');
             }
           } else {
             _.extend(toastOptions, _registeredToastOptions.DEFAULT);
