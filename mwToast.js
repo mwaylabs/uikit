@@ -58,7 +58,7 @@ angular.module('mwToast', [])
           type: options.type || 'default',
           visible: true,
           message: message,
-          autoHide: options.autoHide,
+          autoHide: options.autoHide || false,
           autoHideTime: options.autoHideTime || 5000,
           autoHideCallback: options.autoHideCallback,
           isHtmlMessage: options.isHtmlMessage,
