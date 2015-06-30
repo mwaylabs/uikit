@@ -6,18 +6,22 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
 
   .provider('ResponseToastHandler', function ($provide, ResponseHandlerProvider) {
     var _registeredIds = [],
-        _registeredToastOptions = {
-          DEFAULT: {
-            type: 'default',
-            autoHide: false
-          }
-        };
+      _registeredToastOptions = {
+        DEFAULT: {
+          type: 'default',
+          autoHide: false
+        }
+      };
 
     var _getNoftificationCallback = function (messages, id, options) {
       options = options || {};
       var factoryName = _.uniqueId('notification_factory');
       $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
         return function (response) {
+          if(!messages){
+            return;
+          }
+
           var prevToast = Toast.findToast(id),
             data = response.data || {},
             messageStr = prevToast ? messages.plural : messages.singular,
