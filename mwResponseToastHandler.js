@@ -75,8 +75,8 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
       return factoryName;
     };
 
-    this.registerToastType = function(typeId, toastOptions){
-      if(_registeredToastOptions[typeId]){
+    this.registerToastType = function (typeId, toastOptions) {
+      if (_registeredToastOptions[typeId]) {
 
       } else {
         _registeredToastOptions[typeId] = toastOptions;
