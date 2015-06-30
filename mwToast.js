@@ -8,8 +8,12 @@ angular.module('mwToast', [])
       link: function (scope) {
         scope.toasts = Toast.getToasts();
 
-        scope.hideToast = function (toast) {
-          Toast.removeToast(toast);
+        scope.$watch(function(){return Toast.getToasts().length;}, function(){
+            scope.toasts = Toast.getToasts();
+        });
+
+        scope.hideToast = function (toastId) {
+          Toast.removeToast(toastId);
         };
 
       }
@@ -98,9 +102,9 @@ angular.module('mwToast', [])
         getToasts: function () {
           return _.pluck(_toasts, 'toast');
         },
-        replaceToast: function (toast, message) {
+        replaceToastMessage: function (id, message) {
 
-          var toast = this.findToast(toast.id);
+          var toast = this.findToast(id);
 
           if (toast) {
             toast.replaceMessage(message);
@@ -108,13 +112,15 @@ angular.module('mwToast', [])
 
           return toast;
         },
-        removeToast: function (toast) {
-          var match = this.findToast(toast),
+        removeToast: function (id) {
+          var match = _.findWhere(_toasts, {id:id}),
             index = _.indexOf(_toasts, match);
-          if (index) {
+
+          if (match) {
             _toasts.splice(index, 1);
           }
-          return !!index;
+
+          return match;
         },
         addToast: function (message, options) {
           options = options || {};
@@ -124,7 +130,7 @@ angular.module('mwToast', [])
           var existingToast = this.findToast(options.id);
 
           if(existingToast){
-            this.replaceToast(existingToast, message);
+            this.replaceToastMessage(existingToast.id, message);
           } else {
             var toast = new Toast(message, options);
 
@@ -133,13 +139,15 @@ angular.module('mwToast', [])
                 if (options.autoHideCallback && typeof options.autoHideCallback === 'function') {
                   options.autoHideCallback.apply(this, arguments);
                 }
-                this.removeToast(toast);
-              });
+                this.removeToast(toast.id);
+              }.bind(this));
             }.bind(this);
 
             toast.setAutoHideCallback(removeFn);
 
             _toasts.push({id: toast.id, toast: toast});
+
+            return toast;
           }
         }
       };
