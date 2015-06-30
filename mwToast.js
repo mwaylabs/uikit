@@ -32,13 +32,14 @@ angular.module('mwToast', [])
       };
 
       var setAutoHideCallback = function(fn){
-        toast.autoHide = true;
         toast.autoHideCallback = fn;
         resetAutoHideTimer();
       };
 
       var resetAutoHideTimer = function () {
-        window.clearTimeout(_autoRemoveTimeout);
+        if(_autoRemoveTimeout){
+          window.clearTimeout(_autoRemoveTimeout);
+        }
         startAutoHideTimer();
       };
 
