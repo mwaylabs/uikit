@@ -68,15 +68,31 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
     };
 
     this.registerToast = function (route, messages, options) {
-      var msgId = options.id || route + '_' + options.method,
-        callbackFactory = _getNoftificationCallback(messages, msgId, options);
+      options = options || {};
+      var codes = options.statusCodes || [options.onSuccess ? 'SUCCESS' : 'ERROR'];
 
-      if(_registeredIds.indexOf(msgId)>-1){
-        throw new Error('You can not define a second message for the route '+route+' and method '+ options.method + ' because you have already registered one!');
-      } else {
-        _registeredIds.push(msgId);
-        return ResponseHandlerProvider.registerAction(route, callbackFactory, options);
+      if (_.isUndefined(messages) || _.isObject(messages) && !messages.singular) {
+        throw new Error('You have to pass a messages object and define at least the singular message {singular:"Mandatory", plural:"Optional"}');
       }
+
+      codes.forEach(function (code) {
+        var msgId = options.id || route + '_' + options.method + '_' + code,
+          callbackFactory = _getNoftificationCallback(messages, msgId, options);
+
+        if (_registeredIds.indexOf(msgId) > -1) {
+          throw new Error('You can not define a second message for the route ' + route + ' and method ' + options.method + ' because you have already registered one!');
+        } else {
+          if(code==='SUCCESS' || code ==='ERROR'){
+            delete options.statusCodes;
+          } else {
+            options.statusCodes = [code];
+          }
+          ResponseHandlerProvider.registerAction(route, callbackFactory, options);
+          _registeredIds.push(msgId);
+        }
+      });
+
+    };
     };
 
     this.$get = function () {};
