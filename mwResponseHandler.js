@@ -219,7 +219,7 @@ angular.module('mwResponseHandler', [])
 
   .config(function ($provide, $httpProvider) {
 
-    $provide.factory('requestInterceptorForHandling', function (ResponseHandler) {
+    $provide.factory('requestInterceptorForHandling', function ($q, ResponseHandler) {
       return {
         response: function (response) {
           ResponseHandler.handle(response, false);
@@ -227,7 +227,7 @@ angular.module('mwResponseHandler', [])
         },
         responseError: function (response) {
           ResponseHandler.handle(response, true);
-          return response;
+          return $q.reject(response);
         }
       };
     });
