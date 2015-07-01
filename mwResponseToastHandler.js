@@ -13,17 +13,17 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
         }
       };
 
-    var _getNoftificationCallback = function (messages, id, options) {
+    var _getNotificationCallback = function (messages, id, options) {
       options = options || {};
       var factoryName = _.uniqueId('notification_factory');
       $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
-        return function (response) {
+        return function ($httpResponse) {
           if(!messages){
             return;
           }
 
           var prevToast = Toast.findToast(id),
-            data = response.data || {},
+            data = $httpResponse.data || {},
             messageStr = prevToast ? messages.plural : messages.singular,
             message,
             toastOptions = {
@@ -44,14 +44,14 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
           data.$count++;
 
           if (options.preProcess && typeof options.preProcess === 'function') {
-            message = options.preProcess.call(this, messageStr, data, i18n);
+            message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
           } else {
             if (data.results && data.results.length > 0) {
               data = data.results[0];
             }
 
-            if (response.config.instance && typeof response.config.instance.toJSON === 'function') {
-              var json = response.config.instance.toJSON();
+            if ($httpResponse.config.instance && typeof $httpResponse.config.instance.toJSON === 'function') {
+              var json = $httpResponse.config.instance.toJSON();
               _.extend(data, json);
             }
 
@@ -93,7 +93,7 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
 
       codes.forEach(function (code) {
         var msgId = options.id || route + '_' + options.method + '_' + code,
-          callbackFactory = _getNoftificationCallback(messages, msgId, options);
+          callbackFactory = _getNotificationCallback(messages, msgId, options);
 
         if (_registeredIds.indexOf(msgId) > -1) {
           throw new Error('You can not define a second message for the route ' + route + ' and method ' + options.method + ' because you have already registered one!');
