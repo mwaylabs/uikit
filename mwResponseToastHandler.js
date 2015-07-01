@@ -110,35 +110,39 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
 
     };
 
-    this.registerSuccessToast = function (route, messages, method, toastType) {
+    this.registerSuccessToast = function (route, messages, method, toastType, preProcessFn) {
       this.registerToast(route, messages, {
         method: method,
         toastType: toastType,
-        onSuccess: true
+        onSuccess: true,
+        preProcess: preProcessFn
       });
     };
 
-    this.registerErrorToast = function (route, messages, method, toastType) {
+    this.registerErrorToast = function (route, messages, method, toastType, preProcessFn) {
       this.registerToast(route, messages, {
         method: method,
         toastType: toastType,
-        onError: true
+        onError: true,
+        preProcess: preProcessFn
       });
     };
 
-    this.registerDefaultSuccessToast = function (messages, method, toastType) {
+    this.registerDefaultSuccessToast = function (messages, method, toastType, preProcessFn) {
       return this.registerToast('*', messages, {
         method: method,
         toastType: toastType,
-        onSuccess: true
+        onSuccess: true,
+        preProcess: preProcessFn
       });
     };
 
-    this.registerDefaultErrorToast = function (messages, method, toastType) {
+    this.registerDefaultErrorToast = function (messages, method, toastType, preProcessFn) {
       return this.registerToast('*', messages, {
         method: method,
         toastType: toastType,
-        onError: true
+        onError: true,
+        preProcess: preProcessFn
       });
     };
 
