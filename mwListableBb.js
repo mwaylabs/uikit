@@ -439,7 +439,6 @@ angular.module('mwListableBb', [])
           modalEl = el.parents('.modal .modal-body'),
           lastScrollYPos = 0,
           canShowSelected = false,
-          isModal = !!(modalEl.length>0),
           affixOffset = scope.affixOffset,
           isSticked = false;
 
@@ -449,7 +448,7 @@ angular.module('mwListableBb', [])
 
         scope.collectionName = scope.collectionName || i18n.get('common.items');
 
-        scope.isModal = isModal;
+        scope.isModal = modalEl.length>0;
 
         var throttledScrollFn = _.throttle(function () {
 
@@ -480,7 +479,7 @@ angular.module('mwListableBb', [])
           canShowSelected = true;
           setTimeout(function(){
             var height;
-            if(isModal){
+            if(scope.isModal){
               height = modalEl.height() + (modalEl.offset().top - el.find('.selected-items').offset().top) + 25;
               modalEl.css('overflow', 'hidden');
             } else {
@@ -494,7 +493,7 @@ angular.module('mwListableBb', [])
         };
 
         var hideSelected = function(){
-          if(isModal){
+          if(scope.isModal){
             modalEl.css('overflow', 'auto');
           } else {
             bodyEl.css('overflow', 'inherit');
@@ -560,7 +559,7 @@ angular.module('mwListableBb', [])
           }
         });
 
-        if (isModal) {
+        if (scope.isModal) {
           //element in modal
           scrollEl = modalEl;
         }
@@ -570,7 +569,7 @@ angular.module('mwListableBb', [])
         }
 
         if(!affixOffset){
-          if(isModal){
+          if(scope.isModal){
             affixOffset = 73;
           } else {
             affixOffset = 35;
