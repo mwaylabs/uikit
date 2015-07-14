@@ -1,0 +1,52 @@
+<style>
+
+
+
+  .listable-amount{
+    display: none;
+  }
+
+</style>
+<div class="mw-listable-header clearfix">
+  <div class="selection-controller" ng-if="selectable">
+    <span class="label label-default" ng-class="{'label-primary label-filled':selectable.allSelected()}" ng-click="unSelectAll()">
+      {{'common.selectAll' | i18n:{name: collectionName || i18n.get('common.items')} }}
+    </span>
+    <span class="label label-default" ng-if="selectedAmount > 0" ng-click="selectable.unSelectAll()">
+      {{'common.clearSelection' | i18n}}
+    </span>
+  </div>
+  <div class="search-bar"></div>
+  <div class="selected-counter" ng-click="toggleShowSelected()">
+    <span ng-if="selectedAmount>0">
+      <span ng-if="selectedAmount === 1">
+        {{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
+      </span>
+      <span ng-if="selectedAmount > 1">
+        {{'common.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}
+      </span>
+      <span mw-icon="fa-angle-up" ng-show="canShowSelected()"></span>
+      <span mw-icon="fa-angle-down" ng-show="!canShowSelected()"></span>
+    </span>
+    <span ng-if="selectedAmount<1">
+      {{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
+    </span>
+  </div>
+  <div class="selected-items" ng-if="canShowSelected()">
+    <div class="items clearfix">
+      <div class="col-md-4 item" ng-repeat="item in selectable.getSelected().models" ng-class="{'col-md-5': isModal}">
+        <span ng-if="getModelAttribute(item) && getModelAttribute(item).length>0">
+          <span class="unselector">
+                <span mw-icon="rln-icon close_cross"></span>
+              </span>
+          {{getModelAttribute(item)}}
+        </span>
+
+        <span ng-if="!getModelAttribute(item) || getModelAttribute(item).length<1" ng-click="item.fetch()">
+          Load data
+        </span>
+
+      </div>
+    </div>
+  </div>
+</div>

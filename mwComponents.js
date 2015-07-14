@@ -881,7 +881,9 @@ angular.module('mwComponents', [])
 
         var collection = scope.$eval(attrs.collection),
           loading = false,
+          throttledScrollFn,
           scrollFn,
+          documentEl,
           scrollEl;
 
         if (!collection || (collection && !collection.filterable)) {
@@ -889,7 +891,7 @@ angular.module('mwComponents', [])
         }
 
         var scrollCallback = function () {
-          if (!loading && scrollEl.scrollTop() >= ((d.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
+          if (!loading && scrollEl.scrollTop() >= ((documentEl.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
             loading = true;
             collection.filterable.loadNextPage().then(function () {
               loading = false;
@@ -915,17 +917,19 @@ angular.module('mwComponents', [])
         }
         else {
           //element in window
-          var d = angular.element($document);
+          documentEl = angular.element($document);
           scrollEl = angular.element($window);
           scrollFn = scrollCallback;
         }
 
+        throttledScrollFn = _.throttle(scrollFn, 500);
+
         // Register scroll callback
-        scrollEl.on('scroll', scrollFn);
+        scrollEl.on('scroll', throttledScrollFn);
 
         // Deregister scroll callback if scope is destroyed
         scope.$on('$destroy', function () {
-          scrollEl.off('scroll', scrollFn);
+          scrollEl.off('scroll', throttledScrollFn);
         });
 
       }

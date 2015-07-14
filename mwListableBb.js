@@ -420,4 +420,171 @@ angular.module('mwListableBb', [])
       }
     };
   })
+
+  .directive('mwListableHead2', function ($window, i18n) {
+    return {
+      scope: {
+        collection: '=',
+        affixOffset: '=',
+        collectionName: '@',
+        nameFn: '&',
+        nameAttribute: '@',
+        nameI18nPrefix: '@',
+        nameI18nSuffix: '@'
+      },
+      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHead.html',
+      link: function (scope, el) {
+        var scrollEl,
+          bodyEl = angular.element('body'),
+          modalEl = el.parents('.modal .modal-body'),
+          lastScrollYPos = 0,
+          canShowSelected = false,
+          isModal = !!(modalEl.length>0),
+          affixOffset = scope.affixOffset,
+          isSticked = false;
+
+        scope.selectable = scope.collection.selectable;
+
+        scope.selectedAmount = 0;
+
+        scope.collectionName = scope.collectionName || i18n.get('common.items');
+
+        scope.isModal = isModal;
+
+        var throttledScrollFn = _.throttle(function () {
+
+          var currentScrollPos = scrollEl.scrollTop();
+
+          if (currentScrollPos > affixOffset) {
+            if (currentScrollPos < lastScrollYPos) {
+              var newTopVal = currentScrollPos - affixOffset;
+              newTopVal = newTopVal<0?0:newTopVal;
+              el.css('top', newTopVal);
+              el.css('opacity', 1);
+              isSticked = true;
+            } else {
+              el.css('opacity', 0);
+              el.css('top', 0);
+              isSticked = false;
+            }
+          } else {
+            el.css('top', 0);
+            el.css('opacity', 1);
+            isSticked = false;
+          }
+
+          lastScrollYPos = currentScrollPos;
+        },10);
+
+        var showSelected = function(){
+          canShowSelected = true;
+          setTimeout(function(){
+            var height;
+            if(isModal){
+              height = modalEl.height() + (modalEl.offset().top - el.find('.selected-items').offset().top) + 25;
+              modalEl.css('overflow', 'hidden');
+            } else {
+              height = angular.element($window).height()-el.find('.selected-items').offset().top - affixOffset + scrollEl.scrollTop() - 10;
+              bodyEl.css('overflow', 'hidden');
+            }
+
+            el.find('.selected-items').css('height',height);
+            el.find('.selected-items').css('bottom',height*-1);
+          });
+        };
+
+        var hideSelected = function(){
+          if(isModal){
+            modalEl.css('overflow', 'auto');
+          } else {
+            bodyEl.css('overflow', 'inherit');
+          }
+          canShowSelected = false;
+        };
+
+        scope.canShowSelected = function(){
+          return canShowSelected && scope.selectedAmount>0;
+        };
+
+        scope.unSelect = function(model){
+          model.selectable.unSelect();
+        };
+
+        scope.unSelectAll = function(){
+          scope.selectable.toggleSelectAll();
+        };
+
+        scope.getTotalAmount = function(){
+          if(scope.collection.filterable && scope.collection.filterable.getTotalAmount()){
+            return scope.collection.filterable.getTotalAmount();
+          } else {
+            return scope.collection.length;
+          }
+        };
+
+        scope.toggleShowSelected = function(){
+          if( canShowSelected ){
+            hideSelected();
+          } else {
+            showSelected();
+          }
+        };
+
+        scope.getModelAttribute = function(model){
+          if(scope.nameAttribute){
+            var modelAttr = model.get(scope.nameAttribute);
+
+            if(scope.nameI18nPrefix || scope.nameI18nSuffix){
+              var i18nPrefix = scope.nameI18nPrefix || '',
+                  i18nSuffix = scope.nameI18nSuffix || '';
+
+              return i18n.get(i18nPrefix+modelAttr+i18nSuffix);
+            } else {
+              return modelAttr;
+            }
+          } else {
+            return scope.nameFn({item: model});
+          }
+        };
+
+        scope.$watch(function(){
+          if(scope.selectable){
+            return scope.selectable.getSelected().length;
+          } else {
+            return 0;
+          }
+        }, function(val){
+          scope.selectedAmount = val;
+          if(val < 1){
+            hideSelected();
+          }
+        });
+
+        if (isModal) {
+          //element in modal
+          scrollEl = modalEl;
+        }
+        else {
+          //element in window
+          scrollEl = angular.element($window);
+        }
+
+        if(!affixOffset){
+          if(isModal){
+            affixOffset = 73;
+          } else {
+            affixOffset = 35;
+          }
+        }
+
+        // Register scroll callback
+        scrollEl.on('scroll', throttledScrollFn);
+
+        // Deregister scroll callback if scope is destroyed
+        scope.$on('$destroy', function () {
+          scrollEl.off('scroll', throttledScrollFn);
+        });
+      }
+    };
+  })
 ;
