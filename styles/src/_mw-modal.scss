@@ -1,0 +1,188 @@
+.mw-modal {
+  .modal {
+    height: 100%;
+  }
+
+  .mw-listable {
+    tr, td {
+      border: none;
+      height: 30px;
+    }
+  }
+
+  .modal-dialog,
+  .modal-content-wrapper,
+  .modal-content {
+    height: inherit;
+  }
+
+  .modal-content {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: none;
+    background: none;
+  }
+
+  .modal-dialog {
+    overflow: hidden;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: white;
+  }
+
+  .modal-header,
+  .modal-footer {
+    position: relative;
+    z-index: 2;
+  }
+
+  .modal-header {
+    border-bottom: none;
+    -webkit-box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -5px 15px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-body {
+    max-height: 70%;
+    overflow: auto;
+    border-bottom: none;
+    border-top: none;
+    -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-footer {
+    margin-top: 0;
+    border-top: none;
+    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-body {
+    .mw-tabs {
+      .tab-content {
+        padding: 20px 30px;
+      }
+    }
+  }
+
+  .control-label {
+    text-align: left;
+    width: inherit;
+    margin-bottom: 3px;
+    float: none;
+  }
+
+  .col-sm-6 {
+    width: inherit;
+    float: none;
+  }
+
+  .col-sm-offset-3 {
+    margin-left: 0;
+  }
+
+  textarea {
+    max-width: 100%;
+  }
+
+  //  .form-group  {
+  //    display: inline-block;
+  //    margin-bottom: 0;
+  //    vertical-align: middle;
+  //  }
+  //
+  //  // In navbar-form, allow folks to *not* use `.form-group`
+  //  .form-control {
+  //    display: inline-block;
+  //  }
+  //
+  //  // Remove default margin on radios/checkboxes that were used for stacking, and
+  //  // then undo the floating of radios and checkboxes to match (which also avoids
+  //  // a bug in WebKit: https://github.com/twbs/bootstrap/issues/1969).
+  //  .radio,
+  //  .checkbox {
+  //    display: inline-block;
+  //    margin-top: 0;
+  //    margin-bottom: 0;
+  //    padding-left: 0;
+  //  }
+  //  .radio input[type="radio"],
+  //  .checkbox input[type="checkbox"] {
+  //    float: none;
+  //    margin-left: 0;
+  //  }
+  //
+  //  .control-label {
+  //    text-align: right;
+  //  }
+
+  @media (max-width: $screen-xs) {
+
+    .modal-footer {
+      .btn {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+}
+
+.modal {
+  div[mw-option-group] {
+
+    .mw-option-group {
+      border: none;
+      border-bottom: 1px solid #eee;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+
+    &:last-of-type {
+      .mw-option-group {
+        border: none !important;
+      }
+    }
+  }
+
+  @media (max-width: $screen-xs) {
+    .mw-option-group {
+      .mw-radio {
+        border: none;
+        border-radius: 0;
+        position: absolute;
+        width: 10px;
+        height: 100%;
+
+        &:after {
+          content: "\f054";
+          font-family: FontAwesome;
+          top: 26%;
+          position: absolute;
+          font-size: 20px;
+          left: -2px;
+          color: $brand-primary;
+          opacity: 0;
+          @include single-transition(all, 0.4s, cubic-bezier(.36, -0.21, .25, 1.33));
+        }
+
+        &.active:after {
+          opacity: 1;
+          left: 2px;
+        }
+
+        .state-indicator {
+          top: -8px;
+          border-radius: 0;
+          background: none;
+        }
+      }
+    }
+  }
+}

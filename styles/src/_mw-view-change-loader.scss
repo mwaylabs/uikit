@@ -1,0 +1,36 @@
+.mw-view-change-loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 101;
+  background: rgba(255, 255, 255, 0.5);
+
+  //** ANIMATION START **/
+  &.ng-animate.ng-leave,
+  &.ng-animate.ng-enter {
+    @include single-transition(opacity, 0.4s, cubic-bezier(.72, -0.08, .64, 1.18));
+  }
+
+  // IN
+  &.ng-animate.ng-enter.ng-enter-active,
+  &.ng-animate.ng-leave {
+    opacity: 1;
+  }
+
+  // OUT
+  &.ng-animate.ng-enter,
+  &.ng-animate.ng-leave.ng-leave-active {
+    opacity: 0;
+  }
+
+  .spinner {
+    position: absolute;
+    top: 42%;
+    margin-left: -20px;
+    left: 50%;
+    border-width: 4px;
+    font-size: 50px;
+  }
+}
