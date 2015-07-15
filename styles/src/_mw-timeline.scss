@@ -1,0 +1,192 @@
+.mw-timeline {
+  position: relative;
+  width: 100%;
+
+  hr {
+    position: absolute;
+    height: 100%;
+    left: 50%;
+    top: -15px;
+    background: #ccc;
+    width: 2px;
+  }
+
+  .mw-timeline-fieldset {
+
+    &.collapsable {
+      .legend {
+        cursor: pointer;
+      }
+    }
+
+    .legend,
+    .hidden-entries {
+      width: 120px;
+      padding: 6px;
+      font-size: 11px;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+      color: white;
+      border-radius: 2px;
+      margin: 0 auto 40px auto;
+      background: $brand-primary;
+
+      .toggler {
+        float: right;
+      }
+    }
+
+    .hidden-entries {
+      background: #ccc;
+      color: #fff;
+      margin-bottom: -26px;
+      margin-top: -20px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li.timeline-entry {
+        width: 48%;
+        background: #fff;
+        margin: 0 1px 30px 1px;
+        position: relative;
+        min-height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        padding: 10px;
+
+        &:nth-child(even),
+        &:nth-child(odd) {
+
+          &:before,
+          &:after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            border: 6px solid;
+          }
+
+          &:before {
+            border: 7px solid;
+            top: 9px;
+          }
+
+          > .bubble {
+            background: #aaa;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            border-radius: 50%;
+            top: 10px;
+            border: 2px solid white;
+          }
+        }
+
+        &:nth-child(odd) {
+          float: left;
+          clear: left;
+          margin-top: -14px;
+
+          //Arrow to overlay border of the timeline entry
+          &:after {
+            border-color: transparent transparent transparent #fff;
+            right: -12px;
+          }
+
+          //Border of the arrow (new arrow sitting below the white arrow)
+          &:before {
+            border-color: transparent transparent transparent #ccc;
+            right: -14px;
+          }
+
+          //Dot on the timeline vertical stroke
+          > .bubble {
+            margin-right: -5px;
+            right: -4.4%;
+          }
+        }
+
+        &:nth-child(even) {
+          float: right;
+          clear: right;
+
+          &:after {
+            border-color: transparent #fff transparent transparent;
+            left: -12px;
+          }
+
+          &:before {
+            border-color: transparent #ccc transparent transparent;
+            left: -14px;
+          }
+
+          > .bubble {
+            margin-left: -5px;
+            left: -4%;
+          }
+        }
+      }
+    }
+  }
+
+  .mw-timeline-fieldset.entries-are-hidden + .mw-timeline-fieldset {
+    margin-top: 80px;
+  }
+
+  @media (max-width: $screen-sm) {
+    hr {
+      display: none;
+    }
+
+    .mw-timeline-fieldset {
+
+      legend {
+        margin: 0;
+        text-align: left;
+        background: none;
+        width: 100%;
+        border-bottom: 1px solid $brand-primary;
+        color: #555;
+        text-transform: uppercase;
+        font-size: 16px;
+        font-weight: lighter;
+        cursor: pointer;
+      }
+
+      .hidden-entries {
+        margin: 10px 0;
+        width: 100%;
+      }
+
+      ul {
+        li.timeline-entry {
+          width: 100%;
+
+          &:nth-child(even),
+          &:nth-child(odd) {
+            float: none;
+
+            &:before,
+            &:after {
+              display: none;
+            }
+
+            > .bubble {
+              display: none;
+            }
+
+            margin: 10px 0;
+          }
+        }
+      }
+    }
+
+    .mw-timeline-fieldset.entries-are-hidden + .mw-timeline-fieldset {
+      margin-top: 20px;
+    }
+  }
+}
