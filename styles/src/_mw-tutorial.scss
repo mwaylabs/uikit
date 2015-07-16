@@ -1,0 +1,69 @@
+.mw-tutorial {
+  white-space: nowrap;
+
+  button {
+    float: left;
+  }
+
+  .tutorial-badge-wrapper {
+    display: block;
+    position: relative;
+    opacity: 0;
+    @include single-transition(opacity, 0.8s, ease);
+
+    &.show {
+      opacity: 1;
+    }
+
+    .tutorial-badge {
+      position: absolute;
+      background: black;
+      margin-left: 3px;
+      padding: 7px;
+      z-index: 9;
+      color: white;
+      animation: pulsate 0.8s ease-in-out;
+      -webkit-animation: pulsate 0.8s ease-in-out; /* Safari and Chrome */
+
+      &:after {
+        content: '';
+        position: absolute;
+        left: -9px;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-right: 9px solid black;
+        margin: auto auto;
+      }
+    }
+  }
+
+  &.bottom {
+    .tutorial-badge {
+      left: 0;
+      right: 0;
+      margin-top: 16px;
+      animation: pulsateY 0.8s ease-in-out;
+      -webkit-animation: pulsateY 0.8s ease-in-out;
+
+      &:after {
+        border-right: 7px solid transparent;
+        border-left: 7px solid transparent;
+        border-bottom: 9px solid black;
+        left: 0;
+        right: 0;
+        top: -16px;
+        bottom: initial;
+      }
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    .tutorial-badge {
+      display: none;
+    }
+  }
+}

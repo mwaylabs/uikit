@@ -1,0 +1,61 @@
+.mw-option-group {
+  position: relative;
+
+  fieldset {
+    margin-bottom: 0;
+    &[disabled="disabled"] {
+      color: #aaa;
+    }
+  }
+
+  &.panel {
+    margin-bottom: 6px;
+
+    .panel-body {
+      padding: 4px 4px 0 14px;
+
+      label {
+        &.with-icon {
+          .icon-holder {
+            position: absolute;
+            top: 50%;
+            margin-top: -11px;
+            font-size: 22px;
+            left: -9px;
+
+            .rln-icon {
+              font-size: 30px;
+              margin-left: -9px;
+              margin-top: -10px;
+              display: inline-block;
+              color: $brand-primary;
+            }
+          }
+
+          .description {
+            margin-left: 40px;
+          }
+        }
+      }
+    }
+  }
+
+  .options-container {
+    vertical-align: middle;
+    margin-left: 2%;
+    width: 93%;
+    display: inline-block;
+    box-sizing: border-box;
+    position: relative;
+
+    p {
+      font-weight: normal;
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    .help-icon {
+      display: none;
+    }
+  }
+}

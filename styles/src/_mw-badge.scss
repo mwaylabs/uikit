@@ -1,0 +1,25 @@
+.mw-badge {
+  position: relative;
+  top: -1px;
+
+  & ~ .mw-badge {
+    margin-left: 3px;
+  }
+
+  &.label-android {
+    background-color: $badge-android;
+  }
+  &.label-ios {
+    background-color: $badge-ios;
+  }
+  &.label-safe {
+    background-color: $badge-safe;
+  }
+  &.label-multi {
+    background-color: $badge-multi;
+  }
+  &.label-notsafe {
+    background-color: $brand-danger;
+    text-decoration: line-through;
+  }
+}
