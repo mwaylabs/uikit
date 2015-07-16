@@ -1,0 +1,181 @@
+.mw-listable {
+
+  thead {
+
+    th.listable-amount {
+      padding: 0 0 10px 7px;
+      text-align: right !important;
+      border-bottom: none;
+      font-size: 10px;
+      color: #999;
+      position: relative;
+
+      span:after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        @include background(linear-gradient(left, color-stops(#ffffff 70%, #cccccc 90%, #cccccc 100%)));
+        width: 100%;
+        height: 1px;
+        left: 0;
+      }
+    }
+
+    th {
+      font-weight: 500;
+      color: #555;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      border-top: none !important;
+
+      .sort-indicator,
+      .title {
+        @include single-transition(all, 0.2s, ease);
+      }
+
+      .sort-indicator {
+        width: 8px;
+        opacity: 0;
+      }
+
+      &.clickable .title {
+        margin-left: -10px;
+        margin-right: 10px;
+      }
+
+      &.sort-active {
+        font-weight: bolder;
+        color: #000;
+
+        .sort-indicator {
+          display: none;
+        }
+
+      }
+
+      &:hover {
+        .sort-indicator {
+          opacity: 1;
+        }
+
+      }
+
+      //set next to last child to max width
+      &:nth-last-child(2) {
+        max-width: 1px;
+      }
+
+      &.sort-active,
+      &.clickable:hover {
+        .title {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr{
+      height: 50px;
+    }
+
+    tr td{
+      @include single-transition(background-color, 0.2s, ease);
+    }
+
+    tr.clickable:hover td {
+      background-color: $list-hover-color;
+      cursor: pointer;
+    }
+
+    tr td {
+      vertical-align: middle;
+    }
+
+    tr.selected td,
+    tr.selected:hover td{
+      background-color: $list-active-color !important;
+    }
+
+    td span[mw-icon] {
+      top: 2px;
+    }
+
+    td.icon-column {
+      width: 40px;
+
+      img {
+        max-height: 40px;
+        max-width: 40px;
+      }
+    }
+
+    td.primary-column {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    thead {
+      th {
+        white-space: initial;
+
+        .sort-indicator {
+          display: none;
+        }
+
+        .title {
+          margin: 0 !important;
+        }
+      }
+    }
+
+    tbody {
+      td.icon-column {
+        width: 40px;
+        position: relative;
+
+        img {
+          max-height: 20px;
+          max-width: 20px;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+        }
+      }
+
+      td.primary-column {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  @media (max-width: $screen-xs) {
+
+    td.icon-column img {
+      max-height: 20px;
+      max-width: 20px;
+    }
+
+    td.primary-column {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+}
+
+
+.mw-link-show {
+  text-align: right;
+  padding: 0 12px;
+  font-size: 21px;
+}
