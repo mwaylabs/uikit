@@ -1,7 +1,7 @@
 <select class="form-control mw-form-select"
         mw-custom-select
         ng-model="mwModel"
-        ng-change="change()"
+        ng-change="mwChange()"
         ng-options="getKey(option) as getLabel(option) for option in mwOptionsCollection.models"
         ng-disabled="mwDisabled"
         ng-required="mwRequired"

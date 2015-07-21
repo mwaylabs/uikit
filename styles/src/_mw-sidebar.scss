@@ -1,0 +1,38 @@
+.mw-filterable-search {
+  .filterable-search-btn {
+    min-width: 40px;
+    cursor: pointer;
+
+    &:hover {
+      color: $brand-primary
+    }
+  }
+
+  .search-indicator {
+    position: absolute;
+    display: block;
+    border: 5px solid $brand-primary;
+    border-radius: 50%;
+    animation: searching 1.3s ease infinite;
+    -webkit-animation: searching 1.3s ease infinite; /* Safari and Chrome */
+  }
+}
+
+.mw-sidebar-filters {
+  .filter-toggler {
+    .toggle-indicator {
+      font-size: 11px;
+      top: 7px;
+      @include single-transition(all, 0.5s, ease);
+
+      &.active {
+        @include rotate(0);
+      }
+    }
+  }
+
+  input[type="number"]::-webkit-input-placeholder
+  {
+    color: #555555 !important;
+  }
+}

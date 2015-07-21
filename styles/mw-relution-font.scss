@@ -1,0 +1,307 @@
+$mw-font-path: "../fonts" !default;
+
+@font-face {
+  font-family: 'icomoon';
+  src: url('#{$mw-font-path}/mw-relution.eot');
+  src: url('#{$mw-font-path}/mw-relution.eot?#iefix') format('embedded-opentype'),
+  url('#{$mw-font-path}/mw-relution.woff') format('woff'),
+  url('#{$mw-font-path}/mw-relution.ttf') format('truetype'),
+  url('#{$mw-font-path}/mw-relution.svg#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.rln-icon {
+  font-family: 'icomoon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  margin-left: -3px;
+  margin-top: -2px;
+  font-size: 15px;
+  text-decoration: none !important;
+  vertical-align: middle;
+  color: #808080;
+  display: inline-block;
+
+  &:hover,
+  &:after:hover,
+  &:before:hover {
+    text-decoration: none !important;
+  }
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &.action:before {
+    content: "\e601";
+  }
+  &.add:before {
+    content: "\e602";
+  }
+  &.android:before {
+    content: "\e603";
+  }
+  &.apple:before {
+    content: "\e604";
+  }
+  &.apps:before {
+    content: "\e605";
+  }
+  &.archive:before {
+    content: "\e606";
+  }
+  &.bluetooth:before {
+    content: "\e607";
+  }
+  &.categories:before {
+    content: "\e608";
+  }
+  &.certificate:before {
+    content: "\e609";
+  }
+  &.check:before {
+    content: "\e60a";
+  }
+  &.close_cross:before {
+    content: "\e60b";
+  }
+  &.company:before {
+    content: "\e60c";
+  }
+  &.compliance_error:before {
+    content: "\e60d";
+  }
+  &.compliance_no:before {
+    content: "\e60e";
+  }
+  &.compliance_pending:before {
+    content: "\e60f";
+  }
+  &.compliance_yes:before {
+    content: "\e610";
+  }
+  &.compliance:before {
+    content: "\e611";
+  }
+  &.credit_add:before {
+    content: "\e612";
+  }
+  &.credit_inquire:before {
+    content: "\e613";
+  }
+  &.credit_receive:before {
+    content: "\e614";
+  }
+  &.dashboard:before {
+    content: "\e615";
+  }
+  &.delete:before {
+    content: "\e616";
+  }
+  &.development:before {
+    content: "\e617";
+  }
+  &.device:before {
+    content: "\e618";
+  }
+  &.devicemanagement:before {
+    content: "\e619";
+  }
+  &.download:before {
+    content: "\e61a";
+  }
+  &.edit:before {
+    content: "\e61b";
+  }
+  &.enroll:before {
+    content: "\e61c";
+  }
+  &.exchange:before {
+    content: "\e61d";
+  }
+  &.filter_add:before {
+    content: "\e61e";
+  }
+  &.folder:before {
+    content: "\e61f";
+  }
+  &.group_enrollment:before {
+    content: "\e620";
+  }
+  &.history:before {
+    content: "\e621";
+  }
+  &.ic_conf_managed_app:before {
+    content: "\e622";
+  }
+  &.ic_conf_airplay:before {
+    content: "\e623";
+  }
+  &.ic_conf_airprint:before {
+    content: "\e624";
+  }
+  &.ic_conf_apn:before {
+    content: "\e625";
+  }
+  &.ic_conf_app-control:before {
+    content: "\e626";
+  }
+  &.ic_conf_calendar-subscription:before {
+    content: "\e627";
+  }
+  &.ic_conf_calendar:before {
+    content: "\e628";
+  }
+  &.ic_conf_certificate:before {
+    content: "\e629";
+  }
+  &.ic_conf_contacts:before {
+    content: "\e62a";
+  }
+  &.ic_conf_domain:before {
+    content: "\e62b";
+  }
+  &.ic_conf_email:before {
+    content: "\e62c";
+  }
+  &.ic_conf_exchange:before {
+    content: "\e62d";
+  }
+  &.ic_conf_kiosk:before {
+    content: "\e62e";
+  }
+  &.ic_conf_passcode:before {
+    content: "\e62f";
+  }
+  &.ic_conf_restrictions:before {
+    content: "\e630";
+  }
+  &.ic_conf_scep:before {
+    content: "\e631";
+  }
+  &.ic_conf_vpn:before {
+    content: "\e632";
+  }
+  &.ic_conf_webclip:before {
+    content: "\e633";
+  }
+  &.ic_conf_wifi:before {
+    content: "\e634";
+  }
+  &.language:before {
+    content: "\e635";
+  }
+  &.logout:before {
+    content: "\e636";
+  }
+  &.map_location_filled:before {
+    content: "\e637";
+  }
+  &.map_location:before {
+    content: "\e638";
+  }
+  &.mtrust:before {
+    content: "\e639";
+  }
+  &.new_app_appstore:before {
+    content: "\e63a";
+    color: #808080;
+  }
+  &.new_app_appstore:after {
+    content: "\e63b";
+    margin-left: -1.4794921875em;
+    color: rgb(255, 255, 255);
+  }
+  &.new_app_native:before {
+    content: "\e600";
+  }
+  &.new_app_playstore:before {
+    content: "\e63c";
+  }
+  &.new_app_webapp:before {
+    content: "\e63d";
+  }
+  &.new_app_weblink:before {
+    content: "\e63e";
+  }
+  &.new_app_windowsstore:before {
+    content: "\e63f";
+  }
+  &.notification:before {
+    content: "\e640";
+  }
+  &.password_change:before {
+    content: "\e641";
+  }
+  &.policies:before {
+    content: "\e642";
+  }
+  &.policy_add:before {
+    content: "\e643";
+  }
+  &.policy_remove:before {
+    content: "\e644";
+  }
+  &.pricetag:before {
+    content: "\e645";
+  }
+  &.publish:before {
+    content: "\e646";
+  }
+  &.published:before {
+    content: "\e647";
+  }
+  &.request:before {
+    content: "\e648";
+  }
+  &.review:before {
+    content: "\e649";
+  }
+  &.rule_add:before {
+    content: "\e64a";
+  }
+  &.rule_remove:before {
+    content: "\e64b";
+  }
+  &.ruleset:before {
+    content: "\e64c";
+  }
+  &.secure_browser:before {
+    content: "\e64d";
+  }
+  &.support:before {
+    content: "\e64e";
+  }
+  &.upload:before {
+    content: "\e64f";
+  }
+  &.user_group:before {
+    content: "\e650";
+  }
+  &.user:before {
+    content: "\e651";
+  }
+  &.version_add:before {
+    content: "\e652";
+  }
+  &.version:before {
+    content: "\e653";
+  }
+  &.vpp:before {
+    content: "\e654";
+  }
+  &.webapp:before {
+    content: "\e655";
+  }
+  &.windows:before {
+    content: "\e656";
+  }
+  &.workflow:before {
+    content: "\e657";
+  }
+}
