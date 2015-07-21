@@ -2,11 +2,11 @@ $mw-font-path: "../fonts" !default;
 
 @font-face {
   font-family: 'icomoon';
-  src: url('#{$mw-font-path}/mw-relution.eot?-whbxqj');
-  src: url('#{$mw-font-path}/mw-relution.eot?#iefix-whbxqj') format('embedded-opentype'),
-  url('#{$mw-font-path}/mw-relution.woff?-whbxqj') format('woff'),
-  url('#{$mw-font-path}/mw-relution.ttf?-whbxqj') format('truetype'),
-  url('#{$mw-font-path}/mw-relution.svg?-whbxqj#icomoon') format('svg');
+  src: url('#{$mw-font-path}/mw-relution.eot');
+  src: url('#{$mw-font-path}/mw-relution.eot?#iefix') format('embedded-opentype'),
+  url('#{$mw-font-path}/mw-relution.woff') format('woff'),
+  url('#{$mw-font-path}/mw-relution.ttf') format('truetype'),
+  url('#{$mw-font-path}/mw-relution.svg#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -38,187 +38,187 @@ $mw-font-path: "../fonts" !default;
   -moz-osx-font-smoothing: grayscale;
 
   &.action:before {
-    content: "\e600";
-  }
-  &.add:before {
     content: "\e601";
   }
-  &.android:before {
+  &.add:before {
     content: "\e602";
   }
-  &.apple:before {
+  &.android:before {
     content: "\e603";
   }
-  &.apps:before {
+  &.apple:before {
     content: "\e604";
   }
-  &.archive:before {
+  &.apps:before {
     content: "\e605";
   }
-  &.bluetooth:before {
+  &.archive:before {
     content: "\e606";
   }
-  &.categories:before {
+  &.bluetooth:before {
     content: "\e607";
   }
-  &.certificate:before {
+  &.categories:before {
     content: "\e608";
   }
-  &.check:before {
+  &.certificate:before {
     content: "\e609";
   }
-  &.close_cross:before {
+  &.check:before {
     content: "\e60a";
   }
-  &.company:before {
+  &.close_cross:before {
     content: "\e60b";
   }
-  &.compliance_error:before {
+  &.company:before {
     content: "\e60c";
   }
-  &.compliance_no:before {
+  &.compliance_error:before {
     content: "\e60d";
   }
-  &.compliance_pending:before {
+  &.compliance_no:before {
     content: "\e60e";
   }
-  &.compliance_yes:before {
+  &.compliance_pending:before {
     content: "\e60f";
   }
-  &.compliance:before {
+  &.compliance_yes:before {
     content: "\e610";
   }
-  &.credit_add:before {
+  &.compliance:before {
     content: "\e611";
   }
-  &.credit_inquire:before {
+  &.credit_add:before {
     content: "\e612";
   }
-  &.credit_receive:before {
+  &.credit_inquire:before {
     content: "\e613";
   }
-  &.dashboard:before {
+  &.credit_receive:before {
     content: "\e614";
   }
-  &.delete:before {
+  &.dashboard:before {
     content: "\e615";
   }
-  &.development:before {
+  &.delete:before {
     content: "\e616";
   }
-  &.device:before {
+  &.development:before {
     content: "\e617";
   }
-  &.devicemanagement:before {
+  &.device:before {
     content: "\e618";
   }
-  &.download:before {
+  &.devicemanagement:before {
     content: "\e619";
   }
-  &.edit:before {
+  &.download:before {
     content: "\e61a";
   }
-  &.enroll:before {
+  &.edit:before {
     content: "\e61b";
   }
-  &.exchange:before {
+  &.enroll:before {
     content: "\e61c";
   }
-  &.filter_add:before {
+  &.exchange:before {
     content: "\e61d";
   }
-  &.folder:before {
+  &.filter_add:before {
     content: "\e61e";
   }
-  &.group_enrollment:before {
+  &.folder:before {
     content: "\e61f";
   }
-  &.history:before {
+  &.group_enrollment:before {
     content: "\e620";
   }
-  &.ic_conf_managed_app:before {
+  &.history:before {
     content: "\e621";
   }
-  &.ic_conf_airplay:before {
+  &.ic_conf_managed_app:before {
     content: "\e622";
   }
-  &.ic_conf_airprint:before {
+  &.ic_conf_airplay:before {
     content: "\e623";
   }
-  &.ic_conf_apn:before {
+  &.ic_conf_airprint:before {
     content: "\e624";
   }
-  &.ic_conf_app-control:before {
+  &.ic_conf_apn:before {
     content: "\e625";
   }
-  &.ic_conf_calendar-subscription:before {
+  &.ic_conf_app-control:before {
     content: "\e626";
   }
-  &.ic_conf_calendar:before {
+  &.ic_conf_calendar-subscription:before {
     content: "\e627";
   }
-  &.ic_conf_certificate:before {
+  &.ic_conf_calendar:before {
     content: "\e628";
   }
-  &.ic_conf_contacts:before {
+  &.ic_conf_certificate:before {
     content: "\e629";
   }
-  &.ic_conf_domain:before {
+  &.ic_conf_contacts:before {
     content: "\e62a";
   }
-  &.ic_conf_email:before {
+  &.ic_conf_domain:before {
     content: "\e62b";
   }
-  &.ic_conf_exchange:before {
+  &.ic_conf_email:before {
     content: "\e62c";
   }
-  &.ic_conf_kiosk:before {
+  &.ic_conf_exchange:before {
     content: "\e62d";
   }
-  &.ic_conf_passcode:before {
+  &.ic_conf_kiosk:before {
     content: "\e62e";
   }
-  &.ic_conf_restrictions:before {
+  &.ic_conf_passcode:before {
     content: "\e62f";
   }
-  &.ic_conf_scep:before {
+  &.ic_conf_restrictions:before {
     content: "\e630";
   }
-  &.ic_conf_vpn:before {
+  &.ic_conf_scep:before {
     content: "\e631";
   }
-  &.ic_conf_webclip:before {
+  &.ic_conf_vpn:before {
     content: "\e632";
   }
-  &.ic_conf_wifi:before {
+  &.ic_conf_webclip:before {
     content: "\e633";
   }
-  &.language:before {
+  &.ic_conf_wifi:before {
     content: "\e634";
   }
-  &.logout:before {
+  &.language:before {
     content: "\e635";
   }
-  &.map_location_filled:before {
+  &.logout:before {
     content: "\e636";
   }
-  &.map_location:before {
+  &.map_location_filled:before {
     content: "\e637";
   }
-  &.mtrust:before {
+  &.map_location:before {
     content: "\e638";
   }
-  &.new_app_appstore:before {
+  &.mtrust:before {
     content: "\e639";
+  }
+  &.new_app_appstore:before {
+    content: "\e63a";
     color: #808080;
   }
   &.new_app_appstore:after {
-    content: "\e63a";
+    content: "\e63b";
     margin-left: -1.4794921875em;
     color: rgb(255, 255, 255);
   }
   &.new_app_native:before {
-    content: "\e63b";
+    content: "\e600";
   }
   &.new_app_playstore:before {
     content: "\e63c";
@@ -229,74 +229,79 @@ $mw-font-path: "../fonts" !default;
   &.new_app_weblink:before {
     content: "\e63e";
   }
-  &.notification:before {
+  &.new_app_windowsstore:before {
     content: "\e63f";
   }
-  &.password_change:before {
+  &.notification:before {
     content: "\e640";
   }
-  &.policies:before {
+  &.password_change:before {
     content: "\e641";
   }
-  &.policy_add:before {
+  &.policies:before {
     content: "\e642";
   }
-  &.policy_remove:before {
+  &.policy_add:before {
     content: "\e643";
   }
-  &.publish:before {
+  &.policy_remove:before {
     content: "\e644";
   }
-  &.published:before {
+  &.pricetag:before {
     content: "\e645";
   }
-  &.request:before {
+  &.publish:before {
     content: "\e646";
   }
-  &.review:before {
+  &.published:before {
     content: "\e647";
   }
-  &.rule_add:before {
+  &.request:before {
     content: "\e648";
   }
-  &.rule_remove:before {
+  &.review:before {
     content: "\e649";
   }
-  &.ruleset:before {
+  &.rule_add:before {
     content: "\e64a";
   }
-  &.secure_browser:before {
+  &.rule_remove:before {
     content: "\e64b";
   }
-  &.support:before {
+  &.ruleset:before {
     content: "\e64c";
   }
-  &.upload:before {
+  &.secure_browser:before {
     content: "\e64d";
   }
-  &.user_group:before {
+  &.support:before {
     content: "\e64e";
   }
-  &.user:before {
+  &.upload:before {
     content: "\e64f";
   }
-  &.version_add:before {
+  &.user_group:before {
     content: "\e650";
   }
-  &.version:before {
+  &.user:before {
     content: "\e651";
   }
-  &.vpp:before {
+  &.version_add:before {
     content: "\e652";
   }
-  &.webapp:before {
+  &.version:before {
     content: "\e653";
   }
-  &.windows:before {
+  &.vpp:before {
     content: "\e654";
   }
-  &.workflow:before {
+  &.webapp:before {
     content: "\e655";
   }
-
+  &.windows:before {
+    content: "\e656";
+  }
+  &.workflow:before {
+    content: "\e657";
+  }
 }
