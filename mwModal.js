@@ -237,6 +237,22 @@ angular.module('mwModal', [])
     };
   })
 
+  .provider('mwModalTmpl', function(){
+
+    var _logoPath;
+
+    this.setLogoPath = function(path){
+      _logoPath = path;
+    };
+
+    this.$get = function(){
+      return{
+        getLogoPath: function(){
+          return _logoPath;
+        }
+      };
+    };
+  })
 
 /**
  * @ngdoc directive
@@ -264,7 +280,7 @@ angular.module('mwModal', [])
  * </doc:example>
  */
 
-  .directive('mwModal', function () {
+  .directive('mwModal', function (mwModalTmpl) {
     return {
       restrict: 'A',
       scope: {
@@ -274,6 +290,7 @@ angular.module('mwModal', [])
       templateUrl: 'modules/ui/templates/mwModal/mwModal.html',
       link: function (scope) {
         scope.$emit('COMPILE:FINISHED');
+        scope.mwModalTmpl = mwModalTmpl;
       }
     };
   })
