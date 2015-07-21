@@ -450,6 +450,10 @@ angular.module('mwListableBb', [])
 
         scope.isModal = modalEl.length>0;
 
+        scope.isLoadingModelsNotInCollection = false;
+
+        scope.hasFetchedModelsNotInCollection = false;
+
         var throttledScrollFn = _.throttle(function () {
 
           var currentScrollPos = scrollEl.scrollTop();
@@ -475,8 +479,66 @@ angular.module('mwListableBb', [])
           lastScrollYPos = currentScrollPos;
         },10);
 
+        var loadItemsNotInCollection = function(){
+          if(scope.hasFetchedModelsNotInCollection){
+            return;
+          }
+          var selectedNotInCollection = [];
+          scope.selectable.getSelected().each(function(model){
+            if(!model.selectable.isInCollection && !scope.getModelAttribute(model)){
+              selectedNotInCollection.push(model);
+            }
+          });
+
+          if(selectedNotInCollection.length === 0){
+            return;
+          }
+
+          var Collection = scope.collection.constructor.extend({
+            filterableOptions: function(){
+              return {
+                filterDefinition: function () {
+                  var filter = new window.mCAP.Filter(),
+                    filters = [];
+
+                  selectedNotInCollection.forEach(function(model){
+                    if(model.id){
+                      filters.push(
+                        filter.string(model.idAttribute, model.id)
+                      );
+                    }
+                  });
+
+                  return filter.or(filters);
+                }
+              };
+            }
+          });
+          var collection = new Collection();
+          collection.url = scope.collection.url();
+
+          scope.isLoadingModelsNotInCollection = true;
+
+          collection.fetch().then(function(collection){
+            scope.hasFetchedModelsNotInCollection = true;
+            var selected = scope.selectable.getSelected();
+            collection.each(function(model){
+              selected.get(model.id).set(model.toJSON());
+            });
+
+            var deletedUuids = _.difference(_.pluck(selectedNotInCollection,'id'), collection.pluck('uuid'));
+
+            deletedUuids.forEach(function(id){
+              selected.get(id).selectable.isDeletedItem = true;
+            });
+
+            scope.isLoadingModelsNotInCollection = false;
+          });
+        };
+
         var showSelected = function(){
           canShowSelected = true;
+          loadItemsNotInCollection();
           setTimeout(function(){
             var height;
             if(scope.isModal){
