@@ -1,0 +1,52 @@
+.mw-toggle {
+  background: #ccc;
+  position: relative;
+  padding: 3px;
+  border-radius: $border-radius-base;
+  white-space: nowrap;
+
+  button.toggle {
+    border-radius: 0;
+    padding: 0 15px;
+    vertical-align: middle;
+    position: relative;
+    margin-bottom: 3px;
+    color: white;
+    z-index: 2;
+    background: transparent;
+    border: none;
+    text-decoration: none;
+  }
+
+  span.indicator {
+    width: 50%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 100%;
+    display: inline-block;
+    @include single-transition(all, 0.4s, cubic-bezier(.36, -0.21, .25, 1.33));
+
+    &.enabled {
+      left: 0;
+    }
+
+    &.label-success {
+      background: $label-success-bg !important;
+    }
+
+    &.label-danger {
+      background: $label-danger-bg !important;
+    }
+  }
+
+  @media (max-width: $screen-xs) {
+
+    button.toggle {
+      width: 0px;
+      overflow: hidden;
+      display: inline-block;
+      opacity: 0;
+    }
+  }
+}

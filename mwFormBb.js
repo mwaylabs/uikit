@@ -115,19 +115,17 @@ angular.module('mwFormBb', [])
         mwDisabled: '=',
         mwChange: '&',
         mwPlaceholder: '@placeholder',
+        mwAutoFetch: '=',
         name: '@'
       },
       templateUrl: 'modules/ui/templates/mwFormBb/mwFormSelect.html',
       link: function (scope) {
         scope.optionsKey = scope.mwOptionsKey || 'key';
 
-        if (scope.mwOptionsCollection.length === 0) {
+        //auto fetch is default true
+        if ((scope.mwAutoFetch === true || scope.mwAutoFetch === undefined) && scope.mwOptionsCollection.length === 0) {
           scope.mwOptionsCollection.fetch();
         }
-
-        scope.change = function () {
-
-        };
 
         scope.getKey = function (optionModel) {
           return optionModel.get(scope.optionsKey);
