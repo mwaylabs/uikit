@@ -89,13 +89,18 @@
 
       li:not(.active) {
         .btn {
-          :hover {
+          &:not(.disabled):hover {
             color: darken($brand-primary, 20%);
           }
 
           .fa,
           .rln-icon {
             color: #333;
+          }
+
+          &.disabled {
+            cursor: default;
+            pointer-events: inherit;
           }
 
         }
