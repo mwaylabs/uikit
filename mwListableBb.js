@@ -454,6 +454,10 @@ angular.module('mwListableBb', [])
 
         scope.hasFetchedModelsNotInCollection = false;
 
+        scope.isLoadingModelsNotInCollection = false;
+
+        scope.hasFetchedModelsNotInCollection = false;
+
         var throttledScrollFn = _.throttle(function () {
 
           var currentScrollPos = scrollEl.scrollTop();
