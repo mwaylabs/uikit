@@ -357,7 +357,7 @@ angular.module('mwListableBb', [])
       require: '^mwListableBb',
       scope: true,
       compile: function (elm) {
-        elm.prepend('<th ng-if="hasCollection" mw-listable-header-checkbox-bb width="1%"></th>');
+        elm.prepend('<th ng-if="hasCollection" width="1%"></th>');
         elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
 
         return function (scope, elm, attr, mwListableCtrl) {
