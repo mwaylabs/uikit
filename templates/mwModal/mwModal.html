@@ -2,7 +2,9 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header clearfix">
-        <img src="images/logo-inverted.png" height="20px" class="pull-left logo"/>
+        <img ng-if="mwModalTmpl.getLogoPath()"
+             ng-src="{{mwModalTmpl.getLogoPath()}}"
+             class="pull-left logo"/>
         <h4 class="modal-title pull-left">{{ title }}</h4>
       </div>
       <div ng-transclude class="modal-content-wrapper"></div>
