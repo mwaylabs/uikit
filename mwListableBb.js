@@ -599,7 +599,7 @@ angular.module('mwListableBb', [])
               var i18nPrefix = scope.nameI18nPrefix || '',
                   i18nSuffix = scope.nameI18nSuffix || '';
 
-              return i18n.get(i18nPrefix+modelAttr+i18nSuffix);
+              return i18n.get(i18nPrefix + modelAttr + i18nSuffix);
             } else {
               return modelAttr;
             }
