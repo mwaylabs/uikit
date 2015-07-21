@@ -572,7 +572,7 @@ angular.module('mwListableBb', [])
           model.selectable.unSelect();
         };
 
-        scope.unSelectAll = function(){
+        scope.toggleSelectAll = function(){
           scope.selectable.toggleSelectAll();
         };
 
