@@ -74,17 +74,41 @@ angular.module('mwI18n', [])
     };
 
     /**
+     * Return all placeholders that are available in the translation string
+     * @param property {String}
+     * @returns {String}
+     * @private
+     */
+    var _getUsedPlaceholdersInTranslationStr = function(str){
+
+      var re = /{{([a-zA-Z0-9$_]+)}}/g,
+          usedPlaceHolders = [],
+          matches;
+
+      while ((matches = re.exec(str)) !== null) {
+        if (matches.index === re.lastIndex) {
+          re.lastIndex++;
+        }
+        usedPlaceHolders.push(matches[1]);
+      }
+
+      return usedPlaceHolders;
+    };
+
+    /**
      * Replaces placeholders in transaltion string with a value defined in the placeholder param
      * @param str
      * @param placeholder
-     * @returns {*}
+     * @returns {String}
      * @private
      */
-    var _replacePlaceholders = function (str, placeholder) {
-      placeholder = placeholder || [];
-      _.each(placeholder, function (value, key) {
-        str = str.replace('{{' + key + '}}', value);
-      });
+    var _replacePlaceholders = function (str, placeholders) {
+      if(placeholders){
+        var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
+        usedPlaceHolders.forEach(function(usedPlaceholder){
+          str = str.replace('{{' + usedPlaceholder + '}}', placeholders[usedPlaceholder]);
+        });
+      }
       return str;
     };
 
