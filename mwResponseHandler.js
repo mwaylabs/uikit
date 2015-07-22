@@ -176,10 +176,17 @@ angular.module('mwResponseHandler', [])
         }, this);
       };
 
+      var _isHandlerDefinedFor = function(handler, statusCode, isError){
+        return !!(
+          handler.getCallbacksForStatusCode(statusCode) ||
+          isError && handler.getCallbacksForError() ||
+          !isError && handler.getCallbacksForSuccess()
+        );
+      };
+
       return {
         getHandlerForUrlAndCode: function (method, url, statusCode, isError) {
-          var _returnHandler,
-            _allReturnHandlersForRoute = [];
+          var _returnHandler;
 
           if (!_routeHandlersPerMethodContainer[method]) {
             throw _methodIsInValidError(method);
@@ -187,24 +194,7 @@ angular.module('mwResponseHandler', [])
 
           _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
             var handler = routeHandlerContainer.handler;
-            if (handler.matchesUrl(url)) {
-              _allReturnHandlersForRoute.push(handler);
-            }
-          });
-
-          _allReturnHandlersForRoute.forEach(function(handler){
-            var callback = [];
-            if(_returnHandler){
-              return;
-            }
-            callback = handler.getCallbacksForStatusCode(statusCode);
-            if (!callback && isError) {
-              callback = handler.getCallbacksForError();
-            }
-            if (!callback){
-              callback = handler.getCallbacksForSuccess();
-            }
-            if(!_.isEmpty(callback)){
+            if (handler.matchesUrl(url) && _isHandlerDefinedFor(handler, statusCode, isError)) {
               _returnHandler = handler;
             }
           });
