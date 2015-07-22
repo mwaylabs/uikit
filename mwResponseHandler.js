@@ -177,8 +177,9 @@ angular.module('mwResponseHandler', [])
       };
 
       return {
-        getHandlerForUrl: function (method, url) {
-          var _returnHandler;
+        getHandlerForUrlAndCode: function (method, url, statusCode, isError) {
+          var _returnHandler,
+            _allReturnHandlersForRoute = [];
 
           if (!_routeHandlersPerMethodContainer[method]) {
             throw _methodIsInValidError(method);
@@ -186,7 +187,24 @@ angular.module('mwResponseHandler', [])
 
           _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
             var handler = routeHandlerContainer.handler;
-            if (!_returnHandler && handler.matchesUrl(url)) {
+            if (handler.matchesUrl(url)) {
+              _allReturnHandlersForRoute.push(handler);
+            }
+          });
+
+          _allReturnHandlersForRoute.forEach(function(handler){
+            var callback = [];
+            if(_returnHandler){
+              return;
+            }
+            callback = handler.getCallbacksForStatusCode(statusCode);
+            if (!callback && isError) {
+              callback = handler.getCallbacksForError();
+            }
+            if (!callback){
+              callback = handler.getCallbacksForSuccess();
+            }
+            if(!_.isEmpty(callback)){
               _returnHandler = handler;
             }
           });
@@ -197,7 +215,7 @@ angular.module('mwResponseHandler', [])
           var url = response.config.url,
             method = response.config.method,
             statusCode = response.status,
-            handler = this.getHandlerForUrl(method, url);
+            handler = this.getHandlerForUrlAndCode(method, url, statusCode, isError);
 
           if (handler) {
             var statusCodeCallback = handler.getCallbacksForStatusCode(statusCode);
