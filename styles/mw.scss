@@ -1,0 +1,61 @@
+//Framework specific variables
+
+//SubNavigation
+$sub-nav-background: #eee !default;
+$sub-nav-pill-divider: "1px solid #ccc";
+
+//List
+$list-hover-color: #f3f3f3 !default;
+$list-active-color: #eaeaea !default;
+
+//Star Rating
+$star-rating-color: #ffa602 !default;
+
+//mwBadge colors
+$badge-android: #a4c639;
+$badge-ios: #111111;
+$badge-safe: #5bc0de;
+$badge-multi: #aaaaaa;
+
+
+@import "src/mw-badge";
+@import "src/mw-button-help";
+@import "src/mw-collapsable";
+@import "src/mw-content-header";
+@import "src/mw-empty-state";
+@import "src/mw-form";
+@import "src/mw-full-screen-height";
+@import "src/mw-header";
+@import "src/mw-listable";
+@import "src/mw-markdown-preview";
+@import "src/mw-modal";
+@import "src/mw-nav";
+@import "src/mw-option-group";
+@import "src/mw-select";
+@import "src/mw-sidebar";
+@import "src/mw-tabs";
+@import "src/mw-timeline";
+@import "src/mw-toggle";
+@import "src/mw-tutorial";
+@import "src/mw-view-change-loader";
+
+
+.mw-star-rating {
+  color: $star-rating-color;
+}
+
+/* force line breaks in tooltips */
+.popover {
+  .popover-content {
+    word-wrap: break-word;
+  }
+}
+
+// Change the color of the eye button of the password fields to show the
+// password in clear text.
+.mw-password-toggler {
+  .toggler-btn:hover i{
+    color: $brand-primary
+  }
+}
+
