@@ -176,12 +176,18 @@ angular.module('mwResponseHandler', [])
         }, this);
       };
 
-      var _isHandlerDefinedFor = function(handler, statusCode, isError){
-        return !!(
-          handler.getCallbacksForStatusCode(statusCode) ||
-          isError && handler.getCallbacksForError() ||
-          !isError && handler.getCallbacksForSuccess()
-        );
+      var _getCallbacks = function(handler, statusCode, isError){
+        var statusCallbacks = handler.getCallbacksForStatusCode(statusCode),
+            successCallbacks = handler.getCallbacksForSuccess(),
+            errorCallbacks = handler.getCallbacksForError();
+
+        if(statusCallbacks){
+          return statusCallbacks
+        } else if(isError){
+          return errorCallbacks
+        } else {
+          return successCallbacks;
+        }
       };
 
       return {
@@ -193,8 +199,9 @@ angular.module('mwResponseHandler', [])
           }
 
           _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
-            var handler = routeHandlerContainer.handler;
-            if (handler.matchesUrl(url) && _isHandlerDefinedFor(handler, statusCode, isError)) {
+            var handler = routeHandlerContainer.handler,
+                callbacks = _getCallbacks(handler, statusCode, isError);
+            if (!_returnHandler && handler.matchesUrl(url) && callbacks && callbacks.length>0) {
               _returnHandler = handler;
             }
           });
@@ -208,16 +215,9 @@ angular.module('mwResponseHandler', [])
             handler = this.getHandlerForUrlAndCode(method, url, statusCode, isError);
 
           if (handler) {
-            var statusCodeCallback = handler.getCallbacksForStatusCode(statusCode);
-
-            if (statusCodeCallback) {
-              _executeCallback(statusCodeCallback, response);
-            } else if (isError) {
-              var isErrorCallback = handler.getCallbacksForError();
-              _executeCallback(isErrorCallback, response);
-            } else {
-              var isSuccessCallback = handler.getCallbacksForSuccess();
-              _executeCallback(isSuccessCallback, response);
+            var callbacks = _getCallbacks(handler, statusCode, isError);
+            if(callbacks){
+              _executeCallback(callbacks, response);
             }
           }
         }
