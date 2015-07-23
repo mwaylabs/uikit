@@ -77,7 +77,7 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
 
     this.registerToastType = function (typeId, toastOptions) {
       if (_registeredToastOptions[typeId]) {
-
+        throw new Error('The toast type ' + typeId + ' is already defined. You can configure a toast type only once');
       } else {
         _registeredToastOptions[typeId] = toastOptions;
       }
