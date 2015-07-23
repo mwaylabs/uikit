@@ -1,0 +1,25 @@
+{
+  "name": "relution-uikit",
+  "version": "0.0.0",
+  "devDependencies": {
+    "angular": "1.3.15",
+    "angular-markdown-directive": "^0.3.1",
+    "angular-mocks": "1.3.15",
+    "angular-route": "1.3.15",
+    "angular-sanitize": "1.3.15",
+    "backbone": "^1.2.1",
+    "bootstrap": "^3.3.5",
+    "jasmine-core": "^2.3.4",
+    "jquery": "^1.11.3",
+    "jquery-ui": "^1.10.5",
+    "karma": "^0.13.3",
+    "karma-jasmine": "^0.3.6",
+    "karma-ng-html2js-preprocessor": "^0.1.2",
+    "karma-phantomjs-launcher": "^0.2.0",
+    "mcapjs-client": "git+ssh://git@github.com/mwaylabs/mcapjs-client.git#master",
+    "phantomjs": "^1.9.17",
+    "phantomjs-polyfill": "0.0.1",
+    "showdown": "~0.3.4",
+    "underscore": "^1.8.3"
+  }
+}
