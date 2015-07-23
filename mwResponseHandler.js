@@ -182,9 +182,9 @@ angular.module('mwResponseHandler', [])
             errorCallbacks = handler.getCallbacksForError();
 
         if(statusCallbacks){
-          return statusCallbacks
+          return statusCallbacks;
         } else if(isError){
-          return errorCallbacks
+          return errorCallbacks;
         } else {
           return successCallbacks;
         }
