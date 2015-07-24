@@ -444,18 +444,13 @@ angular.module('mwListableBb', [])
           affixOffset = scope.affixOffset,
           isSticked = false;
 
+        scope.selectable = false;
         scope.selectedAmount = 0;
-
         scope.collectionName = scope.collectionName || i18n.get('common.items');
-
         scope.isModal = modalEl.length>0;
-
         scope.isLoadingModelsNotInCollection = false;
-
         scope.hasFetchedModelsNotInCollection = false;
-
         scope.isLoadingModelsNotInCollection = false;
-
         scope.hasFetchedModelsNotInCollection = false;
 
         var throttledScrollFn = _.throttle(function () {
