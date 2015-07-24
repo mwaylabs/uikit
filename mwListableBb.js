@@ -549,7 +549,7 @@ angular.module('mwListableBb', [])
               height = modalEl.height() + (modalEl.offset().top - el.find('.selected-items').offset().top) + 25;
               modalEl.css('overflow', 'hidden');
             } else {
-              height = angular.element($window).height()-el.find('.selected-items').offset().top - affixOffset + scrollEl.scrollTop() - 10;
+              height = angular.element($window).height()-el.find('.selected-items').offset().top + scrollEl.scrollTop() - 25;
               bodyEl.css('overflow', 'hidden');
             }
 
