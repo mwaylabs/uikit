@@ -433,8 +433,9 @@ angular.module('mwListableBb', [])
         nameI18nPrefix: '@',
         nameI18nSuffix: '@'
       },
+      transclude: true,
       templateUrl: 'modules/ui/templates/mwListableBb/mwListableHead.html',
-      link: function (scope, el) {
+      link: function (scope, el, attrs, ctrl, $transclude) {
         var scrollEl,
           bodyEl = angular.element('body'),
           modalEl = el.parents('.modal .modal-body'),
