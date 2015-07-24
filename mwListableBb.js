@@ -421,7 +421,7 @@ angular.module('mwListableBb', [])
     };
   })
 
-  .directive('mwListableHead2', function ($window, i18n) {
+  .directive('mwListableHead2', function ($window, i18n, MCAPCollection) {
     return {
       scope: {
         collection: '=',
@@ -658,7 +658,7 @@ angular.module('mwListableBb', [])
         });
 
         scope.$watch('collection', function(collection){
-          if(collection && collection instanceof Backbone.Collection){
+          if(collection && collection instanceof MCAPCollection){
             init();
           }
         });
