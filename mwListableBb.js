@@ -568,7 +568,7 @@ angular.module('mwListableBb', [])
         };
 
         scope.canShowSelected = function(){
-          return canShowSelected && scope.selectedAmount>0;
+          return scope.selectable && canShowSelected && scope.selectedAmount>0;
         };
 
         scope.unSelect = function(model){
