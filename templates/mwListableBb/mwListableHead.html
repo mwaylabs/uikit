@@ -8,7 +8,7 @@
 </style>
 <div class="mw-listable-header clearfix" ng-class="{'show-selected':canShowSelected()}">
   <div class="selection-controller" ng-if="selectable">
-    <span ng-click="toggleSelectAll()" class="clickable select-all">
+    <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
       <span class="selected-icon">
         <span class="indicator" ng-if="selectable.allSelected()"></span>
       </span>
@@ -24,8 +24,8 @@
     </span>
   </div>
   <div class="search-bar"></div>
-  <div class="selected-counter" ng-click="toggleShowSelected()">
-    <span ng-if="selectedAmount>0" class="clickable">
+  <div class="selected-counter">
+    <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
       <a href="#" mw-prevent-default="click">
       <span ng-if="selectedAmount === 1">
         {{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
@@ -37,7 +37,8 @@
         <span mw-icon="fa-angle-down" ng-show="!canShowSelected()"></span>
       </a>
     </span>
-    <span ng-if="selectedAmount<1">
+    <div ng-if="!selectable || selectedAmount<1" ng-transclude class="extra-content"></div>
+    <span ng-if="!selectable || selectedAmount<1">
       {{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
     </span>
   </div>
@@ -49,8 +50,10 @@
              ng-click="unSelect(item)"
              ng-class="{'label-danger':item.selectable.isDeletedItem}"
              class="label label-default clickable">
-        <span ng-if="item.selectable.isDeletedItem"
-              mw-tooltip="{{'common.notAvailableTooltip' | i18n}}"> <span mw-icon="fa-warning"></span>{{'common.notAvailable' | i18n}}</span>
+          <span ng-if="item.selectable.isDeletedItem"
+                mw-tooltip="{{'common.notAvailableTooltip' | i18n}}">
+            <span mw-icon="fa-warning"></span>{{'common.notAvailable' | i18n}}
+          </span>
           <span ng-if="!item.selectable.isDeletedItem">{{getModelAttribute(item)}}</span>
           <span mw-icon="rln-icon close_cross"></span>
         </div>
