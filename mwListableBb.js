@@ -442,8 +442,6 @@ angular.module('mwListableBb', [])
           affixOffset = scope.affixOffset,
           isSticked = false;
 
-        scope.selectable = scope.collection.selectable;
-
         scope.selectedAmount = 0;
 
         scope.collectionName = scope.collectionName || i18n.get('common.items');
@@ -612,6 +610,41 @@ angular.module('mwListableBb', [])
           }
         };
 
+        var init = function(){
+          scope.selectable = scope.collection.selectable;
+          if (scope.isModal) {
+            //element in modal
+            scrollEl = modalEl;
+          }
+          else {
+            //element in window
+            scrollEl = angular.element($window);
+          }
+
+          if(!affixOffset){
+            if(scope.isModal){
+              affixOffset = 73;
+            } else {
+              affixOffset = 35;
+            }
+          }
+
+          // Register scroll callback
+          scrollEl.on('scroll', throttledScrollFn);
+
+          // Deregister scroll callback if scope is destroyed
+          scope.$on('$destroy', function () {
+            scrollEl.off('scroll', throttledScrollFn);
+          });
+
+        };
+
+        $transclude(function (clone) {
+          if (clone && clone.length > 0) {
+            el.addClass('has-extra-content');
+          }
+        });
+
         scope.$watch(function(){
           if(scope.selectable){
             return scope.selectable.getSelected().length;
@@ -625,29 +658,10 @@ angular.module('mwListableBb', [])
           }
         });
 
-        if (scope.isModal) {
-          //element in modal
-          scrollEl = modalEl;
-        }
-        else {
-          //element in window
-          scrollEl = angular.element($window);
-        }
-
-        if(!affixOffset){
-          if(scope.isModal){
-            affixOffset = 73;
-          } else {
-            affixOffset = 35;
+        scope.$watch('collection', function(collection){
+          if(collection && collection instanceof Backbone.Collection){
+            init();
           }
-        }
-
-        // Register scroll callback
-        scrollEl.on('scroll', throttledScrollFn);
-
-        // Deregister scroll callback if scope is destroyed
-        scope.$on('$destroy', function () {
-          scrollEl.off('scroll', throttledScrollFn);
         });
       }
     };
