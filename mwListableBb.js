@@ -429,6 +429,7 @@ angular.module('mwListableBb', [])
         collectionName: '@',
         nameFn: '&',
         nameAttribute: '@',
+        localizeName: '@',
         nameI18nPrefix: '@',
         nameI18nSuffix: '@'
       },
@@ -601,7 +602,9 @@ angular.module('mwListableBb', [])
               var i18nPrefix = scope.nameI18nPrefix || '',
                   i18nSuffix = scope.nameI18nSuffix || '';
 
-              return i18n.get(i18nPrefix + modelAttr + i18nSuffix);
+              return i18n.get(i18nPrefix + '.' + modelAttr + '.' + i18nSuffix);
+            } else if(angular.isDefined(scope.localizeName)){
+              return i18n.localize(modelAttr);
             } else {
               return modelAttr;
             }
