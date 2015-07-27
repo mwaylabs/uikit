@@ -46,7 +46,7 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
               return;
             }
           } else {
-            var resp = $httpResponse.data;
+            var resp = $httpResponse.data || {};
 
             if (resp.results && !_.isObject(resp.results)) {
               data = {message: resp.results};
