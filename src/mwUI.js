@@ -17,7 +17,8 @@ angular.module('mwUI', [
   'mwMap',
   'mwI18n',
   'mwResponseHandler',
-  'mwResponseToastHandler'
+  'mwResponseToastHandler',
+  'mwFilters'
 ]).config(function(){
   'use strict';
   window.requestAnimFrame = (function () {

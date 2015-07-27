@@ -11,7 +11,7 @@ angular.module('mwTabs', [])
           activePaneNumber: '='
         },
         transclude: true,
-        templateUrl: 'modules/ui/templates/mwTabs.html',
+        templateUrl: 'uikit/templates/mwTabs.html',
         controller: function ($scope) {
           var panes = $scope.panes = [];
 

@@ -40,7 +40,7 @@ angular.module('mwSidebarBb', [])
         translationSuffix: '@',
         customUrlParameter: '@'
       },
-      templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarSelect.html',
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarSelect.html',
       link: function (scope, elm, attr, ctrl) {
 
         //set key function for select key
@@ -131,7 +131,7 @@ angular.module('mwSidebarBb', [])
         min: '@',
         max: '@'
       },
-      templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarNumberInput.html',
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarNumberInput.html',
       link: function (scope, elm, attr, ctrl) {
 
         scope.collection = ctrl.getCollection();
@@ -173,7 +173,7 @@ angular.module('mwSidebarBb', [])
   .directive('mwSidebarFiltersBb', function (Persistance, EmptyState) {
     return {
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwSidebarBb/mwSidebarFilters.html',
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
       link: function (scope, elm, attr) {
 
         scope.collection = scope.$eval(attr.collection);

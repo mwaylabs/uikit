@@ -9,11 +9,23 @@ describe('mwTextCollapse', function () {
   beforeEach(module('ngSanitize'));
   beforeEach(module('btford.markdown'));
 
+  //mock i18n filter
+  beforeEach(function(){
+    module(function($provide){
+      $provide.value('i18nFilter', function(){
+        return function(input){
+          return input;
+        };
+      });
+    });
+  });
+  
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     scope = _$rootScope_.$new();
   }));
+
 
   var longText = 'long text long text long text long text long text ' +
     'long text long text long text long text long text long text long text ' +

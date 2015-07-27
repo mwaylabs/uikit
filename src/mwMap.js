@@ -23,7 +23,7 @@ angular.module('mwMap', [])
         type:'@'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwMap/mwMap.html',
+      templateUrl: 'uikit/templates/mwMap/mwMap.html',
       controller: function ($window,$scope, LayoutWatcher) {
         if(!$window.ol){
           throw new Error('The directive mwMap needs the Openlayer 3 library. Make sure you included it!');
