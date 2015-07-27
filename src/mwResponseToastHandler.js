@@ -23,7 +23,7 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
           }
 
           var prevToast = Toast.findToast(id),
-            data = $httpResponse.data || {},
+            data = {},
             messageStr = prevToast ? messages.plural : messages.singular,
             message,
             toastOptions = {
@@ -36,23 +36,28 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
             messageStr = messages.singular;
           }
 
-          if (!_.isObject(data)) {
-            data = {message: data};
-          }
-
           data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
           data.$count++;
 
           if (options.preProcess && typeof options.preProcess === 'function') {
+            _.extend(data, $httpResponse.data);
             message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
+            if(!message){
+              return;
+            }
           } else {
-            if (data.results && data.results.length > 0) {
-              data = data.results[0];
+            var resp = $httpResponse.data;
+
+            if (resp.results && !_.isObject(resp.results)) {
+              data = {message: resp.results};
+            } else if (resp.results && resp.results.length > 0) {
+              _.extend(data, resp.results[0]);
             }
 
             if ($httpResponse.config.instance && typeof $httpResponse.config.instance.toJSON === 'function') {
               var json = $httpResponse.config.instance.toJSON();
-              _.extend(data, json);
+              _.extend(json, data);
+              data = json;
             }
 
             message = i18n.get(messageStr, data);
@@ -77,7 +82,7 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
 
     this.registerToastType = function (typeId, toastOptions) {
       if (_registeredToastOptions[typeId]) {
-
+        throw new Error('The toast type ' + typeId + ' is already defined. You can configure a toast type only once');
       } else {
         _registeredToastOptions[typeId] = toastOptions;
       }
