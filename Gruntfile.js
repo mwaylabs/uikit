@@ -33,7 +33,7 @@ module.exports = function (grunt) {
     },
     concat: {
       dist: {
-        src: ['.tmp/templates.js', 'src/**/*.js', '!src/mwUI.js', 'src/mwUI.js'],
+        src: ['src/mwUI.js', 'src/**/*.js', '.tmp/templates.js'],
         dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js',
       },
     },
