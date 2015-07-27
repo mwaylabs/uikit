@@ -287,7 +287,7 @@ angular.module('mwModal', [])
         title: '@'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwModal/mwModal.html',
+      templateUrl: 'uikit/templates/mwModal/mwModal.html',
       link: function (scope) {
         scope.$emit('COMPILE:FINISHED');
         scope.mwModalTmpl = mwModalTmpl;
@@ -370,7 +370,7 @@ angular.module('mwModal', [])
       restrict: 'A',
       transclude: true,
       scope: true,
-      templateUrl: 'modules/ui/templates/mwModal/mwModalConfirm.html',
+      templateUrl: 'uikit/templates/mwModal/mwModalConfirm.html',
       link: function (scope, elm, attr) {
         angular.forEach(['ok', 'cancel'], function (action) {
           scope[action] = function () {

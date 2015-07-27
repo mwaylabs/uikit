@@ -10,7 +10,7 @@ module.exports = function(config){
     // list of files / patterns to load in the browser
     files: [
       'node_modules/phantomjs-polyfill/bind-polyfill.js',
-      'node_modules/underscore/underscore-min.js',
+      'node_modules/underscore/underscore.js',
       'node_modules/jquery/dist/jquery.min.js',
       'node_modules/bootstrap/js/tooltip.js',
       'node_modules/bootstrap/js/popover.js',
@@ -90,7 +90,7 @@ module.exports = function(config){
     ngHtml2JsPreprocessor: {
       // strip this from the file path
       stripPrefix: 'src/',
-      prependPrefix: 'modules/ui/',
+      prependPrefix: 'uikit/',
 
       // setting this option will create only a single module that contains templates
       // from all the files, so you can load them all with module('foo')

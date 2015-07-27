@@ -94,7 +94,7 @@
           hideErrors: '=',
           validateWhenDirty: '='
         },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormInput.html',
+        templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
         link: function (scope, elm, attr, ctrl) {
 
           scope.isInvalid = function () {
@@ -186,7 +186,7 @@
           query: '=filter',
           mwRequired: '='
         },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect.html',
+        templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect.html',
         controller: function ($scope) {
 
           if (!angular.isArray($scope.model)) {
@@ -264,7 +264,7 @@
           mwRequired: '=',
           mwDisabled: '='
         },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormMultiSelect2.html',
+        templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect2.html',
         link: function (scope, elm, attr, formCtrl) {
           if (scope.mwOptionsCollection.length === 0) {
             scope.mwOptionsCollection.fetch();
@@ -309,7 +309,7 @@
           tooltip: '@',
           badges: '@'
         },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormCheckbox.html',
+        templateUrl: 'uikit/templates/mwForm/mwFormCheckbox.html',
         link: function (scope) {
           if (scope.badges) {
             var formatBadges = function () {
@@ -482,7 +482,7 @@
           label: '@',
           tooltip: '@'
         },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormWrapper.html'
+        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html'
       };
     })
 
@@ -616,7 +616,7 @@
           showSave: '=',
           showCancel: '='
         },
-        templateUrl: 'modules/ui/templates/mwForm/mwFormActions.html',
+        templateUrl: 'uikit/templates/mwForm/mwFormActions.html',
         link: function (scope, elm, attr) {
 
           scope.isLoading = Loading.isLoading;

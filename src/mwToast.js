@@ -4,7 +4,7 @@ angular.module('mwToast', [])
 
   .directive('mwToasts', function (Toast) {
     return {
-      templateUrl: 'modules/ui/templates/mwToast/mwToasts.html',
+      templateUrl: 'uikit/templates/mwToast/mwToasts.html',
       link: function (scope) {
         scope.toasts = Toast.getToasts();
 
