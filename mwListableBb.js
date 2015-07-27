@@ -357,7 +357,7 @@ angular.module('mwListableBb', [])
       require: '^mwListableBb',
       scope: true,
       compile: function (elm) {
-        elm.prepend('<th ng-if="hasCollection" mw-listable-header-checkbox-bb width="1%"></th>');
+        elm.prepend('<th ng-if="hasCollection" width="1%"></th>');
         elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
 
         return function (scope, elm, attr, mwListableCtrl) {
@@ -417,6 +417,251 @@ angular.module('mwListableBb', [])
         if (attr.mwRowIdentifier) {
           attr.$set('title', attr.mwRowIdentifier);
         }
+      }
+    };
+  })
+
+  .directive('mwListableHead2', function ($window, i18n, MCAPCollection) {
+    return {
+      scope: {
+        collection: '=',
+        affixOffset: '=',
+        collectionName: '@',
+        nameFn: '&',
+        nameAttribute: '@',
+        localizeName: '@',
+        nameI18nPrefix: '@',
+        nameI18nSuffix: '@'
+      },
+      transclude: true,
+      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHead.html',
+      link: function (scope, el, attrs, ctrl, $transclude) {
+        var scrollEl,
+          bodyEl = angular.element('body'),
+          modalEl = el.parents('.modal .modal-body'),
+          lastScrollYPos = 0,
+          canShowSelected = false,
+          affixOffset = scope.affixOffset,
+          isSticked = false;
+
+        scope.selectable = false;
+        scope.selectedAmount = 0;
+        scope.collectionName = scope.collectionName || i18n.get('common.items');
+        scope.isModal = modalEl.length>0;
+        scope.isLoadingModelsNotInCollection = false;
+        scope.hasFetchedModelsNotInCollection = false;
+        scope.isLoadingModelsNotInCollection = false;
+        scope.hasFetchedModelsNotInCollection = false;
+
+        var throttledScrollFn = _.throttle(function () {
+
+          var currentScrollPos = scrollEl.scrollTop();
+
+          if (currentScrollPos > affixOffset) {
+            if (currentScrollPos < lastScrollYPos) {
+              var newTopVal = currentScrollPos - affixOffset;
+              newTopVal = newTopVal<0?0:newTopVal;
+              el.css('top', newTopVal);
+              el.css('opacity', 1);
+              isSticked = true;
+            } else {
+              el.css('opacity', 0);
+              el.css('top', 0);
+              isSticked = false;
+            }
+          } else {
+            el.css('top', 0);
+            el.css('opacity', 1);
+            isSticked = false;
+          }
+
+          lastScrollYPos = currentScrollPos;
+        },10);
+
+        var loadItemsNotInCollection = function(){
+          if(scope.hasFetchedModelsNotInCollection){
+            return;
+          }
+          var selectedNotInCollection = [];
+          scope.selectable.getSelected().each(function(model){
+            if(!model.selectable.isInCollection && !scope.getModelAttribute(model)){
+              selectedNotInCollection.push(model);
+            }
+          });
+
+          if(selectedNotInCollection.length === 0){
+            return;
+          }
+
+          var Collection = scope.collection.constructor.extend({
+            filterableOptions: function(){
+              return {
+                filterDefinition: function () {
+                  var filter = new window.mCAP.Filter(),
+                    filters = [];
+
+                  selectedNotInCollection.forEach(function(model){
+                    if(model.id){
+                      filters.push(
+                        filter.string(model.idAttribute, model.id)
+                      );
+                    }
+                  });
+
+                  return filter.or(filters);
+                }
+              };
+            }
+          });
+          var collection = new Collection();
+          collection.url = scope.collection.url();
+
+          scope.isLoadingModelsNotInCollection = true;
+
+          collection.fetch().then(function(collection){
+            scope.hasFetchedModelsNotInCollection = true;
+            var selected = scope.selectable.getSelected();
+            collection.each(function(model){
+              selected.get(model.id).set(model.toJSON());
+            });
+
+            var deletedUuids = _.difference(_.pluck(selectedNotInCollection,'id'), collection.pluck('uuid'));
+
+            deletedUuids.forEach(function(id){
+              selected.get(id).selectable.isDeletedItem = true;
+            });
+
+            scope.isLoadingModelsNotInCollection = false;
+          });
+        };
+
+        var showSelected = function(){
+          canShowSelected = true;
+          loadItemsNotInCollection();
+          setTimeout(function(){
+            var height;
+            if(scope.isModal){
+              height = modalEl.height() + (modalEl.offset().top - el.find('.selected-items').offset().top) + 25;
+              modalEl.css('overflow', 'hidden');
+            } else {
+              height = angular.element($window).height()-el.find('.selected-items').offset().top + scrollEl.scrollTop() - 25;
+              bodyEl.css('overflow', 'hidden');
+            }
+
+            el.find('.selected-items').css('height',height);
+            el.find('.selected-items').css('bottom',height*-1);
+          });
+        };
+
+        var hideSelected = function(){
+          if(scope.isModal){
+            modalEl.css('overflow', 'auto');
+          } else {
+            bodyEl.css('overflow', 'inherit');
+          }
+          canShowSelected = false;
+        };
+
+        scope.canShowSelected = function(){
+          return scope.selectable && canShowSelected && scope.selectedAmount>0;
+        };
+
+        scope.unSelect = function(model){
+          model.selectable.unSelect();
+        };
+
+        scope.toggleSelectAll = function(){
+          scope.selectable.toggleSelectAll();
+        };
+
+        scope.getTotalAmount = function(){
+          if(scope.collection.filterable && scope.collection.filterable.getTotalAmount()){
+            return scope.collection.filterable.getTotalAmount();
+          } else {
+            return scope.collection.length;
+          }
+        };
+
+        scope.toggleShowSelected = function(){
+          if( canShowSelected ){
+            hideSelected();
+          } else {
+            showSelected();
+          }
+        };
+
+        scope.getModelAttribute = function(model){
+          if(scope.nameAttribute){
+            var modelAttr = model.get(scope.nameAttribute);
+
+            if(scope.nameI18nPrefix || scope.nameI18nSuffix){
+              var i18nPrefix = scope.nameI18nPrefix || '',
+                  i18nSuffix = scope.nameI18nSuffix || '';
+
+              return i18n.get(i18nPrefix + '.' + modelAttr + '.' + i18nSuffix);
+            } else if(angular.isDefined(scope.localizeName)){
+              return i18n.localize(modelAttr);
+            } else {
+              return modelAttr;
+            }
+          } else {
+            return scope.nameFn({item: model});
+          }
+        };
+
+        var init = function(){
+          scope.selectable = scope.collection.selectable;
+          if (scope.isModal) {
+            //element in modal
+            scrollEl = modalEl;
+          }
+          else {
+            //element in window
+            scrollEl = angular.element($window);
+          }
+
+          if(!affixOffset){
+            if(scope.isModal){
+              affixOffset = 73;
+            } else {
+              affixOffset = 35;
+            }
+          }
+
+          // Register scroll callback
+          scrollEl.on('scroll', throttledScrollFn);
+
+          // Deregister scroll callback if scope is destroyed
+          scope.$on('$destroy', function () {
+            scrollEl.off('scroll', throttledScrollFn);
+          });
+
+        };
+
+        $transclude(function (clone) {
+          if (clone && clone.length > 0) {
+            el.addClass('has-extra-content');
+          }
+        });
+
+        scope.$watch(function(){
+          if(scope.selectable){
+            return scope.selectable.getSelected().length;
+          } else {
+            return 0;
+          }
+        }, function(val){
+          scope.selectedAmount = val;
+          if(val < 1){
+            hideSelected();
+          }
+        });
+
+        scope.$watch('collection', function(collection){
+          if(collection && collection instanceof MCAPCollection){
+            init();
+          }
+        });
       }
     };
   })
