@@ -1,8 +1,5 @@
 node_modules
-dist
 .tmp
 .sass-cache
 .DS_Store
 .idea
-/test-coverage
-test-results.xml

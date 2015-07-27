@@ -59,3 +59,56 @@
     }
   }
 }
+
+.modal {
+  div[mw-option-group] {
+
+    .mw-option-group {
+      border: none;
+      border-bottom: 1px solid #eee;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+
+    &:last-of-type {
+      .mw-option-group {
+        border: none !important;
+      }
+    }
+  }
+
+  @media (max-width: $screen-xs) {
+    .mw-option-group {
+      .mw-radio {
+        border: none;
+        border-radius: 0;
+        position: absolute;
+        width: 10px;
+        height: 100%;
+
+        &:after {
+          content: "\f054";
+          font-family: FontAwesome;
+          top: 26%;
+          position: absolute;
+          font-size: 20px;
+          left: -2px;
+          color: $brand-primary;
+          opacity: 0;
+          @include single-transition(all, 0.4s, cubic-bezier(.36, -0.21, .25, 1.33));
+        }
+
+        &.active:after {
+          opacity: 1;
+          left: 2px;
+        }
+
+        .state-indicator {
+          top: -8px;
+          border-radius: 0;
+          background: none;
+        }
+      }
+    }
+  }
+}
