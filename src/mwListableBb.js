@@ -434,7 +434,7 @@ angular.module('mwListableBb', [])
         nameI18nSuffix: '@'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHead.html',
+      templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
         var scrollEl,
           bodyEl = angular.element('body'),
