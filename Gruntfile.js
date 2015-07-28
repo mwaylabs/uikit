@@ -16,10 +16,9 @@ module.exports = function (grunt) {
     regarde: {
       all: {
         files: [
-          'src/**/*.js',
-          'styles/**/*.scss'
+          'src/**/*.js'
         ],
-        tasks: ['default']
+        tasks: ['process']
       }
     },
     jshint: {
@@ -35,7 +34,7 @@ module.exports = function (grunt) {
       dist: {
         src: ['src/mwUI.js', 'src/**/*.js', '.tmp/templates.js'],
         dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js',
-      },
+      }
     },
     uglify: {
       js : {
@@ -54,7 +53,7 @@ module.exports = function (grunt) {
             '<%= uikit.dist %>/<%= uikit.fileName %>.js': ['<%= uikit.dist %>/<%= uikit.fileName %>.js']
           }
         ]
-      },
+      }
     },
     ngtemplates: {
       all: {
@@ -82,6 +81,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('watch', ['regarde']);
-  grunt.registerTask('default', ['jshint', 'ngtemplates:all', 'concat', 'ngAnnotate:dist', 'uglify', 'clean']);
+  grunt.registerTask('process', ['ngtemplates:all', 'concat', 'ngAnnotate:dist']);
+  grunt.registerTask('build', ['jshint', 'test', 'process', 'uglify', 'clean']);
   grunt.registerTask('test', ['karma']);
 };
