@@ -30,5 +30,8 @@
     "phantomjs-polyfill": "0.0.1",
     "showdown": "~0.3.4",
     "underscore": "~1.8.3"
+  },
+  "scripts": {
+    "test": "grunt test"
   }
 }
