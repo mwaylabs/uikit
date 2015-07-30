@@ -64,7 +64,7 @@ angular.module('mwNav', [])
       return {
         transclude: true,
         replace: true,
-        templateUrl: 'modules/ui/templates/mwNav/mwNavbar.html',
+        templateUrl: 'uikit/templates/mwNav/mwNavbar.html',
         controller: function () {
           this.isActive = function (path, exact) {
             if(!path) {
@@ -99,7 +99,7 @@ angular.module('mwNav', [])
       return {
         transclude: true,
         replace: true,
-        templateUrl: 'modules/ui/templates/mwNav/mwNavbarBrand.html'
+        templateUrl: 'uikit/templates/mwNav/mwNavbarBrand.html'
       };
     })
 

@@ -194,7 +194,7 @@ angular.module('mwListable', [])
     .directive('mwListableFooter', function(Loading) {
       return {
         require: '^mwListable',
-        templateUrl: 'modules/ui/templates/mwListable/mwListableFooter.html',
+        templateUrl: 'uikit/templates/mwListable/mwListableFooter.html',
         link: function(scope, elm, attr, mwListableCtrl) {
           scope.Loading = Loading;
           scope.columns = mwListableCtrl.getColumns();
@@ -225,7 +225,7 @@ angular.module('mwListable', [])
         },
         transclude: true,
         replace:true,
-        templateUrl: 'modules/ui/templates/mwListable/mwListableHeader.html',
+        templateUrl: 'uikit/templates/mwListable/mwListableHeader.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           var ascending = '+',
               descending = '-';
@@ -275,7 +275,7 @@ angular.module('mwListable', [])
           mwDisabled: '=',
           item: '='
         },
-        templateUrl: 'modules/ui/templates/mwListable/mwListableColumnCheckbox.html',
+        templateUrl: 'uikit/templates/mwListable/mwListableColumnCheckbox.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
           scope.radio = mwListableCtrl.isRadio();
@@ -305,7 +305,7 @@ angular.module('mwListable', [])
         restrict: 'A',
         require: '^mwListable',
         scope: true,
-        templateUrl: 'modules/ui/templates/mwListable/mwListableHeaderCheckbox.html',
+        templateUrl: 'uikit/templates/mwListable/mwListableHeaderCheckbox.html',
         link: function (scope, elm, attr, mwListableCtrl) {
           scope.radio = mwListableCtrl.isRadio();
           scope.filterable = mwListableCtrl.getFilterable();

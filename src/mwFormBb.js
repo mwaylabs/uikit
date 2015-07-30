@@ -15,15 +15,15 @@ angular.module('mwFormBb', [])
         mwRequired: '=',
         disabledCollection: '='
       },
-      templateUrl: 'modules/ui/templates/mwFormBb/mwFormMultiSelect.html',
+      templateUrl: 'uikit/templates/mwFormBb/mwFormMultiSelect.html',
       link: function (scope, el, attr, form) {
         scope.optionsKey = scope.mwOptionsKey || 'key';
 
-        if (!scope.collection instanceof window.mCAP.Collection) {
+        if (!(scope.collection instanceof window.mCAP.Collection)) {
           throw new Error('mwFormMultiSelect: collection attribute has to be a collection');
         }
 
-        if (scope.disabledCollection && !scope.disabledCollection instanceof window.mCAP.Collection) {
+        if (scope.disabledCollection && !(scope.disabledCollection instanceof window.mCAP.Collection)) {
           throw new Error('mwFormMultiSelect: disabledCollection attribuet has to be a collection');
         }
 
@@ -89,7 +89,7 @@ angular.module('mwFormBb', [])
         mwDisabled: '=',
         name: '@'
       },
-      templateUrl: 'modules/ui/templates/mwFormBb/mwFormRadioGroup.html',
+      templateUrl: 'uikit/templates/mwFormBb/mwFormRadioGroup.html',
       link: function (scope) {
         scope.optionsKey = scope.mwOptionsKey || 'key';
 
@@ -118,7 +118,7 @@ angular.module('mwFormBb', [])
         mwAutoFetch: '=',
         name: '@'
       },
-      templateUrl: 'modules/ui/templates/mwFormBb/mwFormSelect.html',
+      templateUrl: 'uikit/templates/mwFormBb/mwFormSelect.html',
       link: function (scope) {
         scope.optionsKey = scope.mwOptionsKey || 'key';
 
@@ -168,7 +168,7 @@ angular.module('mwFormBb', [])
         name: '@hiddenFormElementName',
         placeholder: '@'
       },
-      templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBoxes.html',
+      templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBoxes.html',
       link: function (scope) {
 
         //init collection with given values or one empty model if no data is provided
@@ -187,7 +187,7 @@ angular.module('mwFormBb', [])
         //remove the specific model or the last (empty) one if model is not found
         scope.remove = function (model) {
           correctIds();
-          if (!model.id) {
+          if (_.isUndefined(model.id)) {
             scope.privateCollection.pop();
           }
           scope.privateCollection.remove(scope.privateCollection.get(model.id));
@@ -213,7 +213,8 @@ angular.module('mwFormBb', [])
         scope.change = function () {
           scope.selectedCollection.reset(scope.privateCollection.models, {silent: true});
           scope.selectedCollection.each(function (model) {
-            if (!model.id) {
+
+            if (_.isUndefined(model.id)) {
               scope.selectedCollection.pop();
             }
           });
@@ -246,6 +247,6 @@ angular.module('mwFormBb', [])
   .directive('mwMultiSelectBox', function () {
     return {
       restrict: 'A',
-      templateUrl: 'modules/ui/templates/mwFormBb/mwMultiSelectBox.html'
+      templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBox.html'
     };
   });

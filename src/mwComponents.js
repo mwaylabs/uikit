@@ -24,7 +24,7 @@ angular.module('mwComponents', [])
     return {
       restrict: 'A',
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwPanel.html',
+      templateUrl: 'uikit/templates/mwComponents/mwPanel.html',
     };
   })
 
@@ -62,7 +62,7 @@ angular.module('mwComponents', [])
         isReversed: '='
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwSortIndicator.html'
+      templateUrl: 'uikit/templates/mwComponents/mwSortIndicator.html'
     };
   })
 
@@ -98,7 +98,7 @@ angular.module('mwComponents', [])
         type: '@mwAlert'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwAlert.html'
+      templateUrl: 'uikit/templates/mwComponents/mwAlert.html'
     };
   })
 
@@ -133,7 +133,7 @@ angular.module('mwComponents', [])
         warningCondition: '=',
         mwBreadCrumbs: '='
       },
-      templateUrl: 'modules/ui/templates/mwComponents/mwHeader.html',
+      templateUrl: 'uikit/templates/mwComponents/mwHeader.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
         $rootScope.siteTitleDetails = scope.title;
 
@@ -318,7 +318,7 @@ angular.module('mwComponents', [])
         property: '@'
 //        loading: '='
       },
-      templateUrl: 'modules/ui/templates/mwComponents/mwFilterableSearch.html',
+      templateUrl: 'uikit/templates/mwComponents/mwFilterableSearch.html',
       link: function (scope, elm) {
         $animate.enabled(false, elm.find('.search-indicator'));
         scope.model = scope.filterable.properties[scope.property];
@@ -546,7 +546,7 @@ angular.module('mwComponents', [])
         mwDisabled: '='
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwOptionGroup.html',
+      templateUrl: 'uikit/templates/mwComponents/mwOptionGroup.html',
       link: function (scope, el) {
         scope.randomId = _.uniqueId('option_group_');
         el.find('input').attr('id', scope.randomId);
@@ -576,7 +576,7 @@ angular.module('mwComponents', [])
         mwChange: '&'
       },
       replace: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwToggle.html',
+      templateUrl: 'uikit/templates/mwComponents/mwToggle.html',
       link: function (scope) {
         scope.toggle = function (value) {
           if (scope.mwModel !== value) {
@@ -615,7 +615,7 @@ angular.module('mwComponents', [])
       },
       transclude: true,
       replace: true,
-      templateUrl: 'modules/ui/templates/mwComponents/mwTimelineFieldset.html',
+      templateUrl: 'uikit/templates/mwComponents/mwTimelineFieldset.html',
       controller: function ($scope) {
         $scope.entries = [];
         this.register = function (entry) {
@@ -826,7 +826,7 @@ angular.module('mwComponents', [])
         length: '=',
         markdown: '='
       },
-      templateUrl: 'modules/ui/templates/mwComponents/mwTextCollapse.html',
+      templateUrl: 'uikit/templates/mwComponents/mwTextCollapse.html',
       link: function (scope) {
 
         // set default length
@@ -974,7 +974,7 @@ angular.module('mwComponents', [])
         mwCollapsable: '=',
         title: '@mwTitle'
       },
-      templateUrl: 'modules/ui/templates/mwComponents/mwCollapsable.html',
+      templateUrl: 'uikit/templates/mwComponents/mwCollapsable.html',
       link: function (scope, elm) {
         scope.viewModel = {};
         scope.viewModel.collapsed = false;
@@ -999,7 +999,7 @@ angular.module('mwComponents', [])
       scope: {
         mwModel: '=mwMarkdownPreview'
       },
-      templateUrl: 'modules/ui/templates/mwComponents/mwMarkdownPreview.html',
+      templateUrl: 'uikit/templates/mwComponents/mwMarkdownPreview.html',
       link: function (scope, elm) {
         elm.addClass('mw-markdown-preview');
       }
@@ -1027,5 +1027,3 @@ angular.module('mwComponents', [])
       }
     };
   }]);
-
-

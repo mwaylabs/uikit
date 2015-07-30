@@ -23,7 +23,7 @@ angular.module('mwSidebar', [])
         property: '@',
         persist: '='
       },
-      templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarSelect.html',
+      templateUrl: 'uikit/templates/mwSidebar/mwSidebarSelect.html',
       link: function (scope) {
         scope.$watch('filterable', function () {
           if (scope.filterable) {
@@ -53,7 +53,7 @@ angular.module('mwSidebar', [])
     return {
       replace: true,
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarPanel.html',
+      templateUrl: 'uikit/templates/mwSidebar/mwSidebarPanel.html',
       link: function (scope, el, attr) {
         var offsetTop = angular.element(el).offset().top,
           newOffset;
@@ -130,7 +130,7 @@ angular.module('mwSidebar', [])
   .directive('mwSidebarFilters', function () {
     return {
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwSidebar/mwSidebarFilters.html',
+      templateUrl: 'uikit/templates/mwSidebar/mwSidebarFilters.html',
       link: function (scope) {
         scope.resetFiltersOnClose = function () {
           if (!scope.toggleFilters) {
