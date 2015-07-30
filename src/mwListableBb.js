@@ -154,7 +154,7 @@ angular.module('mwListableBb', [])
   .directive('mwListableFooterBb', function (Loading) {
     return {
       require: '^mwListableBb',
-      templateUrl: 'modules/ui/templates/mwListableBb/mwListableFooter.html',
+      templateUrl: 'uikit/templates/mwListableBb/mwListableFooter.html',
       link: function (scope, elm, attr, mwListableCtrl) {
         scope.Loading = Loading;
         scope.collection = mwListableCtrl.getCollection();
@@ -184,7 +184,7 @@ angular.module('mwListableBb', [])
       },
       transclude: true,
       replace: true,
-      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeader.html',
+      templateUrl: 'uikit/templates/mwListableBb/mwListableHeader.html',
       link: function (scope, elm, attr, mwListableCtrl) {
         var ascending = '+',
           descending = '-';
@@ -237,7 +237,7 @@ angular.module('mwListableBb', [])
       scope: {
         item: '='
       },
-      templateUrl: 'modules/ui/templates/mwListableBb/mwListableColumnCheckbox.html',
+      templateUrl: 'uikit/templates/mwListableBb/mwListableColumnCheckbox.html',
       link: function (scope, elm, attr, mwListableCtrl) {
         scope.isSingleSelection = mwListableCtrl.isSingleSelection();
         scope.click = function (item, $event) {
@@ -274,7 +274,7 @@ angular.module('mwListableBb', [])
       restrict: 'A',
       require: '^mwListableBb',
       scope: true,
-      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHeaderCheckbox.html',
+      templateUrl: 'uikit/templates/mwListableBb/mwListableHeaderCheckbox.html',
       link: function (scope, elm, attr, mwListableCtrl) {
         scope.isSingleSelection = mwListableCtrl.isSingleSelection();
         scope.collection = mwListableCtrl.getCollection();
@@ -434,7 +434,7 @@ angular.module('mwListableBb', [])
         nameI18nSuffix: '@'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwListableBb/mwListableHead.html',
+      templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
         var scrollEl,
           bodyEl = angular.element('body'),

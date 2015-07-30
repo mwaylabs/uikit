@@ -22,7 +22,7 @@ angular.module('mwComponentsBb', [])
         customUrlParameter: '@',
         mwDisabled: '='
       },
-      templateUrl: 'modules/ui/templates/mwComponentsBb/mwFilterableSearch.html',
+      templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
       link: function (scope, elm) {
         $animate.enabled(false, elm.find('.search-indicator'));
 
@@ -118,7 +118,7 @@ angular.module('mwComponentsBb', [])
         buttonText: '@'
       },
       transclude: true,
-      templateUrl: 'modules/ui/templates/mwComponentsBb/mwEmptyStateBb.html',
+      templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
       link: function(scope){
         scope.showEmptyState = function(){
           return !scope.collection || (scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection));
@@ -137,7 +137,7 @@ angular.module('mwComponentsBb', [])
         versionNumberKey: '@',
         url: '@'
       },
-      templateUrl: 'modules/ui/templates/mwComponentsBb/mwVersionSelector.html',
+      templateUrl: 'uikit/templates/mwComponentsBb/mwVersionSelector.html',
       link: function(scope){
         scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
         scope.getUrl = function(uuid){

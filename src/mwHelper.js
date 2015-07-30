@@ -172,7 +172,7 @@ angular.module('mwHelper', [])
       link: function (scope) {
 
         var confirmationModal = Modal.create({
-          templateUrl: 'modules/ui/templates/mwForm/mwLeaveConfirmation.html',
+          templateUrl: 'uikit/templates/mwForm/mwLeaveConfirmation.html',
           scope: scope
         });
 
