@@ -63,6 +63,7 @@ angular.module('mwToast', [])
           type: options.type || 'default',
           visible: true,
           message: message,
+          title: options.title,
           autoHide: options.autoHide || false,
           autoHideTime: options.autoHideTime || 5000,
           autoHideCallback: options.autoHideCallback,
@@ -70,7 +71,8 @@ angular.module('mwToast', [])
           button: {
             title: options.button.title,
             link: options.button.link,
-            isLink: !!options.button.link,
+            target: options.button.target,
+            isLink: options.button.isLink || !!options.button.link,
             action: options.button.action
           },
           replaceMessage: replaceMessage,

@@ -16,7 +16,8 @@ module.exports = function (grunt) {
     regarde: {
       all: {
         files: [
-          'src/**/*.js'
+          'src/**/*.js',
+          'src/**/*.html'
         ],
         tasks: ['process']
       }

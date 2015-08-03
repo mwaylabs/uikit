@@ -6147,6 +6147,7 @@ angular.module('mwToast', [])
           type: options.type || 'default',
           visible: true,
           message: message,
+          title: options.title,
           autoHide: options.autoHide || false,
           autoHideTime: options.autoHideTime || 5000,
           autoHideCallback: options.autoHideCallback,
@@ -6154,7 +6155,8 @@ angular.module('mwToast', [])
           button: {
             title: options.button.title,
             link: options.button.link,
-            isLink: !!options.button.link,
+            target: options.button.target,
+            isLink: options.button.isLink || !!options.button.link,
             action: options.button.action
           },
           replaceMessage: replaceMessage,
@@ -6772,6 +6774,6 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwToast/mwToasts.html',
-    "<div class=\"message messages-list\"><div class=\"content\" ng-model=\"bootstrapClass\"><ul ng-if=\"toasts.length > 0\"><li ng-repeat=\"toast in toasts\" class=\"alert message-item alert-{{toast.type}}\"><strong ng-if=\"toast.title\">{{toast.title}}</strong><div class=\"holder\"><span ng-if=\"!toast.isHtmlMessage\">{{toast.message}}</span> <span ng-if=\"toast.isHtmlMessage\" ng-bind-html=\"toast.message\"></span> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.action && !toast.button.link\" href=\"#\"><span ng-click=\"hideToast(toast); toast.button.action()\" mw-prevent-default=\"click\">{{toast.button.title}}</span></a> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.link\" ng-href=\"toast.button.link\"><span>{{toast.button.title}}</span></a></div><div class=\"action-button btn btn-default btn-xs margin-top-5\" ng-if=\"toast.button && !toast.button.link && toast.button.action\"><div ng-click=\"hideToast(toast); toast.button.action()\">{{toast.button.title}}</div></div><div class=\"closer\" ng-click=\"hideToast(toast.id)\"><i class=\"rln-icon close_cross\"></i></div></li></ul></div></div>"
+    "<div class=\"message messages-list mw-toasts\"><div class=\"content\" ng-model=\"bootstrapClass\"><ul ng-if=\"toasts.length > 0\"><li ng-repeat=\"toast in toasts\" class=\"alert message-item alert-{{toast.type}}\"><strong ng-if=\"toast.title\">{{toast.title}}</strong><div class=\"holder\"><span ng-if=\"!toast.isHtmlMessage\">{{toast.message}}</span> <span ng-if=\"toast.isHtmlMessage\" ng-bind-html=\"toast.message\"></span> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.action && !toast.button.link\" href=\"#\"><span ng-click=\"hideToast(toast); toast.button.action()\" mw-prevent-default=\"click\">{{toast.button.title}}</span></a> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.link\" ng-href=\"{{toast.button.link}}\" target=\"{{toast.button.target}}\"><span>{{toast.button.title}}</span></a></div><div class=\"action-button btn btn-default btn-xs margin-top-5\" ng-if=\"toast.button && !toast.button.isLink && toast.button.action\"><div ng-click=\"hideToast(toast); toast.button.action()\">{{toast.button.title}}</div></div><div class=\"closer\" ng-click=\"hideToast(toast.id)\"><i class=\"rln-icon close_cross\"></i></div></li></ul></div></div>"
   );
 }]);
