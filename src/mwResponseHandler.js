@@ -238,7 +238,7 @@ angular.module('mwResponseHandler', [])
             return response;
           });
         } else {
-          return response;
+          return $q.when(response);
         }
       };
 
