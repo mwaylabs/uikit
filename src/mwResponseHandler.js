@@ -247,7 +247,9 @@ angular.module('mwResponseHandler', [])
           return handle(response, false);
         },
         responseError: function (response) {
-          return handle(response, true);
+          return handle(response, true).then(function(){
+            return $q.reject(response);
+          });
         }
       };
     });
