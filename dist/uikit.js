@@ -5432,13 +5432,15 @@ angular.module('mwResponseHandler', [])
       });
     };
 
-    this.$get = ['$injector', function ($injector) {
+    this.$get = ['$injector', '$q', function ($injector, $q) {
 
       var _executeCallback = function (callbacks, response) {
+        var promises = [];
         callbacks.forEach(function (callback) {
           callback = angular.isString(callback) ? $injector.get(callback) : callback;
-          callback.call(this, response);
+          promises.push(callback.call(this, response));
         }, this);
+        return $q.all(promises);
       };
 
       var _getCallbacks = function(handler, statusCode, isError){
@@ -5482,7 +5484,7 @@ angular.module('mwResponseHandler', [])
           if (handler) {
             var callbacks = _getCallbacks(handler, statusCode, isError);
             if(callbacks){
-              _executeCallback(callbacks, response);
+              return _executeCallback(callbacks, response);
             }
           }
         }
@@ -5493,14 +5495,24 @@ angular.module('mwResponseHandler', [])
   .config(['$provide', '$httpProvider', function ($provide, $httpProvider) {
 
     $provide.factory('requestInterceptorForHandling', ['$q', 'ResponseHandler', function ($q, ResponseHandler) {
+
+      var handle = function(response, isError){
+        var handler = ResponseHandler.handle(response, isError);
+        if(handler){
+          return handler.then(function(){
+            return response;
+          });
+        } else {
+          return response;
+        }
+      };
+
       return {
         response: function (response) {
-          ResponseHandler.handle(response, false);
-          return response;
+          return handle(response, false);
         },
         responseError: function (response) {
-          ResponseHandler.handle(response, true);
-          return $q.reject(response);
+          return handle(response, true);
         }
       };
     }]);
