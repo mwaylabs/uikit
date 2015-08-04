@@ -535,7 +535,7 @@ angular.module('mwListableBb', [])
           });
         };
 
-        var showSelected = function(){
+        scope.showSelected = function(){
           canShowSelected = true;
           loadItemsNotInCollection();
           setTimeout(function(){
@@ -553,7 +553,7 @@ angular.module('mwListableBb', [])
           });
         };
 
-        var hideSelected = function(){
+        scope.hideSelected = function(){
           if(scope.isModal){
             modalEl.css('overflow', 'auto');
           } else {
@@ -584,9 +584,9 @@ angular.module('mwListableBb', [])
 
         scope.toggleShowSelected = function(){
           if( canShowSelected ){
-            hideSelected();
+            scope.hideSelected();
           } else {
-            showSelected();
+            scope.showSelected();
           }
         };
 
@@ -653,7 +653,7 @@ angular.module('mwListableBb', [])
         }, function(val){
           scope.selectedAmount = val;
           if(val < 1){
-            hideSelected();
+            scope.hideSelected();
           }
         });
 
