@@ -1,11 +1,3 @@
-<style>
-
-
-  .listable-amount {
-    display: none;
-  }
-
-</style>
 <div class="mw-listable-header clearfix" ng-class="{'show-selected':canShowSelected()}">
   <div class="selection-controller" ng-if="selectable">
     <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
@@ -63,5 +55,6 @@
         </div>
       </div>
     </div>
+    <div class="close-pane" ng-click="hideSelected()"></div>
   </div>
 </div>
