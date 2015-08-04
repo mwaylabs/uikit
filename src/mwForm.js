@@ -323,14 +323,14 @@
                 if (badge.toLowerCase().indexOf('ios') > -1) {
                   type = 'ios';
                 }
-                if (badge.toLowerCase().indexOf('safe') > -1) {
-                  type = 'safe';
+                if (badge.toLowerCase().indexOf('knox') > -1) {
+                  type = 'knox';
                 }
-                if (badge.toLowerCase().indexOf('-safe-') > -1) {
-                  badge = 'SAFE';
+                if (badge.toLowerCase().indexOf('-knox-') > -1) {
+                  badge = 'KNOX';
                   type = 'notsafe';
                 }
-                if (badge.toLowerCase().indexOf('safe') > -1 &&
+                if (badge.toLowerCase().indexOf('knox') > -1 &&
                   badge.toLowerCase().indexOf('android') > -1) {
                   type = 'multi';
                 }
