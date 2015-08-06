@@ -31,20 +31,20 @@ angular.module('mwModal', [])
 
     var body = $document.find('body').eq(0);
 
-    var Modal = function (modalOptions) {
+    var Modal = function (modalOptions, bootStrapModalOptions) {
 
-        var _id = modalOptions.templateUrl,
-            _scope = modalOptions.scope || $rootScope,
-            _scopeAttributes = modalOptions.scopeAttributes || {},
-            _controller = modalOptions.controller,
-            _class = modalOptions.class || '',
-            _holderEl = modalOptions.el?modalOptions.el:'body .module-page',
-            _modalOpened = false,
-            _self = this,
-            _modal,
-            _usedScope,
-            _bootstrapModal;
-
+      var _id = modalOptions.templateUrl,
+        _scope = modalOptions.scope || $rootScope,
+        _scopeAttributes = modalOptions.scopeAttributes || {},
+        _controller = modalOptions.controller,
+        _class = modalOptions.class || '',
+        _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
+        _bootStrapModalOptions = bootStrapModalOptions || {},
+        _modalOpened = false,
+        _self = this,
+        _modal,
+        _usedScope,
+        _bootstrapModal;
 
       var _getTemplate = function () {
         if (!_id) {
@@ -59,12 +59,12 @@ angular.module('mwModal', [])
         });
       };
 
-      var _destroyOnRouteChange = function(){
+      var _destroyOnRouteChange = function () {
         var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
-          if(_bootstrapModal && _modalOpened){
+          if (_bootstrapModal && _modalOpened) {
             ev.preventDefault();
-            _self.hide().then(function(){
-              document.location.href=newUrl;
+            _self.hide().then(function () {
+              document.location.href = newUrl;
               changeLocationOff();
             });
           } else {
@@ -94,6 +94,19 @@ angular.module('mwModal', [])
             _modal.addClass('mw-modal');
             _modal.addClass(_class);
             _bootstrapModal = _modal.find('.modal');
+            _bootStrapModalOptions.show = false;
+            _bootstrapModal.modal(_bootStrapModalOptions);
+
+            // We need to overwrite the the original backdrop method with our own one
+            // to make it possible to define the element where the backdrop should be placed
+            // This enables us a backdrop per modal because we are appending the backdrop to the modal
+            // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
+            /* jshint ignore:start */
+            _bootstrapModal.data()['bs.modal'].backdrop = function(callback){
+              $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
+            };
+            /* jshint ignore:end */
+            
             _bindModalCloseEvent();
             _destroyOnRouteChange();
             dfd.resolve();
@@ -193,7 +206,7 @@ angular.module('mwModal', [])
           _modalOpened = false;
         }
 
-        if(_usedScope){
+        if (_usedScope) {
           _usedScope.$destroy();
         }
       };
@@ -229,25 +242,25 @@ angular.module('mwModal', [])
       return new Modal(modalOptions);
     };
 
-    this.prepare = function(modalOptions){
-      var ModalDefinition = function(){
-        return new Modal(modalOptions);
+    this.prepare = function (modalOptions, bootstrapModalOptions) {
+      var ModalDefinition = function () {
+        return new Modal(modalOptions, bootstrapModalOptions);
       };
       return ModalDefinition;
     };
   })
 
-  .provider('mwModalTmpl', function(){
+  .provider('mwModalTmpl', function () {
 
     var _logoPath;
 
-    this.setLogoPath = function(path){
+    this.setLogoPath = function (path) {
       _logoPath = path;
     };
 
-    this.$get = function(){
-      return{
-        getLogoPath: function(){
+    this.$get = function () {
+      return {
+        getLogoPath: function () {
           return _logoPath;
         }
       };
@@ -381,3 +394,53 @@ angular.module('mwModal', [])
       }
     };
   });
+
+/* jshint ignore:start */
+// This is the orginal bootstrap backdrop implementation with the only
+// modification that the element can be defined as parameter where the backdrop should be placed
+var $bootstrapBackdrop = function (callback, holderEl) {
+  var animate = this.$element.hasClass('fade') ? 'fade' : '';
+
+  if (this.isShown && this.options.backdrop) {
+    var doAnimate = $.support.transition && animate;
+
+    this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+      .appendTo(holderEl);
+
+    this.$element.on('click.dismiss.modal', $.proxy(function (e) {
+      //if (e.target !== e.currentTarget) {
+      //  return;
+      //}
+      this.options.backdrop == 'static'
+        ? this.$element[0].focus.call(this.$element[0])
+        : this.hide.call(this)
+    }, this));
+
+    if (doAnimate) {
+      this.$backdrop[0].offsetWidth;
+    } // force reflow
+
+    this.$backdrop.addClass('in');
+
+    if (!callback) return;
+
+    doAnimate ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (!this.isShown && this.$backdrop) {
+    this.$backdrop.removeClass('in');
+
+    $.support.transition && this.$element.hasClass('fade') ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (callback) {
+    callback()
+  }
+};
+/* jshint ignore:end */
