@@ -106,7 +106,7 @@ angular.module('mwModal', [])
               $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
             };
             /* jshint ignore:end */
-            
+
             _bindModalCloseEvent();
             _destroyOnRouteChange();
             dfd.resolve();
@@ -407,10 +407,10 @@ var $bootstrapBackdrop = function (callback, holderEl) {
     this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
       .appendTo(holderEl);
 
-    this.$element.on('click.dismiss.modal', $.proxy(function (e) {
-      //if (e.target !== e.currentTarget) {
-      //  return;
-      //}
+    this.$backdrop.on('click', $.proxy(function (e) {
+      if (e.target !== e.currentTarget) {
+        return;
+      }
       this.options.backdrop == 'static'
         ? this.$element[0].focus.call(this.$element[0])
         : this.hide.call(this)
