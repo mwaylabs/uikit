@@ -235,7 +235,12 @@ angular.module('mwResponseHandler', [])
         var handler = ResponseHandler.handle(response, isError);
         if(handler){
           return handler.then(function(handlerResponse){
-            return handlerResponse[0];
+            if(handlerResponse && handlerResponse[0]){
+              return handlerResponse[0];
+            } else {
+              return response;
+            }
+
           });
         } else if(isError){
           return $q.reject(response);
