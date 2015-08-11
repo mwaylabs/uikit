@@ -2669,7 +2669,7 @@ angular.module('mwHelper', [])
         this.setFocus = function(id){
           var inputField = _.findWhere(_registeredFocusFields,{id:id});
           if(this.getFocusedField() && this.getFocusedField().id !== id){
-            console.warn('There can be only one focused field');
+            throw new Error('There can be only one focused field');
           }
           if(inputField){
             inputField.active = true;
@@ -2723,9 +2723,14 @@ angular.module('mwHelper', [])
           if(el.is(':focus')){
             return;
           } else {
-            mwDefaultFocusService.setFocus(id);
-            el[0].focus();
-            window.requestAnimFrame(setFocus);
+            try{
+              mwDefaultFocusService.setFocus(id);
+              el[0].focus();
+              window.requestAnimFrame(setFocus);
+            } catch(err){
+              console.warn(err);
+            }
+
           }
         };
 
@@ -4600,20 +4605,20 @@ angular.module('mwModal', [])
 
     var body = $document.find('body').eq(0);
 
-    var Modal = function (modalOptions) {
+    var Modal = function (modalOptions, bootStrapModalOptions) {
 
-        var _id = modalOptions.templateUrl,
-            _scope = modalOptions.scope || $rootScope,
-            _scopeAttributes = modalOptions.scopeAttributes || {},
-            _controller = modalOptions.controller,
-            _class = modalOptions.class || '',
-            _holderEl = modalOptions.el?modalOptions.el:'body .module-page',
-            _modalOpened = false,
-            _self = this,
-            _modal,
-            _usedScope,
-            _bootstrapModal;
-
+      var _id = modalOptions.templateUrl,
+        _scope = modalOptions.scope || $rootScope,
+        _scopeAttributes = modalOptions.scopeAttributes || {},
+        _controller = modalOptions.controller,
+        _class = modalOptions.class || '',
+        _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
+        _bootStrapModalOptions = bootStrapModalOptions || {},
+        _modalOpened = false,
+        _self = this,
+        _modal,
+        _usedScope,
+        _bootstrapModal;
 
       var _getTemplate = function () {
         if (!_id) {
@@ -4628,12 +4633,12 @@ angular.module('mwModal', [])
         });
       };
 
-      var _destroyOnRouteChange = function(){
+      var _destroyOnRouteChange = function () {
         var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
-          if(_bootstrapModal && _modalOpened){
+          if (_bootstrapModal && _modalOpened) {
             ev.preventDefault();
-            _self.hide().then(function(){
-              document.location.href=newUrl;
+            _self.hide().then(function () {
+              document.location.href = newUrl;
               changeLocationOff();
             });
           } else {
@@ -4663,6 +4668,19 @@ angular.module('mwModal', [])
             _modal.addClass('mw-modal');
             _modal.addClass(_class);
             _bootstrapModal = _modal.find('.modal');
+            _bootStrapModalOptions.show = false;
+            _bootstrapModal.modal(_bootStrapModalOptions);
+
+            // We need to overwrite the the original backdrop method with our own one
+            // to make it possible to define the element where the backdrop should be placed
+            // This enables us a backdrop per modal because we are appending the backdrop to the modal
+            // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
+            /* jshint ignore:start */
+            _bootstrapModal.data()['bs.modal'].backdrop = function(callback){
+              $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
+            };
+            /* jshint ignore:end */
+
             _bindModalCloseEvent();
             _destroyOnRouteChange();
             dfd.resolve();
@@ -4762,7 +4780,7 @@ angular.module('mwModal', [])
           _modalOpened = false;
         }
 
-        if(_usedScope){
+        if (_usedScope) {
           _usedScope.$destroy();
         }
       };
@@ -4798,25 +4816,25 @@ angular.module('mwModal', [])
       return new Modal(modalOptions);
     };
 
-    this.prepare = function(modalOptions){
-      var ModalDefinition = function(){
-        return new Modal(modalOptions);
+    this.prepare = function (modalOptions, bootstrapModalOptions) {
+      var ModalDefinition = function () {
+        return new Modal(modalOptions, bootstrapModalOptions);
       };
       return ModalDefinition;
     };
   }])
 
-  .provider('mwModalTmpl', function(){
+  .provider('mwModalTmpl', function () {
 
     var _logoPath;
 
-    this.setLogoPath = function(path){
+    this.setLogoPath = function (path) {
       _logoPath = path;
     };
 
-    this.$get = function(){
-      return{
-        getLogoPath: function(){
+    this.$get = function () {
+      return {
+        getLogoPath: function () {
           return _logoPath;
         }
       };
@@ -4950,6 +4968,56 @@ angular.module('mwModal', [])
       }
     };
   });
+
+/* jshint ignore:start */
+// This is the orginal bootstrap backdrop implementation with the only
+// modification that the element can be defined as parameter where the backdrop should be placed
+var $bootstrapBackdrop = function (callback, holderEl) {
+  var animate = this.$element.hasClass('fade') ? 'fade' : '';
+
+  if (this.isShown && this.options.backdrop) {
+    var doAnimate = $.support.transition && animate;
+
+    this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+      .appendTo(holderEl);
+
+    this.$backdrop.on('click', $.proxy(function (e) {
+      if (e.target !== e.currentTarget) {
+        return;
+      }
+      this.options.backdrop == 'static'
+        ? this.$element[0].focus.call(this.$element[0])
+        : this.hide.call(this)
+    }, this));
+
+    if (doAnimate) {
+      this.$backdrop[0].offsetWidth;
+    } // force reflow
+
+    this.$backdrop.addClass('in');
+
+    if (!callback) return;
+
+    doAnimate ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (!this.isShown && this.$backdrop) {
+    this.$backdrop.removeClass('in');
+
+    $.support.transition && this.$element.hasClass('fade') ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (callback) {
+    callback()
+  }
+};
+/* jshint ignore:end */
 'use strict';
 
 angular.module('mwNav', [])
@@ -5519,9 +5587,16 @@ angular.module('mwResponseHandler', [])
       var handle = function(response, isError){
         var handler = ResponseHandler.handle(response, isError);
         if(handler){
-          return handler.then(function(){
-            return response;
+          return handler.then(function(handlerResponse){
+            if(handlerResponse && handlerResponse[0]){
+              return handlerResponse[0];
+            } else {
+              return response;
+            }
+
           });
+        } else if(isError){
+          return $q.reject(response);
         } else {
           return $q.when(response);
         }
@@ -5532,9 +5607,7 @@ angular.module('mwResponseHandler', [])
           return handle(response, false);
         },
         responseError: function (response) {
-          return handle(response, true).then(function(){
-            return $q.reject(response);
-          });
+          return handle(response, true);
         }
       };
     }]);
@@ -6751,7 +6824,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwModal/mwModal.html',
-    "<div class=\"modal fade\" tabindex=\"1\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header clearfix\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div>"
+    "<div class=\"modal fade\" tabindex=\"1\" role=\"dialog\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header clearfix\" ng-if=\"title\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div>"
   );
 
 
