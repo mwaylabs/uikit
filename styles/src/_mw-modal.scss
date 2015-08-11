@@ -1,4 +1,7 @@
 .mw-modal {
+  position: relative;
+  z-index: 9999;
+
   .modal {
     height: 100%;
   }

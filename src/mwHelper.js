@@ -77,7 +77,7 @@ angular.module('mwHelper', [])
         this.setFocus = function(id){
           var inputField = _.findWhere(_registeredFocusFields,{id:id});
           if(this.getFocusedField() && this.getFocusedField().id !== id){
-            console.warn('There can be only one focused field');
+            throw new Error('There can be only one focused field');
           }
           if(inputField){
             inputField.active = true;
@@ -131,9 +131,14 @@ angular.module('mwHelper', [])
           if(el.is(':focus')){
             return;
           } else {
-            mwDefaultFocusService.setFocus(id);
-            el[0].focus();
-            window.requestAnimFrame(setFocus);
+            try{
+              mwDefaultFocusService.setFocus(id);
+              el[0].focus();
+              window.requestAnimFrame(setFocus);
+            } catch(err){
+              console.warn(err);
+            }
+
           }
         };
 
