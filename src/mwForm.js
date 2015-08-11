@@ -91,23 +91,43 @@
         scope: {
           label: '@',
           tooltip: '@',
-          hideErrors: '=',
-          validateWhenDirty: '='
+          hideErrors: '='
         },
         templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
         link: function (scope, elm, attr, ctrl) {
 
-          scope.isInvalid = function () {
-            return (ctrl && scope.elementName && ctrl[scope.elementName]) ? ctrl[scope.elementName].$invalid : false;
+          var getElementCtrl = function(){
+            if(ctrl && scope.elementName && ctrl[scope.elementName]){
+              return ctrl[scope.elementName];
+            }
+          };
+
+
+          scope.isInvalid = function() {
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$invalid : false;
           };
 
           scope.isDirty = function () {
-            return ctrl ? ctrl.$dirty : false;
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$dirty : false;
           };
 
           scope.getCurrentErrors = function(){
-            return (ctrl && ctrl[scope.elementName]) ? ctrl[scope.elementName].$error : undefined;
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$error : undefined;
           };
+
+          scope.isRequiredError = function(){
+            var elCtrl = getElementCtrl();
+            return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
+          };
+
+          scope.isRequired = function(){
+            return !!elm.find('input,select,textarea').attr('required');
+          };
+
+
         },
         controller: function ($scope) {
           var that = this;

@@ -19,6 +19,30 @@
   }
 }
 
+.mw-form-input{
+  &.form-group{
+
+    label{
+      font-weight: normal;
+    }
+
+    &.is-required{
+      label{
+        font-weight: bold;
+      }
+    }
+
+    &.is-required-error{
+      button,
+      textarea,
+      select,
+      input{
+        border-left: 3px solid #737373;
+      }
+    }
+  }
+}
+
 .checkbox .mw-checkbox {
   margin-left: -20px;
   float: left;
