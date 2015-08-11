@@ -1396,23 +1396,43 @@ angular.module('mwComponentsBb', [])
         scope: {
           label: '@',
           tooltip: '@',
-          hideErrors: '=',
-          validateWhenDirty: '='
+          hideErrors: '='
         },
         templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
         link: function (scope, elm, attr, ctrl) {
 
-          scope.isInvalid = function () {
-            return (ctrl && scope.elementName && ctrl[scope.elementName]) ? ctrl[scope.elementName].$invalid : false;
+          var getElementCtrl = function(){
+            if(ctrl && scope.elementName && ctrl[scope.elementName]){
+              return ctrl[scope.elementName];
+            }
+          };
+
+
+          scope.isInvalid = function() {
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$invalid : false;
           };
 
           scope.isDirty = function () {
-            return ctrl ? ctrl.$dirty : false;
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$dirty : false;
           };
 
           scope.getCurrentErrors = function(){
-            return (ctrl && ctrl[scope.elementName]) ? ctrl[scope.elementName].$error : undefined;
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$error : undefined;
           };
+
+          scope.isRequiredError = function(){
+            var elCtrl = getElementCtrl();
+            return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
+          };
+
+          scope.isRequired = function(){
+            return !!elm.find('input,select,textarea').attr('required');
+          };
+
+
         },
         controller: ['$scope', function ($scope) {
           var that = this;
@@ -6700,7 +6720,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwForm/mwFormInput.html',
-    "<div class=\"mw-form mw-form-input form-group\" ng-class=\"{'has-error': (validateWhenDirty ? (isInvalid() && isDirty()) : isInvalid() ) }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"hideErrors !== true\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><span ng-if=\"hideErrors !== true && hideErrors !== key\" ng-repeat=\"(key, value) in getCurrentErrors()\" mw-form-validation=\"{{ key }}\">{{ validationValues[key] }}</span></div></div>"
+    "<div class=\"mw-form mw-form-input form-group\" ng-class=\"{'has-error': isInvalid() && isDirty(), 'is-required': isRequired(), 'is-required-error':isRequiredError() }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"hideErrors !== true\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><span ng-if=\"hideErrors !== true && hideErrors !== key && isInvalid()\" ng-repeat=\"(key, value) in getCurrentErrors()\" mw-form-validation=\"{{ key }}\">{{ validationValues[key] }}</span></div></div>"
   );
 
 
