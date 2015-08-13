@@ -169,11 +169,19 @@ angular.module('mwResponseHandler', [])
 
     this.$get = function ($injector, $q) {
 
-      var _executeCallback = function (callbacks, response) {
+      var _executeCallback = function (callbacks, response, isError) {
         var promises = [];
         callbacks.forEach(function (callback) {
           callback = angular.isString(callback) ? $injector.get(callback) : callback;
-          promises.push(callback.call(this, response));
+          var callbackValue = callback.call(this, response),
+              promise;
+
+          if(isError && (!callbackValue || !callbackValue.then)){
+            promise = $q.reject(callbackValue || response);
+          } else {
+            promise = $q.when(callbackValue || response);
+          }
+          promises.push(promise);
         }, this);
         return $q.all(promises);
       };
@@ -219,7 +227,7 @@ angular.module('mwResponseHandler', [])
           if (handler) {
             var callbacks = _getCallbacks(handler, statusCode, isError);
             if(callbacks){
-              return _executeCallback(callbacks, response);
+              return _executeCallback(callbacks, response, isError);
             }
           }
         }
@@ -234,9 +242,16 @@ angular.module('mwResponseHandler', [])
       var handle = function(response, isError){
         var handler = ResponseHandler.handle(response, isError);
         if(handler){
-          return handler.then(function(){
-            return response;
+          return handler.then(function(handlerResponse){
+            if(handlerResponse && handlerResponse[0]){
+              return handlerResponse[0];
+            } else {
+              return response;
+            }
+
           });
+        } else if(isError){
+          return $q.reject(response);
         } else {
           return $q.when(response);
         }
@@ -247,9 +262,7 @@ angular.module('mwResponseHandler', [])
           return handle(response, false);
         },
         responseError: function (response) {
-          return handle(response, true).then(function(){
-            return $q.reject(response);
-          });
+          return handle(response, true);
         }
       };
     });
