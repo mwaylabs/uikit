@@ -1,5 +1,5 @@
 <div class="mw-form mw-form-input form-group"
-     ng-class="{'has-error': (validateWhenDirty ? (isInvalid() && isDirty()) : isInvalid() ) }">
+     ng-class="{'has-error': isInvalid() && isDirty(), 'is-required': isRequired(), 'is-required-error':isRequiredError() }">
 
   <div class="clearfix">
 
@@ -16,7 +16,7 @@
   <div ng-if="hideErrors !== true"
        ng-class="{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]">
 
-    <span ng-if="hideErrors !== true && hideErrors !== key"
+    <span ng-if="hideErrors !== true && hideErrors !== key && isInvalid()"
           ng-repeat="(key, value) in getCurrentErrors()"
           mw-form-validation="{{ key }}">{{ validationValues[key] }}
     </span>

@@ -1396,23 +1396,43 @@ angular.module('mwComponentsBb', [])
         scope: {
           label: '@',
           tooltip: '@',
-          hideErrors: '=',
-          validateWhenDirty: '='
+          hideErrors: '='
         },
         templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
         link: function (scope, elm, attr, ctrl) {
 
-          scope.isInvalid = function () {
-            return (ctrl && scope.elementName && ctrl[scope.elementName]) ? ctrl[scope.elementName].$invalid : false;
+          var getElementCtrl = function(){
+            if(ctrl && scope.elementName && ctrl[scope.elementName]){
+              return ctrl[scope.elementName];
+            }
+          };
+
+
+          scope.isInvalid = function() {
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$invalid : false;
           };
 
           scope.isDirty = function () {
-            return ctrl ? ctrl.$dirty : false;
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$dirty : false;
           };
 
           scope.getCurrentErrors = function(){
-            return (ctrl && ctrl[scope.elementName]) ? ctrl[scope.elementName].$error : undefined;
+            var elCtrl = getElementCtrl();
+            return (elCtrl) ? elCtrl.$error : undefined;
           };
+
+          scope.isRequiredError = function(){
+            var elCtrl = getElementCtrl();
+            return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
+          };
+
+          scope.isRequired = function(){
+            return !!elm.find('input,select,textarea').attr('required');
+          };
+
+
         },
         controller: ['$scope', function ($scope) {
           var that = this;
@@ -2649,7 +2669,7 @@ angular.module('mwHelper', [])
         this.setFocus = function(id){
           var inputField = _.findWhere(_registeredFocusFields,{id:id});
           if(this.getFocusedField() && this.getFocusedField().id !== id){
-            console.warn('There can be only one focused field');
+            throw new Error('There can be only one focused field');
           }
           if(inputField){
             inputField.active = true;
@@ -2703,9 +2723,14 @@ angular.module('mwHelper', [])
           if(el.is(':focus')){
             return;
           } else {
-            mwDefaultFocusService.setFocus(id);
-            el[0].focus();
-            window.requestAnimFrame(setFocus);
+            try{
+              mwDefaultFocusService.setFocus(id);
+              el[0].focus();
+              window.requestAnimFrame(setFocus);
+            } catch(err){
+              console.warn(err);
+            }
+
           }
         };
 
@@ -4209,7 +4234,7 @@ angular.module('mwListableBb', [])
           });
         };
 
-        var showSelected = function(){
+        scope.showSelected = function(){
           canShowSelected = true;
           loadItemsNotInCollection();
           setTimeout(function(){
@@ -4227,7 +4252,7 @@ angular.module('mwListableBb', [])
           });
         };
 
-        var hideSelected = function(){
+        scope.hideSelected = function(){
           if(scope.isModal){
             modalEl.css('overflow', 'auto');
           } else {
@@ -4258,9 +4283,9 @@ angular.module('mwListableBb', [])
 
         scope.toggleShowSelected = function(){
           if( canShowSelected ){
-            hideSelected();
+            scope.hideSelected();
           } else {
-            showSelected();
+            scope.showSelected();
           }
         };
 
@@ -4327,7 +4352,7 @@ angular.module('mwListableBb', [])
         }, function(val){
           scope.selectedAmount = val;
           if(val < 1){
-            hideSelected();
+            scope.hideSelected();
           }
         });
 
@@ -4580,20 +4605,20 @@ angular.module('mwModal', [])
 
     var body = $document.find('body').eq(0);
 
-    var Modal = function (modalOptions) {
+    var Modal = function (modalOptions, bootStrapModalOptions) {
 
-        var _id = modalOptions.templateUrl,
-            _scope = modalOptions.scope || $rootScope,
-            _scopeAttributes = modalOptions.scopeAttributes || {},
-            _controller = modalOptions.controller,
-            _class = modalOptions.class || '',
-            _holderEl = modalOptions.el?modalOptions.el:'body .module-page',
-            _modalOpened = false,
-            _self = this,
-            _modal,
-            _usedScope,
-            _bootstrapModal;
-
+      var _id = modalOptions.templateUrl,
+        _scope = modalOptions.scope || $rootScope,
+        _scopeAttributes = modalOptions.scopeAttributes || {},
+        _controller = modalOptions.controller,
+        _class = modalOptions.class || '',
+        _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
+        _bootStrapModalOptions = bootStrapModalOptions || {},
+        _modalOpened = false,
+        _self = this,
+        _modal,
+        _usedScope,
+        _bootstrapModal;
 
       var _getTemplate = function () {
         if (!_id) {
@@ -4608,12 +4633,12 @@ angular.module('mwModal', [])
         });
       };
 
-      var _destroyOnRouteChange = function(){
+      var _destroyOnRouteChange = function () {
         var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
-          if(_bootstrapModal && _modalOpened){
+          if (_bootstrapModal && _modalOpened) {
             ev.preventDefault();
-            _self.hide().then(function(){
-              document.location.href=newUrl;
+            _self.hide().then(function () {
+              document.location.href = newUrl;
               changeLocationOff();
             });
           } else {
@@ -4643,6 +4668,19 @@ angular.module('mwModal', [])
             _modal.addClass('mw-modal');
             _modal.addClass(_class);
             _bootstrapModal = _modal.find('.modal');
+            _bootStrapModalOptions.show = false;
+            _bootstrapModal.modal(_bootStrapModalOptions);
+
+            // We need to overwrite the the original backdrop method with our own one
+            // to make it possible to define the element where the backdrop should be placed
+            // This enables us a backdrop per modal because we are appending the backdrop to the modal
+            // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
+            /* jshint ignore:start */
+            _bootstrapModal.data()['bs.modal'].backdrop = function(callback){
+              $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
+            };
+            /* jshint ignore:end */
+
             _bindModalCloseEvent();
             _destroyOnRouteChange();
             dfd.resolve();
@@ -4742,7 +4780,7 @@ angular.module('mwModal', [])
           _modalOpened = false;
         }
 
-        if(_usedScope){
+        if (_usedScope) {
           _usedScope.$destroy();
         }
       };
@@ -4778,25 +4816,25 @@ angular.module('mwModal', [])
       return new Modal(modalOptions);
     };
 
-    this.prepare = function(modalOptions){
-      var ModalDefinition = function(){
-        return new Modal(modalOptions);
+    this.prepare = function (modalOptions, bootstrapModalOptions) {
+      var ModalDefinition = function () {
+        return new Modal(modalOptions, bootstrapModalOptions);
       };
       return ModalDefinition;
     };
   }])
 
-  .provider('mwModalTmpl', function(){
+  .provider('mwModalTmpl', function () {
 
     var _logoPath;
 
-    this.setLogoPath = function(path){
+    this.setLogoPath = function (path) {
       _logoPath = path;
     };
 
-    this.$get = function(){
-      return{
-        getLogoPath: function(){
+    this.$get = function () {
+      return {
+        getLogoPath: function () {
           return _logoPath;
         }
       };
@@ -4930,6 +4968,56 @@ angular.module('mwModal', [])
       }
     };
   });
+
+/* jshint ignore:start */
+// This is the orginal bootstrap backdrop implementation with the only
+// modification that the element can be defined as parameter where the backdrop should be placed
+var $bootstrapBackdrop = function (callback, holderEl) {
+  var animate = this.$element.hasClass('fade') ? 'fade' : '';
+
+  if (this.isShown && this.options.backdrop) {
+    var doAnimate = $.support.transition && animate;
+
+    this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+      .appendTo(holderEl);
+
+    this.$backdrop.on('click', $.proxy(function (e) {
+      if (e.target !== e.currentTarget) {
+        return;
+      }
+      this.options.backdrop == 'static'
+        ? this.$element[0].focus.call(this.$element[0])
+        : this.hide.call(this)
+    }, this));
+
+    if (doAnimate) {
+      this.$backdrop[0].offsetWidth;
+    } // force reflow
+
+    this.$backdrop.addClass('in');
+
+    if (!callback) return;
+
+    doAnimate ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (!this.isShown && this.$backdrop) {
+    this.$backdrop.removeClass('in');
+
+    $.support.transition && this.$element.hasClass('fade') ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (callback) {
+    callback()
+  }
+};
+/* jshint ignore:end */
 'use strict';
 
 angular.module('mwNav', [])
@@ -6640,7 +6728,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwForm/mwFormInput.html',
-    "<div class=\"mw-form mw-form-input form-group\" ng-class=\"{'has-error': (validateWhenDirty ? (isInvalid() && isDirty()) : isInvalid() ) }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"hideErrors !== true\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><span ng-if=\"hideErrors !== true && hideErrors !== key\" ng-repeat=\"(key, value) in getCurrentErrors()\" mw-form-validation=\"{{ key }}\">{{ validationValues[key] }}</span></div></div>"
+    "<div class=\"mw-form mw-form-input form-group\" ng-class=\"{'has-error': isInvalid() && isDirty(), 'is-required': isRequired(), 'is-required-error':isRequiredError() }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"hideErrors !== true\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><span ng-if=\"hideErrors !== true && hideErrors !== key && isInvalid()\" ng-repeat=\"(key, value) in getCurrentErrors()\" mw-form-validation=\"{{ key }}\">{{ validationValues[key] }}</span></div></div>"
   );
 
 
@@ -6724,9 +6812,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwListableBb/mwListableHead.html',
-    "<style>.listable-amount {\n" +
-    "    display: none;\n" +
-    "  }</style><div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected()}\"><div class=\"selection-controller\" ng-if=\"selectable\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"rln-icon close_cross\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.clearSelection' | i18n}}</a></span></div><div class=\"search-bar\"></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'common.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'common.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'common.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"rln-icon close_cross\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div></div></div>"
+    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected()}\"><div class=\"selection-controller\" ng-if=\"selectable\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"rln-icon close_cross\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.clearSelection' | i18n}}</a></span></div><div class=\"search-bar\"></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'common.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'common.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'common.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"rln-icon close_cross\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
   );
 
 
@@ -6746,7 +6832,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwModal/mwModal.html',
-    "<div class=\"modal fade\" tabindex=\"1\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header clearfix\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div>"
+    "<div class=\"modal fade\" tabindex=\"1\" role=\"dialog\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header clearfix\" ng-if=\"title\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div>"
   );
 
 
