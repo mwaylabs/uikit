@@ -207,7 +207,7 @@ angular.module('mwResponseHandler', [])
             dfd.resolve(resp);
           }
         }
-        return dfd.promise
+        return dfd.promise;
       };
 
       var _executeCallbacks = function (callbacks, response, isError) {
