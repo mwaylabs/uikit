@@ -1429,7 +1429,14 @@ angular.module('mwComponentsBb', [])
           };
 
           scope.isRequired = function(){
-            return !!elm.find('input,select,textarea').attr('required');
+            var inputs = elm.find('input,select,textarea'),
+                required = false;
+            inputs.each(function(){
+              if(!required){
+                required = !!angular.element(this).attr('required');
+              }
+            });
+            return required;
           };
 
 
