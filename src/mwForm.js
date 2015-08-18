@@ -124,7 +124,14 @@
           };
 
           scope.isRequired = function(){
-            return !!elm.find('input,select,textarea').attr('required');
+            var inputs = elm.find('input,select,textarea'),
+                required = false;
+            inputs.each(function(){
+              if(!required){
+                required = !!angular.element(this).attr('required');
+              }
+            });
+            return required;
           };
 
 
@@ -175,6 +182,46 @@
               buildValidationValues();
               $scope.$on('i18n:localeChanged', buildValidationValues);
             }
+          };
+        }
+      };
+    })
+
+  /**
+   * @ngdoc directive
+   * @name mwForm.directive:mwFormWrapper
+   * @element div
+   * @description
+   *
+   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
+   * Does not include validation or any other functional components.
+   *
+   * @scope
+   *
+   * @param {string} label Label to show
+   * @param {string} tooltip Tooltip to display
+   *
+   */
+    .directive('mwFormWrapper', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        transclude: true,
+        scope: {
+          label: '@',
+          tooltip: '@'
+        },
+        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
+        link: function(scope, el){
+          scope.isRequired = function(){
+            var inputs = el.find('input,select,textarea'),
+              required = false;
+            inputs.each(function(){
+              if(!required){
+                required = !!angular.element(this).attr('required');
+              }
+            });
+            return required;
           };
         }
       };
@@ -477,35 +524,6 @@
         }
       };
     })
-
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormWrapper
-   * @element div
-   * @description
-   *
-   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
-   * Does not include validation or any other functional components.
-   *
-   * @scope
-   *
-   * @param {string} label Label to show
-   * @param {string} tooltip Tooltip to display
-   *
-   */
-    .directive('mwFormWrapper', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html'
-      };
-    })
-
 
   /**
    * @ngdoc directive
