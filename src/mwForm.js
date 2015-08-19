@@ -124,14 +124,8 @@
           };
 
           scope.isRequired = function(){
-            var inputs = elm.find('input,select,textarea'),
-                required = false;
-            inputs.each(function(){
-              if(!required){
-                required = !!angular.element(this).attr('required');
-              }
-            });
-            return required;
+            var requiredInputs = elm.find('input[required],select[required],textarea[required]');
+            return requiredInputs.length>0;
           };
 
 
@@ -214,14 +208,8 @@
         templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
         link: function(scope, el){
           scope.isRequired = function(){
-            var inputs = el.find('input,select,textarea'),
-              required = false;
-            inputs.each(function(){
-              if(!required){
-                required = !!angular.element(this).attr('required');
-              }
-            });
-            return required;
+            var requiredInputs = el.find('input[required],select[required],textarea[required]');
+            return requiredInputs.length>0;
           };
         }
       };
