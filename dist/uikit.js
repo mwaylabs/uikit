@@ -5528,13 +5528,54 @@ angular.module('mwResponseHandler', [])
 
     this.$get = ['$injector', '$q', function ($injector, $q) {
 
-      var _executeCallback = function (callbacks, response) {
-        var promises = [];
+      /*
+       *  Execute promises sequentially
+       *  When funtion does not return a promise it converts the response into a promise
+       *  The last function defines if the chain should be resolved or rejected by rejecting or resolving value
+       *  When the first function rejectes value but the last function resolves it the whole chain will be resolved
+       */
+      var _executePromiseQueue = function(fns, resp, isError, dfd){
+        var fn = fns.shift();
+
+        if(!dfd){
+          dfd = $q.defer();
+        }
+
+        if(fn){
+          var returnVal = fn(resp, isError),
+              promise;
+          if(returnVal && returnVal.then){
+            promise = returnVal;
+          } else {
+            if(isError){
+              promise = $q.reject(returnVal || resp);
+            } else {
+              promise = $q.when(returnVal || resp);
+            }
+          }
+
+          promise.then(function(rsp){
+            _executePromiseQueue(fns, rsp, false, dfd);
+          },function(rsp){
+            _executePromiseQueue(fns, rsp, true, dfd);
+          });
+        } else {
+          if(isError){
+            dfd.reject(resp);
+          } else {
+            dfd.resolve(resp);
+          }
+        }
+        return dfd.promise;
+      };
+
+      var _executeCallbacks = function (callbacks, response, isError) {
+        var fns = [];
         callbacks.forEach(function (callback) {
           callback = angular.isString(callback) ? $injector.get(callback) : callback;
-          promises.push(callback.call(this, response));
+          fns.push(callback);
         }, this);
-        return $q.all(promises);
+        return _executePromiseQueue(fns, response, isError);
       };
 
       var _getCallbacks = function(handler, statusCode, isError){
@@ -5578,7 +5619,7 @@ angular.module('mwResponseHandler', [])
           if (handler) {
             var callbacks = _getCallbacks(handler, statusCode, isError);
             if(callbacks){
-              return _executeCallback(callbacks, response);
+              return _executeCallbacks(callbacks, response, isError);
             }
           }
         }
@@ -5593,14 +5634,7 @@ angular.module('mwResponseHandler', [])
       var handle = function(response, isError){
         var handler = ResponseHandler.handle(response, isError);
         if(handler){
-          return handler.then(function(handlerResponse){
-            if(handlerResponse && handlerResponse[0]){
-              return handlerResponse[0];
-            } else {
-              return response;
-            }
-
-          });
+          return handler;
         } else if(isError){
           return $q.reject(response);
         } else {
