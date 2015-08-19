@@ -124,7 +124,8 @@
           };
 
           scope.isRequired = function(){
-            return !!elm.find('input,select,textarea').attr('required');
+            var requiredInputs = elm.find('input[required],select[required],textarea[required]');
+            return requiredInputs.length>0;
           };
 
 
@@ -175,6 +176,40 @@
               buildValidationValues();
               $scope.$on('i18n:localeChanged', buildValidationValues);
             }
+          };
+        }
+      };
+    })
+
+  /**
+   * @ngdoc directive
+   * @name mwForm.directive:mwFormWrapper
+   * @element div
+   * @description
+   *
+   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
+   * Does not include validation or any other functional components.
+   *
+   * @scope
+   *
+   * @param {string} label Label to show
+   * @param {string} tooltip Tooltip to display
+   *
+   */
+    .directive('mwFormWrapper', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        transclude: true,
+        scope: {
+          label: '@',
+          tooltip: '@'
+        },
+        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
+        link: function(scope, el){
+          scope.isRequired = function(){
+            var requiredInputs = el.find('input[required],select[required],textarea[required]');
+            return requiredInputs.length>0;
           };
         }
       };
@@ -477,35 +512,6 @@
         }
       };
     })
-
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormWrapper
-   * @element div
-   * @description
-   *
-   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
-   * Does not include validation or any other functional components.
-   *
-   * @scope
-   *
-   * @param {string} label Label to show
-   * @param {string} tooltip Tooltip to display
-   *
-   */
-    .directive('mwFormWrapper', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html'
-      };
-    })
-
 
   /**
    * @ngdoc directive

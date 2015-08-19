@@ -1429,7 +1429,8 @@ angular.module('mwComponentsBb', [])
           };
 
           scope.isRequired = function(){
-            return !!elm.find('input,select,textarea').attr('required');
+            var requiredInputs = elm.find('input[required],select[required],textarea[required]');
+            return requiredInputs.length>0;
           };
 
 
@@ -1484,6 +1485,40 @@ angular.module('mwComponentsBb', [])
         }]
       };
     }])
+
+  /**
+   * @ngdoc directive
+   * @name mwForm.directive:mwFormWrapper
+   * @element div
+   * @description
+   *
+   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
+   * Does not include validation or any other functional components.
+   *
+   * @scope
+   *
+   * @param {string} label Label to show
+   * @param {string} tooltip Tooltip to display
+   *
+   */
+    .directive('mwFormWrapper', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        transclude: true,
+        scope: {
+          label: '@',
+          tooltip: '@'
+        },
+        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
+        link: function(scope, el){
+          scope.isRequired = function(){
+            var requiredInputs = el.find('input[required],select[required],textarea[required]');
+            return requiredInputs.length>0;
+          };
+        }
+      };
+    })
 
   /**
    * @ngdoc directive
@@ -1782,35 +1817,6 @@ angular.module('mwComponentsBb', [])
         }
       };
     })
-
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormWrapper
-   * @element div
-   * @description
-   *
-   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
-   * Does not include validation or any other functional components.
-   *
-   * @scope
-   *
-   * @param {string} label Label to show
-   * @param {string} tooltip Tooltip to display
-   *
-   */
-    .directive('mwFormWrapper', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html'
-      };
-    })
-
 
   /**
    * @ngdoc directive
@@ -6769,7 +6775,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwForm/mwFormWrapper.html',
-    "<div class=\"mw-form mw-form-wrapper form-group\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div class=\"col-sm-6 col-lg-5\" ng-class=\"{ false: 'col-sm-offset-3' }[label.length > 0]\" ng-transclude></div></div>"
+    "<div class=\"mw-form mw-form-wrapper form-group\" ng-class=\"{'is-required': isRequired()}\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div class=\"col-sm-6 col-lg-5\" ng-class=\"{ false: 'col-sm-offset-3' }[label.length > 0]\" ng-transclude></div></div>"
   );
 
 
@@ -6779,7 +6785,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwFormBb/mwFormMultiSelect.html',
-    "<div ng-form><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"item in collection.models\"><label><input type=\"checkbox\" name=\"selectOption\" mw-custom-checkbox ng-disabled=\"isDisabled(item)\" ng-checked=\"model.indexOf(item.attributes.key) >= 0\" ng-click=\"toggleKeyIntoModelArray(item.attributes.key); setDirty()\"> {{ translationPrefix + '.' + item.attributes.key | i18n }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div></div></div>"
+    "<div ng-form><div class=\"checkbox\" ng-repeat=\"item in collection.models\"><label><input type=\"checkbox\" name=\"selectOption\" mw-custom-checkbox ng-disabled=\"isDisabled(item)\" ng-checked=\"model.indexOf(item.attributes.key) >= 0\" ng-click=\"toggleKeyIntoModelArray(item.attributes.key); setDirty()\"> {{ translationPrefix + '.' + item.attributes.key | i18n }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div></div>"
   );
 
 
