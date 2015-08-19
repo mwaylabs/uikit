@@ -124,6 +124,9 @@ angular.module('mwToast', [])
 
           return match;
         },
+        clear: function(){
+          _toasts = [];
+        },
         addToast: function (message, options) {
           options = options || {};
 
