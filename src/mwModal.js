@@ -201,8 +201,15 @@ angular.module('mwModal', [])
        * @description Removes the modal from the dom
        */
       this.destroy = function () {
+        _openedModals = _.without(_openedModals, this);
+        var toasts = Toast.getToasts();
+        toasts.forEach(function(toast){
+          if(+new Date()-toast.initDate>200){
+            Toast.removeToast(toast.id);
+          }
+        });
+
         $timeout(function () {
-          Toast.clear();
           _body.css({
             height: '',
             width: '',
