@@ -8,8 +8,10 @@ angular.module('mwToast', [])
       link: function (scope) {
         scope.toasts = Toast.getToasts();
 
-        scope.$watch(function(){return Toast.getToasts().length;}, function(){
-            scope.toasts = Toast.getToasts();
+        scope.$watch(function () {
+          return Toast.getToasts().length;
+        }, function () {
+          scope.toasts = Toast.getToasts();
         });
 
         scope.hideToast = function (toastId) {
@@ -35,13 +37,13 @@ angular.module('mwToast', [])
         resetAutoHideTimer();
       };
 
-      var setAutoHideCallback = function(fn){
+      var setAutoHideCallback = function (fn) {
         toast.autoHideCallback = fn;
         resetAutoHideTimer();
       };
 
       var resetAutoHideTimer = function () {
-        if(_autoRemoveTimeout){
+        if (_autoRemoveTimeout) {
           window.clearTimeout(_autoRemoveTimeout);
         }
         startAutoHideTimer();
@@ -77,7 +79,8 @@ angular.module('mwToast', [])
           },
           replaceMessage: replaceMessage,
           replaceCount: 0,
-          setAutoHideCallback: setAutoHideCallback
+          setAutoHideCallback: setAutoHideCallback,
+          initDate: +new Date()
         },
         _autoRemoveTimeout;
 
@@ -86,7 +89,7 @@ angular.module('mwToast', [])
       return toast;
     };
 
-    this.setAutoHideTime = function(timeInMs){
+    this.setAutoHideTime = function (timeInMs) {
       _autoHideTime = timeInMs;
     };
 
@@ -95,11 +98,14 @@ angular.module('mwToast', [])
       return {
         findToast: function (id) {
           var toastContainer = _.findWhere(_toasts, {id: id});
-          if(toastContainer){
+          if (toastContainer) {
             return toastContainer.toast;
           } else {
             return false;
           }
+        },
+        clear: function () {
+          _toasts = [];
         },
         getToasts: function () {
           return _.pluck(_toasts, 'toast');
@@ -115,7 +121,7 @@ angular.module('mwToast', [])
           return toast;
         },
         removeToast: function (id) {
-          var match = _.findWhere(_toasts, {id:id}),
+          var match = _.findWhere(_toasts, {id: id}),
             index = _.indexOf(_toasts, match);
 
           if (match) {
@@ -124,9 +130,6 @@ angular.module('mwToast', [])
 
           return match;
         },
-        clear: function(){
-          _toasts = [];
-        },
         addToast: function (message, options) {
           options = options || {};
 
@@ -134,7 +137,7 @@ angular.module('mwToast', [])
 
           var existingToast = this.findToast(options.id);
 
-          if(existingToast){
+          if (existingToast) {
             this.replaceToastMessage(existingToast.id, message);
           } else {
             var toast = new Toast(message, options);
