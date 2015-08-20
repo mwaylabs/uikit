@@ -2426,13 +2426,20 @@ angular.module('mwFormBb', [])
           mwRequired: '=',
           mwKey: '@'
         },
+        require: '^?form',
         template: '<input type="text" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}" style="display: none">',
-        link: function (scope) {
+        link: function (scope, el, attr, formController) {
 
           var key = scope.mwKey || 'uuid';
 
           scope.model = {};
           scope.uId = _.uniqueId('validator_');
+
+          var setDirty = function(){
+            if(formController){
+              formController.$setDirty();
+            }
+          };
 
           var unwatch = scope.$watch('mwModel', function () {
             var val = scope.mwModel;
@@ -2444,6 +2451,7 @@ angular.module('mwFormBb', [])
                   } else {
                     scope.model.tmp = undefined;
                   }
+                  setDirty();
                 });
                 if(val.length > 0){
                   scope.model.tmp = val.first().get(key);
@@ -2454,6 +2462,7 @@ angular.module('mwFormBb', [])
                 key = scope.mwKey || val.idAttribute;
                 val.on('change:'+key, function () {
                   scope.model.tmp = val.get(key);
+                  setDirty();
                 });
                 scope.model.tmp = val.get(key);
               } else {
