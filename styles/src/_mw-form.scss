@@ -19,25 +19,37 @@
   }
 }
 
-.mw-form{
-  &.form-group{
+@mixin required-input-highlighter($color) {
+  .custom-select,
+  textarea,
+  input {
+    &:not([type=button]){
+      border-left: 3px solid $color;
+    }
+  }
 
-    label{
+  input[type=button],button{
+      font-weight: bold;
+  }
+}
+
+.mw-form {
+  &.form-group {
+
+    label {
       font-weight: normal;
     }
 
-    &.is-required{
-      label{
+    &.is-required {
+      label {
         font-weight: bold;
       }
     }
 
-    &.is-required-error{
-      button,
-      textarea,
-      select,
-      input{
-        border-left: 3px solid #737373;
+    &.is-required-error {
+      @include required-input-highlighter(#bbb);
+      &.has-error {
+        @include required-input-highlighter($brand-danger);
       }
     }
   }
