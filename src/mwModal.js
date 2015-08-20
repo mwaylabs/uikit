@@ -201,8 +201,15 @@ angular.module('mwModal', [])
        * @description Removes the modal from the dom
        */
       this.destroy = function () {
+        _openedModals = _.without(_openedModals, this);
+        var toasts = Toast.getToasts();
+        toasts.forEach(function(toast){
+          if(+new Date()-toast.initDate>200){
+            Toast.removeToast(toast.id);
+          }
+        });
+
         $timeout(function () {
-          Toast.clear();
           _body.css({
             height: '',
             width: '',
@@ -215,11 +222,6 @@ angular.module('mwModal', [])
 
           if (_usedScope) {
             _usedScope.$destroy();
-          }
-
-          var indexOfOpenendModals = _openedModals.indexOf(this);
-          if (indexOfOpenendModals > -1) {
-            _openedModals.splice(indexOfOpenendModals, 1);
           }
         }.bind(this));
       };
