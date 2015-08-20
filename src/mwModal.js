@@ -223,11 +223,6 @@ angular.module('mwModal', [])
           if (_usedScope) {
             _usedScope.$destroy();
           }
-
-          var indexOfOpenendModals = _openedModals.indexOf(this);
-          if (indexOfOpenendModals > -1) {
-            _openedModals.splice(indexOfOpenendModals, 1);
-          }
         }.bind(this));
       };
 
