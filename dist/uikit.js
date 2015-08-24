@@ -4793,7 +4793,7 @@ angular.module('mwModal', [])
         _openedModals = _.without(_openedModals, this);
         var toasts = Toast.getToasts();
         toasts.forEach(function(toast){
-          if(+new Date()-toast.initDate>200){
+          if(+new Date()-toast.initDate>500){
             Toast.removeToast(toast.id);
           }
         });
@@ -5052,6 +5052,7 @@ var $bootstrapBackdrop = function (callback, holderEl) {
   }
 };
 /* jshint ignore:end */
+
 'use strict';
 
 angular.module('mwNav', [])
