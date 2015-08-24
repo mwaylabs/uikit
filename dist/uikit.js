@@ -2426,13 +2426,20 @@ angular.module('mwFormBb', [])
           mwRequired: '=',
           mwKey: '@'
         },
+        require: '^?form',
         template: '<input type="text" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}" style="display: none">',
-        link: function (scope) {
+        link: function (scope, el, attr, formController) {
 
           var key = scope.mwKey || 'uuid';
 
           scope.model = {};
           scope.uId = _.uniqueId('validator_');
+
+          var setDirty = function(){
+            if(formController){
+              formController.$setDirty();
+            }
+          };
 
           var unwatch = scope.$watch('mwModel', function () {
             var val = scope.mwModel;
@@ -2444,6 +2451,7 @@ angular.module('mwFormBb', [])
                   } else {
                     scope.model.tmp = undefined;
                   }
+                  setDirty();
                 });
                 if(val.length > 0){
                   scope.model.tmp = val.first().get(key);
@@ -2454,6 +2462,7 @@ angular.module('mwFormBb', [])
                 key = scope.mwKey || val.idAttribute;
                 val.on('change:'+key, function () {
                   scope.model.tmp = val.get(key);
+                  setDirty();
                 });
                 scope.model.tmp = val.get(key);
               } else {
@@ -4607,9 +4616,10 @@ angular.module('mwModal', [])
  *   </doc:source>
  * </doc:example>
  */
-  .service('Modal', ['$rootScope', '$templateCache', '$document', '$compile', '$controller', '$q', '$templateRequest', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest) {
+  .service('Modal', ['$rootScope', '$templateCache', '$document', '$compile', '$controller', '$q', '$templateRequest', '$timeout', 'Toast', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest, $timeout, Toast) {
 
-    var body = $document.find('body').eq(0);
+    var _body = $document.find('body').eq(0),
+      _openedModals = [];
 
     var Modal = function (modalOptions, bootStrapModalOptions) {
 
@@ -4682,7 +4692,7 @@ angular.module('mwModal', [])
             // This enables us a backdrop per modal because we are appending the backdrop to the modal
             // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
             /* jshint ignore:start */
-            _bootstrapModal.data()['bs.modal'].backdrop = function(callback){
+            _bootstrapModal.data()['bs.modal'].backdrop = function (callback) {
               $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
             };
             /* jshint ignore:end */
@@ -4695,6 +4705,8 @@ angular.module('mwModal', [])
 
         return dfd.promise;
       };
+
+      this.id = _id;
 
       this.getScope = function () {
         return _scope;
@@ -4709,16 +4721,18 @@ angular.module('mwModal', [])
        * @description Shows the modal
        */
       this.show = function () {
-        body.css({
+        _body.css({
           height: '100%',
           width: '100%',
           overflow: 'hidden'
         });
+        Toast.clear();
         _buildModal().then(function () {
           angular.element(_holderEl).append(_modal);
           _bootstrapModal.modal('show');
           _modalOpened = true;
-        });
+          _openedModals.push(this);
+        }.bind(this));
       };
 
 
@@ -4776,19 +4790,29 @@ angular.module('mwModal', [])
        * @description Removes the modal from the dom
        */
       this.destroy = function () {
-        body.css({
-          height: '',
-          width: '',
-          overflow: ''
+        _openedModals = _.without(_openedModals, this);
+        var toasts = Toast.getToasts();
+        toasts.forEach(function(toast){
+          if(+new Date()-toast.initDate>500){
+            Toast.removeToast(toast.id);
+          }
         });
-        if (_modal) {
-          _modal.remove();
-          _modalOpened = false;
-        }
 
-        if (_usedScope) {
-          _usedScope.$destroy();
-        }
+        $timeout(function () {
+          _body.css({
+            height: '',
+            width: '',
+            overflow: ''
+          });
+          if (_modal) {
+            _modal.remove();
+            _modalOpened = false;
+          }
+
+          if (_usedScope) {
+            _usedScope.$destroy();
+          }
+        }.bind(this));
       };
 
       (function main() {
@@ -4827,6 +4851,10 @@ angular.module('mwModal', [])
         return new Modal(modalOptions, bootstrapModalOptions);
       };
       return ModalDefinition;
+    };
+
+    this.getOpenedModals = function () {
+      return _openedModals;
     };
   }])
 
@@ -5024,6 +5052,7 @@ var $bootstrapBackdrop = function (callback, holderEl) {
   }
 };
 /* jshint ignore:end */
+
 'use strict';
 
 angular.module('mwNav', [])
@@ -6239,8 +6268,10 @@ angular.module('mwToast', [])
       link: function (scope) {
         scope.toasts = Toast.getToasts();
 
-        scope.$watch(function(){return Toast.getToasts().length;}, function(){
-            scope.toasts = Toast.getToasts();
+        scope.$watch(function () {
+          return Toast.getToasts().length;
+        }, function () {
+          scope.toasts = Toast.getToasts();
         });
 
         scope.hideToast = function (toastId) {
@@ -6266,13 +6297,13 @@ angular.module('mwToast', [])
         resetAutoHideTimer();
       };
 
-      var setAutoHideCallback = function(fn){
+      var setAutoHideCallback = function (fn) {
         toast.autoHideCallback = fn;
         resetAutoHideTimer();
       };
 
       var resetAutoHideTimer = function () {
-        if(_autoRemoveTimeout){
+        if (_autoRemoveTimeout) {
           window.clearTimeout(_autoRemoveTimeout);
         }
         startAutoHideTimer();
@@ -6308,7 +6339,8 @@ angular.module('mwToast', [])
           },
           replaceMessage: replaceMessage,
           replaceCount: 0,
-          setAutoHideCallback: setAutoHideCallback
+          setAutoHideCallback: setAutoHideCallback,
+          initDate: +new Date()
         },
         _autoRemoveTimeout;
 
@@ -6317,7 +6349,7 @@ angular.module('mwToast', [])
       return toast;
     };
 
-    this.setAutoHideTime = function(timeInMs){
+    this.setAutoHideTime = function (timeInMs) {
       _autoHideTime = timeInMs;
     };
 
@@ -6326,11 +6358,14 @@ angular.module('mwToast', [])
       return {
         findToast: function (id) {
           var toastContainer = _.findWhere(_toasts, {id: id});
-          if(toastContainer){
+          if (toastContainer) {
             return toastContainer.toast;
           } else {
             return false;
           }
+        },
+        clear: function () {
+          _toasts = [];
         },
         getToasts: function () {
           return _.pluck(_toasts, 'toast');
@@ -6346,7 +6381,7 @@ angular.module('mwToast', [])
           return toast;
         },
         removeToast: function (id) {
-          var match = _.findWhere(_toasts, {id:id}),
+          var match = _.findWhere(_toasts, {id: id}),
             index = _.indexOf(_toasts, match);
 
           if (match) {
@@ -6362,7 +6397,7 @@ angular.module('mwToast', [])
 
           var existingToast = this.findToast(options.id);
 
-          if(existingToast){
+          if (existingToast) {
             this.replaceToastMessage(existingToast.id, message);
           } else {
             var toast = new Toast(message, options);
@@ -6864,7 +6899,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwModal/mwModal.html',
-    "<div class=\"modal fade\" tabindex=\"1\" role=\"dialog\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header clearfix\" ng-if=\"title\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div>"
+    "<div class=\"modal fade\" tabindex=\"1\" role=\"dialog\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header clearfix\" ng-if=\"title\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div class=\"body-holder\"><div mw-toasts class=\"notifications\"></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div></div>"
   );
 
 
