@@ -7,7 +7,10 @@
              class="pull-left logo"/>
         <h4 class="modal-title pull-left">{{ title }}</h4>
       </div>
-      <div ng-transclude class="modal-content-wrapper"></div>
+      <div class="body-holder">
+        <div mw-toasts class="notifications"></div>
+        <div ng-transclude class="modal-content-wrapper"></div>
+      </div>
     </div>
   </div>
 </div>

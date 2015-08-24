@@ -6,12 +6,12 @@
 
   .animate-in{
     opacity:1;
-    top:0;
+    @include translateY(0);
   }
 
   .animate-out{
     opacity: 0;
-    top:-30px
+    @include translateY(-30px);
   }
 
   &.messages-list {
