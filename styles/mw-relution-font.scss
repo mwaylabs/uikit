@@ -11,31 +11,26 @@ $mw-font-path: "../fonts" !default;
   font-style: normal;
 }
 
+body .rln-icon{
+  position: relative;
+}
+
 .rln-icon {
-  font-family: 'icomoon';
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  margin-left: -3px;
-  margin-top: -2px;
-  font-size: 15px;
-  text-decoration: none !important;
-  vertical-align: middle;
-  color: #808080;
+  top: 1px;
   display: inline-block;
+  font: normal normal normal 14px/1 icomoon;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+  color: #808080;
 
   &:hover,
   &:after:hover,
   &:before:hover {
     text-decoration: none !important;
   }
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 
   &.action:before {
     content: "\e601";
