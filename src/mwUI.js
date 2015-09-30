@@ -1,4 +1,5 @@
 angular.module('mwUI', [
+  'ngSanitize',
   'mwModal',
   'mwWizard',
   'mwListable',

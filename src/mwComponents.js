@@ -993,6 +993,29 @@ angular.module('mwComponents', [])
     };
   })
 
+  .service('mwMarkdown', function(){
+    converter = new showdown.Converter({
+      headerLevelStart: 3,
+      smoothLivePreview: true,
+      extensions: [function(){
+        return [
+          // Replace escaped @ symbols
+          { type: 'lang', regex: '•', replace: '-' },
+          { type: 'lang', filter: function(text){
+            return text.replace(/https?:\/\/\S*/g, function(link){
+              return '<'+link+'>';
+            });
+          }}
+        ];
+      }]
+    });
+    return {
+      convert: function(val){
+        return converter.makeHtml(val);
+      }
+    }
+  })
+
 
   .directive('mwMarkdownPreview', function () {
     return {
@@ -1007,21 +1030,21 @@ angular.module('mwComponents', [])
   })
 
 
-  .directive('mwMarkdown', ['$sanitize', 'markdownConverter', function ($sanitize, markdownConverter) {
+  .directive('mwMarkdown', ['$sanitize', 'mwMarkdown', function ($sanitize, mwMarkdown) {
     return {
       restrict: 'AE',
       link: function (scope, element, attrs) {
         if (attrs.mwMarkdown) {
           scope.$watch(attrs.mwMarkdown, function (newVal) {
             try {
-              var html = newVal ? $sanitize(markdownConverter.makeHtml(newVal)) : '';
+              var html = newVal ? $sanitize(mwMarkdown.convert(newVal)) : '';
               element.html(html);
             } catch (e) {
               element.text(newVal);
             }
           });
         } else {
-          var html = $sanitize(markdownConverter.makeHtml(element.text()));
+          var html = $sanitize(mwMarkdown.convert(element.text()));
           element.html(html);
         }
       }
