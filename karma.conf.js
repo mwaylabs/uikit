@@ -21,7 +21,7 @@ module.exports = function(config){
       'node_modules/angular-sanitize/angular-sanitize.min.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/mcapjs-client/dist/mcap.angular.js',
-      'node_modules/showdown/src/showdown.js',
+      'node_modules/showdown/dist/showdown.js',
       'node_modules/angular-markdown-directive/markdown.js',
       'src/mwUI.js',
       'src/*.js',
