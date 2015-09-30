@@ -994,7 +994,7 @@ angular.module('mwComponents', [])
   })
 
   .service('mwMarkdown', function(){
-    converter = new showdown.Converter({
+    var converter = new window.showdown.Converter({
       headerLevelStart: 3,
       smoothLivePreview: true,
       extensions: [function(){
@@ -1013,7 +1013,7 @@ angular.module('mwComponents', [])
       convert: function(val){
         return converter.makeHtml(val);
       }
-    }
+    };
   })
 
 
