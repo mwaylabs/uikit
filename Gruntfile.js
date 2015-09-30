@@ -33,7 +33,7 @@ module.exports = function (grunt) {
     },
     concat: {
       dist: {
-        src: ['src/mwUI.js', 'src/**/*.js', '.tmp/templates.js', 'components/angular-sanitize/angular-sanitize.js', 'components/showdown/dist/showdown.js'],
+        src: ['src/mwUI.js', 'src/**/*.js', '.tmp/templates.js', 'node_modules/angular-sanitize/angular-sanitize.js', 'node_modules/showdown/dist/showdown.js'],
         dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js',
       }
     },
