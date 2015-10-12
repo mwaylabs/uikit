@@ -2274,13 +2274,18 @@ angular.module('mwFormBb', [])
 
         if(scope.mwModel instanceof window.Backbone.Model){
           scope.viewModel.val = scope.mwModel.get(scope.optionsKey);
+          scope.mwOptionsCollection.on('add', function(){
+            if(scope.viewModel.val && scope.getSelectedModel(scope.viewModel.val)){
+              scope.mwModel.set(scope.getSelectedModel(scope.viewModel.val).toJSON());
+            }
+          });
         } else {
           scope.viewModel.val = scope.mwModel;
         }
 
         scope.$watch('viewModel.val', function(val){
           if(scope.mwModel instanceof window.Backbone.Model){
-            if(val){
+            if(val && scope.getSelectedModel(val)){
               scope.mwModel.set(scope.getSelectedModel(val).toJSON());
             } else {
               scope.mwModel.clear();
