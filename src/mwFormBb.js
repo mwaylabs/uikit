@@ -122,6 +122,10 @@ angular.module('mwFormBb', [])
       link: function (scope) {
         scope.optionsKey = scope.mwOptionsKey || 'key';
 
+        scope.viewModel = {
+          val: ''
+        };
+
         //auto fetch is default true
         if ((scope.mwAutoFetch === true || scope.mwAutoFetch === undefined) && scope.mwOptionsCollection.length === 0) {
           scope.mwOptionsCollection.fetch();
@@ -131,21 +135,51 @@ angular.module('mwFormBb', [])
           return optionModel.get(scope.optionsKey);
         };
 
-        scope.getLabel = function(optionModel){
-          if(!scope.mwOptionsLabelI18nPrefix){
+        scope.getLabel = function (optionModel) {
+          if (!scope.mwOptionsLabelI18nPrefix) {
             return optionModel.get(scope.mwOptionsLabelKey);
           }
-          return i18n.get(scope.mwOptionsLabelI18nPrefix+'.'+scope.getKey(optionModel));
+          return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
         };
 
-        if(!scope.mwPlaceholder && scope.mwRequired){
-          if(scope.mwOptionsCollection.length>0){
-            if(_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)) {
+        scope.getSelectedModel = function (val) {
+          var searchObj = {};
+          searchObj[scope.optionsKey] = val;
+          return scope.mwOptionsCollection.findWhere(searchObj);
+        };
+
+
+        if(scope.mwModel instanceof window.Backbone.Model){
+          scope.viewModel.val = scope.mwModel.get(scope.optionsKey);
+          scope.mwOptionsCollection.on('add', function(){
+            if(scope.viewModel.val && scope.getSelectedModel(scope.viewModel.val)){
+              scope.mwModel.set(scope.getSelectedModel(scope.viewModel.val).toJSON());
+            }
+          });
+        } else {
+          scope.viewModel.val = scope.mwModel;
+        }
+
+        scope.$watch('viewModel.val', function(val){
+          if(scope.mwModel instanceof window.Backbone.Model){
+            if(val && scope.getSelectedModel(val)){
+              scope.mwModel.set(scope.getSelectedModel(val).toJSON());
+            } else {
+              scope.mwModel.clear();
+            }
+          } else {
+            scope.mwModel = val;
+          }
+        });
+
+        if (!scope.mwPlaceholder && scope.mwRequired) {
+          if (scope.mwOptionsCollection.length > 0) {
+            if (_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)) {
               scope.mwModel = scope.mwOptionsCollection.first().get(scope.optionsKey);
             }
           } else {
-            scope.mwOptionsCollection.once('add', function(model){
-              if(_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)){
+            scope.mwOptionsCollection.once('add', function (model) {
+              if (_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)) {
                 scope.mwModel = model.get(scope.optionsKey);
               }
             });
