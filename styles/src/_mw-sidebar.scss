@@ -7,15 +7,15 @@
       color: $brand-primary
     }
   }
+}
 
-  .search-indicator {
-    position: absolute;
-    display: block;
-    border: 5px solid $brand-primary;
-    border-radius: 50%;
-    animation: searching 1.3s ease infinite;
-    -webkit-animation: searching 1.3s ease infinite; /* Safari and Chrome */
-  }
+.search-indicator {
+  position: absolute;
+  display: block;
+  border: 5px solid $brand-primary;
+  border-radius: 50%;
+  animation: searching 1.3s ease infinite;
+  -webkit-animation: searching 1.3s ease infinite; /* Safari and Chrome */
 }
 
 .mw-sidebar-filters {
