@@ -32,271 +32,376 @@ body .rln-icon{
     text-decoration: none !important;
   }
 
+  @font-face {
+    font-family: 'icomoon';
+    src:url('fonts/icomoon.eot?wzr8pt');
+    src:url('fonts/icomoon.eot?wzr8pt#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?wzr8pt') format('truetype'),
+    url('fonts/icomoon.woff?wzr8pt') format('woff'),
+    url('fonts/icomoon.svg?wzr8pt#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  [class^="icon-"], [class*=" icon-"] {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   &.action:before {
-    content: "\e601";
+    content: "\e800";
   }
   &.add:before {
-    content: "\e602";
+    content: "\e801";
   }
   &.android:before {
-    content: "\e603";
+    content: "\e802";
   }
   &.apple:before {
-    content: "\e604";
+    content: "\e803";
   }
   &.apps:before {
-    content: "\e605";
+    content: "\e804";
   }
   &.archive:before {
-    content: "\e606";
+    content: "\e805";
   }
   &.bluetooth:before {
-    content: "\e607";
+    content: "\e806";
   }
   &.categories:before {
-    content: "\e608";
+    content: "\e807";
   }
   &.certificate:before {
-    content: "\e609";
+    content: "\e808";
   }
   &.check:before {
-    content: "\e60a";
+    content: "\e809";
   }
   &.close_cross:before {
-    content: "\e60b";
+    content: "\e80a";
   }
   &.company:before {
-    content: "\e60c";
+    content: "\e80b";
   }
   &.compliance_error:before {
-    content: "\e60d";
+    content: "\e80c";
   }
   &.compliance_no:before {
-    content: "\e60e";
+    content: "\e80d";
   }
   &.compliance_pending:before {
-    content: "\e60f";
+    content: "\e80e";
   }
   &.compliance_yes:before {
-    content: "\e610";
+    content: "\e80f";
   }
   &.compliance:before {
-    content: "\e611";
+    content: "\e810";
   }
   &.credit_add:before {
-    content: "\e612";
+    content: "\e811";
   }
   &.credit_inquire:before {
-    content: "\e613";
+    content: "\e812";
   }
   &.credit_receive:before {
-    content: "\e614";
+    content: "\e813";
   }
   &.dashboard:before {
-    content: "\e615";
+    content: "\e814";
   }
   &.delete:before {
-    content: "\e616";
+    content: "\e815";
   }
   &.development:before {
-    content: "\e617";
+    content: "\e816";
   }
   &.device:before {
-    content: "\e618";
+    content: "\e817";
   }
   &.devicemanagement:before {
-    content: "\e619";
+    content: "\e818";
   }
   &.download:before {
-    content: "\e61a";
+    content: "\e819";
   }
   &.edit:before {
-    content: "\e61b";
+    content: "\e81a";
   }
   &.enroll:before {
-    content: "\e61c";
+    content: "\e81b";
   }
   &.exchange:before {
-    content: "\e61d";
+    content: "\e81c";
   }
   &.filter_add:before {
-    content: "\e61e";
+    content: "\e81d";
   }
   &.folder:before {
-    content: "\e61f";
+    content: "\e81e";
   }
   &.group_enrollment:before {
-    content: "\e620";
+    content: "\e81f";
   }
   &.history:before {
-    content: "\e621";
+    content: "\e820";
+  }
+  &.ic_action_add_shortcut:before {
+    content: "\e821";
+  }
+  &.ic_action_alert:before {
+    content: "\e822";
+  }
+  &.ic_action_change_policy:before {
+    content: "\e823";
+  }
+  &.ic_action_deploy_app:before {
+    content: "\e824";
+  }
+  &.ic_action_deploy_store_app:before {
+    content: "\e825";
+  }
+  &.ic_action_locate:before {
+    content: "\e826";
+  }
+  &.ic_action_lock:before {
+    content: "\e827";
+  }
+  &.ic_action_message:before {
+    content: "\e828";
+  }
+  &.ic_action_open_file:before {
+    content: "\e829";
+  }
+  &.ic_action_ping:before {
+    content: "\e82a";
+  }
+  &.ic_action_refresh_device:before {
+    content: "\e82b";
+  }
+  &.ic_action_remove_app:before {
+    content: "\e82c";
+  }
+  &.ic_action_remove_shortcut:before {
+    content: "\e82d";
+  }
+  &.ic_action_reset_passcode:before {
+    content: "\e82e";
+  }
+  &.ic_action_update:before {
+    content: "\e82f";
+  }
+  &.ic_action_wipe:before {
+    content: "\e830";
+  }
+  &.ic_action_withdraw:before {
+    content: "\e831";
   }
   &.ic_conf_managed_app:before {
-    content: "\e622";
+    content: "\e832";
   }
   &.ic_conf_airplay:before {
-    content: "\e623";
+    content: "\e833";
   }
   &.ic_conf_airprint:before {
-    content: "\e624";
+    content: "\e834";
   }
   &.ic_conf_apn:before {
-    content: "\e625";
+    content: "\e835";
   }
   &.ic_conf_app-control:before {
-    content: "\e626";
+    content: "\e836";
   }
   &.ic_conf_calendar-subscription:before {
-    content: "\e627";
+    content: "\e837";
   }
   &.ic_conf_calendar:before {
-    content: "\e628";
+    content: "\e838";
   }
   &.ic_conf_certificate:before {
-    content: "\e629";
+    content: "\e839";
   }
   &.ic_conf_contacts:before {
-    content: "\e62a";
+    content: "\e83a";
   }
   &.ic_conf_domain:before {
-    content: "\e62b";
+    content: "\e83b";
   }
   &.ic_conf_email:before {
-    content: "\e62c";
+    content: "\e83c";
   }
   &.ic_conf_exchange:before {
-    content: "\e62d";
+    content: "\e83d";
   }
   &.ic_conf_kiosk:before {
-    content: "\e62e";
+    content: "\e83e";
   }
   &.ic_conf_passcode:before {
-    content: "\e62f";
+    content: "\e83f";
   }
   &.ic_conf_restrictions:before {
-    content: "\e630";
+    content: "\e840";
   }
   &.ic_conf_scep:before {
-    content: "\e631";
+    content: "\e841";
   }
   &.ic_conf_vpn:before {
-    content: "\e632";
+    content: "\e842";
   }
   &.ic_conf_webclip:before {
-    content: "\e633";
+    content: "\e843";
   }
   &.ic_conf_wifi:before {
-    content: "\e634";
+    content: "\e844";
+  }
+  &.ic_iot_advertisement:before {
+    content: "\e845";
+  }
+  &.ic_iot_end_programming:before {
+    content: "\e846";
+  }
+  &.ic_iot_led_multi_off:before {
+    content: "\e847";
+  }
+  &.ic_iot_led_off:before {
+    content: "\e848";
+  }
+  &.ic_iot_led_on_multi:before {
+    content: "\e849";
+  }
+  &.ic_iot_led_on:before {
+    content: "\e84a";
+  }
+  &.ic_iot_start_programming:before {
+    content: "\e84b";
   }
   &.language:before {
-    content: "\e635";
+    content: "\e84c";
   }
   &.logout:before {
-    content: "\e636";
+    content: "\e84d";
   }
   &.map_location_filled:before {
-    content: "\e637";
+    content: "\e84e";
   }
   &.map_location:before {
-    content: "\e638";
+    content: "\e84f";
   }
   &.mtrust:before {
-    content: "\e639";
+    content: "\e850";
   }
+
   &.new_app_appstore:before {
-    content: "\e63a";
+    content: "\e851";
     color: #808080;
   }
+
   &.new_app_appstore:after {
-    content: "\e63b";
+    content: "\e852";
     margin-left: -1.4794921875em;
     color: rgb(255, 255, 255);
   }
+
   &.new_app_native:before {
     content: "\e600";
   }
+
+
+  &.new_app_native:before {
+    content: "\e853";
+  }
   &.new_app_playstore:before {
-    content: "\e63c";
+    content: "\e854";
   }
   &.new_app_webapp:before {
-    content: "\e63d";
+    content: "\e855";
   }
   &.new_app_weblink:before {
-    content: "\e63e";
+    content: "\e856";
   }
   &.new_app_windowsstore:before {
-    content: "\e63f";
+    content: "\e857";
   }
   &.notification:before {
-    content: "\e640";
+    content: "\e858";
   }
   &.password_change:before {
-    content: "\e641";
+    content: "\e859";
   }
   &.policies:before {
-    content: "\e642";
+    content: "\e85a";
   }
   &.policy_add:before {
-    content: "\e643";
+    content: "\e85b";
   }
   &.policy_remove:before {
-    content: "\e644";
+    content: "\e85c";
   }
   &.pricetag:before {
-    content: "\e645";
+    content: "\e85d";
   }
   &.publish:before {
-    content: "\e646";
+    content: "\e85e";
   }
   &.published:before {
-    content: "\e647";
+    content: "\e85f";
   }
   &.request:before {
-    content: "\e648";
+    content: "\e860";
   }
   &.review:before {
-    content: "\e649";
+    content: "\e861";
   }
   &.rule_add:before {
-    content: "\e64a";
+    content: "\e862";
   }
   &.rule_remove:before {
-    content: "\e64b";
+    content: "\e863";
   }
   &.ruleset:before {
-    content: "\e64c";
+    content: "\e864";
   }
   &.secure_browser:before {
-    content: "\e64d";
+    content: "\e865";
   }
   &.support:before {
-    content: "\e64e";
+    content: "\e866";
   }
   &.upload:before {
-    content: "\e64f";
+    content: "\e867";
   }
   &.user_group:before {
-    content: "\e650";
+    content: "\e868";
   }
   &.user:before {
-    content: "\e651";
+    content: "\e869";
   }
   &.version_add:before {
-    content: "\e652";
+    content: "\e86a";
   }
   &.version:before {
-    content: "\e653";
+    content: "\e86b";
   }
   &.vpp:before {
-    content: "\e654";
+    content: "\e86c";
   }
   &.webapp:before {
-    content: "\e655";
+    content: "\e86d";
   }
   &.windows:before {
-    content: "\e656";
+    content: "\e86e";
   }
   &.workflow:before {
-    content: "\e657";
+    content: "\e86f";
   }
 }
