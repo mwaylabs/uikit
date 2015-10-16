@@ -158,6 +158,9 @@ angular.module('mwFormBb', [])
           });
         } else {
           scope.viewModel.val = scope.mwModel;
+          scope.$watch('mwModel', function(val){
+            scope.viewModel.val = val;
+          });
         }
 
         scope.$watch('viewModel.val', function(val){
