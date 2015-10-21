@@ -9,6 +9,22 @@
     </a>
   </div>
 
-  <div ng-if="toggleFilters" ng-transclude class="filters animate-height"></div>
+  <div ng-if="toggleFilters" class="filters animate-height">
+
+    <div ng-transclude></div>
+
+    <div>
+      <input type="text" placeholder="name" class="margin-top-10">
+
+      <button class="btn btn-danger">
+        Cancel
+      </button>
+
+      <button class="btn btn-primary">
+        Save
+      </button>
+    </div>
+
+  </div>
 
 </div>
