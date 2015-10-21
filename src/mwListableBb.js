@@ -425,6 +425,7 @@ angular.module('mwListableBb', [])
     return {
       scope: {
         collection: '=',
+        affix: '=',
         affixOffset: '=',
         collectionName: '@',
         nameFn: '&',
@@ -441,6 +442,7 @@ angular.module('mwListableBb', [])
           modalEl = el.parents('.modal .modal-body'),
           lastScrollYPos = 0,
           canShowSelected = false,
+          _affix = angular.isDefined(scope.affix)?scope.affix:true,
           affixOffset = scope.affixOffset,
           isSticked = false;
 
@@ -457,7 +459,7 @@ angular.module('mwListableBb', [])
 
           var currentScrollPos = scrollEl.scrollTop();
 
-          if (currentScrollPos > affixOffset) {
+          if (currentScrollPos > affixOffset && _affix) {
             if (currentScrollPos < lastScrollYPos) {
               var newTopVal = currentScrollPos - affixOffset;
               newTopVal = newTopVal<0?0:newTopVal;
