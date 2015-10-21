@@ -4,6 +4,67 @@ angular.module('mwSidebarBb', [])
 
 /**
  * @ngdoc directive
+ * @name mwSidebar.directive:mwSidebarFilters
+ * @element div
+ * @description
+ *
+ * Container for filters
+ *
+ */
+  .directive('mwSidebarFiltersBb', function (Persistance, EmptyState) {
+    return {
+      transclude: true,
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
+      controller: function($scope){
+        this.getCollection = function(){
+          return $scope.collection;
+        };
+
+        this.changeFilter = function(property, value, isUrlParam){
+          if(isUrlParam){
+            $scope.collection.customUrlParams[property] = value;
+          } else {
+            var filterVal = {};
+            filterVal[property] = value;
+            $scope.collection.filterable.setFilters(filterVal);
+          }
+
+          EmptyState.pushFilter($scope.collection, property);
+
+          //persist filter values
+          Persistance.saveFilterValues($scope.collection);
+
+          $scope.collection.fetch();
+
+        }
+      },
+      link: function (scope, elm, attr) {
+
+        scope.collection = scope.$eval(attr.collection);
+        if(!angular.isDefined(scope.collection)){
+          throw new Error('mwSidebarFiltersBb does not have a collection!');
+        }
+
+        scope.resetFiltersOnClose = function () {
+          if (!scope.toggleFilters) {
+            scope.collection.filterable.resetFilters();
+            Persistance.clearFilterValues(scope.collection);
+            scope.collection.fetch().then(function(collection){
+              EmptyState.resetFilter(collection);
+            });
+          }
+        };
+
+        //open filters when there are persisted filters saved
+        if(Persistance.getFilterValues(scope.collection)){
+          scope.toggleFilters = true;
+        }
+      }
+    };
+  })
+
+/**
+ * @ngdoc directive
  * @name mwSidebar.directive:mwSidebarSelect
  * @element div
  * @description
@@ -25,7 +86,7 @@ angular.module('mwSidebarBb', [])
  * @param {function} labelTransformFn function to use. Will be called with model as parameter.
  * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
  */
-  .directive('mwSidebarSelectBb', function (i18n, Persistance, EmptyState) {
+  .directive('mwSidebarSelectBb', function (i18n) {
     return {
       require: '^mwSidebarFiltersBb',
       scope: {
@@ -43,16 +104,16 @@ angular.module('mwSidebarBb', [])
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarSelect.html',
       link: function (scope, elm, attr, ctrl) {
 
+        scope.viewModel = {};
+
         //set key function for select key
         scope.key = function(model) {
-          return model.attributes.key;
-        };
-
-        if(angular.isDefined(scope.keyProperty)) {
-          scope.key = function(model) {
+          if(angular.isDefined(scope.keyProperty)){
             return model.attributes[scope.keyProperty];
-          };
-        }
+          } else {
+            return model.attributes.key;
+          }
+        };
 
         //set label function fo select label
         scope.label = function(model){
@@ -68,6 +129,11 @@ angular.module('mwSidebarBb', [])
           return label;
         };
 
+        scope.changed = function(){
+          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter );
+        };
+
         if(angular.isDefined(scope.labelProperty)){
           scope.label = function(model){
             //translate if value is a translation object
@@ -81,25 +147,6 @@ angular.module('mwSidebarBb', [])
         if(angular.isDefined(scope.labelTransformFn)){
           scope.label = scope.labelTransformFn;
         }
-
-        scope.collection = ctrl.getCollection();
-
-        scope.changed = function(){
-          //add property to setted filters on collection for empty state
-          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          EmptyState.pushFilter(scope.collection, property);
-
-          //persist filter values
-          Persistance.saveFilterValues(scope.collection);
-
-          //fetch data and reset filtered property for this selectbox if the filter value or customUrlParameter is empty
-          var searchValue = scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
-          scope.collection.fetch().then(function(collection){
-            if(!searchValue){
-              EmptyState.removeFilter(collection, property);
-            }
-          });
-        };
       }
     };
   })
@@ -134,71 +181,15 @@ angular.module('mwSidebarBb', [])
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarNumberInput.html',
       link: function (scope, elm, attr, ctrl) {
 
-        scope.collection = ctrl.getCollection();
+        scope.viewModel = {};
 
         scope.isValid = function(){
           return elm.find('input').first().hasClass('ng-valid');
         };
 
         scope.changed = function(){
-          //add property to setted filters on collection for empty state
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          EmptyState.pushFilter(scope.collection, property);
-
-          //persist filter values
-          Persistance.saveFilterValues(scope.collection);
-
-          //fetch data and reset filtered property for this selectbox if the filter value or customUrlParameter is empty
-          var searchValue = scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
-
-          scope.collection.fetch().then(function(collection){
-            if(!searchValue){
-              EmptyState.removeFilter(collection, property);
-            }
-          });
-        };
-      }
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarFilters
- * @element div
- * @description
- *
- * Container for filters
- *
- */
-  .directive('mwSidebarFiltersBb', function (Persistance, EmptyState) {
-    return {
-      transclude: true,
-      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
-      link: function (scope, elm, attr) {
-
-        scope.collection = scope.$eval(attr.collection);
-        if(!angular.isDefined(scope.collection)){
-          throw new Error('mwSidebarFiltersBb does not have a collection!');
-        }
-
-        scope.resetFiltersOnClose = function () {
-          if (!scope.toggleFilters) {
-            scope.collection.filterable.resetFilters();
-            Persistance.clearFilterValues(scope.collection);
-            scope.collection.fetch().then(function(collection){
-              EmptyState.resetFilter(collection);
-            });
-          }
-        };
-
-        //open filters when there are persisted filters saved
-        if(Persistance.getFilterValues(scope.collection)){
-          scope.toggleFilters = true;
-        }
-      },
-      controller: function($scope){
-        this.getCollection = function(){
-          return $scope.collection;
+          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter );
         };
       }
     };
