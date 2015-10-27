@@ -227,7 +227,7 @@ div[mw-listable-head-2] {
 
 .mw-listable-header {
   width: 100%;
-  background: white;
+  background: #efefef;
   padding: 5px 7px 5px 10px;
   color: #555;
   font-size: 12px;
@@ -238,8 +238,8 @@ div[mw-listable-head-2] {
   height: 22px;
   left: -16px;
   box-sizing: content-box;
-
-  @include curved-shadow();
+  position: relative;
+  //@include curved-shadow();
 
   .selection-controller {
     margin-left: 10px;
@@ -287,6 +287,43 @@ div[mw-listable-head-2] {
 
   .search-bar {
     margin: auto;
+
+    input{
+      border: none;
+      box-shadow: none;
+      width: 128px;
+      background: transparent;
+      display: inline-block;
+      margin: -6px 0 0 0;
+      padding: 0 0 0 3px;
+      font-size: 12px;
+      transition: all 0.2s ease;
+
+      &:focus{
+        background: white;
+        height: 26px;
+        margin-top: -2px;
+        font-size: 16px;
+        width: 300px;
+      }
+    }
+
+    input~.mw-icon{
+      position: absolute;
+      left: -16px;
+      top: 1px;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    input:focus~.mw-icon{
+      background: white;
+      left: -26px;
+      top: -2px;
+      display: inline-block;
+      padding: 4px 8px;
+      height: 26px;
+    }
   }
 
   .selected-counter {

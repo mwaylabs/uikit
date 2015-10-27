@@ -15,7 +15,14 @@
      <a href="#" mw-prevent-default="click">{{'common.clearSelection' | i18n}}</a>
     </span>
   </div>
-  <div class="search-bar"></div>
+  <div class="search-bar">
+      <div style="position: relative">
+        <input type="text"
+               placeholder="Search for apps...">
+        <span mw-icon="fa-search"></span>
+      </div>
+
+  </div>
   <div class="selected-counter">
     <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
       <a href="#" mw-prevent-default="click">
@@ -29,6 +36,7 @@
         <span mw-icon="fa-angle-down" ng-show="!canShowSelected()"></span>
       </a>
     </span>
+
     <div ng-if="!selectable || selectedAmount<1" ng-transclude class="extra-content"></div>
     <span ng-if="!selectable || selectedAmount<1">
       {{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
