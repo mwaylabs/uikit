@@ -33,12 +33,13 @@ angular.module('mwListableBb', [])
  *   </doc:source>
  * </doc:example>
  */
-  .directive('mwListableBb', function (Persistance) {
+  .directive('mwListableBb', function () {
 
     return {
       restrict: 'A',
       scope: {
-        collection: '='
+        collection: '=',
+        mwListCollection: '='
       },
       compile: function (elm) {
         elm.append('<tfoot mw-listable-footer-bb></tfoot>');
