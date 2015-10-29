@@ -82,16 +82,23 @@ angular.module('mwComponentsBb', [])
       },
       transclude: true,
       templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
-      link: function(scope){
-        scope.showEmptyState = function(){
-          return !scope.collection || (scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection));
-        };
+      link: function (scope) {
+
+        if(scope.collection){
+          scope.showEmptyState = function(){
+            return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
+          }
+        } else {
+          scope.showEmptyState = function(){
+            return true;
+          }
+        }
       }
     };
   })
 
 
-  .directive('mwVersionSelector', function(){
+  .directive('mwVersionSelector', function () {
     return {
       restrict: 'A',
       scope: {
