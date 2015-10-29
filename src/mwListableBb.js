@@ -58,14 +58,15 @@ angular.module('mwListableBb', [])
         this.sort = function (property, order) {
           var sortOrder = order + property;
           _collection.filterable.setSortOrder(sortOrder);
-          _collection.fetch();
-
-          if(_mwListCollectionFilter){
-            _mwListCollectionFilter.applySortOrder({
-              property: property,
-              order: order
-            });
-          }
+          _collection.fetch().then(function(){
+            if(_mwListCollectionFilter){
+              _mwListCollectionFilter.applySortOrder({
+                property: property,
+                order: order
+              });
+            }
+            return _collection;
+          });
 
         };
 
