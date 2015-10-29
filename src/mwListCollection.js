@@ -32,7 +32,7 @@ angular.module('mwCollection', [])
           _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
 
           if(appliedFilter.get('group')){
-            _collection.filterable.setFilters(appliedFilter.get('filterValues'));
+            _collection.filterable.setFilters(filterValues);
           } else {
             _collection.filterable.filterIsSet = false;
           }
