@@ -1,10 +1,59 @@
 .mw-filterable-search {
-  .filterable-search-btn {
-    min-width: 40px;
-    cursor: pointer;
 
-    &:hover {
-      color: $brand-primary
+  .input-holder{
+    position: relative;
+    border-bottom: 1px solid #aaa;
+    margin: 0 15px;
+
+    input {
+      border: none;
+      box-shadow: none;
+      width: 100%;
+      background: transparent;
+      display: inline-block;
+      margin-left: 17px;
+      padding: 0 0 0 3px;
+      font-size: 14px;
+
+      ~ .mw-icon {
+        position: absolute;
+        left: 1px;
+        top: 8px;
+      }
+
+      ~ .reset-icon{
+        display: none;
+      }
+
+      ~ .search-icon{
+        display: block;
+      }
+
+      &.has-value{
+        ~ .reset-icon{
+          left: -3px;
+          display: block;
+        }
+
+        ~ .search-icon{
+          display: none;
+
+          &.searching i {
+            animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite;
+            -webkit-animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite; /* Safari and Chrome */
+          }
+        }
+      }
+
+      &:focus {
+        ~.search-icon{
+          display: block;
+        }
+
+        ~ .reset-icon{
+          display: none;
+        }
+      }
     }
   }
 }
