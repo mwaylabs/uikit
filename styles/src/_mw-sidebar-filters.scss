@@ -116,10 +116,6 @@
     }
 
     &.form-active{
-      .form{
-        opacity: 1;
-        transform: translateX(0);
-      }
 
       .persisted-filters{
         opacity: 0;
@@ -134,10 +130,6 @@
     &.form-active-add,
     &.form-in-active,
     &.form-active-remove{
-      .form{
-        opacity: 0;
-        transform: translateX(-101%);
-      }
 
       .persisted-filters{
         opacity: 1;
@@ -149,6 +141,41 @@
 
       }
     }
+
+    // IN
+    .form.ng-animate.ng-enter.ng-enter-active,
+    .form.ng-leave{
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    // OUT
+    .form.ng-animate.ng-enter,
+    .form.ng-leave.ng-leave-active{
+      opacity: 0;
+      transform: translateX(-101%);
+    }
+
+    .quickfilter-form{
+      @include single-transition(all, 0.5s, ease);
+      background: transparent;
+    }
+
+    .quickfilter-form.ng-animate.ng-enter{
+      background: mix($brand-primary, white, 10%);
+    }
+    // IN
+    .quickfilter-form.ng-animate.ng-enter.ng-enter-active,
+    .quickfilter-form.ng-leave{
+      opacity: 1;
+    }
+
+    // OUT
+    .quickfilter-form.ng-animate.ng-enter,
+    .quickfilter-form.ng-leave.ng-leave-active{
+      opacity: 0;
+    }
+
   }
 
 }
