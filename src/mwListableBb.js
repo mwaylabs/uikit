@@ -449,7 +449,8 @@ angular.module('mwListableBb', [])
         nameAttribute: '@',
         localizeName: '@',
         nameI18nPrefix: '@',
-        nameI18nSuffix: '@'
+        nameI18nSuffix: '@',
+        searchAttribute: '@'
       },
       transclude: true,
       templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',

@@ -16,12 +16,12 @@
     </span>
   </div>
   <div class="search-bar">
-      <div style="position: relative">
-        <input type="text"
-               placeholder="Search for apps...">
-        <span mw-icon="fa-search"></span>
-      </div>
-
+    <div ng-if="searchAttribute"
+         mw-filterable-search-bb
+         collection="collection"
+         placeholder="{{'common.searchFor' | i18n:{name: collectionName} }}"
+         property="{{searchAttribute}}">
+    </div>
   </div>
   <div class="selected-counter">
     <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
