@@ -25,7 +25,8 @@ angular.module('mwSidebarBb', [])
 
         this.changeFilter = function (property, value, isUrlParam) {
           if (isUrlParam) {
-            $scope.collection.customUrlParams[property] = value;
+            $scope.collection.filterable.customUrlParams[property] = value;
+            $scope.viewModel.tmpFilter.get('customUrlParams')[property] = value;
           } else {
             var filterVal = {};
             filterVal[property] = value;
@@ -140,11 +141,15 @@ angular.module('mwSidebarBb', [])
 
           scope.cancelFilterEdit = function () {
             scope.viewModel.showFilterForm = false;
-            if (scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
+            if (!scope.appliedFilter.id || scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
               $timeout(function(){
                 scope.applyFilter(scope.appliedFilter);
               },_filterAnimationDuration);
             }
+          };
+
+          scope.filtersAreApplied = function(){
+            return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
           };
 
           scope.mwListCollectionFilter.fetchFilters();
