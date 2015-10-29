@@ -27,11 +27,11 @@ angular.module('mwComponentsBb', [])
       link: function (scope, el) {
         var inputEl = el.find('input');
 
-        var setFilterVal = function(val){
+        var setFilterVal = function (val) {
           if (scope.customUrlParameter) {
             scope.collection.filterable.customUrlParams[scope.customUrlParameter] = val;
           } else {
-            var filter = {}
+            var filter = {};
             filter[scope.property] = val;
             scope.collection.filterable.setFilters(filter);
           }
@@ -63,14 +63,12 @@ angular.module('mwComponentsBb', [])
 
         scope.keyUp = function () {
           scope.searching = true;
-        }
+        };
       }
-    }
-      ;
+    };
   })
 
-  .
-  directive('mwEmptyStateBb', function (EmptyState) {
+  .directive('mwEmptyStateBb', function () {
     return {
       restrict: 'A',
       replace: true,
@@ -84,19 +82,18 @@ angular.module('mwComponentsBb', [])
       templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
       link: function (scope) {
 
-        if(scope.collection){
-          scope.showEmptyState = function(){
+        if (scope.collection) {
+          scope.showEmptyState = function () {
             return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
-          }
+          };
         } else {
-          scope.showEmptyState = function(){
+          scope.showEmptyState = function () {
             return true;
-          }
+          };
         }
       }
     };
   })
-
 
   .directive('mwVersionSelector', function () {
     return {
