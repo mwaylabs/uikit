@@ -108,9 +108,9 @@ angular.module('mwComponentsBb', [])
         url: '@'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwVersionSelector.html',
-      link: function(scope){
+      link: function (scope) {
         scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
-        scope.getUrl = function(uuid){
+        scope.getUrl = function (uuid) {
           return scope.url.replace('VERSION_UUID', uuid);
         };
       }
