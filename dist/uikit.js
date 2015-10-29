@@ -1191,100 +1191,61 @@ angular.module('mwComponentsBb', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearchBb', ['$timeout', '$animate', 'Loading', 'Detect', 'EmptyState', 'Persistance', function ($timeout, $animate, Loading, Detect, EmptyState, Persistance) {
+  .directive('mwFilterableSearchBb', ['$timeout', function ($timeout) {
     return {
       scope: {
         collection: '=',
         property: '@',
         customUrlParameter: '@',
-        mwDisabled: '='
+        mwDisabled: '=',
+        placeholder: '@'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-      link: function (scope, elm) {
-        $animate.enabled(false, elm.find('.search-indicator'));
+      link: function (scope, el) {
+        var inputEl = el.find('input');
 
-        scope.inputLength = 0;
-        var timeout,
-            isMobile = Detect.isMobile();
-
-        var getSearchText = function(){
-          return scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
-        };
-
-        var search = function () {
-          //show search icon
-          scope.searching = true;
-
-          //persist filter values
-          Persistance.saveFilterValues(scope.collection);
-
-          //set property to setted filters on collection
-          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          EmptyState.pushFilter(scope.collection, property);
-
-          //backup searched text to reset after fetch complete in case of search text was empty
-          return scope.collection.fetch()
-              .then(function(collection){
-                if(getSearchText() === ''){
-                  EmptyState.removeFilter(collection, property);
-                }
-              }).finally(function(){
-                scope.searching = false;
-              });
-        };
-
-        var throttler = function () {
-          $timeout.cancel(timeout);
-          timeout = $timeout(function () {
-            search().then(function () {
-              $timeout.cancel(timeout);
-            });
-          }, 500);
-        };
-
-        scope.search = function (event) {
-          if (!event || event.keyCode === 13) {
-            search();
+        var setFilterVal = function (val) {
+          if (scope.customUrlParameter) {
+            scope.collection.filterable.customUrlParams[scope.customUrlParameter] = val;
           } else {
-
-            if(!isMobile){
-              throttler();
-            }
+            var filter = {};
+            filter[scope.property] = val;
+            scope.collection.filterable.setFilters(filter);
           }
+        };
+
+        scope.viewModel = {
+          searchVal: ''
+        };
+
+        scope.search = function () {
+          scope.searching = true;
+          //backup searched text to reset after fetch complete in case of search text was empty
+          setFilterVal(scope.viewModel.searchVal);
+          return scope.collection.fetch().finally(function () {
+            $timeout(function () {
+              scope.searching = false;
+            }, 500);
+          });
         };
 
         scope.reset = function () {
-          if(scope.customUrlParameter) {
-            scope.collection.filterable.customUrlParams[scope.customUrlParameter] = '';
-          } else {
-            scope.collection.filterable.filterValues[scope.property] = '';
-          }
-        };
-
-        scope.showResetIcon = function() {
-          //never show icon on mobile
-          if(!scope.collection || isMobile){
-            return false;
-          }
-          //return true if search text is undefined (ng-model is invalid e..g text is too long)
-          if(angular.isUndefined(getSearchText())){
-            return true;
-          }
-          //show icon when searchText is there
-          return getSearchText().length > 0;
-        };
-
-        scope.performAction = function(){
-          if(scope.showResetIcon() && !scope.searching) {
-            scope.reset();
-          }
+          scope.viewModel.searchVal = '';
           scope.search();
+        };
+
+        scope.hasValue = function () {
+          return inputEl.val().length > 0;
+        };
+
+        scope.keyUp = function () {
+          scope.searching = true;
         };
       }
     };
   }])
 
-  .directive('mwEmptyStateBb', ['EmptyState', function (EmptyState) {
+  .directive('mwEmptyStateBb', function () {
     return {
       restrict: 'A',
       replace: true,
@@ -1296,16 +1257,22 @@ angular.module('mwComponentsBb', [])
       },
       transclude: true,
       templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
-      link: function(scope){
-        scope.showEmptyState = function(){
-          return !scope.collection || (scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection));
-        };
+      link: function (scope) {
+
+        if (scope.collection) {
+          scope.showEmptyState = function () {
+            return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
+          };
+        } else {
+          scope.showEmptyState = function () {
+            return true;
+          };
+        }
       }
     };
-  }])
+  })
 
-
-  .directive('mwVersionSelector', function(){
+  .directive('mwVersionSelector', function () {
     return {
       restrict: 'A',
       scope: {
@@ -1315,9 +1282,9 @@ angular.module('mwComponentsBb', [])
         url: '@'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwVersionSelector.html',
-      link: function(scope){
+      link: function (scope) {
         scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
-        scope.getUrl = function(uuid){
+        scope.getUrl = function (uuid) {
           return scope.url.replace('VERSION_UUID', uuid);
         };
       }
@@ -3321,7 +3288,7 @@ angular.module('mwCollection', [])
     var MwListCollection = function(collection, id){
 
       var _collection = collection,
-          _id = id || collection.endpoint,
+          _id = (id || collection.endpoint) + '_V1',
           _mwFilter = new MwListCollectionFilter(_id);
 
       this.getMwListCollectionFilter = function(){
@@ -3337,10 +3304,17 @@ angular.module('mwCollection', [])
 
         return $q.all([mwListCollectionFilter.fetchAppliedFilter(),mwListCollectionFilter.fetchAppliedSortOrder()]).then(function(rsp){
           var appliedFilter = rsp[0],
-              sortOrder = rsp[1];
+              sortOrder = rsp[1],
+              filterValues = appliedFilter.get('filterValues');
 
           _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
-          _collection.filterable.setFilters(appliedFilter.get('filterValues'));
+
+          if(appliedFilter.get('group')){
+            _collection.filterable.setFilters(filterValues);
+          } else {
+            _collection.filterable.filterIsSet = false;
+          }
+
           return $q.all([_collection.fetch(),mwListCollectionFilter.fetchFilters()]).then(function(){
             return this;
           }.bind(this));
@@ -3988,14 +3962,15 @@ angular.module('mwListableBb', [])
         this.sort = function (property, order) {
           var sortOrder = order + property;
           _collection.filterable.setSortOrder(sortOrder);
-          _collection.fetch();
-
-          if(_mwListCollectionFilter){
-            _mwListCollectionFilter.applySortOrder({
-              property: property,
-              order: order
-            });
-          }
+          _collection.fetch().then(function(){
+            if(_mwListCollectionFilter){
+              _mwListCollectionFilter.applySortOrder({
+                property: property,
+                order: order
+              });
+            }
+            return _collection;
+          });
 
         };
 
@@ -4379,7 +4354,8 @@ angular.module('mwListableBb', [])
         nameAttribute: '@',
         localizeName: '@',
         nameI18nPrefix: '@',
-        nameI18nSuffix: '@'
+        nameI18nSuffix: '@',
+        searchAttribute: '@'
       },
       transclude: true,
       templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',
@@ -6254,7 +6230,8 @@ angular.module('mwSidebarBb', [])
 
         this.changeFilter = function (property, value, isUrlParam) {
           if (isUrlParam) {
-            $scope.collection.customUrlParams[property] = value;
+            $scope.collection.filterable.customUrlParams[property] = value;
+            $scope.viewModel.tmpFilter.get('customUrlParams')[property] = value;
           } else {
             var filterVal = {};
             filterVal[property] = value;
@@ -6369,11 +6346,15 @@ angular.module('mwSidebarBb', [])
 
           scope.cancelFilterEdit = function () {
             scope.viewModel.showFilterForm = false;
-            if (scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
+            if (!scope.appliedFilter.id || scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
               $timeout(function(){
                 scope.applyFilter(scope.appliedFilter);
               },_filterAnimationDuration);
             }
+          };
+
+          scope.filtersAreApplied = function(){
+            return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
           };
 
           scope.mwListCollectionFilter.fetchFilters();
@@ -7103,14 +7084,12 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
-    "<div><!-- using ng-show instead of ng-if due to angular bug (see link)\n" +
-    "       angular 1.3 fixes this issue, we should replace ng-show after 1.3 migration\n" +
-    "       https://github.com/vojtajina/angular.js/commit/d414b787173643362c0c513a1929d8e715ca340e --><div ng-if=\"!showEmptyState()\" ng-transclude></div><div ng-if=\"showEmptyState()\" class=\"mw-empty-state\"><img src=\"images/logo-grey.png\"><h2 class=\"lead\">{{ text | i18n }}</h2><div ng-if=\"buttonText\"><button class=\"btn btn-primary btn-large\" ng-click=\"button()\">{{buttonText}}</button></div></div></div>"
+    "<div><div ng-if=\"!showEmptyState()\" ng-transclude></div><div ng-if=\"showEmptyState()\" class=\"mw-empty-state\"><img src=\"images/logo-grey.png\"><h2 class=\"lead\">{{ text | i18n }}</h2><div ng-if=\"buttonText\"><button class=\"btn btn-primary btn-large\" ng-click=\"button()\">{{buttonText}}</button></div></div></div>"
   );
 
 
   $templateCache.put('uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-    "<div class=\"row mw-filterable-search\"><div class=\"col-md-12\"><div class=\"input-group\"><input ng-if=\"!customUrlParameter\" type=\"text\" placeholder=\"{{ 'common.search' | i18n }}\" class=\"form-control\" ng-keyup=\"search($event)\" ng-model=\"collection.filterable.filterValues[property]\" ng-disabled=\"mwDisabled\"> <input ng-if=\"customUrlParameter\" type=\"text\" placeholder=\"{{ 'common.search' | i18n }}\" class=\"form-control\" ng-keyup=\"search($event)\" ng-model=\"collection.filterable.customUrlParams[customUrlParameter]\" ng-disabled=\"mwDisabled\"> <span class=\"input-group-addon filterable-search-btn\" ng-click=\"performAction()\"><span ng-show=\"searching\" class=\"search-indicator\"></span> <span ng-hide=\"searching || showResetIcon()\"><span mw-icon=\"search\"></span></span> <span ng-if=\"showResetIcon() && !searching\" mw-icon=\"fa-times\" class=\"red\"></span></span></div></div></div>"
+    "<div class=\"row mw-filterable-search\"><div class=\"input-holder\"><input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp()\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\" ng-class=\"{'has-value':hasValue()}\"> <span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></div></div>"
   );
 
 
@@ -7214,7 +7193,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwListableBb/mwListableHead.html',
-    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected()}\"><div class=\"selection-controller\" ng-if=\"selectable\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"rln-icon close_cross\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.clearSelection' | i18n}}</a></span></div><div class=\"search-bar\"><div style=\"position: relative\"><input type=\"text\" placeholder=\"Search for apps...\"> <span mw-icon=\"fa-search\"></span></div></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'common.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'common.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'common.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"rln-icon close_cross\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
+    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected()}\"><div class=\"selection-controller\" ng-if=\"selectable\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"rln-icon close_cross\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'common.clearSelection' | i18n}}</a></span></div><div class=\"search-bar\"><div ng-if=\"searchAttribute\" mw-filterable-search-bb collection=\"collection\" placeholder=\"{{'common.searchFor' | i18n:{name: collectionName} }}\" property=\"{{searchAttribute}}\"></div></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'common.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'common.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'common.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"rln-icon close_cross\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
   );
 
 
@@ -7269,7 +7248,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwSidebarBb/mwSidebarFilters.html',
-    "<div class=\"mw-sidebar-filters\" ng-class=\"{'form-active':viewModel.showFilterForm, 'form-in-active':!viewModel.showFilterForm}\"><div ng-if=\"mwListCollection\" class=\"btn-group btn-block persisted-filters\"><button class=\"btn btn-default btn-block dropdown-toggle\" ng-class=\"{hidden:viewModel.showFilterForm}\" data-toggle=\"dropdown\">{{appliedFilter.get('name') || 'All'}}</button><ul class=\"filter-dropdown dropdown-menu\" style=\"min-width:100%\" role=\"menu\"><li ng-class=\"{'active':appliedFilter.id===filter.id}\" class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"revokeFilter()\" class=\"btn btn-link\">All</a></li><li ng-repeat=\"filter in filters.models\" ng-class=\"{'active':appliedFilter.id===filter.id}\" class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"applyFilter(filter)\" class=\"btn btn-link\">{{filter.get('name')}}</a><div ng-if=\"appliedFilter.id===filter.id\" class=\"pull-right action-btns hidden-xs hidden-sm\"><button class=\"btn btn-link\" ng-click=\"editFilter(filter)\"><span mw-icon=\"rln-icon edit\"></span></button> <button class=\"btn btn-link\" ng-click=\"deleteFilter(filter)\"><span mw-icon=\"rln-icon delete\"></span></button></div></li><li class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"addFilter(filter)\" class=\"btn btn-link\">+ Add Filter</a></li></ul></div><div class=\"form\" ng-if=\"viewModel.canShowForm\"><div ng-transclude></div><div ng-if=\"mwListCollection\" class=\"panel panel-default margin-top-10\"><div class=\"panel-body\"><p>You can save this filter to your personal quick filter collection</p><input type=\"text\" placeholder=\"Quick Filter Name\" class=\"margin-top-10\" ng-model=\"viewModel.tmpFilter.attributes.name\"><div class=\"margin-top-10\"><button class=\"btn btn-danger\" ng-click=\"cancelFilterEdit()\">{{'common.cancel' | i18n}}</button> <button class=\"btn btn-primary\" ng-disabled=\"!viewModel.tmpFilter.isValid()\" ng-click=\"saveFilter()\">{{'common.save' | i18n}}</button></div></div></div></div></div>"
+    "<div class=\"mw-sidebar-filters\" ng-class=\"{'form-active':viewModel.showFilterForm, 'form-in-active':!viewModel.showFilterForm}\"><div ng-if=\"mwListCollection\" class=\"btn-group btn-block persisted-filters\"><button class=\"btn btn-default btn-block dropdown-toggle\" ng-class=\"{hidden:viewModel.showFilterForm}\" data-toggle=\"dropdown\">{{appliedFilter.get('name') || 'All'}}</button><ul class=\"filter-dropdown dropdown-menu\" style=\"min-width:100%\" role=\"menu\"><li ng-class=\"{'active':appliedFilter.id===filter.id}\" class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"revokeFilter()\" class=\"btn btn-link\">{{'common.unFiltered' | i18n}}</a></li><li ng-repeat=\"filter in filters.models\" ng-class=\"{'active':appliedFilter.id===filter.id}\" class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"applyFilter(filter)\" class=\"btn btn-link\">{{filter.get('name')}}</a><div ng-if=\"appliedFilter.id===filter.id\" class=\"pull-right action-btns hidden-xs hidden-sm\"><button class=\"btn btn-link\" ng-click=\"editFilter(filter)\"><span mw-icon=\"rln-icon edit\"></span></button> <button class=\"btn btn-link\" ng-click=\"deleteFilter(filter)\"><span mw-icon=\"rln-icon delete\"></span></button></div></li><li class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"addFilter(filter)\" class=\"btn btn-link\">+ {{'common.addFilter' | i18n}}</a></li></ul></div><div class=\"form\" ng-if=\"viewModel.showFilterForm\"><div ng-transclude></div><div ng-if=\"mwListCollection && filtersAreApplied()\" class=\"panel panel-default margin-top-10 quickfilter-form\"><div class=\"panel-body\"><p>{{'common.saveQuickFilter' | i18n}}</p><input type=\"text\" placeholder=\"{{'common.quickFilterName' | i18n}}\" class=\"margin-top-10\" ng-model=\"viewModel.tmpFilter.attributes.name\"><div class=\"margin-top-10\"><button class=\"btn btn-danger\" ng-click=\"cancelFilterEdit()\">{{'common.cancel' | i18n}}</button> <button class=\"btn btn-primary\" ng-disabled=\"!viewModel.tmpFilter.isValid()\" ng-click=\"saveFilter()\">{{'common.save' | i18n}}</button></div></div></div><div ng-if=\"mwListCollection && !filtersAreApplied()\" class=\"margin-top-10\"><button class=\"btn btn-danger btn-block\" ng-click=\"cancelFilterEdit()\">{{'common.cancel' | i18n}}</button></div></div></div>"
   );
 
 
