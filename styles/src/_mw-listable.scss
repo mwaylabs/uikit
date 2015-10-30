@@ -408,6 +408,47 @@ div[mw-listable-head-2] {
       z-index: -1;
     }
   }
+
+  @media (max-width: $screen-md) {
+    .search-bar{
+      margin-left: 25px;
+
+      .input-holder{
+        input {
+          margin: -18px 0 0 0;
+
+          ~ .mw-icon {
+            top: -8px;
+          }
+
+          &:focus {
+            margin-top: -18px;
+            width:100%;
+
+            ~ .mw-icon {
+              top: -13px;
+            }
+          }
+
+          &.has-value{
+            ~ .reset-icon{
+              top: -8px;
+            }
+          }
+
+        }
+      }
+    }
+
+    .search-bar.focused {
+      width: 100%;
+
+      ~.selected-counter{
+        display: none;
+      }
+
+    }
+  }
 }
 
 .modal {
