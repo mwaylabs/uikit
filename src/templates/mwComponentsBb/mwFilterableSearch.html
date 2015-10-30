@@ -1,29 +1,19 @@
 <div class="row mw-filterable-search">
-  <div class="col-md-12">
-    <div class="input-group">
-      <input ng-if="!customUrlParameter"
-             type="text"
-             placeholder="{{ 'common.search' | i18n }}"
-             class="form-control"
-             ng-keyup="search($event)"
-             ng-model="collection.filterable.filterValues[property]"
-             ng-disabled="mwDisabled">
-
-      <input ng-if="customUrlParameter"
-             type="text"
-             placeholder="{{ 'common.search' | i18n }}"
-             class="form-control"
-             ng-keyup="search($event)"
-             ng-model="collection.filterable.customUrlParams[customUrlParameter]"
-             ng-disabled="mwDisabled">
-
-      <span class="input-group-addon filterable-search-btn" ng-click="performAction()">
-        <span ng-show="searching" class="search-indicator"></span>
-        <span ng-hide="searching || showResetIcon()"><span mw-icon="search"></span></span>
-        <span ng-if="showResetIcon() && !searching"
-              mw-icon="fa-times"
-              class="red"></span>
-      </span>
-    </div>
+  <div class="input-holder">
+    <input type="text"
+           placeholder="{{placeholder || ('common.search' | i18n)}}"
+           ng-keyup="keyUp()"
+           ng-model="viewModel.searchVal"
+           ng-change="search($event)"
+           ng-model-options="{ debounce: 500 }"
+           ng-disabled="mwDisabled"
+           ng-class="{'has-value':hasValue()}">
+    <span mw-icon="fa-search"
+          ng-class="{searching:searching}"
+          class="search-icon"></span>
+    <span ng-click="reset()"
+          mw-prevent-default="click"
+          mw-icon="rln-icon close_cross"
+          class="reset-icon red clickable"></span>
   </div>
 </div>

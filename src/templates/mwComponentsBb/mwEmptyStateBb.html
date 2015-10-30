@@ -1,7 +1,4 @@
 <div>
-  <!-- using ng-show instead of ng-if due to angular bug (see link)
-       angular 1.3 fixes this issue, we should replace ng-show after 1.3 migration
-       https://github.com/vojtajina/angular.js/commit/d414b787173643362c0c513a1929d8e715ca340e -->
   <div ng-if="!showEmptyState()" ng-transclude></div>
   <div ng-if="showEmptyState()"
        class="mw-empty-state">

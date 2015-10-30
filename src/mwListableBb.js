@@ -33,12 +33,13 @@ angular.module('mwListableBb', [])
  *   </doc:source>
  * </doc:example>
  */
-  .directive('mwListableBb', function (Persistance) {
+  .directive('mwListableBb', function () {
 
     return {
       restrict: 'A',
       scope: {
-        collection: '='
+        collection: '=',
+        mwListCollection: '='
       },
       compile: function (elm) {
         elm.append('<tfoot mw-listable-footer-bb></tfoot>');
@@ -48,55 +49,72 @@ angular.module('mwListableBb', [])
         };
       },
       controller: function ($scope) {
-        var columns = $scope.columns = [],
-          self = this;
+        var _columns = $scope.columns = [],
+            _collection = null,
+            _mwListCollectionFilter = null;
 
         this.actionColumns = [];
 
         this.sort = function (property, order) {
           var sortOrder = order + property;
-          Persistance.saveSortOrder(sortOrder, $scope.collection);
-          $scope.collection.filterable.setSortOrder(sortOrder);
-          $scope.collection.fetch();
+          _collection.filterable.setSortOrder(sortOrder);
+          _collection.fetch().then(function(){
+            if(_mwListCollectionFilter){
+              _mwListCollectionFilter.applySortOrder({
+                property: property,
+                order: order
+              });
+            }
+            return _collection;
+          });
+
         };
 
         this.getSortOrder = function () {
-          return $scope.collection.filterable.getSortOrder();
+          return _collection.filterable.getSortOrder();
         };
 
         this.registerColumn = function (scope) {
-          columns.push(scope);
+          _columns.push(scope);
         };
 
         this.unRegisterColumn = function (scope) {
           if (scope && scope.$id) {
-            var scopeInArray = _.findWhere(columns, {$id: scope.$id}),
-              indexOfScope = _.indexOf(columns, scopeInArray);
+            var scopeInArray = _.findWhere(_columns, {$id: scope.$id}),
+              indexOfScope = _.indexOf(_columns, scopeInArray);
 
             if (indexOfScope > -1) {
-              columns.splice(indexOfScope, 1);
+              _columns.splice(indexOfScope, 1);
             }
           }
         };
 
         this.getColumns = function () {
-          return columns;
+          return _columns;
         };
 
         this.getCollection = function () {
-          return $scope.collection;
+          return _collection;
         };
 
         this.isSingleSelection = function () {
-          if ($scope.collection && $scope.collection.selectable) {
-            return $scope.collection.selectable.isSingleSelection();
+          if (_collection && _collection.selectable) {
+            return _collection.selectable.isSingleSelection();
           }
           return false;
         };
 
         $scope.$on('$destroy', function () {
-          self.actionColumns = [];
-        });
+          this.actionColumns = [];
+        }.bind(this));
+
+        if($scope.mwListCollection){
+          _collection = $scope.mwListCollection.getCollection();
+          _mwListCollectionFilter = $scope.mwListCollection.getMwListCollectionFilter();
+        } else if($scope.collection){
+          console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
+          _collection = $scope.collection;
+        }
       }
     };
   })
@@ -432,7 +450,8 @@ angular.module('mwListableBb', [])
         nameAttribute: '@',
         localizeName: '@',
         nameI18nPrefix: '@',
-        nameI18nSuffix: '@'
+        nameI18nSuffix: '@',
+        searchAttribute: '@'
       },
       transclude: true,
       templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',
@@ -638,6 +657,13 @@ angular.module('mwListableBb', [])
             scrollEl.off('scroll', throttledScrollFn);
           });
 
+          el.on('focus','input[type=text]', function(){
+            el.find('.search-bar').addClass('focused');
+          });
+
+          el.on('blur','input[type=text]', function(){
+            el.find('.search-bar').removeClass('focused');
+          });
         };
 
         $transclude(function (clone) {
