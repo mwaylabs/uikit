@@ -657,6 +657,13 @@ angular.module('mwListableBb', [])
             scrollEl.off('scroll', throttledScrollFn);
           });
 
+          el.on('focus','input[type=text]', function(){
+            el.find('.search-bar').addClass('focused');
+          });
+
+          el.on('blur','input[type=text]', function(){
+            el.find('.search-bar').removeClass('focused');
+          });
         };
 
         $transclude(function (clone) {
