@@ -3307,7 +3307,9 @@ angular.module('mwCollection', [])
               sortOrder = rsp[1],
               filterValues = appliedFilter.get('filterValues');
 
-          _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
+          if(sortOrder.property){
+            _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
+          }
 
           if(appliedFilter.get('group')){
             _collection.filterable.setFilters(filterValues);
