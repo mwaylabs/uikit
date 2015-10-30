@@ -3,7 +3,7 @@
     <select ng-if="!customUrlParameter"
             class="form-control"
             mw-custom-select
-            ng-model="collection.filterable.filterValues[property]"
+            ng-model="viewModel.val"
             ng-change="changed()"
             ng-options="key(model) as label(model) for model in options.models"
             ng-disabled="mwDisabled">
@@ -13,7 +13,7 @@
     <select ng-if="customUrlParameter"
             class="form-control"
             mw-custom-select
-            ng-model="collection.filterable.customUrlParams[customUrlParameter]"
+            ng-model="viewModel.val"
             ng-change="changed()"
             ng-options="key(model) as label(model) for model in options.models"
             ng-disabled="mwDisabled">

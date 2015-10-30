@@ -2,6 +2,7 @@ angular.module('mwUI', [
   'ngSanitize',
   'mwModal',
   'mwWizard',
+  'mwCollection',
   'mwListable',
   'mwListableBb',
   'mwForm',

@@ -77,11 +77,11 @@
   }
 
   tbody {
-    tr{
+    tr {
       height: 50px;
     }
 
-    tr td{
+    tr td {
       @include single-transition(background-color, 0.2s, ease);
     }
 
@@ -95,7 +95,7 @@
     }
 
     tr.selected td,
-    tr.selected:hover td{
+    tr.selected:hover td {
       background-color: $list-active-color !important;
     }
 
@@ -184,7 +184,7 @@
       margin: 0
     }
 
-    .selected-items .items{
+    .selected-items .items {
       padding: 10px 0;
     }
   }
@@ -193,7 +193,7 @@
 @mixin curved-shadow() {
   position: relative;
 
-  &:before{
+  &:before {
     bottom: 0px;
     left: 1%;
     border-radius: 25%;
@@ -218,8 +218,8 @@ div[mw-listable-head-2] {
     @include normal-listable-header();
   }
 
-  &.has-extra-content{
-    .extra-content{
+  &.has-extra-content {
+    .extra-content {
       display: inline-block;
     }
   }
@@ -227,7 +227,7 @@ div[mw-listable-head-2] {
 
 .mw-listable-header {
   width: 100%;
-  background: white;
+  background: #efefef;
   padding: 5px 7px 5px 10px;
   color: #555;
   font-size: 12px;
@@ -238,8 +238,8 @@ div[mw-listable-head-2] {
   height: 22px;
   left: -16px;
   box-sizing: content-box;
-
-  @include curved-shadow();
+  position: relative;
+  //@include curved-shadow();
 
   .selection-controller {
     margin-left: 10px;
@@ -254,7 +254,7 @@ div[mw-listable-head-2] {
         vertical-align: text-top;
         position: relative;
 
-        .indicator{
+        .indicator {
           width: 60%;
           height: 60%;
           background: $brand-primary;
@@ -266,12 +266,12 @@ div[mw-listable-head-2] {
       }
     }
 
-    .clear{
+    .clear {
       border-left: 1px solid #ccc;
       margin-left: 3px;
       padding-left: 2px;
 
-      &:first-child{
+      &:first-child {
         border-left: none;
       }
 
@@ -287,6 +287,52 @@ div[mw-listable-head-2] {
 
   .search-bar {
     margin: auto;
+
+    .input-holder{
+      border-bottom: none;
+
+      input {
+        border: none;
+        box-shadow: none;
+        width: 128px;
+        background: transparent;
+        display: inline-block;
+        margin: -6px 0 0 0;
+        padding: 0 0 0 3px;
+        font-size: 12px;
+        transition: all 0.2s ease;
+
+        ~ .mw-icon {
+          position: absolute;
+          left: -16px;
+          top: 1px;
+          transition: all 0.2s ease;
+        }
+
+        &:focus {
+          background: white;
+          height: 26px;
+          margin-top: -2px;
+          font-size: 16px;
+          width: 300px;
+
+          ~ .mw-icon {
+            background: white;
+            left: -26px;
+            top: -2px;
+            padding: 4px 8px;
+            height: 26px;
+          }
+        }
+
+        &.has-value{
+          ~ .reset-icon{
+            top: 2px;
+            left: -15px;
+          }
+        }
+      }
+    }
   }
 
   .selected-counter {
@@ -296,7 +342,7 @@ div[mw-listable-head-2] {
       color: $brand-primary;
     }
 
-    .extra-content{
+    .extra-content {
       border-right: 1px solid #ccc;
       padding-right: 5px;
       margin-right: 3px;
@@ -308,7 +354,7 @@ div[mw-listable-head-2] {
     position: absolute;
     left: 0;
     width: 100%;
-    background: rgba(255,255,255,0.85);
+    background: rgba(255, 255, 255, 0.85);
     z-index: 9;
     overflow: auto;
 
@@ -316,34 +362,34 @@ div[mw-listable-head-2] {
       background: white;
       padding: 10px 15px;
 
-      .box-shadow-container{
+      .box-shadow-container {
 
         @include curved-shadow();
 
-        &:before{
+        &:before {
           bottom: -9px;
         }
       }
 
-      .label{
+      .label {
         font-size: 13px;
         font-weight: normal;
         margin: 5px;
-        &:hover{
+        &:hover {
           border-color: $brand-primary;
           color: $brand-primary;
 
-          i{
+          i {
             color: $brand-primary;
           }
         }
 
-        i{
+        i {
           font-size: 11px;
           margin: 0px -5px 0 0;
         }
 
-        i.fa{
+        i.fa {
           margin: 0;
         }
       }
@@ -353,13 +399,54 @@ div[mw-listable-head-2] {
       }
     }
 
-    .close-pane{
+    .close-pane {
       position: absolute;
       height: 100%;
       width: 100%;
       top: 0;
       left: 0;
       z-index: -1;
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    .search-bar{
+      margin-left: 25px;
+
+      .input-holder{
+        input {
+          margin: -18px 0 0 0;
+
+          ~ .mw-icon {
+            top: -8px;
+          }
+
+          &:focus {
+            margin-top: -18px;
+            width:100%;
+
+            ~ .mw-icon {
+              top: -13px;
+            }
+          }
+
+          &.has-value{
+            ~ .reset-icon{
+              top: -8px;
+            }
+          }
+
+        }
+      }
+    }
+
+    .search-bar.focused {
+      width: 100%;
+
+      ~.selected-counter{
+        display: none;
+      }
+
     }
   }
 }

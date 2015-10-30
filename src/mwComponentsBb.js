@@ -14,100 +14,61 @@ angular.module('mwComponentsBb', [])
  * @param {expression} disabled If expression evaluates to true, input is disabled.
  * @param {string} property The name of the property on which the filtering should happen.
  */
-  .directive('mwFilterableSearchBb', function ($timeout, $animate, Loading, Detect, EmptyState, Persistance) {
+  .directive('mwFilterableSearchBb', function ($timeout) {
     return {
       scope: {
         collection: '=',
         property: '@',
         customUrlParameter: '@',
-        mwDisabled: '='
+        mwDisabled: '=',
+        placeholder: '@'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-      link: function (scope, elm) {
-        $animate.enabled(false, elm.find('.search-indicator'));
+      link: function (scope, el) {
+        var inputEl = el.find('input');
 
-        scope.inputLength = 0;
-        var timeout,
-            isMobile = Detect.isMobile();
-
-        var getSearchText = function(){
-          return scope.customUrlParameter ? scope.collection.filterable.customUrlParams[scope.customUrlParameter] : scope.collection.filterable.filterValues[scope.property];
-        };
-
-        var search = function () {
-          //show search icon
-          scope.searching = true;
-
-          //persist filter values
-          Persistance.saveFilterValues(scope.collection);
-
-          //set property to setted filters on collection
-          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          EmptyState.pushFilter(scope.collection, property);
-
-          //backup searched text to reset after fetch complete in case of search text was empty
-          return scope.collection.fetch()
-              .then(function(collection){
-                if(getSearchText() === ''){
-                  EmptyState.removeFilter(collection, property);
-                }
-              }).finally(function(){
-                scope.searching = false;
-              });
-        };
-
-        var throttler = function () {
-          $timeout.cancel(timeout);
-          timeout = $timeout(function () {
-            search().then(function () {
-              $timeout.cancel(timeout);
-            });
-          }, 500);
-        };
-
-        scope.search = function (event) {
-          if (!event || event.keyCode === 13) {
-            search();
+        var setFilterVal = function (val) {
+          if (scope.customUrlParameter) {
+            scope.collection.filterable.customUrlParams[scope.customUrlParameter] = val;
           } else {
-
-            if(!isMobile){
-              throttler();
-            }
+            var filter = {};
+            filter[scope.property] = val;
+            scope.collection.filterable.setFilters(filter);
           }
+        };
+
+        scope.viewModel = {
+          searchVal: ''
+        };
+
+        scope.search = function () {
+          scope.searching = true;
+          //backup searched text to reset after fetch complete in case of search text was empty
+          setFilterVal(scope.viewModel.searchVal);
+          return scope.collection.fetch().finally(function () {
+            $timeout(function () {
+              scope.searching = false;
+            }, 500);
+          });
         };
 
         scope.reset = function () {
-          if(scope.customUrlParameter) {
-            scope.collection.filterable.customUrlParams[scope.customUrlParameter] = '';
-          } else {
-            scope.collection.filterable.filterValues[scope.property] = '';
-          }
-        };
-
-        scope.showResetIcon = function() {
-          //never show icon on mobile
-          if(!scope.collection || isMobile){
-            return false;
-          }
-          //return true if search text is undefined (ng-model is invalid e..g text is too long)
-          if(angular.isUndefined(getSearchText())){
-            return true;
-          }
-          //show icon when searchText is there
-          return getSearchText().length > 0;
-        };
-
-        scope.performAction = function(){
-          if(scope.showResetIcon() && !scope.searching) {
-            scope.reset();
-          }
+          scope.viewModel.searchVal = '';
           scope.search();
+        };
+
+        scope.hasValue = function () {
+          return inputEl.val().length > 0;
+        };
+
+        scope.keyUp = function () {
+          scope.searching = true;
         };
       }
     };
   })
 
-  .directive('mwEmptyStateBb', function (EmptyState) {
+  .directive('mwEmptyStateBb', function () {
     return {
       restrict: 'A',
       replace: true,
@@ -119,16 +80,22 @@ angular.module('mwComponentsBb', [])
       },
       transclude: true,
       templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
-      link: function(scope){
-        scope.showEmptyState = function(){
-          return !scope.collection || (scope.collection.length === 0 && !EmptyState.hasFilters(scope.collection));
-        };
+      link: function (scope) {
+
+        if (scope.collection) {
+          scope.showEmptyState = function () {
+            return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
+          };
+        } else {
+          scope.showEmptyState = function () {
+            return true;
+          };
+        }
       }
     };
   })
 
-
-  .directive('mwVersionSelector', function(){
+  .directive('mwVersionSelector', function () {
     return {
       restrict: 'A',
       scope: {
@@ -138,9 +105,9 @@ angular.module('mwComponentsBb', [])
         url: '@'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwVersionSelector.html',
-      link: function(scope){
+      link: function (scope) {
         scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
-        scope.getUrl = function(uuid){
+        scope.getUrl = function (uuid) {
           return scope.url.replace('VERSION_UUID', uuid);
         };
       }
