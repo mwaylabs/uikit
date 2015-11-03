@@ -2287,8 +2287,8 @@ angular.module('mwFormBb', [])
     return {
       restrict: 'A',
       scope: {
-        inputCollection: '=mwOptionsCollection',
-        selectedCollection: '=mwCollection',
+        mwOptionsCollection: '=',
+        mwCollection: '=',
         labelProperty: '@mwOptionsLabelKey',
         i18nPrefix: '@mwOptionsLabelI18nPrefix',
         mwRequired: '=',
@@ -2298,55 +2298,18 @@ angular.module('mwFormBb', [])
       },
       templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBoxes.html',
       link: function (scope) {
-
-        //init collection with given values or one empty model if no data is provided
-        scope.privateCollection = scope.selectedCollection.clone();
-        if (scope.privateCollection.length === 0 && scope.inputCollection.first()) {
-          var emptyClone = scope.inputCollection.first().clone().clear();
-          scope.privateCollection.add(emptyClone);
-        }
+        scope.viewModel = {
+          tmpModel: new scope.mwCollection.model()
+        };
 
         //add empty model on + button
-        scope.add = function () {
-          var emptyClone = scope.inputCollection.first().clone().clear();
-          scope.privateCollection.add(emptyClone);
+        scope.add = function (model) {
+          scope.mwCollection.add(model.toJSON());
         };
 
         //remove the specific model or the last (empty) one if model is not found
         scope.remove = function (model) {
-          correctIds();
-          if (_.isUndefined(model.id)) {
-            scope.privateCollection.pop();
-          }
-          scope.privateCollection.remove(scope.privateCollection.get(model.id));
-          if (scope.privateCollection.length === 0) {
-            scope.add();
-          }
-          scope.change();
-        };
-
-        //only show the available models in options
-        scope.collectionWithoutSelected = function (model) {
-          //the current selected model should not be removed from the options
-          var notInOptionsCollection = scope.privateCollection.clone();
-          notInOptionsCollection.remove(model);
-
-          //remove all already chosen models from options
-          var filteredOptionsCollection = scope.inputCollection.clone();
-          filteredOptionsCollection.remove(notInOptionsCollection.models);
-          return filteredOptionsCollection;
-        };
-
-        //reset selected collection on every change
-        scope.change = function () {
-          scope.selectedCollection.reset(scope.privateCollection.models, {silent: true});
-          scope.selectedCollection.each(function (model) {
-
-            if (_.isUndefined(model.id)) {
-              scope.selectedCollection.pop();
-            }
-          });
-          scope.requiredValue = scope.selectedCollection.length ? true : null;
+          scope.mwCollection.remove(model);
         };
 
         //get label to show in select boxes
@@ -2357,27 +2320,21 @@ angular.module('mwFormBb', [])
           }
         };
 
-        //helper method to reset the collections ids (we need this because the ng-model of the select directly replaces the model
-        //and does not use the collections set function
-        var correctIds = function () {
-          var byId = {};
-          scope.privateCollection.each(function (model) {
-            byId[model.id] = model;
-          });
-          scope.privateCollection._byId = byId;
-        };
+        scope.mwCollection.on('add', function(model){
+          scope.mwOptionsCollection.remove(model);
+        });
 
-        scope.change();
+        scope.mwCollection.on('remove', function(model){
+          scope.mwOptionsCollection.add(model.toJSON());
+        });
+
+        scope.mwCollection.each(function(model){
+          scope.mwOptionsCollection.remove(model);
+        });
+
       }
     };
-  }])
-
-  .directive('mwMultiSelectBox', function () {
-    return {
-      restrict: 'A',
-      templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBox.html'
-    };
-  });
+  }]);
 
 'use strict';
 
@@ -7157,13 +7114,8 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
-  $templateCache.put('uikit/templates/mwFormBb/mwMultiSelectBox.html',
-    "<div class=\"multi-select-box\"><div class=\"col-xs-7 col-sm-8 col-md-9\"><select ng-options=\"getLabel(item) for item in collectionWithoutSelected(privateCollection.models[$index]).models track by item.id\" mw-custom-select ng-model=\"privateCollection.models[$index]\" ng-change=\"change()\" ng-disabled=\"mwDisabled\"></select></div><div class=\"col-xs-5 col-sm-4 col-md-3 toggle-btns\"><button ng-click=\"remove(model)\" ng-disabled=\"mwDisabled\" class=\"btn btn-default remove\"><span mw-icon=\"fa-minus\"></span></button> <button ng-if=\"$last === true\" ng-click=\"add()\" ng-disabled=\"privateCollection.models[$index].id === undefined ||  privateCollection.length === inputCollection.length || mwDisabled\" class=\"btn btn-default add\"><span mw-icon=\"fa-plus\"></span></button></div></div>"
-  );
-
-
   $templateCache.put('uikit/templates/mwFormBb/mwMultiSelectBoxes.html',
-    "<div class=\"mw-multi-select-boxes\"><div ng-if=\"privateCollection.models.length>0\" mw-multi-select-box class=\"row\" ng-class=\"{true: 'margin-top-5'}[!$first]\" ng-repeat=\"model in privateCollection.models\"></div><p ng-if=\"privateCollection.models.length===0\" class=\"margin-top-5\">{{'common.noOptionsAv' | i18n}}</p><input type=\"hidden\" ng-model=\"requiredValue\" ng-required=\"mwRequired\" name=\"{{hiddenFormElementName || 'mwMultiSelectBoxes'}}\"></div>"
+    "<div class=\"mw-multi-select-boxes\"><div class=\"selected-items\" ng-if=\"mwCollection.models.length>0\"><ul class=\"col-xs-7 col-sm-8 col-md-9\"><li ng-repeat=\"model in mwCollection.models\"><span><span mw-icon=\"rln-icon delete\" class=\"clickable\" ng-click=\"remove(model)\"></span></span> <span>{{getLabel(model)}}</span></li></ul></div><div class=\"row selector\"><div class=\"col-xs-7 col-sm-8 col-md-9\"><select ng-options=\"getLabel(item) for item in mwOptionsCollection.models\" mw-custom-select ng-model=\"viewModel.tmpModel\" ng-disabled=\"mwDisabled\"></select></div><div class=\"col-xs-5 col-sm-4 col-md-3 toggle-btns\"><button ng-click=\"add(viewModel.tmpModel)\" ng-disabled=\"mwDisabled || !viewModel.tmpModel.id\" class=\"btn btn-primary add\"><span mw-icon=\"fa-plus\"></span></button></div></div><input type=\"hidden\" ng-model=\"requiredValue\" ng-required=\"mwRequired\" name=\"{{hiddenFormElementName || 'mwMultiSelectBoxes'}}\"></div>"
   );
 
 
@@ -7281,8 +7233,8 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 }]);
 /**
- * @license AngularJS v1.3.15
- * (c) 2010-2014 Google, Inc. http://angularjs.org
+ * @license AngularJS v1.4.7
+ * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
 (function(window, angular, undefined) {'use strict';
@@ -7493,10 +7445,11 @@ var inlineElements = angular.extend({}, optionalEndTagInlineElements, makeMap("a
 
 // SVG Elements
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Elements
-var svgElements = makeMap("animate,animateColor,animateMotion,animateTransform,circle,defs," +
-        "desc,ellipse,font-face,font-face-name,font-face-src,g,glyph,hkern,image,linearGradient," +
-        "line,marker,metadata,missing-glyph,mpath,path,polygon,polyline,radialGradient,rect,set," +
-        "stop,svg,switch,text,title,tspan,use");
+// Note: the elements animate,animateColor,animateMotion,animateTransform,set are intentionally omitted.
+// They can potentially allow for arbitrary javascript to be executed. See #11290
+var svgElements = makeMap("circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph," +
+        "hkern,image,linearGradient,line,marker,metadata,missing-glyph,mpath,path,polygon,polyline," +
+        "radialGradient,rect,stop,svg,switch,text,title,tspan,use");
 
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
@@ -7514,36 +7467,37 @@ var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap,xlink:href");
 var htmlAttrs = makeMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
     'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
-    'scope,scrolling,shape,size,span,start,summary,target,title,type,' +
+    'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
     'valign,value,vspace,width');
 
 // SVG attributes (without "id" and "name" attributes)
 // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Attributes
 var svgAttrs = makeMap('accent-height,accumulate,additive,alphabetic,arabic-form,ascent,' +
-    'attributeName,attributeType,baseProfile,bbox,begin,by,calcMode,cap-height,class,color,' +
-    'color-rendering,content,cx,cy,d,dx,dy,descent,display,dur,end,fill,fill-rule,font-family,' +
-    'font-size,font-stretch,font-style,font-variant,font-weight,from,fx,fy,g1,g2,glyph-name,' +
-    'gradientUnits,hanging,height,horiz-adv-x,horiz-origin-x,ideographic,k,keyPoints,' +
-    'keySplines,keyTimes,lang,marker-end,marker-mid,marker-start,markerHeight,markerUnits,' +
-    'markerWidth,mathematical,max,min,offset,opacity,orient,origin,overline-position,' +
-    'overline-thickness,panose-1,path,pathLength,points,preserveAspectRatio,r,refX,refY,' +
-    'repeatCount,repeatDur,requiredExtensions,requiredFeatures,restart,rotate,rx,ry,slope,stemh,' +
-    'stemv,stop-color,stop-opacity,strikethrough-position,strikethrough-thickness,stroke,' +
-    'stroke-dasharray,stroke-dashoffset,stroke-linecap,stroke-linejoin,stroke-miterlimit,' +
-    'stroke-opacity,stroke-width,systemLanguage,target,text-anchor,to,transform,type,u1,u2,' +
-    'underline-position,underline-thickness,unicode,unicode-range,units-per-em,values,version,' +
-    'viewBox,visibility,width,widths,x,x-height,x1,x2,xlink:actuate,xlink:arcrole,xlink:role,' +
-    'xlink:show,xlink:title,xlink:type,xml:base,xml:lang,xml:space,xmlns,xmlns:xlink,y,y1,y2,' +
-    'zoomAndPan');
+    'baseProfile,bbox,begin,by,calcMode,cap-height,class,color,color-rendering,content,' +
+    'cx,cy,d,dx,dy,descent,display,dur,end,fill,fill-rule,font-family,font-size,font-stretch,' +
+    'font-style,font-variant,font-weight,from,fx,fy,g1,g2,glyph-name,gradientUnits,hanging,' +
+    'height,horiz-adv-x,horiz-origin-x,ideographic,k,keyPoints,keySplines,keyTimes,lang,' +
+    'marker-end,marker-mid,marker-start,markerHeight,markerUnits,markerWidth,mathematical,' +
+    'max,min,offset,opacity,orient,origin,overline-position,overline-thickness,panose-1,' +
+    'path,pathLength,points,preserveAspectRatio,r,refX,refY,repeatCount,repeatDur,' +
+    'requiredExtensions,requiredFeatures,restart,rotate,rx,ry,slope,stemh,stemv,stop-color,' +
+    'stop-opacity,strikethrough-position,strikethrough-thickness,stroke,stroke-dasharray,' +
+    'stroke-dashoffset,stroke-linecap,stroke-linejoin,stroke-miterlimit,stroke-opacity,' +
+    'stroke-width,systemLanguage,target,text-anchor,to,transform,type,u1,u2,underline-position,' +
+    'underline-thickness,unicode,unicode-range,units-per-em,values,version,viewBox,visibility,' +
+    'width,widths,x,x-height,x1,x2,xlink:actuate,xlink:arcrole,xlink:role,xlink:show,xlink:title,' +
+    'xlink:type,xml:base,xml:lang,xml:space,xmlns,xmlns:xlink,y,y1,y2,zoomAndPan', true);
 
 var validAttrs = angular.extend({},
                                 uriAttrs,
                                 svgAttrs,
                                 htmlAttrs);
 
-function makeMap(str) {
+function makeMap(str, lowercaseKeys) {
   var obj = {}, items = str.split(','), i;
-  for (i = 0; i < items.length; i++) obj[items[i]] = true;
+  for (i = 0; i < items.length; i++) {
+    obj[lowercaseKeys ? angular.lowercase(items[i]) : items[i]] = true;
+  }
   return obj;
 }
 
@@ -7671,8 +7625,9 @@ function htmlParser(html, handler) {
 
     unary = voidElements[tagName] || !!unary;
 
-    if (!unary)
+    if (!unary) {
       stack.push(tagName);
+    }
 
     var attrs = {};
 
@@ -7691,11 +7646,12 @@ function htmlParser(html, handler) {
   function parseEndTag(tag, tagName) {
     var pos = 0, i;
     tagName = angular.lowercase(tagName);
-    if (tagName)
+    if (tagName) {
       // Find the closest opened tag of the same type
-      for (pos = stack.length - 1; pos >= 0; pos--)
-        if (stack[pos] == tagName)
-          break;
+      for (pos = stack.length - 1; pos >= 0; pos--) {
+        if (stack[pos] == tagName) break;
+      }
+    }
 
     if (pos >= 0) {
       // Close all the open elements, up the stack
@@ -7909,8 +7865,8 @@ angular.module('ngSanitize', []).provider('$sanitize', $SanitizeProvider);
  */
 angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
   var LINKY_URL_REGEXP =
-        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/,
-      MAILTO_REGEXP = /^mailto:/;
+        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"\u201d\u2019]/i,
+      MAILTO_REGEXP = /^mailto:/i;
 
   return function(text, target) {
     if (!text) return text;
