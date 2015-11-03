@@ -53,28 +53,54 @@ describe('mwUi mwMultiSelectBoxes', function(){
     expect(scope.selectedCollection.length).toBe(0);
   });
 
-/*  it('should enable the add button when a selectbox has an active option', function(){
+  it('should enable the add button when a selectbox has an active option', function(){
+    var scope = $rootScope.$new(),
+        isolateScope;
+    scope.inputCollection = inputCollection;
+    scope.selectedCollection = selectedCollection;
+    element = $compile('<div mw-multi-select-boxes mw-options-collection="inputCollection" mw-collection="selectedCollection"></div>')(scope);
+    scope.$digest();
+    isolateScope = element.isolateScope();
     expect(element.find('button.add[disabled]').length).toBe(1);
-    scope.addModel(inputCollection.at(0));
+    isolateScope.viewModel.tmpModel.set('uuid',1);
+    scope.$digest();
     expect(element.find('button.add[disabled]').length).toBe(0);
   });
-*/
-  it('should disable the add button when no selection is in the last select box', function(){
-    expect(element.find('button.add[disabled]').length).toBe(1);
+
+  it('should remove model from option list on add', function(){
+    var scope = $rootScope.$new(),
+      isolateScope;
+    scope.inputCollection = inputCollection;
+    scope.selectedCollection = selectedCollection;
+    element = $compile('<div mw-multi-select-boxes mw-options-collection="inputCollection" mw-collection="selectedCollection"></div>')(scope);
+    scope.$digest();
+    isolateScope = element.isolateScope();
+    expect(inputCollection.length).toBe(10);
+    expect(selectedCollection.length).toBe(0);
+    isolateScope.add(inputCollection.at(0));
+    scope.$digest();
+    expect(inputCollection.length).toBe(9);
+    expect(selectedCollection.length).toBe(1);
+    expect(selectedCollection.first().id).toBe(0);
   });
 
-  /*it('should always have all selections in the selected collection', function(){
-    scope.addModel(inputCollection.at(0));
-    scope.addModel(inputCollection.at(1));
-    scope.addModel(inputCollection.at(2));
-    expect(inputCollection.length).toBe(3);
-
-    scope.addModel();
-    expect(inputCollection.length).toBe(2);
-    scope.addModel();
-    expect(inputCollection.length).toBe(1);
+  it('should add model to option list when it is removed from the selected list', function(){
+    var scope = $rootScope.$new(),
+      isolateScope;
+    scope.inputCollection = inputCollection;
+    scope.selectedCollection = selectedCollection;
+    scope.selectedCollection.add(scope.inputCollection.at(0));
+    element = $compile('<div mw-multi-select-boxes mw-options-collection="inputCollection" mw-collection="selectedCollection"></div>')(scope);
+    scope.$digest();
+    isolateScope = element.isolateScope();
+    expect(inputCollection.length).toBe(9);
+    expect(selectedCollection.length).toBe(1);
+    isolateScope.remove(selectedCollection.at(0));
+    scope.$digest();
+    expect(inputCollection.length).toBe(10);
+    expect(selectedCollection.length).toBe(0);
   });
-*/
+
 
   it('should not show already selected items in the options', function(){
     var scope = $rootScope.$new();
@@ -87,7 +113,7 @@ describe('mwUi mwMultiSelectBoxes', function(){
     element = $compile('<div mw-multi-select-boxes mw-options-collection="inputCollection" mw-collection="selectedCollection"></div>')(scope);
     scope.$digest();
 
-    expect(element.find('select').length).toBe(3);
+    expect(element.find('ul li').length).toBe(3);
     //has to be 8 because it should not show the already selected ones (10-3=7) but is has to show the currently selected one (7+1=8)
     expect(element.find('select:first > option').length).toBe(8);
   });

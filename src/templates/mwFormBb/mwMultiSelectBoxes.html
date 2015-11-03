@@ -1,11 +1,26 @@
 <div class="mw-multi-select-boxes">
-  <div ng-if="privateCollection.models.length>0"
-       mw-multi-select-box
-       class="row" ng-class="{true: 'margin-top-5'}[!$first]"
-       ng-repeat="model in privateCollection.models">
+
+  <div class="selected-items" ng-if="mwCollection.models.length>0">
+    <ul class="col-xs-7 col-sm-8 col-md-9">
+      <li ng-repeat="model in mwCollection.models">
+        <span><span mw-icon="rln-icon delete" class="clickable" ng-click="remove(model)"></span></span>
+        <span>{{getLabel(model)}}</span>
+      </li>
+    </ul>
   </div>
-  <p ng-if="privateCollection.models.length===0" class="margin-top-5">
-    {{'common.noOptionsAv' | i18n}}
-  </p>
+  <div class="row selector">
+    <div class="col-xs-7 col-sm-8 col-md-9">
+      <select ng-options="getLabel(item) for item in mwOptionsCollection.models"
+              mw-custom-select
+              ng-model="viewModel.tmpModel"
+              ng-disabled="mwDisabled"></select>
+    </div>
+    <div class="col-xs-5 col-sm-4 col-md-3 toggle-btns">
+      <button ng-click="add(viewModel.tmpModel)"
+              ng-disabled="mwDisabled || !viewModel.tmpModel.id"
+              class="btn btn-primary add"><span mw-icon="fa-plus"></span></button>
+    </div>
+  </div>
+
   <input type="hidden" ng-model="requiredValue" ng-required="mwRequired" name="{{hiddenFormElementName || 'mwMultiSelectBoxes'}}"/>
 </div>
