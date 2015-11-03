@@ -196,8 +196,8 @@ angular.module('mwFormBb', [])
     return {
       restrict: 'A',
       scope: {
-        inputCollection: '=mwOptionsCollection',
-        selectedCollection: '=mwCollection',
+        mwOptionsCollection: '=',
+        mwCollection: '=',
         labelProperty: '@mwOptionsLabelKey',
         i18nPrefix: '@mwOptionsLabelI18nPrefix',
         mwRequired: '=',
@@ -207,55 +207,18 @@ angular.module('mwFormBb', [])
       },
       templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBoxes.html',
       link: function (scope) {
-
-        //init collection with given values or one empty model if no data is provided
-        scope.privateCollection = scope.selectedCollection.clone();
-        if (scope.privateCollection.length === 0 && scope.inputCollection.first()) {
-          var emptyClone = scope.inputCollection.first().clone().clear();
-          scope.privateCollection.add(emptyClone);
-        }
+        scope.viewModel = {
+          tmpModel: new scope.mwCollection.model()
+        };
 
         //add empty model on + button
-        scope.add = function () {
-          var emptyClone = scope.inputCollection.first().clone().clear();
-          scope.privateCollection.add(emptyClone);
+        scope.add = function (model) {
+          scope.mwCollection.add(model.toJSON());
         };
 
         //remove the specific model or the last (empty) one if model is not found
         scope.remove = function (model) {
-          correctIds();
-          if (_.isUndefined(model.id)) {
-            scope.privateCollection.pop();
-          }
-          scope.privateCollection.remove(scope.privateCollection.get(model.id));
-          if (scope.privateCollection.length === 0) {
-            scope.add();
-          }
-          scope.change();
-        };
-
-        //only show the available models in options
-        scope.collectionWithoutSelected = function (model) {
-          //the current selected model should not be removed from the options
-          var notInOptionsCollection = scope.privateCollection.clone();
-          notInOptionsCollection.remove(model);
-
-          //remove all already chosen models from options
-          var filteredOptionsCollection = scope.inputCollection.clone();
-          filteredOptionsCollection.remove(notInOptionsCollection.models);
-          return filteredOptionsCollection;
-        };
-
-        //reset selected collection on every change
-        scope.change = function () {
-          scope.selectedCollection.reset(scope.privateCollection.models, {silent: true});
-          scope.selectedCollection.each(function (model) {
-
-            if (_.isUndefined(model.id)) {
-              scope.selectedCollection.pop();
-            }
-          });
-          scope.requiredValue = scope.selectedCollection.length ? true : null;
+          scope.mwCollection.remove(model);
         };
 
         //get label to show in select boxes
@@ -266,24 +229,18 @@ angular.module('mwFormBb', [])
           }
         };
 
-        //helper method to reset the collections ids (we need this because the ng-model of the select directly replaces the model
-        //and does not use the collections set function
-        var correctIds = function () {
-          var byId = {};
-          scope.privateCollection.each(function (model) {
-            byId[model.id] = model;
-          });
-          scope.privateCollection._byId = byId;
-        };
+        scope.mwCollection.on('add', function(model){
+          scope.mwOptionsCollection.remove(model);
+        });
 
-        scope.change();
+        scope.mwCollection.on('remove', function(model){
+          scope.mwOptionsCollection.add(model.toJSON());
+        });
+
+        scope.mwCollection.each(function(model){
+          scope.mwOptionsCollection.remove(model);
+        });
+
       }
-    };
-  })
-
-  .directive('mwMultiSelectBox', function () {
-    return {
-      restrict: 'A',
-      templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBox.html'
     };
   });
