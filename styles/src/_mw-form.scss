@@ -147,11 +147,28 @@
 }
 
 .mw-multi-select-boxes {
-  .custom-select {
-    width: 100%;
+
+  .selected-items{
+    ul{
+      list-style: none;
+      padding: 0;
+      margin-top: 2px;
+
+      li{
+        padding: 5px;
+
+        &:hover{
+          background: #efefef;
+        }
+      }
+    }
   }
 
-  .multi-select-box {
+  .selector {
+    .custom-select {
+      width: 100%;
+    }
+
     .toggle-btns {
       margin-left: -25px;
     }
