@@ -1370,6 +1370,76 @@ angular.module('mwComponentsBb', [])
 
   angular.module('mwForm', [])
 
+    .provider('mwValidationMessages', function () {
+      var _registeredValidators = {},
+          _translatedValidators = {},
+          _functionValidators = {},
+          _executedValidators = {};
+
+      var _setValidationMessage = function(key, validationMessage){
+        if(typeof validationMessage === 'function'){
+          _functionValidators[key] = validationMessage;
+        } else {
+          _registeredValidators[key] = validationMessage;
+        }
+      };
+
+      this.registerValidator = function(key, validationMessage){
+        if(!_registeredValidators[key] && !_functionValidators[key]){
+          _setValidationMessage(key,validationMessage);
+        } else {
+          throw new Error('The key ' + key + ' has already been registered');
+        }
+      };
+
+      this.$get = ['$rootScope', 'i18n', function($rootScope, i18n){
+        var _translateRegisteredValidators = function(){
+          _.pairs(_registeredValidators).forEach(function(pair){
+            var key = pair[0],
+                value = pair[1];
+            if(i18n.translationIsAvailable(value)){
+              _translatedValidators[key] = i18n.get(value);
+            } else {
+              _translatedValidators[key] = value;
+            }
+          });
+        };
+
+        var _executeFunctionValidators = function(){
+          _.pairs(_functionValidators).forEach(function(pair){
+            var key = pair[0],
+                fn = pair[1];
+            _executedValidators[key] = fn();
+          });
+        };
+
+        var _setValidationMessages = function(){
+          _translateRegisteredValidators();
+          _executeFunctionValidators();
+          $rootScope.$broadcast('mwValidationMessages:change');
+        };
+
+        _setValidationMessages();
+        $rootScope.$on('i18n:localeChanged', function(){
+          _setValidationMessages();
+        });
+
+        return {
+          getRegisteredValidators: function(){
+            return _.extend(_translatedValidators, _executedValidators);
+          },
+          updateMessage: function(key, message){
+            if(_registeredValidators[key] || _functionValidators[key]){
+              _setValidationMessage(key, message);
+              _setValidationMessages();
+            } else {
+              throw new Error('The key '+key+' is not available. You have to register it first via the provider');
+            }
+          }
+        };
+      }];
+    })
+
   /**
    * @ngdoc directive
    * @name mwForm.directive:mwFormInput
@@ -1436,7 +1506,7 @@ angular.module('mwComponentsBb', [])
 
 
         },
-        controller: ['$scope', function ($scope) {
+        controller: ['$scope', 'mwValidationMessages', function ($scope, mwValidationMessages) {
           var that = this;
           that.element = null;
 
@@ -1461,7 +1531,8 @@ angular.module('mwComponentsBb', [])
               });
 
               var buildValidationValues = function () {
-                $scope.validationValues = {
+                var registeredValidators = mwValidationMessages.getRegisteredValidators(),
+                    defaultValidators = {
                   required: i18n.get('errors.isRequired'),
                   email: i18n.get('errors.hasToBeAnEmail'),
                   pattern: i18n.get('errors.hasToMatchPattern'),
@@ -1478,9 +1549,12 @@ angular.module('mwComponentsBb', [])
                   withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')}),
                   itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
                 };
+
+                $scope.validationValues = _.extend(defaultValidators, registeredValidators);
+
               };
               buildValidationValues();
-              $scope.$on('i18n:localeChanged', buildValidationValues);
+              $scope.$on('mwValidationMessages:change', buildValidationValues);
             }
           };
         }]
