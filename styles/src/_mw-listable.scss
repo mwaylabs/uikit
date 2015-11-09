@@ -1,3 +1,16 @@
+@mixin stripped-table() {
+  tr:nth-child(odd) > td,
+  tr:nth-child(odd) > th{
+    background-color: transparent;
+  }
+
+  tr{
+    &:not(:last-child) td,th{
+      border-bottom: 1px solid #efefef;
+    }
+  }
+}
+
 .mw-listable {
 
   thead {
@@ -99,6 +112,8 @@
       background-color: $list-active-color !important;
     }
 
+    @include stripped-table();
+
     td span[mw-icon] {
       top: 2px;
     }
@@ -171,6 +186,12 @@
     }
   }
 
+}
+
+.table.table-striped{
+  tbody{
+    @include stripped-table();
+  }
 }
 
 @mixin normal-listable-header() {
