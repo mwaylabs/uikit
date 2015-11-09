@@ -1,13 +1,30 @@
 @mixin stripped-table() {
-  tr:nth-child(odd) > td,
-  tr:nth-child(odd) > th{
-    background-color: transparent;
-  }
 
   tr{
-    &:not(:last-child) td,th{
-      border-bottom: 1px solid #efefef;
+
+    &:nth-child(odd) > td,
+    &:nth-child(odd) > th{
+      background-color: transparent;
     }
+
+    &:not(:last-child) td,th{
+      border-bottom: 1px solid $list-hover-color;
+    }
+
+    &.clickable:hover td {
+      background-color: $list-hover-color;
+      cursor: pointer;
+    }
+
+    &.selected td,
+    &.selected:hover td {
+      background-color: $list-active-color !important;
+    }
+  }
+
+  tr td {
+    vertical-align: middle;
+    @include single-transition(background-color, 0.2s, ease);
   }
 }
 
@@ -92,24 +109,6 @@
   tbody {
     tr {
       height: 50px;
-    }
-
-    tr td {
-      @include single-transition(background-color, 0.2s, ease);
-    }
-
-    tr.clickable:hover td {
-      background-color: $list-hover-color;
-      cursor: pointer;
-    }
-
-    tr td {
-      vertical-align: middle;
-    }
-
-    tr.selected td,
-    tr.selected:hover td {
-      background-color: $list-active-color !important;
     }
 
     @include stripped-table();
