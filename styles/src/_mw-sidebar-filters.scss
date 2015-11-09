@@ -116,6 +116,10 @@
       }
     }
 
+    .form > *[ng-transclude] *:first-child .row {
+      margin-top: 0;
+    }
+
     &.form-active{
 
       .persisted-filters{
