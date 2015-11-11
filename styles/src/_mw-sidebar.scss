@@ -102,6 +102,10 @@
       margin: 15px 0;
     }
 
+    *[mw-sidebar-actions] > *[ng-transclude] > *:not(:first-child) {
+        margin-top: 5px;
+    }
+
     @import "mw-sidebar-filters";
 
   }
