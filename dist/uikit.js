@@ -1009,11 +1009,11 @@ angular.module('mwComponents', [])
           scrollFn,
           documentEl,
           scrollEl;
-
+        
         if(attrs.mwListCollection){
           collection = scope.$eval(attrs.mwListCollection).getCollection();
         } else if(attrs.collection){
-          scope.$eval(attrs.collection);
+          collection = scope.$eval(attrs.collection);
         } else {
           console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
         }
