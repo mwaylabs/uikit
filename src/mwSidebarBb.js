@@ -162,7 +162,8 @@ angular.module('mwSidebarBb', [])
           console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
           scope.viewModel = {
             showFilterForm: true,
-            canShowForm: true
+            canShowForm: true,
+            tmpFilter: new MCAPFilterHolder()
           };
         } else {
           throw new Error('please pass a collection or mwCollection as scope attribute');
