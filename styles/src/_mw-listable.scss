@@ -310,6 +310,7 @@ div[mw-listable-head-2] {
 
     .input-holder{
       border-bottom: none;
+      color: $brand-primary;
 
       input {
         border: none;
@@ -320,7 +321,7 @@ div[mw-listable-head-2] {
         margin: -6px 0 0 0;
         padding: 0 0 0 3px;
         font-size: 12px;
-        transition: all 0.2s ease;
+        @include single-transition(all, 0.2s, ease);
 
         ~ .mw-icon {
           position: absolute;
