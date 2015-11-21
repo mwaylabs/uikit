@@ -364,12 +364,6 @@ angular.module('mwComponents', [])
           scope.model.value = '';
           search();
         };
-
-//        Loading.registerDoneCallback(function(){
-//          scope.loading = false;
-//        });
-//
-//        scope.loading = Loading.isLoading();
       }
     };
   })
@@ -885,7 +879,7 @@ angular.module('mwComponents', [])
           scrollFn,
           documentEl,
           scrollEl;
-        
+
         if(attrs.mwListCollection){
           collection = scope.$eval(attrs.mwListCollection).getCollection();
         } else if(attrs.collection){
@@ -894,7 +888,6 @@ angular.module('mwComponents', [])
           console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
         }
 
-        console.log(collection);
         if (!collection || (collection && !collection.filterable)) {
           return;
         }
