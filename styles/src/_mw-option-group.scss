@@ -86,27 +86,36 @@
         width: 10px;
         height: 100%;
 
-        &:after {
-          content: "\f054";
-          font-family: FontAwesome;
-          top: 26%;
-          position: absolute;
-          font-size: 20px;
-          left: -2px;
-          color: $brand-primary;
-          opacity: 0;
-          @include single-transition(all, 0.4s, cubic-bezier(.36, -0.21, .25, 1.33));
-        }
-
-        &.active:after {
-          opacity: 1;
-          left: 2px;
-        }
-
         .state-indicator {
           top: -8px;
           border-radius: 0;
           background: none;
+          position: relative;
+          height: inherit;
+
+          &:after {
+            content: $fa-var-angle-right;
+            font-family: FontAwesome;
+            top: 26%;
+            position: absolute;
+            font-size: 20px;
+            left: -2px;
+            color: $brand-primary;
+            opacity: 0;
+            @include single-transition(all, 0.4s, cubic-bezier(.36, -0.21, .25, 1.33));
+          }
+
+        }
+
+        input[type=radio]:checked ~ .state-indicator {
+          &:after {
+            opacity: 1;
+            left: 2px;
+          }
+        }
+
+        .state-focus-indicator{
+          box-shadow: none !important;
         }
       }
     }
