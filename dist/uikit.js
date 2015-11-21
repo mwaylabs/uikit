@@ -488,12 +488,6 @@ angular.module('mwComponents', [])
           scope.model.value = '';
           search();
         };
-
-//        Loading.registerDoneCallback(function(){
-//          scope.loading = false;
-//        });
-//
-//        scope.loading = Loading.isLoading();
       }
     };
   }])
@@ -1009,7 +1003,7 @@ angular.module('mwComponents', [])
           scrollFn,
           documentEl,
           scrollEl;
-        
+
         if(attrs.mwListCollection){
           collection = scope.$eval(attrs.mwListCollection).getCollection();
         } else if(attrs.collection){
@@ -1018,7 +1012,6 @@ angular.module('mwComponents', [])
           console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
         }
 
-        console.log(collection);
         if (!collection || (collection && !collection.filterable)) {
           return;
         }
@@ -1188,18 +1181,18 @@ angular.module('mwComponents', [])
 
 angular.module('mwComponentsBb', [])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwFilterableSearch
- * @element div
- * @description
- *
- * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwFilterableSearch
+   * @element div
+   * @description
+   *
+   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .directive('mwFilterableSearchBb', ['$timeout', function ($timeout) {
     return {
       scope: {
@@ -1250,6 +1243,18 @@ angular.module('mwComponentsBb', [])
         scope.keyUp = function () {
           scope.searching = true;
         };
+
+        scope.focus = function () {
+          inputEl.focus();
+        };
+
+        el.on('focus', 'input[type=text]', function () {
+          el.children().addClass('is-focused');
+        });
+
+        el.on('blur', 'input[type=text]', function () {
+          el.children().removeClass('is-focused');
+        });
       }
     };
   }])
@@ -7151,7 +7156,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-    "<div class=\"row mw-filterable-search\"><div class=\"input-holder\"><input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp()\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\" ng-class=\"{'has-value':hasValue()}\"> <span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></div></div>"
+    "<div class=\"row mw-filterable-search\" ng-class=\"{'has-value':hasValue()}\"><div class=\"input-holder input-group\"><span class=\"input-group-addon clickable\" ng-click=\"focus()\"><span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-stop-propagation=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></span> <input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp()\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\"></div></div>"
   );
 
 
