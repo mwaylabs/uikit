@@ -4,6 +4,22 @@
     position: relative;
     border-bottom: 1px solid #aaa;
     margin: 0 15px;
+    width: inherit;
+
+    .input-group-addon{
+      background: none;
+      border: none;
+      padding: 6px 8px;
+
+      .reset-icon{
+        display: none;
+        margin: 0 -4px;
+      }
+
+      .search-icon{
+        display: block;
+      }
+    }
 
     input {
       border: none;
@@ -11,48 +27,42 @@
       width: 100%;
       background: transparent;
       display: inline-block;
-      margin-left: 17px;
       padding: 0 0 0 3px;
       font-size: 14px;
+    }
+  }
 
-      ~ .mw-icon {
-        position: absolute;
-        left: 1px;
-        top: 8px;
-      }
+  &:not(.is-focused){
+    .search-icon i{
+      color: $brand-primary;
+    }
+  }
 
-      ~ .reset-icon{
-        display: none;
-      }
-
-      ~ .search-icon{
+  &.has-value{
+    .input-group-addon{
+      .reset-icon{
         display: block;
       }
 
-      &.has-value{
-        ~ .reset-icon{
-          left: -3px;
-          display: block;
-        }
+      .search-icon{
+        display: none;
 
-        ~ .search-icon{
-          display: none;
-
-          &.searching i {
-            animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite;
-            -webkit-animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite; /* Safari and Chrome */
-          }
+        &.searching i {
+          animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite;
+          -webkit-animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite; /* Safari and Chrome */
         }
       }
+    }
+  }
 
-      &:focus {
-        ~.search-icon{
-          display: block;
-        }
+  &.is-focused {
+    .input-group-addon {
+      .search-icon {
+        display: block;
+      }
 
-        ~ .reset-icon{
-          display: none;
-        }
+      .reset-icon {
+        display: none;
       }
     }
   }

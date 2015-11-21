@@ -261,6 +261,13 @@ div[mw-listable-head-2] {
   position: relative;
   //@include curved-shadow();
 
+  .selection-controller,
+  .search-bar,
+  .selected-counter
+  {
+    flex-basis: 100%;
+  }
+
   .selection-controller {
     margin-left: 10px;
 
@@ -306,21 +313,25 @@ div[mw-listable-head-2] {
   }
 
   .search-bar {
-    margin: auto;
+    margin: 0 auto;
+    min-width: 0;
+    flex-basis: 50%;
+    @include single-transition(flex-basis, 0.4s, ease);
 
     .input-holder{
       border-bottom: none;
       color: $brand-primary;
+      background: rgba(255, 255, 255, 0.8);
+      @include single-transition(background, 0.8, ease);
 
       input {
         border: none;
         box-shadow: none;
-        width: 128px;
         background: transparent;
-        display: inline-block;
-        margin: -6px 0 0 0;
         padding: 0 0 0 3px;
         font-size: 12px;
+        height: 32px;
+        line-height: 34px;
         @include single-transition(all, 0.2s, ease);
 
         ~ .mw-icon {
@@ -331,11 +342,8 @@ div[mw-listable-head-2] {
         }
 
         &:focus {
-          background: white;
-          height: 26px;
-          margin-top: -2px;
           font-size: 16px;
-          width: 300px;
+          line-height: 18px;
 
           ~ .mw-icon {
             background: white;
@@ -354,10 +362,19 @@ div[mw-listable-head-2] {
         }
       }
     }
+
+    &.focused{
+      flex-basis: 100%;
+
+      .input-holder{
+        background: rgba(255, 255, 255, 1);
+      }
+    }
   }
 
   .selected-counter {
     margin-right: 6px;
+    text-align: right;
 
     i {
       color: $brand-primary;
@@ -430,44 +447,35 @@ div[mw-listable-head-2] {
     }
   }
 
-  @media (max-width: $screen-md) {
+   @media (max-width: $screen-md) {
     .search-bar{
-      margin-left: 25px;
+      margin-left: -5px;
+      width: 50%;
 
-      .input-holder{
-        input {
-          margin: -18px 0 0 0;
+      .input-group{
+        width: 100%;
 
-          ~ .mw-icon {
-            top: -8px;
-          }
-
-          &:focus {
-            margin-top: -18px;
-            width:100%;
-
-            ~ .mw-icon {
-              top: -13px;
-            }
-          }
-
-          &.has-value{
-            ~ .reset-icon{
-              top: -8px;
-            }
-          }
-
+        input{
+          width: 80%;
         }
       }
-    }
 
-    .search-bar.focused {
-      width: 100%;
+      &.focused {
+        width: 100%;
 
-      ~.selected-counter{
-        display: none;
+        .input-group{
+          width: 100%;
+
+          input{
+            width: 90%;
+          }
+        }
+
+        ~.selected-counter{
+          display: none;
+        }
+
       }
-
     }
   }
 }
