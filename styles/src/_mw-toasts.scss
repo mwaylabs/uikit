@@ -6,16 +6,17 @@
 
     .content {
       position: fixed;
-      width: 100%;
-      left: 0;
+      right: 0;
       top: 0;
     }
 
     ul {
-      margin: 0;
+      margin: 20px 20px 0 20px;
       padding: 0;
       list-style: none;
       position: relative;
+      display: flex;
+      flex-direction: column;
 
       &:before {
         content: "";
@@ -31,9 +32,12 @@
         z-index: 9;
         position: relative;
         display: flex;
+        align-self: flex-end;
         padding: 0;
-        opacity: 1;
-        margin-bottom: 2px;
+        margin-bottom: 5px;
+        border-radius: $border-radius-base;
+        background: white;
+        @include box-shadow(0 0 6px 0 rgba(200,200,200,0.8));
 
         .status-indicator {
           min-width: 84px;
@@ -44,9 +48,9 @@
           font-size: 25px;
           position: relative;
           z-index: 1;
+          border-radius: $border-radius-base 0 0 $border-radius-base;
 
           .mw-icon {
-            left: 5px;
             position: relative;
 
             * {
@@ -76,12 +80,14 @@
         }
 
         .message {
-          padding: 10px;
-          background: white;
+          h5{
+            margin-top: 0;
+          }
+
+          padding: 14px 24px;
           position: relative;
           display: flex;
           align-items: center;
-          box-shadow: 0 0 8px 0 rgba(200,200,200,0.7);
 
           .holder {
             flex-basis: 100%;
@@ -106,34 +112,26 @@
           cursor: pointer;
         }
 
-        &.ng-enter,
-        &.ng-leave {
-          @include single-transition(opacity, 0.5s);
-          opacity: 0.9;
-        }
+        @include single-transition(all, 0.8s, cubic-bezier(.41,-0.44,.33,.98));
+        opacity: 1;
+        //animation: toast-message-out 0.6s cubic-bezier(0, .33, .79, 1.46);
 
-        &.ng-leave.ng-leave-active,
         &.ng-enter {
-          opacity: 0.9;
-          .status-indicator{
-            animation: toast-status-indicator-out 0.5s ease;
-          }
-
-          .message{
-            animation: toast-message-out 0.5s cubic-bezier(0, .33, .79, 1.46);
-          }
+          opacity: 0;
+          @include translateY(-30px);
         }
 
-        &.ng-leave,
         &.ng-enter.ng-enter-active {
           opacity: 1;
-          .status-indicator{
-            animation: toast-status-indicator-in .5s cubic-bezier(.66,.15,.74,1.36);
-          }
+          @include translateY(0);
+        }
 
-          .message{
-            animation: toast-message-in .5s cubic-bezier(.41,-0.44,.33,.98);
-          }
+        &.ng-leave{
+          transform: translateX(0);
+        }
+
+        &.ng-leave.ng-leave-active{
+          transform: translateX(120%);
         }
       }
     }
@@ -141,6 +139,6 @@
 }
 
 .navigation + .notifications .messages-list ul {
-  margin-top: $navbar-height - 5px;
+  margin-top: $navbar-height + 11px;
 }
 

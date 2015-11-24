@@ -13,7 +13,7 @@
 
             <h5 ng-if="toast.title">{{toast.title}}</h5>
 
-            <span ng-if="!toast.isHtmlMessage">{{toast.message}}</span>
+            <span ng-if="!toast.isHtmlMessage">{{toast.message | limitTo:500}}</span>
             <span ng-if="toast.isHtmlMessage" ng-bind-html="toast.message"></span>
 
             <a class="action-button btn btn-link btn-xs" ng-if="toast.button && toast.button.isLink && toast.button.action && !toast.button.link" href="#">
