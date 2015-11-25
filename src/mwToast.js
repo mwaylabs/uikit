@@ -25,7 +25,14 @@ angular.module('mwToast', [])
   .provider('Toast', function () {
 
     var _autoHideTime = 5000,
-      _toasts = [];
+      _toasts = [],
+      _defaultIcons = {
+        primary: 'fa-flag-o',
+        info: 'fa-info',
+        success: 'fa-check',
+        warning: 'fa-warning',
+        danger: 'fa-exclamation'
+      };
 
     var Toast = function (message, options) {
       options = options || {};
@@ -70,6 +77,7 @@ angular.module('mwToast', [])
           autoHideTime: options.autoHideTime || 5000,
           autoHideCallback: options.autoHideCallback,
           isHtmlMessage: options.isHtmlMessage,
+          icon: options.icon || _defaultIcons[options.type] || 'fa-info',
           button: {
             title: options.button.title,
             link: options.button.link,
@@ -91,6 +99,10 @@ angular.module('mwToast', [])
 
     this.setAutoHideTime = function (timeInMs) {
       _autoHideTime = timeInMs;
+    };
+
+    this.setDefaultIcons = function(obj){
+      _.extend(_defaultIcons,obj);
     };
 
     this.$get = function ($timeout) {
