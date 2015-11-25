@@ -6,7 +6,8 @@
     <button class="btn btn-default btn-block dropdown-toggle"
             ng-class="{hidden:viewModel.showFilterForm}"
             data-toggle="dropdown">
-      {{appliedFilter.get('name') || 'All'}}
+      <span mw-icon="rln-icon filter_add"></span>
+      {{appliedFilter.get('name') || ('common.applyQuickFilter' | i18n) }}
     </button>
 
     <ul class="filter-dropdown dropdown-menu" style="min-width:100%" role="menu">

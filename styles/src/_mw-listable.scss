@@ -193,11 +193,18 @@
   }
 }
 
-@mixin normal-listable-header() {
+@mixin small-listable-header() {
   .mw-listable-header {
     left: 0;
+    margin-bottom: 20px;
     box-sizing: border-box;
     padding: 15px 5px;
+    background: transparent;
+    border-bottom: 2px solid #999;
+
+    &.has-selection-control{
+      margin-bottom: 55px;
+    }
 
     .selection-controller,
     .selected-counter {
@@ -206,6 +213,75 @@
 
     .selected-items .items {
       padding: 10px 0;
+    }
+
+    .selection-controller{
+      position: absolute;
+      bottom: -35px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      left: 0;
+
+      .select-all,
+      .clear{
+        flex-basis: 50%;
+        text-align: center;
+        padding: 3px;
+        border: 1px solid #ddd;
+        position: relative;
+
+        a{
+          text-decoration: none !important;
+        }
+
+        .selected-icon,
+        .close_cross{
+          left: 6px;
+          position: absolute;
+          top: 6px;
+        }
+
+        &:hover{
+          background: #efefef;
+        }
+      }
+    }
+
+    .search-bar{
+      margin-left: -5px;
+      width: 50%;
+      flex-basis:50%;
+
+      .input-group{
+        width: 100%;
+        background: transparent;
+
+        input{
+          width: 80%;
+        }
+      }
+
+      ~.selected-counter{
+        flex-basis: 50%
+      }
+
+      &.focused {
+        width: 100%;
+        flex-basis:70%;
+
+        .input-group{
+          width: 100%;
+
+          input{
+            width: 90%;
+          }
+        }
+
+        ~.selected-counter{
+          flex-basis: 30%
+        }
+      }
     }
   }
 }
@@ -235,7 +311,7 @@ div[mw-listable-head-2] {
     position: static;
     opacity: 1 !important;
 
-    @include normal-listable-header();
+    @include small-listable-header();
   }
 
   &.has-extra-content {
@@ -260,6 +336,13 @@ div[mw-listable-head-2] {
   box-sizing: content-box;
   position: relative;
   //@include curved-shadow();
+
+  .selection-controller,
+  .search-bar,
+  .selected-counter
+  {
+    flex-basis: 100%;
+  }
 
   .selection-controller {
     margin-left: 10px;
@@ -306,21 +389,25 @@ div[mw-listable-head-2] {
   }
 
   .search-bar {
-    margin: auto;
+    margin: 0 auto;
+    min-width: 0;
+    flex-basis: 50%;
+    @include single-transition(flex-basis, 0.4s, ease);
 
     .input-holder{
       border-bottom: none;
       color: $brand-primary;
+      background: rgba(255, 255, 255, 0.7);
+      @include single-transition(background, 0.8, ease);
 
       input {
         border: none;
         box-shadow: none;
-        width: 128px;
         background: transparent;
-        display: inline-block;
-        margin: -6px 0 0 0;
         padding: 0 0 0 3px;
         font-size: 12px;
+        height: 32px;
+        line-height: 34px;
         @include single-transition(all, 0.2s, ease);
 
         ~ .mw-icon {
@@ -331,11 +418,8 @@ div[mw-listable-head-2] {
         }
 
         &:focus {
-          background: white;
-          height: 26px;
-          margin-top: -2px;
           font-size: 16px;
-          width: 300px;
+          line-height: 18px;
 
           ~ .mw-icon {
             background: white;
@@ -354,10 +438,19 @@ div[mw-listable-head-2] {
         }
       }
     }
+
+    &.focused{
+      flex-basis: 100%;
+
+      .input-holder{
+        background: rgba(255, 255, 255, 1);
+      }
+    }
   }
 
   .selected-counter {
     margin-right: 6px;
+    text-align: right;
 
     i {
       color: $brand-primary;
@@ -430,50 +523,15 @@ div[mw-listable-head-2] {
     }
   }
 
-  @media (max-width: $screen-md) {
-    .search-bar{
-      margin-left: 25px;
-
-      .input-holder{
-        input {
-          margin: -18px 0 0 0;
-
-          ~ .mw-icon {
-            top: -8px;
-          }
-
-          &:focus {
-            margin-top: -18px;
-            width:100%;
-
-            ~ .mw-icon {
-              top: -13px;
-            }
-          }
-
-          &.has-value{
-            ~ .reset-icon{
-              top: -8px;
-            }
-          }
-
-        }
-      }
-    }
-
-    .search-bar.focused {
-      width: 100%;
-
-      ~.selected-counter{
-        display: none;
-      }
-
+  &.show-selected{
+    .mw-filterable-search{
+      display: none;
     }
   }
 }
 
 .modal {
-  @include normal-listable-header();
+  @include small-listable-header();
 }
 
 .mw-link-show {
