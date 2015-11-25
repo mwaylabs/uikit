@@ -196,11 +196,15 @@
 @mixin small-listable-header() {
   .mw-listable-header {
     left: 0;
+    margin-bottom: 20px;
     box-sizing: border-box;
     padding: 15px 5px;
     background: transparent;
-    border-bottom: 2px solid #ddd;
-    margin-bottom: 55px;
+    border-bottom: 2px solid #999;
+
+    &.has-selection-control{
+      margin-bottom: 55px;
+    }
 
     .selection-controller,
     .selected-counter {
@@ -226,9 +230,17 @@
         text-align: center;
         padding: 3px;
         border: 1px solid #ddd;
+        position: relative;
 
         a{
           text-decoration: none !important;
+        }
+
+        .selected-icon,
+        .close_cross{
+          left: 6px;
+          position: absolute;
+          top: 6px;
         }
 
         &:hover{
@@ -270,7 +282,6 @@
         ~.selected-counter{
           flex-basis: 30%
         }
-
       }
     }
   }
