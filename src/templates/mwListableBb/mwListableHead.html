@@ -1,5 +1,7 @@
-<div class="mw-listable-header clearfix" ng-class="{'show-selected':canShowSelected()}">
-  <div class="selection-controller hidden-xs hidden-sm" ng-if="selectable">
+<div class="mw-listable-header clearfix"
+     ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}">
+
+  <div class="selection-controller" ng-if="selectable">
     <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
       <span class="selected-icon">
         <span class="indicator" ng-if="selectable.allSelected()"></span>
@@ -15,6 +17,7 @@
      <a href="#" mw-prevent-default="click">{{'common.clearSelection' | i18n}}</a>
     </span>
   </div>
+
   <div class="search-bar">
     <div ng-if="searchAttribute"
          mw-filterable-search-bb
@@ -23,6 +26,7 @@
          property="{{searchAttribute}}">
     </div>
   </div>
+
   <div class="selected-counter">
     <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
       <a href="#" mw-prevent-default="click">
@@ -42,6 +46,7 @@
       {{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
     </span>
   </div>
+
   <div class="selected-items" ng-if="canShowSelected()">
     <div class="items clearfix">
       <div class="box-shadow-container">
@@ -65,4 +70,5 @@
     </div>
     <div class="close-pane" ng-click="hideSelected()"></div>
   </div>
+
 </div>

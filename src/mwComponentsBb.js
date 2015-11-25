@@ -2,18 +2,18 @@
 
 angular.module('mwComponentsBb', [])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwFilterableSearch
- * @element div
- * @description
- *
- * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwFilterableSearch
+   * @element div
+   * @description
+   *
+   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .directive('mwFilterableSearchBb', function ($timeout) {
     return {
       scope: {
@@ -64,6 +64,18 @@ angular.module('mwComponentsBb', [])
         scope.keyUp = function () {
           scope.searching = true;
         };
+
+        scope.focus = function () {
+          inputEl.focus();
+        };
+
+        el.on('focus', 'input[type=text]', function () {
+          el.children().addClass('is-focused');
+        });
+
+        el.on('blur', 'input[type=text]', function () {
+          el.children().removeClass('is-focused');
+        });
       }
     };
   })
