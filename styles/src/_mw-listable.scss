@@ -220,13 +220,12 @@
       bottom: -35px;
       width: 100%;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       left: 0;
 
       .select-all,
       .clear{
-        width: 100%;
-        flex-basis: 100%;
+        flex-basis: 50%;
         text-align: center;
         padding: 3px;
         border: 1px solid #ddd;
