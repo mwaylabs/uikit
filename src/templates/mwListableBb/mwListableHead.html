@@ -1,5 +1,5 @@
 <div class="mw-listable-header clearfix" ng-class="{'show-selected':canShowSelected()}">
-  <div class="selection-controller hidden-xs hidden-sm" ng-if="selectable">
+  <div class="selection-controller" ng-if="selectable">
     <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
       <span class="selected-icon">
         <span class="indicator" ng-if="selectable.allSelected()"></span>

@@ -193,11 +193,14 @@
   }
 }
 
-@mixin normal-listable-header() {
+@mixin small-listable-header() {
   .mw-listable-header {
     left: 0;
     box-sizing: border-box;
     padding: 15px 5px;
+    background: transparent;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 55px;
 
     .selection-controller,
     .selected-counter {
@@ -206,6 +209,69 @@
 
     .selected-items .items {
       padding: 10px 0;
+    }
+
+    .selection-controller{
+      position: absolute;
+      bottom: -35px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      left: 0;
+
+      .select-all,
+      .clear{
+        width: 100%;
+        flex-basis: 100%;
+        text-align: center;
+        padding: 3px;
+        border: 1px solid #ddd;
+
+        a{
+          text-decoration: none !important;
+        }
+
+        &:hover{
+          background: #efefef;
+        }
+      }
+    }
+
+    .search-bar{
+      margin-left: -5px;
+      width: 50%;
+      flex-basis:50%;
+
+      .input-group{
+        width: 100%;
+        background: transparent;
+
+        input{
+          width: 80%;
+        }
+      }
+
+      ~.selected-counter{
+        flex-basis: 50%
+      }
+
+      &.focused {
+        width: 100%;
+        flex-basis:70%;
+
+        .input-group{
+          width: 100%;
+
+          input{
+            width: 90%;
+          }
+        }
+
+        ~.selected-counter{
+          flex-basis: 30%
+        }
+
+      }
     }
   }
 }
@@ -235,7 +301,7 @@ div[mw-listable-head-2] {
     position: static;
     opacity: 1 !important;
 
-    @include normal-listable-header();
+    @include small-listable-header();
   }
 
   &.has-extra-content {
@@ -321,7 +387,7 @@ div[mw-listable-head-2] {
     .input-holder{
       border-bottom: none;
       color: $brand-primary;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.7);
       @include single-transition(background, 0.8, ease);
 
       input {
@@ -447,41 +513,15 @@ div[mw-listable-head-2] {
     }
   }
 
-   @media (max-width: $screen-md) {
-    .search-bar{
-      margin-left: -5px;
-      width: 50%;
-
-      .input-group{
-        width: 100%;
-
-        input{
-          width: 80%;
-        }
-      }
-
-      &.focused {
-        width: 100%;
-
-        .input-group{
-          width: 100%;
-
-          input{
-            width: 90%;
-          }
-        }
-
-        ~.selected-counter{
-          display: none;
-        }
-
-      }
+  &.show-selected{
+    .mw-filterable-search{
+      display: none;
     }
   }
 }
 
 .modal {
-  @include normal-listable-header();
+  @include small-listable-header();
 }
 
 .mw-link-show {
