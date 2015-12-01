@@ -37,7 +37,7 @@ angular.module('mwFileUpload', [])
         getGlobalConfig: function(){
           return _defaultConfig;
         }
-      }
+      };
     };
 
   })
