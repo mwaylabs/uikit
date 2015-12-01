@@ -202,6 +202,10 @@
     background: transparent;
     border-bottom: 2px solid #999;
 
+    &:after{
+      background: none;
+    }
+
     &.has-selection-control{
       margin-bottom: 55px;
     }
@@ -219,31 +223,34 @@
       position: absolute;
       bottom: -35px;
       width: 100%;
-      display: flex;
-      justify-content: flex-start;
       left: 0;
 
-      .select-all,
-      .clear{
-        flex-basis: 50%;
-        text-align: center;
-        padding: 3px;
-        border: 1px solid #ddd;
-        position: relative;
+      .holder{
+        width: inherit;
+        display: flex;
 
-        a{
-          text-decoration: none !important;
-        }
+        .select-all,
+        .clear{
+          flex-basis: 50%;
+          text-align: center;
+          padding: 3px;
+          border: 1px solid #ddd;
+          position: relative;
 
-        .selected-icon,
-        .close_cross{
-          left: 6px;
-          position: absolute;
-          top: 6px;
-        }
+          a{
+            text-decoration: none !important;
+          }
 
-        &:hover{
-          background: #efefef;
+          .selected-icon,
+          .close_cross{
+            left: 6px;
+            position: absolute;
+            top: 6px;
+          }
+
+          &:hover{
+            background: #efefef;
+          }
         }
       }
     }
@@ -335,7 +342,16 @@ div[mw-listable-head-2] {
   left: -16px;
   box-sizing: content-box;
   position: relative;
-  //@include curved-shadow();
+
+  &:after{
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 0;
+    height: 105%;
+    width: 1px;
+    background: #efefef;
+  }
 
   .selection-controller,
   .search-bar,
