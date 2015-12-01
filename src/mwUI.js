@@ -20,7 +20,8 @@ angular.module('mwUI', [
   'mwI18n',
   'mwResponseHandler',
   'mwResponseToastHandler',
-  'mwFilters'
+  'mwFilters',
+  'mwFileUpload'
 ]).config(function(){
   'use strict';
   window.requestAnimFrame = (function () {

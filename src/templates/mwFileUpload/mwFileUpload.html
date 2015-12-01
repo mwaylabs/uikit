@@ -1,0 +1,60 @@
+<div ng-form="file" class="mw-file-upload {{uploadState}}" ng-class="{
+  'drag-start':isInDragState,
+  'drag-over':isInDragOverState,
+  'full-screen':fullScreen,
+  'hidden-btn':hiddenBtn
+  }">
+
+  <div ng-class="{'has-error': file.$error.required}">
+
+    <div ng-show="uploadState == 'uploading'" class="upload-progress-bar">
+      <div class="progress progress-striped active margin-top-5">
+        <div class="progress-bar"
+             ng-style="{width: uploadProgress + '%'};"></div>
+      </div>
+    </div>
+
+    <div ng-show="uploadState != 'uploading'" class="upload-btn">
+
+      <button ng-show="!fileIsSet()"
+              type="button"
+              class="btn btn-primary btn-upload hidden-on-drag"
+              ng-click="triggerUploadDialog()">
+        <span mw-icon="rln-icon upload"></span> {{ text || ('common.upload' | i18n) }}
+      </button>
+
+      <div class="drop-zone">
+
+        <div class="content">
+          <span mw-icon="fa-file-o"></span>
+
+          <h3>Drop your file here</h3>
+        </div>
+
+      </div>
+
+      <div ng-if="fileIsSet()" class="hidden-on-drag">
+        <p ng-if="showFileName"><span mw-icon="fa-file-o"></span> {{getFileName()}}</p>
+
+        <button type="button" class="btn btn-danger"
+                ng-click="remove()">
+          <span mw-icon="rln-icon delete"></span> {{'common.remove' | i18n }}
+        </button>
+      </div>
+
+
+        <span class="help-block hidden-on-drag"
+              ng-show="file.fileValidator.$error.required">{{'errors.isRequired' | i18n }}</span>
+
+    </div>
+
+  </div>
+
+  <input type="hidden"
+         name="fileValidator"
+         ng-required="mwRequired"
+         ng-model="model">
+
+  <input type="file" class="hidden" name="file" accept="{{inputValidator}}">
+
+</div>
