@@ -479,17 +479,11 @@ angular.module('mwListableBb', [])
           var currentScrollPos = scrollEl.scrollTop();
 
           if (currentScrollPos > affixOffset && _affix) {
-            if (currentScrollPos < lastScrollYPos) {
-              var newTopVal = currentScrollPos - affixOffset;
-              newTopVal = newTopVal<0?0:newTopVal;
-              el.css('top', newTopVal);
-              el.css('opacity', 1);
-              isSticked = true;
-            } else {
-              el.css('opacity', 0);
-              el.css('top', 0);
-              isSticked = false;
-            }
+            var newTopVal = currentScrollPos - affixOffset;
+            newTopVal = newTopVal < 0 ? 0 : newTopVal;
+            el.css('top', newTopVal);
+            el.css('opacity', 1);
+            isSticked = true;
           } else {
             el.css('top', 0);
             el.css('opacity', 1);
