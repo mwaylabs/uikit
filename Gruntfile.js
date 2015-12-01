@@ -33,12 +33,21 @@ module.exports = function (grunt) {
     },
     concat: {
       dist: {
-        src: ['src/mwUI.js', 'src/**/*.js', '.tmp/templates.js', 'node_modules/angular-sanitize/angular-sanitize.js', 'node_modules/showdown/dist/showdown.js'],
-        dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js',
+        src: [
+          'src/mwUI.js',
+          'src/**/*.js',
+          '.tmp/templates.js',
+          'node_modules/angular-sanitize/angular-sanitize.js',
+          'node_modules/showdown/dist/showdown.js',
+          'node_modules/jquery.ui.widget/jquery.ui.widget.js',
+          'node_modules/blueimp-file-upload/js/jquery.fileupload.js',
+          'node_modules/blueimp-file-upload/js/jquery.iframe-transport.js'
+        ],
+        dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
       }
     },
     uglify: {
-      js : {
+      js: {
         files: {
           '<%= uikit.dist %>/<%= uikit.fileName %>.min.js': ['<%= uikit.dist %>/<%= uikit.fileName %>.js']
         }
@@ -69,7 +78,7 @@ module.exports = function (grunt) {
           bootstrap: function (module, script) {
             return 'angular.module("mwUI").run(["$templateCache", function($templateCache) {' + script + '}]);';
           },
-          htmlmin:  { collapseWhitespace: true, collapseBooleanAttributes: true }
+          htmlmin: {collapseWhitespace: true, collapseBooleanAttributes: true}
         }
       }
     },
@@ -81,7 +90,7 @@ module.exports = function (grunt) {
     clean: ['.tmp']
   });
 
-  grunt.registerTask('watch', ['process','regarde']);
+  grunt.registerTask('watch', ['process', 'regarde']);
   grunt.registerTask('process', ['ngtemplates:all', 'concat', 'ngAnnotate:dist']);
   grunt.registerTask('build', ['jshint', 'test', 'process', 'uglify', 'clean']);
   grunt.registerTask('test', ['karma']);

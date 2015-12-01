@@ -1,21 +1,26 @@
 <div class="mw-listable-header clearfix"
      ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}">
 
-  <div class="selection-controller" ng-if="selectable">
-    <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
-      <span class="selected-icon">
-        <span class="indicator" ng-if="selectable.allSelected()"></span>
+  <div class="selection-controller">
+    <div ng-if="selectable" class="holder">
+
+      <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
+        <span class="selected-icon">
+          <span class="indicator" ng-if="selectable.allSelected()"></span>
+        </span>
+        <a href="#" mw-prevent-default="click">
+          {{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}
+        </a>
       </span>
-      <a href="#" mw-prevent-default="click">
-        {{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}
-      </a>
+
+      <span ng-if="selectedAmount > 0"
+            class="clickable clear"
+            ng-click="selectable.unSelectAll()">
+        <span mw-icon="rln-icon close_cross"></span>
+       <a href="#" mw-prevent-default="click">{{'common.clearSelection' | i18n}}</a>
       </span>
-    <span ng-if="selectedAmount > 0"
-          class="clickable clear"
-          ng-click="selectable.unSelectAll()">
-      <span mw-icon="rln-icon close_cross"></span>
-     <a href="#" mw-prevent-default="click">{{'common.clearSelection' | i18n}}</a>
-    </span>
+
+    </div>
   </div>
 
   <div class="search-bar">

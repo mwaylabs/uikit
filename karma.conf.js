@@ -23,8 +23,11 @@ module.exports = function(config){
       'node_modules/mcapjs-client/dist/mcap.angular.js',
       'node_modules/showdown/dist/showdown.js',
       'node_modules/angular-markdown-directive/markdown.js',
+      'node_modules/jquery.ui.widget/jquery.ui.widget.js',
+      'node_modules/blueimp-file-upload/js/jquery.fileupload.js',
+      'node_modules/blueimp-file-upload/js/jquery.iframe-transport.js',
       'src/mwUI.js',
-      'src/*.js',
+      'src/**/*.js',
       'test/**/*.js',
       'src/templates/**/*.html'
     ],
