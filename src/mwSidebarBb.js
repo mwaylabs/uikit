@@ -260,7 +260,11 @@ angular.module('mwSidebarBb', [])
         }
 
         scope.$watch('collection.filterable.filterValues.' + scope.property, function (val) {
-          scope.viewModel.val = val;
+          if(val && val.length>0){
+            scope.viewModel.val = val;
+          } else {
+            scope.viewModel.val = null;
+          }
         });
       }
     };
