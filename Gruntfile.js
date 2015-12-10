@@ -37,11 +37,13 @@ module.exports = function (grunt) {
           'src/mwUI.js',
           'src/**/*.js',
           '.tmp/templates.js',
-          'node_modules/angular-sanitize/angular-sanitize.js',
-          'node_modules/showdown/dist/showdown.js',
-          'node_modules/jquery.ui.widget/jquery.ui.widget.js',
-          'node_modules/blueimp-file-upload/js/jquery.fileupload.js',
-          'node_modules/blueimp-file-upload/js/jquery.iframe-transport.js'
+          'libs/angular-sanitize/angular-sanitize.js',
+          'libs/showdown/dist/showdown.js',
+          'libs/jquery-ui/ui/jquery.ui.widget.js',
+          'libs/blueimp-file-upload/js/jquery.fileupload.js',
+          'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
+          'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
+          'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
         ],
         dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
       }
