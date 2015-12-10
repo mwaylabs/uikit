@@ -250,6 +250,50 @@
           };
         }
       };
+    })
+
+    .config(function(mwValidationMessagesProvider){
+      mwValidationMessagesProvider.registerValidator('minValidDate','errors.minDate');
+      mwValidationMessagesProvider.registerValidator('maxValidDate','errors.maxDate');
+    })
+
+    .directive('mwValidateDate', function(mwValidationMessages, i18n){
+      return {
+        require: 'ngModel',
+        link: function(scope, el, attrs, ngModel){
+
+          ngModel.$validators.minValidDate = function(value){
+            var minDate = scope.$eval(attrs.minDate),
+              currentDateTs = +new Date(value),
+              minDateTs = +new Date(minDate);
+
+            return !minDate || !value || currentDateTs > minDateTs;
+          };
+
+          ngModel.$validators.maxValidDate = function(value){
+            var maxDate = scope.$eval(attrs.maxDate),
+              currentDateTs = +new Date(value),
+              maxDateTs = +new Date(maxDate);
+
+            return !maxDate || !value || currentDateTs < maxDateTs;
+          };
+
+          attrs.$observe('minDate', function(val){
+            if(val){
+              mwValidationMessages.updateMessage('minValidDate', function(){
+                return i18n.get('errors.minValidDate',{ minDate: new Date( scope.$eval(val) ).toLocaleString() });
+              });
+            }
+          });
+          attrs.$observe('maxDate', function(val){
+            if(val){
+              mwValidationMessages.updateMessage('maxValidDate', function(){
+                return i18n.get('errors.maxValidDate',{ maxDate: new Date( scope.$eval(val) ).toLocaleString() });
+              });
+            }
+          })
+        }
+      }
     });
 
 })();
