@@ -1,6 +1,7 @@
 /**
  * Created by zarges on 09/12/15.
  */
+'use strict';
 angular.module('mwUI')
 
   .directive('mwDatePicker', function($rootScope, $compile, $interval, $timeout, i18n){
