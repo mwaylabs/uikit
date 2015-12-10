@@ -22,9 +22,9 @@ module.exports = function(config){
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/mcapjs-client/dist/mcap.angular.js',
 
-      'libs/showdown/dist/showdown.js',
       'libs/angular-markdown-directive/markdown.js',
-      'libs/jquery.ui.widget/jquery.ui.widget.js',
+      'libs/showdown/dist/showdown.js',
+      'libs/jquery-ui/ui/jquery.ui.widget.js',
       'libs/blueimp-file-upload/js/jquery.fileupload.js',
       'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
       'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
