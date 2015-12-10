@@ -291,9 +291,9 @@
                 return i18n.get('errors.maxValidDate',{ maxDate: new Date( scope.$eval(val) ).toLocaleString() });
               });
             }
-          })
+          });
         }
-      }
+      };
     });
 
 })();
