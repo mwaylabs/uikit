@@ -66,32 +66,32 @@
 
     .provider('mwValidationMessages', function () {
       var _registeredValidators = {},
-          _translatedValidators = {},
-          _functionValidators = {},
-          _executedValidators = {};
+        _translatedValidators = {},
+        _functionValidators = {},
+        _executedValidators = {};
 
-      var _setValidationMessage = function(key, validationMessage){
-        if(typeof validationMessage === 'function'){
+      var _setValidationMessage = function (key, validationMessage) {
+        if (typeof validationMessage === 'function') {
           _functionValidators[key] = validationMessage;
         } else {
           _registeredValidators[key] = validationMessage;
         }
       };
 
-      this.registerValidator = function(key, validationMessage){
-        if(!_registeredValidators[key] && !_functionValidators[key]){
-          _setValidationMessage(key,validationMessage);
+      this.registerValidator = function (key, validationMessage) {
+        if (!_registeredValidators[key] && !_functionValidators[key]) {
+          _setValidationMessage(key, validationMessage);
         } else {
           throw new Error('The key ' + key + ' has already been registered');
         }
       };
 
-      this.$get = function($rootScope, i18n){
-        var _translateRegisteredValidators = function(){
-          _.pairs(_registeredValidators).forEach(function(pair){
+      this.$get = function ($rootScope, i18n) {
+        var _translateRegisteredValidators = function () {
+          _.pairs(_registeredValidators).forEach(function (pair) {
             var key = pair[0],
-                value = pair[1];
-            if(i18n.translationIsAvailable(value)){
+              value = pair[1];
+            if (i18n.translationIsAvailable(value)) {
               _translatedValidators[key] = i18n.get(value);
             } else {
               _translatedValidators[key] = value;
@@ -99,60 +99,60 @@
           });
         };
 
-        var _executeFunctionValidators = function(){
-          _.pairs(_functionValidators).forEach(function(pair){
+        var _executeFunctionValidators = function () {
+          _.pairs(_functionValidators).forEach(function (pair) {
             var key = pair[0],
-                fn = pair[1];
+              fn = pair[1];
             _executedValidators[key] = fn();
           });
         };
 
-        var _setValidationMessages = function(){
+        var _setValidationMessages = function () {
           _translateRegisteredValidators();
           _executeFunctionValidators();
           $rootScope.$broadcast('mwValidationMessages:change');
         };
 
         _setValidationMessages();
-        $rootScope.$on('i18n:localeChanged', function(){
+        $rootScope.$on('i18n:localeChanged', function () {
           _setValidationMessages();
         });
 
         return {
-          getRegisteredValidators: function(){
+          getRegisteredValidators: function () {
             return _.extend(_translatedValidators, _executedValidators);
           },
-          updateMessage: function(key, message){
-            if(_registeredValidators[key] || _functionValidators[key]){
+          updateMessage: function (key, message) {
+            if (_registeredValidators[key] || _functionValidators[key]) {
               _setValidationMessage(key, message);
               _setValidationMessages();
             } else {
-              throw new Error('The key '+key+' is not available. You have to register it first via the provider');
+              throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
             }
           }
         };
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormInput
-   * @element div
-   * @description
-   *
-   * Wrapper for input elements. Adds validation messages, form HTML and corresponding CSS.
-   * The following elements can register itself on mwFormInput:
-   *
-   * - select
-   * - input[text]
-   * - textarea
-   *
-   * @scope
-   *
-   * @param {string} label Label to show
-   * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwFormInput
+     * @element div
+     * @description
+     *
+     * Wrapper for input elements. Adds validation messages, form HTML and corresponding CSS.
+     * The following elements can register itself on mwFormInput:
+     *
+     * - select
+     * - input[text]
+     * - textarea
+     *
+     * @scope
+     *
+     * @param {string} label Label to show
+     * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
+     *
+     */
     .directive('mwFormInput', function (i18n) {
       return {
         restrict: 'A',
@@ -166,14 +166,14 @@
         templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
         link: function (scope, elm, attr, ctrl) {
 
-          var getElementCtrl = function(){
-            if(ctrl && scope.elementName && ctrl[scope.elementName]){
+          var getElementCtrl = function () {
+            if (ctrl && scope.elementName && ctrl[scope.elementName]) {
               return ctrl[scope.elementName];
             }
           };
 
 
-          scope.isInvalid = function() {
+          scope.isInvalid = function () {
             var elCtrl = getElementCtrl();
             return (elCtrl) ? elCtrl.$invalid : false;
           };
@@ -183,19 +183,19 @@
             return (elCtrl) ? elCtrl.$dirty : false;
           };
 
-          scope.getCurrentErrors = function(){
+          scope.getCurrentErrors = function () {
             var elCtrl = getElementCtrl();
             return (elCtrl) ? elCtrl.$error : undefined;
           };
 
-          scope.isRequiredError = function(){
+          scope.isRequiredError = function () {
             var elCtrl = getElementCtrl();
             return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
           };
 
-          scope.isRequired = function(){
+          scope.isRequired = function () {
             var requiredInputs = elm.find('input[required],select[required],textarea[required]');
-            return requiredInputs.length>0;
+            return requiredInputs.length > 0;
           };
 
 
@@ -226,23 +226,23 @@
 
               var buildValidationValues = function () {
                 var registeredValidators = mwValidationMessages.getRegisteredValidators(),
-                    defaultValidators = {
-                  required: i18n.get('errors.isRequired'),
-                  email: i18n.get('errors.hasToBeAnEmail'),
-                  pattern: i18n.get('errors.hasToMatchPattern'),
-                  url: i18n.get('errors.validUrl'),
-                  min: i18n.get('errors.minValue', {count: element.attr('min')}),
-                  minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
-                  max: i18n.get('errors.maxValue', {count: element.attr('max')}),
-                  maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
-                  phone: i18n.get('errors.phoneNumber'),
-                  hex: i18n.get('errors.hex'),
-                  unique: i18n.get('errors.notUnique'),
-                  match: i18n.get('errors.doesNotMatch'),
-                  emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                  withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')}),
-                  itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
-                };
+                  defaultValidators = {
+                    required: i18n.get('errors.isRequired'),
+                    email: i18n.get('errors.hasToBeAnEmail'),
+                    pattern: i18n.get('errors.hasToMatchPattern'),
+                    url: i18n.get('errors.validUrl'),
+                    min: i18n.get('errors.minValue', {count: element.attr('min')}),
+                    minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
+                    max: i18n.get('errors.maxValue', {count: element.attr('max')}),
+                    maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
+                    phone: i18n.get('errors.phoneNumber'),
+                    hex: i18n.get('errors.hex'),
+                    unique: i18n.get('errors.notUnique'),
+                    match: i18n.get('errors.doesNotMatch'),
+                    emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
+                    withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')}),
+                    itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
+                  };
 
                 $scope.validationValues = _.extend(defaultValidators, registeredValidators);
 
@@ -255,21 +255,21 @@
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormWrapper
-   * @element div
-   * @description
-   *
-   * Wrapper for custom elements. Adds form HTML and corresponding CSS.
-   * Does not include validation or any other functional components.
-   *
-   * @scope
-   *
-   * @param {string} label Label to show
-   * @param {string} tooltip Tooltip to display
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwFormWrapper
+     * @element div
+     * @description
+     *
+     * Wrapper for custom elements. Adds form HTML and corresponding CSS.
+     * Does not include validation or any other functional components.
+     *
+     * @scope
+     *
+     * @param {string} label Label to show
+     * @param {string} tooltip Tooltip to display
+     *
+     */
     .directive('mwFormWrapper', function () {
       return {
         restrict: 'A',
@@ -280,30 +280,30 @@
           tooltip: '@'
         },
         templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
-        link: function(scope, el){
-          scope.isRequired = function(){
+        link: function (scope, el) {
+          scope.isRequired = function () {
             var requiredInputs = el.find('input[required],select[required],textarea[required]');
-            return requiredInputs.length>0;
+            return requiredInputs.length > 0;
           };
         }
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwMultiSelect
-   * @element div
-   * @description
-   *
-   * Can be used for a selectbox where multiple values can be selected
-   * Generates checkboxes and pushes or removes values into an array
-   *
-   * @scope
-   *
-   * @param {expression} model Model where the selected values should be saved in
-   * @param {expression} options Options which can be selected
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwMultiSelect
+     * @element div
+     * @description
+     *
+     * Can be used for a selectbox where multiple values can be selected
+     * Generates checkboxes and pushes or removes values into an array
+     *
+     * @scope
+     *
+     * @param {expression} model Model where the selected values should be saved in
+     * @param {expression} options Options which can be selected
+     *
+     */
     .directive('mwFormMultiSelect', function () {
       return {
         restrict: 'A',
@@ -414,19 +414,19 @@
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormCheckbox
-   * @element div
-   * @description
-   *
-   * Wrapper for checkbox elements. Adds form HTML and corresponding CSS.
-   *
-   * @scope
-   *
-   * @param {string} label Label to show
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwFormCheckbox
+     * @element div
+     * @description
+     *
+     * Wrapper for checkbox elements. Adds form HTML and corresponding CSS.
+     *
+     * @scope
+     *
+     * @param {string} label Label to show
+     *
+     */
     .directive('mwFormCheckbox', function () {
       return {
         restrict: 'A',
@@ -505,18 +505,18 @@
     })
 
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwCustomCheckbox
-   * @element input
-   * @scope
-   *
-   * @param {boolean} radio If true, adds class 'round' to wrapping span element
-   * @description
-   *
-   * Replaces native checkbox with custom checkbox
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwCustomCheckbox
+     * @element input
+     * @scope
+     *
+     * @param {boolean} radio If true, adds class 'round' to wrapping span element
+     * @description
+     *
+     * Replaces native checkbox with custom checkbox
+     *
+     */
     .directive('mwCustomCheckbox', function () {
       return {
         restrict: 'A',
@@ -587,19 +587,19 @@
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormValidation
-   * @element span
-   * @description
-   * **Important!:** Can only be placed inside of {@link mwForm.directive:mwFormInput mwFormInput}.
-   *
-   * Adds validation messages if validation for given key fails.
-   *
-   * @scope
-   *
-   * @param {string} mwFormsValidation The key to validate a model
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwFormValidation
+     * @element span
+     * @description
+     * **Important!:** Can only be placed inside of {@link mwForm.directive:mwFormInput mwFormInput}.
+     *
+     * Adds validation messages if validation for given key fails.
+     *
+     * @scope
+     *
+     * @param {string} mwFormsValidation The key to validate a model
+     */
     .directive('mwFormValidation', function () {
       return {
         restrict: 'A',
@@ -639,15 +639,15 @@
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwForm
-   * @element form
-   * @description
-   *
-   * Adds form specific behaviour
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwForm
+     * @element form
+     * @description
+     *
+     * Adds form specific behaviour
+     *
+     */
     .directive('form', function () {
       return {
         restrict: 'E',
@@ -666,15 +666,15 @@
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwLeaveConfirmation
-   * @element form
-   * @description
-   *
-   * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwLeaveConfirmation
+     * @element form
+     * @description
+     *
+     * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
+     *
+     */
 
     .directive('mwFormLeaveConfirmation', function ($window, $document, $location, i18n, Modal, $compile) {
       return {
@@ -692,21 +692,21 @@
       };
     })
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwFormActions
-   * @element form
-   * @description
-   *
-   * Adds buttons for save and cancel. Must be placed inside a form tag.
-   * (Form controller has to be available on the parent scope!)
-   *
-   * @scope
-   *
-   * @param {expression} save Expression to evaluate on click on 'Save' button
-   * @param {expression} cancel Expression to evaluate on click on 'cancel' button
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwFormActions
+     * @element form
+     * @description
+     *
+     * Adds buttons for save and cancel. Must be placed inside a form tag.
+     * (Form controller has to be available on the parent scope!)
+     *
+     * @scope
+     *
+     * @param {expression} save Expression to evaluate on click on 'Save' button
+     * @param {expression} cancel Expression to evaluate on click on 'cancel' button
+     *
+     */
     .directive('mwFormActions', function (Loading, $route) {
       return {
         replace: true,
@@ -765,102 +765,102 @@
     })
 
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:select
-   * @restrict E
-   * @description
-   *
-   * Extends the select element, by adding class 'form-control' and registers
-   * it on {@link mwForm.directive:mwFormInput mwFormInput}.
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:select
+     * @restrict E
+     * @description
+     *
+     * Extends the select element, by adding class 'form-control' and registers
+     * it on {@link mwForm.directive:mwFormInput mwFormInput}.
+     *
+     */
     .directive('select', extendHTMLElement)
 
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:input
-   * @restrict E
-   * @description
-   *
-   * Extends the input[text] element, by adding class 'form-control' and
-   * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:input
+     * @restrict E
+     * @description
+     *
+     * Extends the input[text] element, by adding class 'form-control' and
+     * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
+     *
+     */
     .directive('input', extendHTMLElement)
     .directive('input', addDefaultValidations)
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:textarea
-   * @restrict E
-   * @description
-   *
-   * Extends the textarea element, by adding class 'form-control' and
-   * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:textarea
+     * @restrict E
+     * @description
+     *
+     * Extends the textarea element, by adding class 'form-control' and
+     * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
+     *
+     */
     .directive('textarea', extendHTMLElement)
     .directive('textarea', addDefaultValidations)
 
-  /**
-   * @ngdoc directive
-   * @name mwForm.directive:mwPasswordToggler
-   * @element input
-   * @description
-   *
-   * Adds an eye button for password fields to show the password in clear text
-   *
-   */
+    /**
+     * @ngdoc directive
+     * @name mwForm.directive:mwPasswordToggler
+     * @element input
+     * @description
+     *
+     * Adds an eye button for password fields to show the password in clear text
+     *
+     */
     .directive('mwPasswordToggler', function ($compile) {
-    return {
-      restrict: 'A',
-      link: function (scope, el) {
+      return {
+        restrict: 'A',
+        link: function (scope, el) {
 
-        var render = function () {
-          var passwordWrapper = angular.element('<div class="mw-password-toggler input-group"></div>'),
-            passwordToggleBtn = $compile(
-              '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()" ng-if="showToggler()">' +
+          var render = function () {
+            var passwordWrapper = angular.element('<div class="mw-password-toggler input-group"></div>'),
+              passwordToggleBtn = $compile(
+                '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()" ng-if="showToggler()">' +
                 '<span ng-if="isPassword()" mw-icon="fa-eye"></span>' +
                 '<span ng-if="!isPassword()" mw-icon="fa-eye-slash"></span>' +
-              '</span>')(scope);
+                '</span>')(scope);
 
-          el.wrap(passwordWrapper);
-          passwordToggleBtn.insertAfter(el);
-        };
+            el.wrap(passwordWrapper);
+            passwordToggleBtn.insertAfter(el);
+          };
 
-        scope.isPassword = function(){
-          return el.attr('type')==='password';
-        };
+          scope.isPassword = function () {
+            return el.attr('type') === 'password';
+          };
 
-        scope.togglePassword = function(){
-          if(scope.isPassword()){
-            el.attr('type', 'text');
-          } else {
-            el.attr('type', 'password');
-          }
-        };
+          scope.togglePassword = function () {
+            if (scope.isPassword()) {
+              el.attr('type', 'text');
+            } else {
+              el.attr('type', 'password');
+            }
+          };
 
 
-        scope.showToggler = function(){
-          return !el.is(':disabled');
-        };
+          scope.showToggler = function () {
+            return !el.is(':disabled');
+          };
 
-        // remove input group class when input is disabled so it is displaaed like a normal input element
-        scope.$watch(scope.showToggler, function(showToggler){
-          var passwordWrapper = el.parent('.mw-password-toggler');
-          if(showToggler){
-            passwordWrapper.addClass('input-group');
-          } else {
-            passwordWrapper.removeClass('input-group');
-          }
-        });
+          // remove input group class when input is disabled so it is displaaed like a normal input element
+          scope.$watch(scope.showToggler, function (showToggler) {
+            var passwordWrapper = el.parent('.mw-password-toggler');
+            if (showToggler) {
+              passwordWrapper.addClass('input-group');
+            } else {
+              passwordWrapper.removeClass('input-group');
+            }
+          });
 
-        render();
-      }
-    };
-  });
+          render();
+        }
+      };
+    });
 
 })();
 
