@@ -17,7 +17,6 @@ $badge-ios: #111111;
 $badge-knox: #5bc0de;
 $badge-multi: #aaaaaa;
 
-
 @import "src/animations";
 @import "src/mw-badge";
 @import "src/mw-button-help";
@@ -41,7 +40,7 @@ $badge-multi: #aaaaaa;
 @import "src/mw-view-change-loader";
 @import "src/mw-toasts";
 @import "src/mw-file-upload";
-
+@import "src/mw-date-picker";
 
 .mw-star-rating {
   color: $star-rating-color;
