@@ -1,4 +1,4 @@
-<div class="mw-date-picker clearfix" ng-form>
+<div class="mw-date-picker clearfix" ng-class="{'datepicker-visible': viewModel.datepickerIsOpened}" ng-form>
   <div class="input-group date-picker-holder">
     <div class="input-group-addon">
       <span class="fa fa-calendar"></span>
@@ -11,7 +11,7 @@
     </div>
     <fieldset ng-disabled="!viewModel.date">
       <div class="number-spinner-holder hours">
-        <input type="number" min="0" max="23" ng-model="viewModel.hours">
+        <input type="number" min="0" max="23" ng-model="viewModel.hours" mw-leading-zero ng-disabled="!canChange(1,'HOURS') && !canChange(-1,'HOURS')">
         <button class="btn btn-default btn-link number-spinner increment clickable" ng-mousedown="startIncrementCounter('hours', 0, 23)" ng-mouseup="stopIncrementCounter()" ng-click="increment('hours', 0, 23)" tabindex="-1" ng-disabled="!canChange(1,'HOURS')">
           <span class="fa fa-angle-up"></span>
         </button>
@@ -20,7 +20,7 @@
         </button>
       </div>
       <div class="number-spinner-holder minutes">
-        <input type="number" min="0" max="59" ng-model="viewModel.minutes">
+        <input type="number" min="0" max="59" ng-model="viewModel.minutes" mw-leading-zero ng-disabled="!canChange(1,'MINUTES') && !canChange(-1,'MINUTES')">
         <button class="btn btn-default btn-link number-spinner increment clickable" ng-mousedown="startIncrementCounter('minutes', 0, 59)" ng-mouseup="stopIncrementCounter()" ng-click="increment('minutes', 0, 59)" tabindex="-1" ng-disabled="!canChange(1,'MINUTES')">
           <span class="fa fa-angle-up"></span>
         </button>
