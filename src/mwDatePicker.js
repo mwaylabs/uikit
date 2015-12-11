@@ -16,7 +16,7 @@ angular.module('mwUI')
           }
         });
       }
-    }
+    };
   })
 
   .directive('mwDatePicker', function ($rootScope, $compile, $interval, $timeout, i18n) {
@@ -45,8 +45,9 @@ angular.module('mwUI')
 
         scope.canChange = function (num, type) {
           var options = scope.options || {},
-            currentDateTs = +new Date(scope.mwModel),
-            num = num || 0;
+            currentDateTs = +new Date(scope.mwModel);
+
+          num = num || 0;
 
           if (type === 'MINUTES') {
             num = num * 60 * 1000;
@@ -188,7 +189,7 @@ angular.module('mwUI')
 
             datepicker.setDate(date);
             datepicker.update();
-            _datePicker.val(parsedDateStr)
+            _datePicker.val(parsedDateStr);
           }
         };
 
