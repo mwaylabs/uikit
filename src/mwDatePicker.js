@@ -4,7 +4,22 @@
 'use strict';
 angular.module('mwUI')
 
-  .directive('mwDatePicker', function($rootScope, $compile, $interval, $timeout, i18n){
+  .directive('mwLeadingZero', function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, el, attrs, ngModel) {
+        ngModel.$formatters.unshift(function (val) {
+          if (val < 10) {
+            return '0' + val;
+          } else {
+            return val;
+          }
+        });
+      }
+    }
+  })
+
+  .directive('mwDatePicker', function ($rootScope, $compile, $interval, $timeout, i18n) {
     return {
       templateUrl: 'uikit/templates/mwDatePicker.html',
       scope: {
