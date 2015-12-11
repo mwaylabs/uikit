@@ -189,6 +189,9 @@ angular.module('mwUI')
 
             datepicker.setDate(date);
             datepicker.update();
+            // we need to set this val manually for the case that it is out of daterange
+            // when we don't set it manually it will be empty because the datpicker sets
+            // the textfield val only when it is in valid date range
             _datePicker.val(parsedDateStr);
           }
         };
