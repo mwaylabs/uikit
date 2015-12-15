@@ -6,7 +6,7 @@
         ng-disabled="mwDisabled"
         ng-required="mwRequired"
         name="{{name}}">
-  <option value="" ng-show="!mwRequired || mwPlaceholder" ng-disabled="mwRequired">{{ mwPlaceholder?mwPlaceholder:''}}</option>
+  <option value="" ng-if="!viewModel.val && (!mwRequired || mwPlaceholder)" ng-disabled="mwRequired">{{ mwPlaceholder?mwPlaceholder:''}}</option>
 
 </select>
 
