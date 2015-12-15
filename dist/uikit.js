@@ -7893,7 +7893,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwFormBb/mwFormSelect.html',
-    "<select class=\"form-control mw-form-select\" mw-custom-select ng-model=\"viewModel.val\" ng-change=\"mwChange({selectedModel:getSelectedModel(viewModel.val)})\" ng-options=\"getKey(option) as getLabel(option) for option in mwOptionsCollection.models\" ng-disabled=\"mwDisabled\" ng-required=\"mwRequired\" name=\"{{name}}\"><option value=\"\" ng-show=\"!mwRequired || mwPlaceholder\" ng-disabled=\"mwRequired\">{{ mwPlaceholder?mwPlaceholder:''}}</option></select>"
+    "<select class=\"form-control mw-form-select\" mw-custom-select ng-model=\"viewModel.val\" ng-change=\"mwChange({selectedModel:getSelectedModel(viewModel.val)})\" ng-options=\"getKey(option) as getLabel(option) for option in mwOptionsCollection.models\" ng-disabled=\"mwDisabled\" ng-required=\"mwRequired\" name=\"{{name}}\"><option value=\"\" ng-if=\"!viewModel.val && (!mwRequired || mwPlaceholder)\" ng-disabled=\"mwRequired\">{{ mwPlaceholder?mwPlaceholder:''}}</option></select>"
   );
 
 
