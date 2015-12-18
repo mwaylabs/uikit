@@ -2,18 +2,18 @@
 
 angular.module('mwSidebar', [])
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarSelect
- * @element div
- * @description
- *
- * Creates a select input which provides possible values for a filtering.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarSelect
+   * @element div
+   * @description
+   *
+   * Creates a select input which provides possible values for a filtering.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .directive('mwSidebarSelect', function () {
     return {
       transclude: true,
@@ -125,15 +125,15 @@ angular.module('mwSidebar', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarFilters
- * @element div
- * @description
- *
- * Container for filters
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarFilters
+   * @element div
+   * @description
+   *
+   * Container for filters
+   *
+   */
   .directive('mwSidebarFilters', function () {
     return {
       transclude: true,
