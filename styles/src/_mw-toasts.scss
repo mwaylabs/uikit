@@ -34,7 +34,7 @@
         display: flex;
         align-self: flex-end;
         padding: 0;
-        margin-bottom: 5px;
+        margin-bottom: 13px;
         border-radius: $border-radius-base;
         background: white;
         @include box-shadow(0 0 6px 0 rgba(200,200,200,0.8));
@@ -139,6 +139,24 @@
 }
 
 .navigation + .notifications .messages-list ul {
-  margin-top: $navbar-height + 11px;
+  margin-top: $navbar-height + 7px;
+}
+
+@media (max-width: $screen-sm) {
+  .mw-toasts{
+    &.messages-list ul{
+      .message-item{
+        .status-indicator{
+          min-width: 60px;
+          font-size: 20px;
+        }
+
+        .message{
+          padding: 8px 24px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
 }
 
