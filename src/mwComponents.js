@@ -139,7 +139,7 @@ angular.module('mwComponents', [])
 
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
-            el.find('.navbar-header').addClass('no-buttons');
+            el.find('.mw-header').addClass('no-buttons');
           }
         });
 
@@ -1051,4 +1051,22 @@ angular.module('mwComponents', [])
         }
       }
     };
-  }]);
+  }])
+
+
+  .directive('mwBreadCrumbsHolder', function () {
+    return {
+      transclude: true,
+      template: '<div class="mw-bread-crumbs" ng-transclude></div>'
+    };
+  })
+
+  .directive('mwBreadCrumb', function () {
+    return {
+      scope: {
+        url: '@',
+        title: '@'
+      },
+      templateUrl: 'uikit/templates/mwComponents/mwBreadCrumb.html'
+    };
+  });
