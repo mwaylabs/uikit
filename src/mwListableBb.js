@@ -439,7 +439,7 @@ angular.module('mwListableBb', [])
     };
   })
 
-  .directive('mwListableHead2', function ($window, i18n, MCAPCollection) {
+  .directive('mwListableHead2', function ($window, $document, i18n, MCAPCollection) {
     return {
       scope: {
         collection: '=',
@@ -459,11 +459,9 @@ angular.module('mwListableBb', [])
         var scrollEl,
           bodyEl = angular.element('body'),
           modalEl = el.parents('.modal .modal-body'),
-          lastScrollYPos = 0,
           canShowSelected = false,
           _affix = angular.isDefined(scope.affix) ? scope.affix : true,
-          affixOffset = scope.affixOffset,
-          isSticked = false;
+          windowEl = angular.element($window);
 
         scope.selectable = false;
         scope.selectedAmount = 0;
@@ -474,23 +472,41 @@ angular.module('mwListableBb', [])
         scope.isLoadingModelsNotInCollection = false;
         scope.hasFetchedModelsNotInCollection = false;
 
+
+        var newOffset;
+
         var throttledScrollFn = _.throttle(function () {
+          if (!newOffset) {
+            var headerOffset,
+              headerHeight,
+              headerBottomOffset,
+              listHeaderOffset,
+              spacer = 5;
 
-          var currentScrollPos = scrollEl.scrollTop();
+            if (scope.isModal) {
+              headerOffset = angular.element('.modal-header').offset().top;
+              headerHeight = angular.element('.modal-header').innerHeight();
+            } else {
+              headerOffset = angular.element('[mw-header]').offset().top;
+              headerHeight = angular.element('[mw-header]').innerHeight();
+            }
 
-          if (currentScrollPos > affixOffset && _affix) {
-            var newTopVal = currentScrollPos - affixOffset;
-            newTopVal = newTopVal < 0 ? 0 : newTopVal;
-            el.css('top', newTopVal);
-            el.css('opacity', 1);
-            isSticked = true;
-          } else {
-            el.css('top', 0);
-            el.css('opacity', 1);
-            isSticked = false;
+            headerBottomOffset = headerOffset + headerHeight;
+            listHeaderOffset = el.offset().top;
+
+            newOffset = listHeaderOffset - headerBottomOffset - spacer;
           }
 
-          lastScrollYPos = currentScrollPos;
+          var scrollTop = scrollEl.scrollTop();
+
+          if (scrollTop > newOffset && _affix) {
+            el.find('.mw-listable-header').css('top', scrollTop - newOffset);
+          } else if (!_affix) {
+            scrollEl.off('scroll', throttledScrollFn);
+          } else {
+            el.find('.mw-listable-header').css('top', 'initial');
+          }
+
         }, 10);
 
         var loadItemsNotInCollection = function () {
@@ -632,15 +648,7 @@ angular.module('mwListableBb', [])
           }
           else {
             //element in window
-            scrollEl = angular.element($window);
-          }
-
-          if (!affixOffset) {
-            if (scope.isModal) {
-              affixOffset = 73;
-            } else {
-              affixOffset = 35;
-            }
+            scrollEl = windowEl;
           }
 
           // Register scroll callback
