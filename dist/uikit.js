@@ -5606,7 +5606,8 @@ angular.module('mwModal', [])
         _self = this,
         _modal,
         _usedScope,
-        _bootstrapModal;
+        _bootstrapModal,
+        _previousFocusedEl;
 
       var _getTemplate = function () {
         if (!_id) {
@@ -5699,11 +5700,22 @@ angular.module('mwModal', [])
           overflow: 'hidden'
         });
         Toast.clear();
+        _previousFocusedEl = angular.element(document.activeElement);
+
         _buildModal().then(function () {
           angular.element(_holderEl).append(_modal);
           _bootstrapModal.modal('show');
           _modalOpened = true;
           _openedModals.push(this);
+          _bootstrapModal.on('shown.bs.modal', function () {
+            angular.element(this).find('input:text:visible:first').focus();
+          });
+          if(_previousFocusedEl){
+            _bootstrapModal.on('hidden.bs.modal', function () {
+              _previousFocusedEl.focus();
+            });
+          }
+
         }.bind(this));
       };
 
@@ -5725,6 +5737,8 @@ angular.module('mwModal', [])
        */
       this.hide = function () {
         var dfd = $q.defer();
+
+
         if (_bootstrapModal && _modalOpened) {
           _bootstrapModal.one('hidden.bs.modal', function () {
             _bootstrapModal.off();
@@ -8013,7 +8027,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwModal/mwModal.html',
-    "<div class=\"modal fade\" tabindex=\"1\" role=\"dialog\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header clearfix\" ng-if=\"title\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div class=\"body-holder\"><div mw-toasts class=\"notifications\"></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div></div>"
+    "<div class=\"modal fade\" tabindex=\"-1\" role=\"dialog\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header clearfix\" ng-if=\"title\"><img ng-if=\"mwModalTmpl.getLogoPath()\" ng-src=\"{{mwModalTmpl.getLogoPath()}}\" class=\"pull-left logo\"><h4 class=\"modal-title pull-left\">{{ title }}</h4></div><div class=\"body-holder\"><div mw-toasts class=\"notifications\"></div><div ng-transclude class=\"modal-content-wrapper\"></div></div></div></div></div>"
   );
 
 
