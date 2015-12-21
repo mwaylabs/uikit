@@ -2,24 +2,24 @@
 
 angular.module('mwComponents', [])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwPanel
- * @element div
- * @description
- *
- * Wrapper directive for {@link http://getbootstrap.com/components/#panels Bootstraps Panel}.
- *
- * @param {string} mwPanel Panel title
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-panel>
- *      Panel content
- *    </div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwPanel
+   * @element div
+   * @description
+   *
+   * Wrapper directive for {@link http://getbootstrap.com/components/#panels Bootstraps Panel}.
+   *
+   * @param {string} mwPanel Panel title
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-panel>
+   *      Panel content
+   *    </div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwPanel', function () {
     return {
       restrict: 'A',
@@ -36,23 +36,23 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwSortIndicator
- * @element span
- * @description
- *
- * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
- *
- * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
- * @param {boolean} isReversed display an arrow up or down
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwSortIndicator
+   * @element span
+   * @description
+   *
+   * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
+   *
+   * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
+   * @param {boolean} isReversed display an arrow up or down
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwSortIndicator', function () {
     return {
       restrict: 'A',
@@ -66,30 +66,30 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwAlert
- * @element div
- * @description
- *
- * Wrapper directive for {@link http://getbootstrap.com/components/#alerts Bootstraps Alert}.
- *
- * @param {string} mwAlert Alert type. Can be one of the following:
- *
- * - warning
- * - danger
- * - success
- * - info
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-alert="warning">
- *      Alert content
- *    </div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwAlert
+   * @element div
+   * @description
+   *
+   * Wrapper directive for {@link http://getbootstrap.com/components/#alerts Bootstraps Alert}.
+   *
+   * @param {string} mwAlert Alert type. Can be one of the following:
+   *
+   * - warning
+   * - danger
+   * - success
+   * - info
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-alert="warning">
+   *      Alert content
+   *    </div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwAlert', function () {
     return {
       restrict: 'A',
@@ -102,25 +102,25 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwHeader
- * @element div
- * @description
- *
- * Header bar for content pages.
- *
- * @param {string} title Header title
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-header title="A nice page">
- *      Header content, Buttons etc...
- *    </div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwHeader
+   * @element div
+   * @description
+   *
+   * Header bar for content pages.
+   *
+   * @param {string} title Header title
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-header title="A nice page">
+   *      Header content, Buttons etc...
+   *    </div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwHeader', function ($location, $route, $rootScope) {
     return {
       transclude: true,
@@ -139,7 +139,7 @@ angular.module('mwComponents', [])
 
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
-            el.find('.navbar-header').addClass('no-buttons');
+            el.find('.mw-header').addClass('no-buttons');
           }
         });
 
@@ -162,25 +162,25 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwIcon
- * @element span
- * @description
- *
- * Wrapper for bootstrap glyphicons.
- *
- * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
- * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <span mw-icon="search"></span>
- *    <span mw-icon="search" tooltip="This is a tooltip"></span>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwIcon
+   * @element span
+   * @description
+   *
+   * Wrapper for bootstrap glyphicons.
+   *
+   * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
+   * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <span mw-icon="search"></span>
+   *    <span mw-icon="search" tooltip="This is a tooltip"></span>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwIcon', function () {
     return {
       restrict: 'A',
@@ -212,19 +212,19 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:rlnTooltip
- * @element span
- *
- * @description
- * Creates a tooltip element using Bootstraps popover component.
- *
- * @param {String} mwTooltip Content of the tooltip
- *
- * @example
- <span mw-tooltip="foobar"></span>
- */
+  /**
+   * @ngdoc directive
+   * @name Relution.Common.directive:rlnTooltip
+   * @element span
+   *
+   * @description
+   * Creates a tooltip element using Bootstraps popover component.
+   *
+   * @param {String} mwTooltip Content of the tooltip
+   *
+   * @example
+   <span mw-tooltip="foobar"></span>
+   */
   .directive('mwTooltip', function () {
     return {
       restrict: 'A',
@@ -240,13 +240,13 @@ angular.module('mwComponents', [])
         el.popover({
           trigger: 'hover',
           placement: scope.placement || 'bottom',
-          content: function(){
+          content: function () {
             return scope.text;
           },
           container: 'body'
         });
 
-        var destroyPopOver = function(){
+        var destroyPopOver = function () {
           var popover = el.data('bs.popover');
           if (popover && popover.tip()) {
             popover.tip().detach().remove();
@@ -260,23 +260,23 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwBadge
- * @element span
- * @description
- *
- * Wrapper for bootstrap labels.
- *
- * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <span mw-badge="info"></span>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwBadge
+   * @element span
+   * @description
+   *
+   * Wrapper for bootstrap labels.
+   *
+   * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <span mw-badge="info"></span>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwBadge', function () {
     return {
       restrict: 'A',
@@ -298,18 +298,18 @@ angular.module('mwComponents', [])
   })
 
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwFilterableSearch
- * @element div
- * @description
- *
- * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwFilterableSearch
+   * @element div
+   * @description
+   *
+   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .directive('mwFilterableSearch', function ($timeout, $animate, Loading, Detect) {
     return {
       scope: {
@@ -368,24 +368,24 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwRating
- * @element span
- * @description
- *
- * Converts a rating number into stars
- *
- * @param {number | expression} mwRating rating score
- * @param {number} max the maximun number of stars
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <span mw-rating="3"></span>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwRating
+   * @element span
+   * @description
+   *
+   * Converts a rating number into stars
+   *
+   * @param {number | expression} mwRating rating score
+   * @param {number} max the maximun number of stars
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <span mw-rating="3"></span>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwRating', function () {
     return {
       restrict: 'A',
@@ -550,18 +550,18 @@ angular.module('mwComponents', [])
   })
 
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwToggle
- * @element span
- * @description
- *
- * Displays a toggle button to toggle a boolean value
- *
- * @param {expression} mwModel model
- * @param {function} mwChange the function which should be executed when the value has changed
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwToggle
+   * @element span
+   * @description
+   *
+   * Displays a toggle button to toggle a boolean value
+   *
+   * @param {expression} mwModel model
+   * @param {function} mwChange the function which should be executed when the value has changed
+   *
+   */
   .directive('mwToggle', function ($timeout) {
     return {
       scope: {
@@ -584,15 +584,15 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwTimeline
- * @element div
- * @description
- *
- * Vertical timeline Is the container element for timeline entries
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwTimeline
+   * @element div
+   * @description
+   *
+   * Vertical timeline Is the container element for timeline entries
+   *
+   */
   .directive('mwTimeline', function () {
     return {
       transclude: true,
@@ -680,15 +680,15 @@ angular.module('mwComponents', [])
   })
 
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwDraggable
- * @description
- *
- * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
- * The drop callback of the mwDroppable element will receive this data.
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwDraggable
+   * @description
+   *
+   * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
+   * The drop callback of the mwDroppable element will receive this data.
+   *
+   */
   .directive('mwDraggable', function ($timeout) {
     return {
       restrict: 'A',
@@ -880,9 +880,9 @@ angular.module('mwComponents', [])
           documentEl,
           scrollEl;
 
-        if(attrs.mwListCollection){
+        if (attrs.mwListCollection) {
           collection = scope.$eval(attrs.mwListCollection).getCollection();
-        } else if(attrs.collection){
+        } else if (attrs.collection) {
           collection = scope.$eval(attrs.collection);
         } else {
           console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
@@ -995,24 +995,26 @@ angular.module('mwComponents', [])
     };
   })
 
-  .service('mwMarkdown', function(){
+  .service('mwMarkdown', function () {
     var converter = new window.showdown.Converter({
       headerLevelStart: 3,
       smoothLivePreview: true,
-      extensions: [function(){
+      extensions: [function () {
         return [
           // Replace escaped @ symbols
-          { type: 'lang', regex: '•', replace: '-' },
-          { type: 'lang', filter: function(text){
-            return text.replace(/https?:\/\/\S*/g, function(link){
-              return '<'+link+'>';
+          {type: 'lang', regex: '•', replace: '-'},
+          {
+            type: 'lang', filter: function (text) {
+            return text.replace(/https?:\/\/\S*/g, function (link) {
+              return '<' + link + '>';
             });
-          }}
+          }
+          }
         ];
       }]
     });
     return {
-      convert: function(val){
+      convert: function (val) {
         return converter.makeHtml(val);
       }
     };
@@ -1051,4 +1053,22 @@ angular.module('mwComponents', [])
         }
       }
     };
-  }]);
+  }])
+
+
+  .directive('mwBreadCrumbsHolder', function () {
+    return {
+      transclude: true,
+      template: '<div class="mw-bread-crumbs" ng-transclude></div>'
+    };
+  })
+
+  .directive('mwBreadCrumb', function () {
+    return {
+      scope: {
+        url: '@',
+        title: '@'
+      },
+      templateUrl: 'uikit/templates/mwComponents/mwBreadCrumb.html'
+    };
+  });

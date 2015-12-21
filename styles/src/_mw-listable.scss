@@ -194,118 +194,112 @@
 }
 
 @mixin small-listable-header() {
-  .mw-listable-header {
-    left: 0;
-    margin-bottom: 20px;
-    box-sizing: border-box;
-    padding: 15px 5px;
-    background: transparent;
-    border-bottom: 2px solid #999;
-
-    &:after{
-      background: none;
-    }
-
-    &.has-selection-control{
-      margin-bottom: 55px;
-    }
-
-    .selection-controller,
-    .selected-counter {
-      margin: 0
-    }
-
-    .selected-items .items {
-      padding: 10px 0;
-    }
-
-    .selection-controller{
-      position: absolute;
-      bottom: -35px;
-      width: 100%;
+  div[mw-listable-head-2] {
+    .mw-listable-header {
       left: 0;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      padding: 15px 5px;
+      background: white;
+      border-bottom: 2px solid #999;
+      z-index: 9;
 
-      .holder{
-        width: inherit;
-        display: flex;
+      &:after{
+        background: none;
+      }
 
-        .select-all,
-        .clear{
-          flex-basis: 50%;
-          text-align: center;
-          padding: 3px;
-          border: 1px solid #ddd;
-          position: relative;
+      &.has-selection-control{
+        margin-bottom: 55px;
+      }
 
-          a{
-            text-decoration: none !important;
-          }
+      .selection-controller,
+      .selected-counter {
+        margin: 0
+      }
 
-          .selected-icon,
-          .close_cross{
-            left: 6px;
-            position: absolute;
-            top: 6px;
-          }
+      .selected-items .items {
+        padding: 10px 0;
+      }
 
-          &:hover{
-            background: #efefef;
+      .selection-controller{
+        position: absolute;
+        bottom: -27px;
+        width: 100%;
+        left: 0;
+
+        .holder{
+          width: inherit;
+          display: flex;
+
+          .select-all,
+          .clear{
+            flex-basis: 50%;
+            text-align: center;
+            padding: 3px;
+            border: 1px solid #ddd;
+            position: relative;
+            background: white;
+
+            a{
+              text-decoration: none !important;
+            }
+
+            .selected-icon,
+            .close_cross{
+              left: 6px;
+              position: absolute;
+              top: 6px;
+            }
+
+            &:hover{
+              background: #efefef;
+            }
           }
         }
       }
-    }
 
-    .search-bar{
-      margin-left: -5px;
-      width: 50%;
-      flex-basis:50%;
-
-      .input-group{
-        width: 100%;
-        background: transparent;
-
-        input{
-          width: 80%;
-        }
-      }
-
-      ~.selected-counter{
-        flex-basis: 50%
-      }
-
-      &.focused {
-        width: 100%;
-        flex-basis:70%;
+      .search-bar{
+        margin-left: -5px;
+        width: 50%;
+        flex-basis:50%;
 
         .input-group{
           width: 100%;
+          background: transparent;
 
           input{
-            width: 90%;
+            width: 80%;
           }
         }
 
         ~.selected-counter{
-          flex-basis: 30%
+          flex-basis: 50%
+        }
+
+        &.focused {
+          width: 100%;
+          flex-basis:70%;
+
+          .input-group{
+            width: 100%;
+
+            input{
+              width: 90%;
+            }
+          }
+
+          ~.selected-counter{
+            flex-basis: 30%
+          }
         }
       }
     }
-  }
-}
 
-@mixin curved-shadow() {
-  position: relative;
-
-  &:before {
-    bottom: 0px;
-    left: 1%;
-    border-radius: 25%;
-    box-shadow: rgba(180, 180, 180, 0.4) 0 3px 4px;
-    content: "";
-    position: absolute;
-    z-index: -1;
-    width: 98%;
-    height: 19px;
+    &.affixed{
+      .selection-controller{
+        display: none;
+      }
+    }
   }
 }
 
@@ -313,13 +307,6 @@ div[mw-listable-head-2] {
   position: relative;
   z-index: 10;
   @include single-transition(opacity, 0.5s, cubic-bezier(0, .33, .79, 1.46));
-
-  @media (max-width: $screen-md) {
-    position: static;
-    opacity: 1 !important;
-
-    @include small-listable-header();
-  }
 
   &.has-extra-content {
     .extra-content {
@@ -494,8 +481,6 @@ div[mw-listable-head-2] {
 
       .box-shadow-container {
 
-        @include curved-shadow();
-
         &:before {
           bottom: -9px;
         }
@@ -543,6 +528,14 @@ div[mw-listable-head-2] {
     .mw-filterable-search{
       display: none;
     }
+  }
+}
+
+@media (max-width: $screen-md) {
+  @include small-listable-header();
+
+  .mw-listable-header{
+    position: initial !important;
   }
 }
 

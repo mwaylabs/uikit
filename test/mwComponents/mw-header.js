@@ -74,7 +74,7 @@ describe('mwHeader', function () {
     $compile(el)(scope);
     scope.$digest();
 
-    expect(el.find('.navbar-header').hasClass('no-buttons')).toBeTruthy();
+    expect(el.find('.mw-header').hasClass('no-buttons')).toBeTruthy();
   });
 
   it('should add class no-buttons when nothing is transcluded and back buttons are disabled', function () {
@@ -89,7 +89,7 @@ describe('mwHeader', function () {
     $compile(el)(scope);
     scope.$digest();
 
-    expect(el.find('.navbar-header').hasClass('no-buttons')).toBeTruthy();
+    expect(el.find('.mw-header').hasClass('no-buttons')).toBeTruthy();
   });
 
   it('should not add class no-buttons when nothing is transcluded and back buttons are enabled', function () {
@@ -104,7 +104,7 @@ describe('mwHeader', function () {
     $compile(el)(scope);
     scope.$digest();
 
-    expect(el.find('.navbar-header').hasClass('no-buttons')).toBeFalsy();
+    expect(el.find('.mw-header').hasClass('no-buttons')).toBeFalsy();
   });
 
   it('should remove "#" from url', function () {
