@@ -481,33 +481,43 @@ angular.module('mwListableBb', [])
               headerHeight,
               headerBottomOffset,
               listHeaderOffset,
-              spacer = 5;
+              spacer;
 
             if (scope.isModal) {
               headerOffset = angular.element('.modal-header').offset().top;
               headerHeight = angular.element('.modal-header').innerHeight();
+              spacer = -3;
             } else {
               headerOffset = angular.element('[mw-header]').offset().top;
               headerHeight = angular.element('[mw-header]').innerHeight();
+              spacer = 5;
             }
 
             headerBottomOffset = headerOffset + headerHeight;
             listHeaderOffset = el.offset().top;
 
             newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            console.log(newOffset);
           }
 
           var scrollTop = scrollEl.scrollTop();
 
           if (scrollTop > newOffset && _affix) {
             el.find('.mw-listable-header').css('top', scrollTop - newOffset);
+            el.addClass('affixed');
           } else if (!_affix) {
             scrollEl.off('scroll', throttledScrollFn);
           } else {
             el.find('.mw-listable-header').css('top', 'initial');
+            el.removeClass('affixed');
           }
 
         }, 10);
+
+        var throttledRecalculate = _.throttle(function(){
+          el.find('.mw-listable-header').css('top', 'initial');
+          newOffset = null;
+        });
 
         var loadItemsNotInCollection = function () {
           if (scope.hasFetchedModelsNotInCollection) {
@@ -654,9 +664,15 @@ angular.module('mwListableBb', [])
           // Register scroll callback
           scrollEl.on('scroll', throttledScrollFn);
 
+          scrollEl.on('resize', throttledRecalculate);
+
           // Deregister scroll callback if scope is destroyed
           scope.$on('$destroy', function () {
             scrollEl.off('scroll', throttledScrollFn);
+          });
+
+          scope.$on('$destroy', function () {
+            scrollEl.off('resize', throttledRecalculate);
           });
 
           el.on('focus', 'input[type=text]', function () {
