@@ -439,7 +439,7 @@ angular.module('mwListableBb', [])
     };
   })
 
-  .directive('mwListableHead2', function ($window, i18n, MCAPCollection) {
+  .directive('mwListableHead2', function ($window, $document, i18n, MCAPCollection) {
     return {
       scope: {
         collection: '=',
@@ -459,11 +459,9 @@ angular.module('mwListableBb', [])
         var scrollEl,
           bodyEl = angular.element('body'),
           modalEl = el.parents('.modal .modal-body'),
-          lastScrollYPos = 0,
           canShowSelected = false,
           _affix = angular.isDefined(scope.affix) ? scope.affix : true,
-          affixOffset = scope.affixOffset,
-          isSticked = false;
+          windowEl = angular.element($window);
 
         scope.selectable = false;
         scope.selectedAmount = 0;
@@ -474,24 +472,52 @@ angular.module('mwListableBb', [])
         scope.isLoadingModelsNotInCollection = false;
         scope.hasFetchedModelsNotInCollection = false;
 
+
+        var newOffset;
+
         var throttledScrollFn = _.throttle(function () {
+          if (!newOffset) {
+            var headerOffset,
+              headerHeight,
+              headerBottomOffset,
+              listHeaderOffset,
+              spacer;
 
-          var currentScrollPos = scrollEl.scrollTop();
+            if (scope.isModal) {
+              headerOffset = angular.element('.modal-header').offset().top;
+              headerHeight = angular.element('.modal-header').innerHeight();
+              spacer = -3;
+            } else {
+              headerOffset = angular.element('[mw-header]').offset().top;
+              headerHeight = angular.element('[mw-header]').innerHeight();
+              spacer = 5;
+            }
 
-          if (currentScrollPos > affixOffset && _affix) {
-            var newTopVal = currentScrollPos - affixOffset;
-            newTopVal = newTopVal < 0 ? 0 : newTopVal;
-            el.css('top', newTopVal);
-            el.css('opacity', 1);
-            isSticked = true;
-          } else {
-            el.css('top', 0);
-            el.css('opacity', 1);
-            isSticked = false;
+            headerBottomOffset = headerOffset + headerHeight;
+            listHeaderOffset = el.offset().top;
+
+            newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            console.log(newOffset);
           }
 
-          lastScrollYPos = currentScrollPos;
+          var scrollTop = scrollEl.scrollTop();
+
+          if (scrollTop > newOffset && _affix) {
+            el.find('.mw-listable-header').css('top', scrollTop - newOffset);
+            el.addClass('affixed');
+          } else if (!_affix) {
+            scrollEl.off('scroll', throttledScrollFn);
+          } else {
+            el.find('.mw-listable-header').css('top', 'initial');
+            el.removeClass('affixed');
+          }
+
         }, 10);
+
+        var throttledRecalculate = _.throttle(function(){
+          el.find('.mw-listable-header').css('top', 'initial');
+          newOffset = null;
+        });
 
         var loadItemsNotInCollection = function () {
           if (scope.hasFetchedModelsNotInCollection) {
@@ -632,23 +658,21 @@ angular.module('mwListableBb', [])
           }
           else {
             //element in window
-            scrollEl = angular.element($window);
-          }
-
-          if (!affixOffset) {
-            if (scope.isModal) {
-              affixOffset = 73;
-            } else {
-              affixOffset = 35;
-            }
+            scrollEl = windowEl;
           }
 
           // Register scroll callback
           scrollEl.on('scroll', throttledScrollFn);
 
+          scrollEl.on('resize', throttledRecalculate);
+
           // Deregister scroll callback if scope is destroyed
           scope.$on('$destroy', function () {
             scrollEl.off('scroll', throttledScrollFn);
+          });
+
+          scope.$on('$destroy', function () {
+            scrollEl.off('resize', throttledRecalculate);
           });
 
           el.on('focus', 'input[type=text]', function () {

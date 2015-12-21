@@ -127,24 +127,24 @@ angular.module('mwFilters', [])
 
 angular.module('mwComponents', [])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwPanel
- * @element div
- * @description
- *
- * Wrapper directive for {@link http://getbootstrap.com/components/#panels Bootstraps Panel}.
- *
- * @param {string} mwPanel Panel title
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-panel>
- *      Panel content
- *    </div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwPanel
+   * @element div
+   * @description
+   *
+   * Wrapper directive for {@link http://getbootstrap.com/components/#panels Bootstraps Panel}.
+   *
+   * @param {string} mwPanel Panel title
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-panel>
+   *      Panel content
+   *    </div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwPanel', function () {
     return {
       restrict: 'A',
@@ -161,23 +161,23 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwSortIndicator
- * @element span
- * @description
- *
- * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
- *
- * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
- * @param {boolean} isReversed display an arrow up or down
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwSortIndicator
+   * @element span
+   * @description
+   *
+   * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
+   *
+   * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
+   * @param {boolean} isReversed display an arrow up or down
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwSortIndicator', function () {
     return {
       restrict: 'A',
@@ -191,30 +191,30 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwAlert
- * @element div
- * @description
- *
- * Wrapper directive for {@link http://getbootstrap.com/components/#alerts Bootstraps Alert}.
- *
- * @param {string} mwAlert Alert type. Can be one of the following:
- *
- * - warning
- * - danger
- * - success
- * - info
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-alert="warning">
- *      Alert content
- *    </div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwAlert
+   * @element div
+   * @description
+   *
+   * Wrapper directive for {@link http://getbootstrap.com/components/#alerts Bootstraps Alert}.
+   *
+   * @param {string} mwAlert Alert type. Can be one of the following:
+   *
+   * - warning
+   * - danger
+   * - success
+   * - info
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-alert="warning">
+   *      Alert content
+   *    </div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwAlert', function () {
     return {
       restrict: 'A',
@@ -227,25 +227,25 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwHeader
- * @element div
- * @description
- *
- * Header bar for content pages.
- *
- * @param {string} title Header title
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <div mw-header title="A nice page">
- *      Header content, Buttons etc...
- *    </div>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwHeader
+   * @element div
+   * @description
+   *
+   * Header bar for content pages.
+   *
+   * @param {string} title Header title
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <div mw-header title="A nice page">
+   *      Header content, Buttons etc...
+   *    </div>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwHeader', ['$location', '$route', '$rootScope', function ($location, $route, $rootScope) {
     return {
       transclude: true,
@@ -264,7 +264,7 @@ angular.module('mwComponents', [])
 
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
-            el.find('.navbar-header').addClass('no-buttons');
+            el.find('.mw-header').addClass('no-buttons');
           }
         });
 
@@ -287,25 +287,25 @@ angular.module('mwComponents', [])
     };
   }])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwIcon
- * @element span
- * @description
- *
- * Wrapper for bootstrap glyphicons.
- *
- * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
- * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <span mw-icon="search"></span>
- *    <span mw-icon="search" tooltip="This is a tooltip"></span>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwIcon
+   * @element span
+   * @description
+   *
+   * Wrapper for bootstrap glyphicons.
+   *
+   * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
+   * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <span mw-icon="search"></span>
+   *    <span mw-icon="search" tooltip="This is a tooltip"></span>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwIcon', function () {
     return {
       restrict: 'A',
@@ -337,19 +337,19 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:rlnTooltip
- * @element span
- *
- * @description
- * Creates a tooltip element using Bootstraps popover component.
- *
- * @param {String} mwTooltip Content of the tooltip
- *
- * @example
- <span mw-tooltip="foobar"></span>
- */
+  /**
+   * @ngdoc directive
+   * @name Relution.Common.directive:rlnTooltip
+   * @element span
+   *
+   * @description
+   * Creates a tooltip element using Bootstraps popover component.
+   *
+   * @param {String} mwTooltip Content of the tooltip
+   *
+   * @example
+   <span mw-tooltip="foobar"></span>
+   */
   .directive('mwTooltip', function () {
     return {
       restrict: 'A',
@@ -365,13 +365,13 @@ angular.module('mwComponents', [])
         el.popover({
           trigger: 'hover',
           placement: scope.placement || 'bottom',
-          content: function(){
+          content: function () {
             return scope.text;
           },
           container: 'body'
         });
 
-        var destroyPopOver = function(){
+        var destroyPopOver = function () {
           var popover = el.data('bs.popover');
           if (popover && popover.tip()) {
             popover.tip().detach().remove();
@@ -385,23 +385,23 @@ angular.module('mwComponents', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwBadge
- * @element span
- * @description
- *
- * Wrapper for bootstrap labels.
- *
- * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <span mw-badge="info"></span>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwBadge
+   * @element span
+   * @description
+   *
+   * Wrapper for bootstrap labels.
+   *
+   * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <span mw-badge="info"></span>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwBadge', function () {
     return {
       restrict: 'A',
@@ -423,18 +423,18 @@ angular.module('mwComponents', [])
   })
 
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwFilterableSearch
- * @element div
- * @description
- *
- * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwFilterableSearch
+   * @element div
+   * @description
+   *
+   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .directive('mwFilterableSearch', ['$timeout', '$animate', 'Loading', 'Detect', function ($timeout, $animate, Loading, Detect) {
     return {
       scope: {
@@ -493,24 +493,24 @@ angular.module('mwComponents', [])
     };
   }])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwRating
- * @element span
- * @description
- *
- * Converts a rating number into stars
- *
- * @param {number | expression} mwRating rating score
- * @param {number} max the maximun number of stars
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *    <span mw-rating="3"></span>
- *  </doc:source>
- * </doc:example>
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwRating
+   * @element span
+   * @description
+   *
+   * Converts a rating number into stars
+   *
+   * @param {number | expression} mwRating rating score
+   * @param {number} max the maximun number of stars
+   *
+   * @example
+   * <doc:example>
+   *  <doc:source>
+   *    <span mw-rating="3"></span>
+   *  </doc:source>
+   * </doc:example>
+   */
   .directive('mwRating', function () {
     return {
       restrict: 'A',
@@ -675,18 +675,18 @@ angular.module('mwComponents', [])
   })
 
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwToggle
- * @element span
- * @description
- *
- * Displays a toggle button to toggle a boolean value
- *
- * @param {expression} mwModel model
- * @param {function} mwChange the function which should be executed when the value has changed
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwToggle
+   * @element span
+   * @description
+   *
+   * Displays a toggle button to toggle a boolean value
+   *
+   * @param {expression} mwModel model
+   * @param {function} mwChange the function which should be executed when the value has changed
+   *
+   */
   .directive('mwToggle', ['$timeout', function ($timeout) {
     return {
       scope: {
@@ -709,15 +709,15 @@ angular.module('mwComponents', [])
     };
   }])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwTimeline
- * @element div
- * @description
- *
- * Vertical timeline Is the container element for timeline entries
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwTimeline
+   * @element div
+   * @description
+   *
+   * Vertical timeline Is the container element for timeline entries
+   *
+   */
   .directive('mwTimeline', function () {
     return {
       transclude: true,
@@ -805,15 +805,15 @@ angular.module('mwComponents', [])
   }])
 
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwDraggable
- * @description
- *
- * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
- * The drop callback of the mwDroppable element will receive this data.
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwDraggable
+   * @description
+   *
+   * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
+   * The drop callback of the mwDroppable element will receive this data.
+   *
+   */
   .directive('mwDraggable', ['$timeout', function ($timeout) {
     return {
       restrict: 'A',
@@ -1005,9 +1005,9 @@ angular.module('mwComponents', [])
           documentEl,
           scrollEl;
 
-        if(attrs.mwListCollection){
+        if (attrs.mwListCollection) {
           collection = scope.$eval(attrs.mwListCollection).getCollection();
-        } else if(attrs.collection){
+        } else if (attrs.collection) {
           collection = scope.$eval(attrs.collection);
         } else {
           console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
@@ -1120,24 +1120,26 @@ angular.module('mwComponents', [])
     };
   })
 
-  .service('mwMarkdown', function(){
+  .service('mwMarkdown', function () {
     var converter = new window.showdown.Converter({
       headerLevelStart: 3,
       smoothLivePreview: true,
-      extensions: [function(){
+      extensions: [function () {
         return [
           // Replace escaped @ symbols
-          { type: 'lang', regex: '•', replace: '-' },
-          { type: 'lang', filter: function(text){
-            return text.replace(/https?:\/\/\S*/g, function(link){
-              return '<'+link+'>';
+          {type: 'lang', regex: '•', replace: '-'},
+          {
+            type: 'lang', filter: function (text) {
+            return text.replace(/https?:\/\/\S*/g, function (link) {
+              return '<' + link + '>';
             });
-          }}
+          }
+          }
         ];
       }]
     });
     return {
-      convert: function(val){
+      convert: function (val) {
         return converter.makeHtml(val);
       }
     };
@@ -1176,7 +1178,25 @@ angular.module('mwComponents', [])
         }
       }
     };
-  }]);
+  }])
+
+
+  .directive('mwBreadCrumbsHolder', function () {
+    return {
+      transclude: true,
+      template: '<div class="mw-bread-crumbs" ng-transclude></div>'
+    };
+  })
+
+  .directive('mwBreadCrumb', function () {
+    return {
+      scope: {
+        url: '@',
+        title: '@'
+      },
+      templateUrl: 'uikit/templates/mwComponents/mwBreadCrumb.html'
+    };
+  });
 
 'use strict';
 
@@ -5059,7 +5079,7 @@ angular.module('mwListableBb', [])
     };
   })
 
-  .directive('mwListableHead2', ['$window', 'i18n', 'MCAPCollection', function ($window, i18n, MCAPCollection) {
+  .directive('mwListableHead2', ['$window', '$document', 'i18n', 'MCAPCollection', function ($window, $document, i18n, MCAPCollection) {
     return {
       scope: {
         collection: '=',
@@ -5079,11 +5099,9 @@ angular.module('mwListableBb', [])
         var scrollEl,
           bodyEl = angular.element('body'),
           modalEl = el.parents('.modal .modal-body'),
-          lastScrollYPos = 0,
           canShowSelected = false,
           _affix = angular.isDefined(scope.affix) ? scope.affix : true,
-          affixOffset = scope.affixOffset,
-          isSticked = false;
+          windowEl = angular.element($window);
 
         scope.selectable = false;
         scope.selectedAmount = 0;
@@ -5094,24 +5112,52 @@ angular.module('mwListableBb', [])
         scope.isLoadingModelsNotInCollection = false;
         scope.hasFetchedModelsNotInCollection = false;
 
+
+        var newOffset;
+
         var throttledScrollFn = _.throttle(function () {
+          if (!newOffset) {
+            var headerOffset,
+              headerHeight,
+              headerBottomOffset,
+              listHeaderOffset,
+              spacer;
 
-          var currentScrollPos = scrollEl.scrollTop();
+            if (scope.isModal) {
+              headerOffset = angular.element('.modal-header').offset().top;
+              headerHeight = angular.element('.modal-header').innerHeight();
+              spacer = -3;
+            } else {
+              headerOffset = angular.element('[mw-header]').offset().top;
+              headerHeight = angular.element('[mw-header]').innerHeight();
+              spacer = 5;
+            }
 
-          if (currentScrollPos > affixOffset && _affix) {
-            var newTopVal = currentScrollPos - affixOffset;
-            newTopVal = newTopVal < 0 ? 0 : newTopVal;
-            el.css('top', newTopVal);
-            el.css('opacity', 1);
-            isSticked = true;
-          } else {
-            el.css('top', 0);
-            el.css('opacity', 1);
-            isSticked = false;
+            headerBottomOffset = headerOffset + headerHeight;
+            listHeaderOffset = el.offset().top;
+
+            newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            console.log(newOffset);
           }
 
-          lastScrollYPos = currentScrollPos;
+          var scrollTop = scrollEl.scrollTop();
+
+          if (scrollTop > newOffset && _affix) {
+            el.find('.mw-listable-header').css('top', scrollTop - newOffset);
+            el.addClass('affixed');
+          } else if (!_affix) {
+            scrollEl.off('scroll', throttledScrollFn);
+          } else {
+            el.find('.mw-listable-header').css('top', 'initial');
+            el.removeClass('affixed');
+          }
+
         }, 10);
+
+        var throttledRecalculate = _.throttle(function(){
+          el.find('.mw-listable-header').css('top', 'initial');
+          newOffset = null;
+        });
 
         var loadItemsNotInCollection = function () {
           if (scope.hasFetchedModelsNotInCollection) {
@@ -5252,23 +5298,21 @@ angular.module('mwListableBb', [])
           }
           else {
             //element in window
-            scrollEl = angular.element($window);
-          }
-
-          if (!affixOffset) {
-            if (scope.isModal) {
-              affixOffset = 73;
-            } else {
-              affixOffset = 35;
-            }
+            scrollEl = windowEl;
           }
 
           // Register scroll callback
           scrollEl.on('scroll', throttledScrollFn);
 
+          scrollEl.on('resize', throttledRecalculate);
+
           // Deregister scroll callback if scope is destroyed
           scope.$on('$destroy', function () {
             scrollEl.off('scroll', throttledScrollFn);
+          });
+
+          scope.$on('$destroy', function () {
+            scrollEl.off('resize', throttledRecalculate);
           });
 
           el.on('focus', 'input[type=text]', function () {
@@ -6774,18 +6818,18 @@ angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToas
 
 angular.module('mwSidebar', [])
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarSelect
- * @element div
- * @description
- *
- * Creates a select input which provides possible values for a filtering.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarSelect
+   * @element div
+   * @description
+   *
+   * Creates a select input which provides possible values for a filtering.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .directive('mwSidebarSelect', function () {
     return {
       transclude: true,
@@ -6809,80 +6853,87 @@ angular.module('mwSidebar', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarPanel
- * @element div
- * @description
- *
- * Directive for the filter panel.
- *
- * @param {boolean} affix Make the filterbar affix by listening on window scroll event and changing top position so that the filterbar can be postion relative instead of fixed
- * @param {number} offset If needed an offset to the top for example when a nav bar is over the sidebar that is not fixed.
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarPanel
+   * @element div
+   * @description
+   *
+   * Directive for the filter panel.
+   *
+   * @param {boolean} affix Make the filterbar affix by listening on window scroll event and changing top position so that the filterbar can be postion relative instead of fixed
+   * @param {number} offset If needed an offset to the top for example when a nav bar is over the sidebar that is not fixed.
+   *
+   */
   .directive('mwSidebarPanel', ['$document', '$window', function ($document, $window) {
     return {
       replace: true,
       transclude: true,
       templateUrl: 'uikit/templates/mwSidebar/mwSidebarPanel.html',
-      link: function (scope, el, attr) {
-        var offsetTop = angular.element(el).offset().top,
-          newOffset;
+      link: function (scope, el) {
 
-        var repos = function () {
-          offsetTop = angular.element(el).offset().top;
+        var windowEl = angular.element($window);
 
-          if ($document.scrollTop() < attr.offset) {
-            newOffset = offsetTop - $document.scrollTop();
+        var reposition = function () {
+          var offsetTop = angular.element(el).offset().top,
+            offsetHeaderTop = angular.element('*[mw-header]').offset().top + angular.element('*[mw-header]').height(),
+            spacer = 15, //Offset so the sidebar has some whitespce to the header
+            newOffset = offsetTop - offsetHeaderTop - spacer,
+            scrollTop = $document.scrollTop();
+
+          if(newOffset <= 10 ){
+            //There is no element between sidebar and header so we can kill the scroll listener
+            windowEl.off('scroll', throttledRepositionFn);
+          } else if (scrollTop > newOffset) {
+            angular.element(el).find('.content-container').css('top', offsetHeaderTop + spacer);
+          } else if (scrollTop > 1) {
+            angular.element(el).find('.content-container').css('top', offsetTop - scrollTop);
           } else {
-            newOffset = offsetTop - attr.offset;
-          }
-
-          angular.element(el).find('.content-container').css('top', newOffset);
-
-          if ($document.scrollTop() < 1) {
             angular.element(el).find('.content-container').css('top', 'initial');
           }
-
         };
 
         var setMaxHeight = function () {
           var containerEl = el.find('.content-container'),
-            windowHeight = angular.element(window).height(),
+            windowHeight = windowEl.height(),
             containerElOffsetTop = el.offset().top,
             footerHeight = angular.element('body > footer').height(),
             padding = 20,
             maxHeight = windowHeight - containerElOffsetTop - footerHeight - padding;
-            if(maxHeight>0){
-              containerEl.css('max-height', maxHeight);
-            } else {
-              containerEl.css('max-height', 'initial');
-            }
+
+          if (maxHeight > 0) {
+            containerEl.css('max-height', maxHeight);
+          } else {
+            containerEl.css('max-height', 'initial');
+          }
         };
 
-        window.requestAnimFrame(setMaxHeight);
-        setTimeout(setMaxHeight,500);
-        angular.element($window).on('resize', _.throttle(setMaxHeight, 500));
+        var throttledRepositionFn = _.throttle(reposition,10),
+            throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
 
-        if (attr.affix && attr.offset) {
-          angular.element($window).scroll(function () {
-            repos();
-          });
-        }
+        window.requestAnimFrame(setMaxHeight);
+        setTimeout(setMaxHeight, 500);
+
+        windowEl.on('resize', throttledSetMaxHeight);
+        windowEl.on('scroll', throttledRepositionFn);
+
+        scope.$on('$destroy', function(){
+          windowEl.off('resize', throttledSetMaxHeight);
+          windowEl.off('scroll', throttledRepositionFn);
+        });
       }
     };
   }])
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarActions
- * @element div
- * @description
- *
- * Container for actions
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarActions
+   * @element div
+   * @description
+   *
+   * Container for actions
+   *
+   */
   .directive('mwSidebarActions', function () {
     return {
       transclude: true,
@@ -6890,15 +6941,15 @@ angular.module('mwSidebar', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarFilters
- * @element div
- * @description
- *
- * Container for filters
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarFilters
+   * @element div
+   * @description
+   *
+   * Container for filters
+   *
+   */
   .directive('mwSidebarFilters', function () {
     return {
       transclude: true,
@@ -7767,6 +7818,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/templates/mwComponents/mwBreadCrumb.html',
+    "<div class=\"mw-bread-crumb\"><a ng-href=\"{{url}}\" class=\"bread-crumb\">{{title}}</a> <span mw-icon=\"fa-caret-right\" class=\"arrow\"></span></div>"
+  );
+
+
   $templateCache.put('uikit/templates/mwComponents/mwCollapsable.html',
     "<div class=\"mw-collapsable\"><div class=\"mw-collapsable-heading\" ng-click=\"toggle()\"><i class=\"fa fa-angle-right\" ng-class=\"{'fa-rotate-90': viewModel.collapsed}\"></i> <span class=\"mw-collapsable-heading-text\">{{title}}</span></div><div ng-class=\"{'collapsed': viewModel.collapsed}\" class=\"mw-collapsable-body mw-collapsable-animate margin-top-5\" ng-transclude></div></div>"
   );
@@ -7778,7 +7834,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwComponents/mwHeader.html',
-    "<div class=\"nav-bar-holder mwHeader\"><div class=\"nav-bar-fixer\"><nav class=\"navbar navbar-default\" role=\"navigation\"><div class=\"navbar-header col-xs-12\"><div ng-if=\"showBackButton\" class=\"back\" data-text=\"{{'common.back' | i18n}}\" ng-click=\"back()\"><span mw-icon=\"fa-angle-left\"></span></div><h2 class=\"lead pull-left clearfix\"><span mw-icon=\"{{mwTitleIcon}}\" class=\"header-icon\" ng-if=\"mwTitleIcon\"></span><div ng-repeat=\"breadCrumb in mwBreadCrumbs\" class=\"mw-bread-crumbs\"><a ng-href=\"{{breadCrumb.url}}\" class=\"bread-crumb\">{{breadCrumb.title}}</a> <i mw-icon=\"fa-caret-right\" class=\"arrow\"></i></div><div class=\"page-title\" ng-click=\"refresh()\">{{title}}</div></h2><div class=\"pull-right header-popover\" mw-tooltip=\"{{ warningText }}\" style=\"font-size: 30px; margin-left:4px\"><span ng-if=\"warningCondition\" class=\"text-warning\" mw-icon=\"fa-warning\"></span> <span class=\"popover-container\" style=\"font-size: 14px\"></span></div><div class=\"pull-right\" ng-transclude></div></div></nav></div></div>"
+    "<div class=\"mw-header\"><div ng-if=\"showBackButton\" class=\"back-btn clickable\" data-text=\"{{'common.back' | i18n}}\" ng-click=\"back()\"><span mw-icon=\"fa-angle-left\"></span></div><div class=\"title-holder\"><span mw-icon=\"{{mwTitleIcon}}\" class=\"header-icon\" ng-if=\"mwTitleIcon\"></span><div ng-if=\"mwBreadCrumbs\" mw-bread-crumbs-holder><div ng-repeat=\"breadCrumb in mwBreadCrumbs\" mw-bread-crumb url=\"{{breadCrumb.url}}\" title=\"{{breadCrumb.title}}\" show-arrow=\"true\"></div></div><h1 class=\"lead page-title\" ng-click=\"refresh()\">{{title}}</h1></div><div ng-if=\"warningCondition\" class=\"warnin-content\" mw-tooltip=\"{{ warningText }}\"><span class=\"text-warning\" mw-icon=\"fa-warning\"></span> <span class=\"popover-container\"></span></div><div class=\"additional-content-holder\" ng-transclude></div></div>"
   );
 
 
@@ -7828,7 +7884,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwComponentsBb/mwVersionSelector.html',
-    "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default dropdown-toggle hidden-xs\" data-toggle=\"dropdown\">Version {{currentVersionModel.attributes[versionNumberKey]}} <span ng-if=\"currentVersionModel.attributes.published\" mw-icon=\"rln-icon published\"></span></button><ul class=\"version-dropdown dropdown-menu pull-right\" style=\"min-width:100%\" role=\"menu\"><li ng-repeat=\"version in versionCollection.models\" ng-class=\"{active:(version.attributes.uuid === currentVersionModel.attributes.uuid)}\"><a ng-href=\"{{getUrl(version.attributes.uuid)}}\">{{version.attributes[versionNumberKey]}} <span ng-if=\"version.attributes.published\" mw-icon=\"rln-icon published\"></span></a></li></ul></div>"
+    "<div class=\"btn-group mw-version-selector\"><button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\"><span class=\"descriptor\">Version</span> <span class=\"descriptor-sm\">V.</span> {{currentVersionModel.attributes[versionNumberKey]}} <span ng-if=\"currentVersionModel.attributes.published\" mw-icon=\"rln-icon published\"></span></button><ul class=\"version-dropdown dropdown-menu pull-right\" style=\"min-width:100%\" role=\"menu\"><li ng-repeat=\"version in versionCollection.models\" ng-class=\"{active:(version.attributes.uuid === currentVersionModel.attributes.uuid)}\"><a ng-href=\"{{getUrl(version.attributes.uuid)}}\">{{version.attributes[versionNumberKey]}} <span ng-if=\"version.attributes.published\" mw-icon=\"rln-icon published\"></span></a></li></ul></div>"
   );
 
 
