@@ -321,14 +321,18 @@ div[mw-listable-head-2] {
   padding: 5px 7px 5px 10px;
   color: #555;
   font-size: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 15px;
   height: 22px;
   left: -16px;
   box-sizing: content-box;
   position: relative;
+
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  align-items: center;
 
   &:after{
     content: '';
@@ -344,6 +348,7 @@ div[mw-listable-head-2] {
   .search-bar,
   .selected-counter
   {
+    -webkit-flex-basis: 100%;
     flex-basis: 100%;
   }
 
@@ -394,6 +399,7 @@ div[mw-listable-head-2] {
   .search-bar {
     margin: 0 auto;
     min-width: 0;
+    -webkit-flex-basis: 50%;
     flex-basis: 50%;
     @include single-transition(flex-basis, 0.4s, ease);
 
@@ -443,6 +449,7 @@ div[mw-listable-head-2] {
     }
 
     &.focused{
+      -webkit-flex-basis: 100%;
       flex-basis: 100%;
 
       .input-holder{
