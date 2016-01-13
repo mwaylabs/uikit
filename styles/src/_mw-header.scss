@@ -13,7 +13,9 @@ div[mw-header] {
   padding: 0 1.5em 0 1.5em;
   z-index: 100;
   background: rgba(255, 255, 255, 0.9);
+  display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   border-bottom: 1px solid #e7e7e7;
   height: $headerHeight + 6;
@@ -35,8 +37,10 @@ div[mw-header] {
   }
 
   .title-holder {
-    flex-grow: 1;
+    display: -webkit-flex;
     display: flex;
+    -webkit-flex-grow: 1;
+    flex-grow: 1;
     overflow: hidden;
     white-space: nowrap;
 
@@ -53,6 +57,7 @@ div[mw-header] {
     h1 {
       display: inline-block;
       margin: 0;
+      -webkit-flex-grow: 2;
       flex-grow: 2;
       text-overflow: ellipsis;
       overflow: hidden;
