@@ -225,19 +225,74 @@
       };
     })
 
-    .directive('mwValidateWithoutChar', function(){
+    .config(function(mwValidationMessagesProvider){
+      mwValidationMessagesProvider.registerValidator('withoutChars','errors.withoutChar');
+      mwValidationMessagesProvider.registerValidator('withoutChar','errors.withoutChars');
+    })
+
+    .directive('mwValidateWithoutChar', function($parse, mwValidationMessages, i18n){
       return {
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          ngModel.$validators.withoutChar = function(value){
-            if(_.isString(value)){
-              return value.indexOf(attr.mwValidateWithoutChar) < 0;
+          var validatorChars,
+              validatorChar = attr.mwValidateWithoutChar;
+
+          try{
+            validatorChars = $parse(attr.mwValidateWithoutChar)(scope);
+          } catch(err){};
+
+          if(_.isArray(validatorChars)){
+            mwValidationMessages.updateMessage('withoutChars', function(){
+              return i18n.get('errors.withoutChars',{ chars: '"'+validatorChars.join('", "') + '"' });
+            });
+
+            ngModel.$validators.withoutChars = function(value){
+              var valid = true;
+
+              if(value){
+                validatorChars.forEach(function(validatorChar){
+                  if(valid){
+                    valid = value.indexOf(validatorChar) < 0;
+                  }
+                });
+              }
+
+              return valid;
+            };
+          } else if(validatorChar){
+            mwValidationMessages.updateMessage('withoutChar', function(){
+              return i18n.get('errors.withoutChar',{ char: validatorChar });
+            });
+
+            ngModel.$validators.withoutChar = function(value){
+              var valid = true;
+              if(value){
+                valid = value.indexOf(validatorChar) < 0;
+              }
+              return valid;
+            }
+          }
+        }
+      };
+    })
+
+    .config(function(mwValidationMessagesProvider){
+      mwValidationMessagesProvider.registerValidator('onlyWordChars','errors.onlyWordChars');
+    })
+
+    .directive('mwValidateWordChars', function(){
+      return {
+        require: 'ngModel',
+        link: function(scope, elm, attr, ngModel){
+          ngModel.$validators.onlyWordChars = function(value){
+            if(value){
+              return !value.match(/\W/g);
             } else {
               return true;
             }
           };
         }
-      };
+      }
     })
 
     .directive('mwValidateItunesOrHttpLink', function(){
