@@ -4,3 +4,6 @@ libs
 .sass-cache
 .DS_Store
 .idea
+
+sample_portal/node_modules
+sample_portal/app/components

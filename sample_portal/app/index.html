@@ -1,0 +1,81 @@
+<!doctype html>
+<!--[if gt IE 8]><!-->
+<html ng-app="SampleApp" class="no-js">
+<!--<![endif]-->
+<head>
+  <meta http-equiv="cache-control" content="max-age=0"/>
+  <meta http-equiv="cache-control" content="no-cache"/>
+  <meta http-equiv="expires" content="0"/>
+  <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+  <meta http-equiv="pragma" content="no-cache"/>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sample App</title>
+  <meta name="description" content="">
+  <meta name="viewport"
+        content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,width=device-width">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  <link rel="shortcut icon" href="favicon.png" type="image/png">
+  <!-- Apple Touch Icons  -->
+  <link href="Icon.png" rel="apple-touch-icon-precomposed">
+  <link href="Icon-72.png" sizes="72x72" rel="apple-touch-icon-precomposed">
+  <link href="Icon@2x.png" sizes="114x114" rel="apple-touch-icon-precomposed">
+  <link href="Icon-72@2x.png" sizes="144x144" rel="apple-touch-icon-precomposed">
+
+  <!-- build:css(.tmp) main.css -->
+  <link rel="stylesheet" href="main.css">
+  <!-- endbuild -->
+</head>
+<body ng-cloak class="loading">
+
+<!--[if lt IE 10]>
+<script>
+  function hideChromeFrame(){
+    document.getElementById('chromeframe').style.display='none';
+  }
+</script>
+
+<p class="chromeframe alert alert-danger col-xs-12 text-center" style="z-index:9999; position: fixed" id="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser
+  today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better
+  experience this site.
+  <span class="pull-right clickable" onclick="hideChromeFrame()">Hide</span>
+</p>
+<![endif]-->
+
+
+<div ng-controller="MainController as ctrl">
+
+  <div ng-view zd-append-class-according-to-route class="view" autoscroll="true"></div>
+
+  <footer></footer>
+</div>
+
+
+<!-- build:js modules/lib.min.js -->
+<script src="components/angular/angular.js"></script>
+<script src="components/angular-route/angular-route.js"></script>
+<script src="components/angular-animate/angular-animate.js"></script>
+
+<script src="components/underscore/underscore-min.js"></script>
+<!-- endbuild -->
+
+<!-- build:js modules/sample-app.min.js -->
+<script src="app.js"></script>
+
+<!-- Main module -->
+<script src="modules/main/main.js"></script>
+<script src="modules/main/controllers/main_controller.js"></script>
+<!-- endbuild -->
+
+<!-- Start module -->
+<script src="modules/start/start.js"></script>
+<script src="modules/main/controllers/main_controller.js"></script>
+<!-- endbuild -->
+
+<!-- build:js modules/zero-day.ui.min.js -->
+<!-- <script src="modules/zero-day.ui.min.js"></script> -->
+<!-- endbuild -->
+
+</body>
+</html>
