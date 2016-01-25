@@ -9,19 +9,20 @@ module.exports = function(config){
 
     // list of files / patterns to load in the browser
     files: [
+      'libs/jquery/dist/jquery.min.js',
+
       'node_modules/phantomjs-polyfill/bind-polyfill.js',
       'node_modules/underscore/underscore.js',
-      'node_modules/jquery/dist/jquery.min.js',
       'node_modules/bootstrap/js/tooltip.js',
       'node_modules/bootstrap/js/popover.js',
       'node_modules/backbone/backbone-min.js',
       'node_modules/mcapjs-client/dist/mcap.min.js',
       'node_modules/angular/angular.min.js',
       'node_modules/angular-route/angular-route.min.js',
-      'node_modules/angular-sanitize/angular-sanitize.min.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/mcapjs-client/dist/mcap.angular.js',
 
+      'libs/angular-sanitize/angular-sanitize.min.js',
       'libs/angular-markdown-directive/markdown.js',
       'libs/showdown/dist/showdown.js',
       'libs/jquery-ui/ui/jquery.ui.widget.js',
