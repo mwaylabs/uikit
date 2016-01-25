@@ -239,7 +239,7 @@
 
           try{
             validatorChars = $parse(attr.mwValidateWithoutChar)(scope);
-          } catch(err){};
+          } catch(err){}
 
           if(_.isArray(validatorChars)){
             mwValidationMessages.updateMessage('withoutChars', function(){
@@ -270,7 +270,7 @@
                 valid = value.indexOf(validatorChar) < 0;
               }
               return valid;
-            }
+            };
           }
         }
       };
@@ -292,7 +292,7 @@
             }
           };
         }
-      }
+      };
     })
 
     .directive('mwValidateItunesOrHttpLink', function(){

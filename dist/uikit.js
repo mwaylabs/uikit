@@ -2196,7 +2196,6 @@ angular.module('mwFileUpload')
                     unique: i18n.get('errors.notUnique'),
                     match: i18n.get('errors.doesNotMatch'),
                     emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                    withoutChar: element.attr('mw-validation-message') || i18n.get('errors.withoutChar', {char: element.attr('mw-validate-without-char')}),
                     itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
                   };
 
@@ -3296,13 +3295,68 @@ angular.module('mwFormBb', [])
       };
     })
 
-    .directive('mwValidateWithoutChar', function(){
+    .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
+      mwValidationMessagesProvider.registerValidator('withoutChars','errors.withoutChar');
+      mwValidationMessagesProvider.registerValidator('withoutChar','errors.withoutChars');
+    }])
+
+    .directive('mwValidateWithoutChar', ['$parse', 'mwValidationMessages', 'i18n', function($parse, mwValidationMessages, i18n){
       return {
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          ngModel.$validators.withoutChar = function(value){
-            if(_.isString(value)){
-              return value.indexOf(attr.mwValidateWithoutChar) < 0;
+          var validatorChars,
+              validatorChar = attr.mwValidateWithoutChar;
+
+          try{
+            validatorChars = $parse(attr.mwValidateWithoutChar)(scope);
+          } catch(err){}
+
+          if(_.isArray(validatorChars)){
+            mwValidationMessages.updateMessage('withoutChars', function(){
+              return i18n.get('errors.withoutChars',{ chars: '"'+validatorChars.join('", "') + '"' });
+            });
+
+            ngModel.$validators.withoutChars = function(value){
+              var valid = true;
+
+              if(value){
+                validatorChars.forEach(function(validatorChar){
+                  if(valid){
+                    valid = value.indexOf(validatorChar) < 0;
+                  }
+                });
+              }
+
+              return valid;
+            };
+          } else if(validatorChar){
+            mwValidationMessages.updateMessage('withoutChar', function(){
+              return i18n.get('errors.withoutChar',{ char: validatorChar });
+            });
+
+            ngModel.$validators.withoutChar = function(value){
+              var valid = true;
+              if(value){
+                valid = value.indexOf(validatorChar) < 0;
+              }
+              return valid;
+            };
+          }
+        }
+      };
+    }])
+
+    .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
+      mwValidationMessagesProvider.registerValidator('onlyWordChars','errors.onlyWordChars');
+    }])
+
+    .directive('mwValidateWordChars', function(){
+      return {
+        require: 'ngModel',
+        link: function(scope, elm, attr, ngModel){
+          ngModel.$validators.onlyWordChars = function(value){
+            if(value){
+              return !value.match(/\W/g);
             } else {
               return true;
             }
@@ -6988,15 +7042,15 @@ angular.module('mwSidebar', [])
 'use strict';
 
 angular.module('mwSidebarBb', [])
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarFilters
- * @element div
- * @description
- *
- * Container for filters
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarFilters
+   * @element div
+   * @description
+   *
+   * Container for filters
+   *
+   */
   .directive('mwSidebarFiltersBb', ['$timeout', 'MCAPFilterHolder', function ($timeout, MCAPFilterHolder) {
     return {
       transclude: true,
@@ -7080,7 +7134,7 @@ angular.module('mwSidebarBb', [])
 
           scope.deleteFilter = function (filterModel) {
             var removeId = filterModel.id,
-                appliedId = scope.appliedFilter.id;
+              appliedId = scope.appliedFilter.id;
 
             return scope.mwListCollectionFilter.deleteFilter(filterModel).then(function () {
 
@@ -7097,7 +7151,7 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.revokeFilter = function () {
-            scope.mwListCollectionFilter.revokeFilter().then(function(){
+            scope.mwListCollectionFilter.revokeFilter().then(function () {
               scope.collection.filterable.resetFilters();
               scope.collection.fetch();
               scope.appliedFilter.clear();
@@ -7111,9 +7165,9 @@ angular.module('mwSidebarBb', [])
             scope.viewModel.tmpFilter.clear();
             scope.viewModel.tmpFilter.set(emptyFilter.toJSON());
             scope.viewModel.showFilterForm = true;
-            $timeout(function(){
+            $timeout(function () {
               filterCollection(scope.viewModel.tmpFilter);
-            },_filterAnimationDuration);
+            }, _filterAnimationDuration);
           };
 
           scope.editFilter = function (filterModel) {
@@ -7121,21 +7175,21 @@ angular.module('mwSidebarBb', [])
             scope.viewModel.tmpFilter.clear();
             scope.viewModel.tmpFilter.set(filterModel.toJSON());
             scope.viewModel.showFilterForm = true;
-            $timeout(function(){
+            $timeout(function () {
               filterCollection(filterModel);
-            },_filterAnimationDuration);
+            }, _filterAnimationDuration);
           };
 
           scope.cancelFilterEdit = function () {
             scope.viewModel.showFilterForm = false;
             if (!scope.appliedFilter.id || scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
-              $timeout(function(){
+              $timeout(function () {
                 scope.applyFilter(scope.appliedFilter);
-              },_filterAnimationDuration);
+              }, _filterAnimationDuration);
             }
           };
 
-          scope.filtersAreApplied = function(){
+          scope.filtersAreApplied = function () {
             return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
           };
 
@@ -7159,29 +7213,29 @@ angular.module('mwSidebarBb', [])
     };
   }])
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarSelect
- * @element div
- * @description
- *
- * Creates a select input which provides possible values for a filtering.
- *
- * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
- * - labelTransformFn
- * - labelProperty
- * - translationPrefix
- *
- * @param {collection} collection with option models. by default model.attributes.key will be called as key label
- * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- * @param {string} placeholder The name of the default selected label with an empty value.
- * @param {expression} persist If true, filter will be saved in runtime variable
- * @param {string} keyProperty property of model to use instead of models.attribute.key property
- * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
- * @param {function} labelTransformFn function to use. Will be called with model as parameter.
- * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarSelect
+   * @element div
+   * @description
+   *
+   * Creates a select input which provides possible values for a filtering.
+   *
+   * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
+   * - labelTransformFn
+   * - labelProperty
+   * - translationPrefix
+   *
+   * @param {collection} collection with option models. by default model.attributes.key will be called as key label
+   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   * @param {string} placeholder The name of the default selected label with an empty value.
+   * @param {expression} persist If true, filter will be saved in runtime variable
+   * @param {string} keyProperty property of model to use instead of models.attribute.key property
+   * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
+   * @param {function} labelTransformFn function to use. Will be called with model as parameter.
+   * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
+   */
   .directive('mwSidebarSelectBb', ['i18n', function (i18n) {
     return {
       require: '^mwSidebarFiltersBb',
@@ -7247,7 +7301,7 @@ angular.module('mwSidebarBb', [])
         }
 
         scope.$watch('collection.filterable.filterValues.' + scope.property, function (val) {
-          if(val && val.length>0){
+          if (val && val.length > 0) {
             scope.viewModel.val = val;
           } else {
             scope.viewModel.val = null;
@@ -7257,21 +7311,65 @@ angular.module('mwSidebarBb', [])
     };
   }])
 
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarNumberInputBb
+   * @element div
+   * @description
+   *
+   * Creates a number input to filter for integer values.
+   *
+   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   * @param {string} placeholder The name of the default selected label with an empty value.
+   * @param {expression} persist If true, filter will be saved in runtime variable
+   * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+   */
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarNumberInputBb
- * @element div
- * @description
- *
- * Creates a number input to filter for integer values.
- *
- * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- * @param {string} placeholder The name of the default selected label with an empty value.
- * @param {expression} persist If true, filter will be saved in runtime variable
- * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
- */
+  .directive('mwSidebarInputBb', function () {
+    return {
+      require: '^mwSidebarFiltersBb',
+      scope: {
+        type: '@',
+        property: '@',
+        placeholder: '@',
+        mwDisabled: '=',
+        customUrlParameter: '@'
+      },
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarInput.html',
+      link: function (scope, elm, attr, ctrl) {
+
+        scope.viewModel = {};
+
+        scope._type = scope.type || 'text';
+
+        scope.isValid = function () {
+          return elm.find('input').first().hasClass('ng-valid');
+        };
+
+        scope.changed = function () {
+          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+        };
+      }
+    };
+  })
+
+
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarNumberInputBb
+   * @element div
+   * @description
+   *
+   * Creates a number input to filter for integer values.
+   *
+   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   * @param {string} placeholder The name of the default selected label with an empty value.
+   * @param {expression} persist If true, filter will be saved in runtime variable
+   * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+   */
 
   .directive('mwSidebarNumberInputBb', function () {
     return {
@@ -7295,6 +7393,7 @@ angular.module('mwSidebarBb', [])
 
         scope.changed = function () {
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          console.log(property, scope.viewModel.val);
           ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
         };
       }
@@ -8063,6 +8162,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/templates/mwSidebarBb/mwSidebarFilters.html',
     "<div class=\"mw-sidebar-filters\" ng-class=\"{'form-active':viewModel.showFilterForm, 'form-in-active':!viewModel.showFilterForm}\"><div ng-if=\"mwListCollection\" class=\"btn-group btn-block persisted-filters\"><button class=\"btn btn-default btn-block dropdown-toggle\" ng-class=\"{hidden:viewModel.showFilterForm}\" data-toggle=\"dropdown\"><span mw-icon=\"rln-icon filter_add\"></span> {{appliedFilter.get('name') || ('common.applyQuickFilter' | i18n) }}</button><ul class=\"filter-dropdown dropdown-menu\" style=\"min-width:100%\" role=\"menu\"><li ng-class=\"{'active':appliedFilter.id===filter.id}\" class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"revokeFilter()\" class=\"btn btn-link\">{{'common.unFiltered' | i18n}}</a></li><li ng-repeat=\"filter in filters.models\" ng-class=\"{'active':appliedFilter.id===filter.id}\" class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"applyFilter(filter)\" class=\"btn btn-link\">{{filter.get('name')}}</a><div ng-if=\"appliedFilter.id===filter.id\" class=\"pull-right action-btns hidden-xs hidden-sm\"><button class=\"btn btn-link\" ng-click=\"editFilter(filter)\"><span mw-icon=\"rln-icon edit\"></span></button> <button class=\"btn btn-link\" ng-click=\"deleteFilter(filter)\"><span mw-icon=\"rln-icon delete\"></span></button></div></li><li class=\"filter\"><a href=\"#\" mw-prevent-default=\"click\" ng-click=\"addFilter(filter)\" class=\"btn btn-link\">+ {{'common.addFilter' | i18n}}</a></li></ul></div><div class=\"form\" ng-if=\"viewModel.showFilterForm\"><div ng-transclude></div><div ng-if=\"mwListCollection && filtersAreApplied()\" class=\"panel panel-default margin-top-10 quickfilter-form\"><div class=\"panel-body\"><p>{{'common.saveQuickFilter' | i18n}}</p><input type=\"text\" placeholder=\"{{'common.quickFilterName' | i18n}}\" class=\"margin-top-10\" ng-model=\"viewModel.tmpFilter.attributes.name\"><div class=\"margin-top-10\"><button class=\"btn btn-danger\" ng-click=\"cancelFilterEdit()\">{{'common.cancel' | i18n}}</button> <button class=\"btn btn-primary\" ng-disabled=\"!viewModel.tmpFilter.isValid()\" ng-click=\"saveFilter()\">{{'common.save' | i18n}}</button></div></div></div><div ng-if=\"mwListCollection && !filtersAreApplied()\" class=\"margin-top-10\"><button class=\"btn btn-danger btn-block\" ng-click=\"cancelFilterEdit()\">{{'common.cancel' | i18n}}</button></div></div></div>"
+  );
+
+
+  $templateCache.put('uikit/templates/mwSidebarBb/mwSidebarInput.html',
+    "<div class=\"row\"><div class=\"col-md-12 form-group\" ng-class=\"{'has-error': !isValid()}\" style=\"margin-bottom: 0\"><input type=\"{{_type}}\" ng-if=\"!customUrlParameter\" class=\"form-control\" ng-model=\"viewModel.val\" ng-change=\"changed()\" ng-disabled=\"mwDisabled\" placeholder=\"{{placeholder}}\" ng-model-options=\"{ debounce: 500 }\"><input type=\"{{_type}}\" ng-if=\"customUrlParameter\" class=\"form-control\" ng-model=\"viewModel.val\" ng-change=\"changed()\" ng-disabled=\"mwDisabled\" placeholder=\"{{placeholder}}\" ng-model-options=\"{ debounce: 500 }\"></div></div>"
   );
 
 
