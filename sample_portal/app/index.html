@@ -46,18 +46,41 @@
 
 <div ng-controller="MainController as ctrl">
 
-  <div ng-view zd-append-class-according-to-route class="view" autoscroll="true"></div>
+  <div class="app">
+
+    <header>
+      <div mw-toasts class="notifications"></div>
+    </header>
+
+    <nav>
+
+    </nav>
+
+    <div rln-append-class-according-to-route class="module-page">
+      <div ng-view class="height-inherit" autoscroll="true"></div>
+      <div mw-view-change-loader></div>
+    </div>
+
+  </div>
 
   <footer></footer>
 </div>
 
 
 <!-- build:js modules/lib.min.js -->
+<script src="components/jquery/dist/jquery.min.js"></script>
+
 <script src="components/angular/angular.js"></script>
 <script src="components/angular-route/angular-route.js"></script>
 <script src="components/angular-animate/angular-animate.js"></script>
 
+<script src="components/sass-bootstrap/js/tooltip.js"></script>
+<script src="components/sass-bootstrap/js/popover.js"></script>
+
 <script src="components/underscore/underscore-min.js"></script>
+<script src="components/backbone/backbone.js"></script>
+
+<script src="components/mw-ui/uikit.js"></script>
 <!-- endbuild -->
 
 <!-- build:js modules/sample-app.min.js -->
@@ -70,7 +93,7 @@
 
 <!-- Start module -->
 <script src="modules/start/start.js"></script>
-<script src="modules/main/controllers/main_controller.js"></script>
+<script src="modules/start/controllers/start_index_controller.js"></script>
 <!-- endbuild -->
 
 <!-- build:js modules/zero-day.ui.min.js -->

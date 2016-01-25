@@ -1,6 +1,26 @@
-/**
- * Created by zarges on 22/01/16.
- */
-html,body{
-  background: pink;
+@import "compass/css3";
+@import "font-awesome/scss/font-awesome";
+@import "sass-bootstrap/lib/bootstrap";
+@import "../../src/mw_ui";
+
+.app {
+  display: flex;
+
+  nav {
+    width: 60px;
+    height: 100vh;
+    background: red;
+  }
+
+  div[mw-header] {
+    height: 60px;
+    position: relative;
+    margin-bottom: 25px;
+
+    .mw-header {
+      width: calc(100% - 57px);
+      height: 60px;
+      left: initial;
+    }
+  }
 }

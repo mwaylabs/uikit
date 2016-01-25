@@ -5,7 +5,10 @@
 
 angular.module('SampleApp.Main', [])
 
-  .config(function ($routeProvider) {
+  .config(function ($routeProvider, i18nProvider) {
+
+    i18nProvider.addLocale('de_DE', 'Deutsch', 'de_DE.json');
+    i18nProvider.addLocale('en_US', 'English (US)', 'en_US.json');
 
     $routeProvider
 
@@ -13,8 +16,10 @@ angular.module('SampleApp.Main', [])
 
   })
 
-  .run(function($rootScope, $location){
+  .run(function($rootScope, $location, i18n){
     $rootScope.goTo = function(path){
       $location.path(path);
     };
+
+    i18n.setLocale('de_DE');
   });

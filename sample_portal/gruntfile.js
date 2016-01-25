@@ -39,7 +39,8 @@
           livereload: {
             files: [
               '<%= yeoman.app %>/**/*.html',
-              '<%= yeoman.app %>/modules/**/*.js'
+              '<%= yeoman.app %>/modules/**/*.js',
+              '<%= yeoman.app %>/components/mw-ui/*.js'
             ]
           }
         },

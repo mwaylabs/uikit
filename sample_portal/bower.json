@@ -5,12 +5,15 @@
     "angular": "1.4.7",
     "angular-animate": "1.4.7",
     "angular-route": "1.4.7",
+
+    "jquery": "1.10.0",
     "backbone": "~1.1.2",
     "json3": "~3.2.4",
     "es5-shim": "~2.0.8",
     "moment": "~2.1.0",
     "underscore": "~1.5.1",
 
+    "font-awesome": "4.3.0",
     "sass-bootstrap": "~3.0.2"
   }
 }
