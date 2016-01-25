@@ -22,6 +22,7 @@
     "grunt-preprocess": "4.0.0",
 
     "husky": "^0.10.2",
+    "matchdep": "~0.1.1",
 
     "jasmine-core": "^2.3.4",
 
