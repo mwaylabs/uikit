@@ -131,6 +131,6 @@ module.exports = function (grunt) {
   grunt.registerTask('watch', ['process', 'regarde']);
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist','copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist','copy:distToSamplePortal']);
-  grunt.registerTask('build', ['jshint', 'test', 'process', 'process-old', 'uglify', 'clean']);
+  grunt.registerTask('build', ['jshint', 'process', 'process-old', 'test', 'uglify', 'clean']);
   grunt.registerTask('test', ['karma']);
 };
