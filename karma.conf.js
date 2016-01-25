@@ -30,10 +30,8 @@ module.exports = function(config){
       'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
       'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
 
-      'src/mwUI.js',
-      'src/**/*.js',
-      'test/**/*.js',
-      'src/templates/**/*.html'
+      'dist/uikit.js',
+      'src/**/tests/**/*.js'
     ],
 
     // list of files to exclude
