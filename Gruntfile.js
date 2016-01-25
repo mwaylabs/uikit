@@ -31,11 +31,17 @@ module.exports = function (grunt) {
         'src/**/*.js'
       ]
     },
+    preprocess: {
+      js : {
+        src : 'src/mw_ui.js',
+        dest : '<%= uikit.dist %>/<%= uikit.fileName %>.js'
+      }
+    },
     concat: {
       dist: {
         src: [
-          'src/mwUI.js',
-          'src/**/*.js',
+          'src-old/mwUI.js',
+          'src-old/**/*.js',
           '.tmp/templates.js',
           'libs/angular-sanitize/angular-sanitize.js',
           'libs/showdown/dist/showdown.js',
@@ -45,7 +51,22 @@ module.exports = function (grunt) {
           'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
           'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
         ],
-        dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
+        dest: '<%= uikit.dist %>/<%= uikit.fileName %>-old.js'
+      }
+    },
+    copy: {
+      distToSamplePortal:{
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%= uikit.dist %>',
+            dest: 'sample_portal/app/components/mw-ui',
+            src: [
+              '<%= uikit.fileName %>.js'
+            ]
+          }
+        ]
       }
     },
     uglify: {
@@ -68,9 +89,24 @@ module.exports = function (grunt) {
       }
     },
     ngtemplates: {
-      all: {
+      old: {
         src: [
-          'src/templates/**/*.html'
+          'src-old/templates/**/*.html'
+        ],
+        dest: '.tmp/templates.js',
+        options: {
+          url: function (url) {
+            return 'uikit/' + url.replace('src-old/', '');
+          },
+          bootstrap: function (module, script) {
+            return 'angular.module("mwUI").run(["$templateCache", function($templateCache) {' + script + '}]);';
+          },
+          htmlmin: {collapseWhitespace: true, collapseBooleanAttributes: true}
+        }
+      },
+      new: {
+        src: [
+          'src/**/templates/**/*.html'
         ],
         dest: '.tmp/templates.js',
         options: {
@@ -93,7 +129,8 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('watch', ['process', 'regarde']);
-  grunt.registerTask('process', ['ngtemplates:all', 'concat', 'ngAnnotate:dist']);
-  grunt.registerTask('build', ['jshint', 'test', 'process', 'uglify', 'clean']);
+  grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist','copy:distToSamplePortal']);
+  grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist','copy:distToSamplePortal']);
+  grunt.registerTask('build', ['jshint', 'test', 'process', 'process-old', 'uglify', 'clean']);
   grunt.registerTask('test', ['karma']);
 };
