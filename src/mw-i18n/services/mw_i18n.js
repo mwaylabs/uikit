@@ -9,6 +9,11 @@ angular.module('mwUI.i18n')
       _oldLocale = null,
       _defaultLocale = null;
 
+    var _getActiveLocale = function () {
+      // This variable was set from 'LanguageService' in method setDefaultLocale()
+      return _.findWhere(_locales, {active: true});
+    };
+
     var _setActiveLocale = function (locale) {
       var oldLocale = _getActiveLocale(),
         newLocale = _.findWhere(_locales, {id: locale});
@@ -22,11 +27,6 @@ angular.module('mwUI.i18n')
       } else {
         throw new Error('You can not set a locale that has not been registered. Please register the locale first by calling addLocale()');
       }
-    };
-
-    var _getActiveLocale = function () {
-      // This variable was set from 'LanguageService' in method setDefaultLocale()
-      return _.findWhere(_locales, {active: true});
     };
 
     /**

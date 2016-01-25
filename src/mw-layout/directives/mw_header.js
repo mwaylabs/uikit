@@ -1,6 +1,6 @@
 angular.module('mwUI.Layout')
 
-  .directive('mwHeader', function ($location, $route, $rootScope) {
+  .directive('mwHeader', function ($rootScope, $route, $location) {
     return {
       transclude: true,
       scope: {
@@ -36,4 +36,4 @@ angular.module('mwUI.Layout')
 
       }
     };
-  })
+  });
