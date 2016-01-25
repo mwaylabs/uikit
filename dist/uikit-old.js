@@ -7184,15 +7184,15 @@ angular.module('mwSidebar', [])
 'use strict';
 
 angular.module('mwSidebarBb', [])
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarFilters
- * @element div
- * @description
- *
- * Container for filters
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarFilters
+   * @element div
+   * @description
+   *
+   * Container for filters
+   *
+   */
   .directive('mwSidebarFiltersBb', function ($timeout, MCAPFilterHolder) {
     return {
       transclude: true,
@@ -7276,7 +7276,7 @@ angular.module('mwSidebarBb', [])
 
           scope.deleteFilter = function (filterModel) {
             var removeId = filterModel.id,
-                appliedId = scope.appliedFilter.id;
+              appliedId = scope.appliedFilter.id;
 
             return scope.mwListCollectionFilter.deleteFilter(filterModel).then(function () {
 
@@ -7293,7 +7293,7 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.revokeFilter = function () {
-            scope.mwListCollectionFilter.revokeFilter().then(function(){
+            scope.mwListCollectionFilter.revokeFilter().then(function () {
               scope.collection.filterable.resetFilters();
               scope.collection.fetch();
               scope.appliedFilter.clear();
@@ -7307,9 +7307,9 @@ angular.module('mwSidebarBb', [])
             scope.viewModel.tmpFilter.clear();
             scope.viewModel.tmpFilter.set(emptyFilter.toJSON());
             scope.viewModel.showFilterForm = true;
-            $timeout(function(){
+            $timeout(function () {
               filterCollection(scope.viewModel.tmpFilter);
-            },_filterAnimationDuration);
+            }, _filterAnimationDuration);
           };
 
           scope.editFilter = function (filterModel) {
@@ -7317,21 +7317,21 @@ angular.module('mwSidebarBb', [])
             scope.viewModel.tmpFilter.clear();
             scope.viewModel.tmpFilter.set(filterModel.toJSON());
             scope.viewModel.showFilterForm = true;
-            $timeout(function(){
+            $timeout(function () {
               filterCollection(filterModel);
-            },_filterAnimationDuration);
+            }, _filterAnimationDuration);
           };
 
           scope.cancelFilterEdit = function () {
             scope.viewModel.showFilterForm = false;
             if (!scope.appliedFilter.id || scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
-              $timeout(function(){
+              $timeout(function () {
                 scope.applyFilter(scope.appliedFilter);
-              },_filterAnimationDuration);
+              }, _filterAnimationDuration);
             }
           };
 
-          scope.filtersAreApplied = function(){
+          scope.filtersAreApplied = function () {
             return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
           };
 
@@ -7355,29 +7355,29 @@ angular.module('mwSidebarBb', [])
     };
   })
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarSelect
- * @element div
- * @description
- *
- * Creates a select input which provides possible values for a filtering.
- *
- * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
- * - labelTransformFn
- * - labelProperty
- * - translationPrefix
- *
- * @param {collection} collection with option models. by default model.attributes.key will be called as key label
- * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- * @param {string} placeholder The name of the default selected label with an empty value.
- * @param {expression} persist If true, filter will be saved in runtime variable
- * @param {string} keyProperty property of model to use instead of models.attribute.key property
- * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
- * @param {function} labelTransformFn function to use. Will be called with model as parameter.
- * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarSelect
+   * @element div
+   * @description
+   *
+   * Creates a select input which provides possible values for a filtering.
+   *
+   * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
+   * - labelTransformFn
+   * - labelProperty
+   * - translationPrefix
+   *
+   * @param {collection} collection with option models. by default model.attributes.key will be called as key label
+   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   * @param {string} placeholder The name of the default selected label with an empty value.
+   * @param {expression} persist If true, filter will be saved in runtime variable
+   * @param {string} keyProperty property of model to use instead of models.attribute.key property
+   * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
+   * @param {function} labelTransformFn function to use. Will be called with model as parameter.
+   * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
+   */
   .directive('mwSidebarSelectBb', function (i18n) {
     return {
       require: '^mwSidebarFiltersBb',
@@ -7443,7 +7443,7 @@ angular.module('mwSidebarBb', [])
         }
 
         scope.$watch('collection.filterable.filterValues.' + scope.property, function (val) {
-          if(val && val.length>0){
+          if (val && val.length > 0) {
             scope.viewModel.val = val;
           } else {
             scope.viewModel.val = null;
@@ -7453,21 +7453,65 @@ angular.module('mwSidebarBb', [])
     };
   })
 
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarNumberInputBb
+   * @element div
+   * @description
+   *
+   * Creates a number input to filter for integer values.
+   *
+   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   * @param {string} placeholder The name of the default selected label with an empty value.
+   * @param {expression} persist If true, filter will be saved in runtime variable
+   * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+   */
 
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarNumberInputBb
- * @element div
- * @description
- *
- * Creates a number input to filter for integer values.
- *
- * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- * @param {string} placeholder The name of the default selected label with an empty value.
- * @param {expression} persist If true, filter will be saved in runtime variable
- * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
- */
+  .directive('mwSidebarInputBb', function () {
+    return {
+      require: '^mwSidebarFiltersBb',
+      scope: {
+        type: '@',
+        property: '@',
+        placeholder: '@',
+        mwDisabled: '=',
+        customUrlParameter: '@'
+      },
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarInput.html',
+      link: function (scope, elm, attr, ctrl) {
+
+        scope.viewModel = {};
+
+        scope._type = scope.type || 'text';
+
+        scope.isValid = function () {
+          return elm.find('input').first().hasClass('ng-valid');
+        };
+
+        scope.changed = function () {
+          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+        };
+      }
+    };
+  })
+
+
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarNumberInputBb
+   * @element div
+   * @description
+   *
+   * Creates a number input to filter for integer values.
+   *
+   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   * @param {string} placeholder The name of the default selected label with an empty value.
+   * @param {expression} persist If true, filter will be saved in runtime variable
+   * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+   */
 
   .directive('mwSidebarNumberInputBb', function () {
     return {
@@ -7491,6 +7535,7 @@ angular.module('mwSidebarBb', [])
 
         scope.changed = function () {
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+          console.log(property, scope.viewModel.val);
           ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
         };
       }

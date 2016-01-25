@@ -23,6 +23,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   $templateCache.put('uikit/mw-ui-components/templates/mw_view_change_loader.html',
     "<div class=\"mw-view-change-loader\" ng-if=\"viewModel.loading\"><div class=\"spinner\"></div></div>"
   );
+
+
+  $templateCache.put('uikit/templates/mwSidebarBb/mwSidebarInput.html',
+    "<div class=\"row\"><div class=\"col-md-12 form-group\" ng-class=\"{'has-error': !isValid()}\" style=\"margin-bottom: 0\"><input type=\"{{_type}}\" ng-if=\"!customUrlParameter\" class=\"form-control\" ng-model=\"viewModel.val\" ng-change=\"changed()\" ng-disabled=\"mwDisabled\" placeholder=\"{{placeholder}}\" ng-model-options=\"{ debounce: 500 }\"><input type=\"{{_type}}\" ng-if=\"customUrlParameter\" class=\"form-control\" ng-model=\"viewModel.val\" ng-change=\"changed()\" ng-disabled=\"mwDisabled\" placeholder=\"{{placeholder}}\" ng-model-options=\"{ debounce: 500 }\"></div></div>"
+  );
 }]);
 
 angular.module('mwUI.Layout', [
@@ -372,6 +377,7 @@ angular.module('mwUI.UiComponents')
       }
     };
   }]);
+<<<<<<< bdd1a49f86be9d0c7eb531747aa90c9705456b6c
 <<<<<<< e84fac7c5deeb27f93ad00d51e91a66bc746a017
 'use strict';
 
@@ -13583,6 +13589,8 @@ $.each( { show: "fadeIn", hide: "fadeOut" }, function( method, defaultEffect ) {
 	});
 
 }(window.jQuery));
+=======
+>>>>>>> adds new build
 =======
 >>>>>>> adds new build
 
