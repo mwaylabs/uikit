@@ -115,6 +115,7 @@ angular.module('mwFormBb', [])
         mwDisabled: '=',
         mwChange: '&',
         mwPlaceholder: '@placeholder',
+        mwNullLabel: '@',
         mwAutoFetch: '=',
         name: '@'
       },
