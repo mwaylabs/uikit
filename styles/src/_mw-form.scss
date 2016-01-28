@@ -20,7 +20,6 @@
 }
 
 @mixin required-input-highlighter($color) {
-  .custom-select,
   textarea,
   input {
     &:not([type=button]){
