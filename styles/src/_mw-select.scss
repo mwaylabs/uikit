@@ -27,8 +27,9 @@
     display: none;
   }
 
-  .default-selected {
-    color: #999;
+  select:invalid {
+    border-left: 3px solid #bbb;
+    font-weight: bold;
   }
 
 }
