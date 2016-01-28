@@ -115,6 +115,7 @@ angular.module('mwFormBb', [])
         mwDisabled: '=',
         mwChange: '&',
         mwPlaceholder: '@placeholder',
+        mwNullLabel: '@',
         mwAutoFetch: '=',
         name: '@'
       },
@@ -125,11 +126,6 @@ angular.module('mwFormBb', [])
         scope.viewModel = {
           val: ''
         };
-
-        //auto fetch is default true
-        if ((scope.mwAutoFetch === true || scope.mwAutoFetch === undefined) && scope.mwOptionsCollection.length === 0) {
-          scope.mwOptionsCollection.fetch();
-        }
 
         scope.getKey = function (optionModel) {
           return optionModel.get(scope.optionsKey);
@@ -144,49 +140,66 @@ angular.module('mwFormBb', [])
 
         scope.getSelectedModel = function (val) {
           var searchObj = {};
+
           searchObj[scope.optionsKey] = val;
           return scope.mwOptionsCollection.findWhere(searchObj);
         };
 
+        var addNullObj = function () {
+          if (!scope.mwRequired) {
+            var placeholderObj = {},
+              key = null,
+              findObj = {};
 
-        if(scope.mwModel instanceof window.Backbone.Model){
-          scope.viewModel.val = scope.mwModel.get(scope.optionsKey);
-          scope.mwOptionsCollection.on('add', function(){
-            if(scope.viewModel.val && scope.getSelectedModel(scope.viewModel.val)){
+            findObj[scope.optionsKey] = key;
+            placeholderObj[scope.optionsKey] = key;
+            placeholderObj[scope.mwOptionsLabelKey] = scope.mwNullLabel || '';
+
+            if (!scope.mwOptionsCollection.findWhere(findObj)) {
+              scope.mwOptionsCollection.add(placeholderObj);
+            }
+          }
+        };
+
+        if (scope.mwModel instanceof window.Backbone.Model) {
+          // We need set it to null when it is undefined so the added null object will be selected
+          scope.viewModel.val = scope.mwModel.get(scope.optionsKey) || null;
+          scope.mwOptionsCollection.on('add', function () {
+            if (scope.viewModel.val && scope.getSelectedModel(scope.viewModel.val)) {
               scope.mwModel.set(scope.getSelectedModel(scope.viewModel.val).toJSON());
             }
           });
-        } else {
-          scope.viewModel.val = scope.mwModel;
-          scope.$watch('mwModel', function(val){
-            scope.viewModel.val = val;
-          });
-        }
-
-        scope.$watch('viewModel.val', function(val){
-          if(scope.mwModel instanceof window.Backbone.Model){
-            if(val && scope.getSelectedModel(val)){
+          scope.$watch('viewModel.val', function (val) {
+            if (val && scope.getSelectedModel(val)) {
               scope.mwModel.set(scope.getSelectedModel(val).toJSON());
             } else {
               scope.mwModel.clear();
             }
-          } else {
-            scope.mwModel = val;
-          }
-        });
-
-        if (!scope.mwPlaceholder && scope.mwRequired) {
-          if (scope.mwOptionsCollection.length > 0) {
-            if (_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)) {
-              scope.mwModel = scope.mwOptionsCollection.first().get(scope.optionsKey);
+          });
+        } else {
+          // We need set it to null when it is undefined so the added null object will be selected
+          scope.viewModel.val = scope.mwModel || null;
+          scope.$watch('mwModel', function (val) {
+            if (val || val === null) {
+              scope.viewModel.val = val;
             }
-          } else {
-            scope.mwOptionsCollection.once('add', function (model) {
-              if (_.isUndefined(scope.mwModel) || _.isNull(scope.mwModel)) {
-                scope.mwModel = model.get(scope.optionsKey);
-              }
-            });
-          }
+          });
+          scope.$watch('viewModel.val', function (val) {
+            scope.mwModel = val;
+          });
+        }
+
+        //auto fetch is default true
+        if ((scope.mwAutoFetch || angular.isUndefined(scope.mwAutoFetch)) && scope.mwOptionsCollection.length === 0) {
+          scope.mwOptionsCollection.fetch();
+        }
+
+        if (!scope.mwRequired) {
+          //We are adding a null object so we can use a placeholder and a null option
+          //It is not possible to use 2 options in ng-select when ng-options is in use
+          //So we have to add it to the collection
+          addNullObj();
+          scope.mwOptionsCollection.on('reset sync', addNullObj, this);
         }
       }
     };
@@ -229,15 +242,15 @@ angular.module('mwFormBb', [])
           }
         };
 
-        scope.mwCollection.on('add', function(model){
+        scope.mwCollection.on('add', function (model) {
           scope.mwOptionsCollection.remove(model);
         });
 
-        scope.mwCollection.on('remove', function(model){
+        scope.mwCollection.on('remove', function (model) {
           scope.mwOptionsCollection.add(model.toJSON());
         });
 
-        scope.mwCollection.each(function(model){
+        scope.mwCollection.each(function (model) {
           scope.mwOptionsCollection.remove(model);
         });
 
