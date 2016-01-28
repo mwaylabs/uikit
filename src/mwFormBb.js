@@ -242,15 +242,15 @@ angular.module('mwFormBb', [])
           }
         };
 
-        scope.mwCollection.on('add', function(model){
+        scope.mwCollection.on('add', function (model) {
           scope.mwOptionsCollection.remove(model);
         });
 
-        scope.mwCollection.on('remove', function(model){
+        scope.mwCollection.on('remove', function (model) {
           scope.mwOptionsCollection.add(model.toJSON());
         });
 
-        scope.mwCollection.each(function(model){
+        scope.mwCollection.each(function (model) {
           scope.mwOptionsCollection.remove(model);
         });
 
