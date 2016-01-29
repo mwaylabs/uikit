@@ -7,7 +7,7 @@
   display: flex;
 
   nav {
-    width: 60px;
+    min-width: 60px;
     height: 100vh;
     background: red;
   }
@@ -18,7 +18,7 @@
     margin-bottom: 25px;
 
     .mw-header {
-      width: calc(100% - 57px);
+      width: calc(100% - 60px);
       height: 60px;
       left: initial;
     }
