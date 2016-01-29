@@ -1,9 +1,10 @@
-(function(root, angular){
+(function (root, angular) {
   'use strict';
 
   angular.module('mwUI', [
-    'mwUI.Layout',
-    'mwUI.i18n'
+    'mwUI.Inputs',
+    'mwUI.i18n',
+    'mwUI.Layout'
   ]);
 
   root.mwUI = {};
@@ -30,49 +31,6 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 }]);
 
-angular.module('mwUI.Layout', [
-
-]);
-
-angular.module('mwUI.Layout')
-
-  .directive('mwHeader', ['$rootScope', '$route', '$location', function ($rootScope, $route, $location) {
-    return {
-      transclude: true,
-      scope: {
-        title: '@',
-        url: '@',
-        mwTitleIcon: '@',
-        mwBreadCrumbs: '='
-      },
-      templateUrl: 'uikit/mw-layout/templates/mw_header.html',
-      link: function (scope, el, attrs, ctrl, $transclude) {
-        $rootScope.siteTitleDetails = scope.title;
-
-        $transclude(function (clone) {
-          if ((!clone || clone.length === 0) && !scope.showBackButton) {
-            el.find('.mw-header').addClass('no-buttons');
-          }
-        });
-
-        scope.refresh = function () {
-          $route.reload();
-        };
-
-        if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
-          scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
-          scope.url = scope.url.replace('#', '');
-        } else if (!scope.url && scope.showBackButton) {
-          console.error('Url attribute in header is missing!!');
-        }
-
-        scope.back = function () {
-          $location.path(scope.url);
-        };
-
-      }
-    };
-  }]);
 angular.module('mwUI.i18n', [
 
 ]);
@@ -344,6 +302,147 @@ angular.module('mwUI.i18n')
     i18nFilter.$stateful = true;
 
     return i18nFilter;
+  }]);
+angular.module('mwUI.Inputs', []);
+
+angular.module('mwUI.Inputs')
+
+  .directive('mwCheckbox', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, el) {
+        // render custom checkbox
+        // to preserve the functionality of the original checkbox we just wrap it with a custom element
+        // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
+        // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
+        var render = function () {
+          var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
+            customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>'),
+            customCheckboxStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
+
+          el.wrap(customCheckbox);
+          customCheckboxStateIndicator.insertAfter(el);
+          customCheckboxStateFocusIndicator.insertAfter(customCheckboxStateIndicator);
+        };
+
+        (function init() {
+          //after this the remaining element is removed
+          scope.$on('$destroy', function () {
+            el.off();
+            el.parent('.mw-checkbox').remove();
+          });
+
+          render();
+
+        }());
+      }
+    };
+  });
+angular.module('mwUI.Inputs')
+
+  .directive('mwRadio', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, el) {
+        // render custom radio
+        // to preserve the functionality of the original checkbox we just wrap it with a custom element
+        // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
+        // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
+        var render = function () {
+          var customRadio = angular.element('<span class="custom-radio mw-radio"></span>'),
+            customRadioStateIndicator = angular.element('<span class="state-indicator"></span>'),
+            customRadioStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
+
+          el.wrap(customRadio);
+          customRadioStateIndicator.insertAfter(el);
+          customRadioStateFocusIndicator.insertAfter(customRadioStateIndicator);
+        };
+
+        (function init() {
+          //after this the remaining element is removed
+          scope.$on('$destroy', function () {
+            el.off();
+            el.parent('.mw-radio').remove();
+          });
+
+          render();
+
+        }());
+      }
+    };
+  });
+angular.module('mwUI.Inputs')
+
+  .directive('mwSelect', function () {
+    return {
+      require: '^?ngModel',
+      link: function (scope, el, attrs, ngModel) {
+        var customSelectWrapper = angular.element('<span class="custom-select mw-select"></span>');
+
+        var render = function () {
+          el.wrap(customSelectWrapper);
+          el.addClass('custom');
+        };
+
+        scope.$watch(
+          function () {
+            return ngModel.$modelValue;
+          },
+          function (val) {
+            if (angular.isUndefined(val)) {
+              el.addClass('default-selected');
+            } else {
+              el.removeClass('default-selected');
+            }
+          }
+        );
+
+        render();
+      }
+    };
+  });
+angular.module('mwUI.Layout', [
+
+]);
+
+angular.module('mwUI.Layout')
+
+  .directive('mwHeader', ['$rootScope', '$route', '$location', function ($rootScope, $route, $location) {
+    return {
+      transclude: true,
+      scope: {
+        title: '@',
+        url: '@',
+        mwTitleIcon: '@',
+        mwBreadCrumbs: '='
+      },
+      templateUrl: 'uikit/mw-layout/templates/mw_header.html',
+      link: function (scope, el, attrs, ctrl, $transclude) {
+        $rootScope.siteTitleDetails = scope.title;
+
+        $transclude(function (clone) {
+          if ((!clone || clone.length === 0) && !scope.showBackButton) {
+            el.find('.mw-header').addClass('no-buttons');
+          }
+        });
+
+        scope.refresh = function () {
+          $route.reload();
+        };
+
+        if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
+          scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
+          scope.url = scope.url.replace('#', '');
+        } else if (!scope.url && scope.showBackButton) {
+          console.error('Url attribute in header is missing!!');
+        }
+
+        scope.back = function () {
+          $location.path(scope.url);
+        };
+
+      }
+    };
   }]);
 angular.module('mwUI.UiComponents', []);
 
