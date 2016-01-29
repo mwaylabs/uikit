@@ -34,6 +34,7 @@
     "phantomjs-polyfill": "0.0.1"
   },
   "scripts": {
+    "start": "grunt watch",
     "test": "grunt test",
     "prepush": "./git-hooks/pre-push"
   }
