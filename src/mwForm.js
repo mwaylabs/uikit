@@ -204,7 +204,7 @@
           var that = this;
           that.element = null;
 
-          var buildValidationValues = function () {
+          var buildValidationValues = function (element) {
             var registeredValidators = mwValidationMessages.getRegisteredValidators(),
               defaultValidators = {
                 required: i18n.get('errors.isRequired'),
@@ -243,12 +243,14 @@
                 return element.attr('mw-validation-message');
               }, function (val) {
                 if (val) {
-                  buildValidationValues();
+                  buildValidationValues(element);
                 }
               });
 
-              buildValidationValues();
-              $scope.$on('mwValidationMessages:change', buildValidationValues);
+              buildValidationValues(element);
+              $scope.$on('mwValidationMessages:change', function(){
+                buildValidationValues(element);
+              });
             }
           };
         }
