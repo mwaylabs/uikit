@@ -38,35 +38,6 @@ angular.module('mwToast', [])
       options = options || {};
       options.button = options.button || {};
 
-      var replaceMessage = function (newMessage) {
-        toast.message = newMessage;
-        toast.replaceCount++;
-        resetAutoHideTimer();
-      };
-
-      var setAutoHideCallback = function (fn) {
-        toast.autoHideCallback = fn;
-        resetAutoHideTimer();
-      };
-
-      var resetAutoHideTimer = function () {
-        if (_autoRemoveTimeout) {
-          window.clearTimeout(_autoRemoveTimeout);
-        }
-        startAutoHideTimer();
-      };
-
-      var startAutoHideTimer = function () {
-        if (toast.autoHide) {
-          _autoRemoveTimeout = window.setTimeout(function () {
-            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
-              toast.visible = false;
-              toast.autoHideCallback.apply(this, arguments);
-            }
-          }.bind(this), toast.autoHideTime);
-        }
-      };
-
       var toast = {
           id: options.id || _.uniqueId('toast'),
           type: options.type || 'default',
@@ -85,12 +56,43 @@ angular.module('mwToast', [])
             isLink: options.button.isLink || !!options.button.link,
             action: options.button.action
           },
-          replaceMessage: replaceMessage,
           replaceCount: 0,
-          setAutoHideCallback: setAutoHideCallback,
           initDate: +new Date()
         },
         _autoRemoveTimeout;
+
+      var startAutoHideTimer = function () {
+        if (toast.autoHide) {
+          _autoRemoveTimeout = window.setTimeout(function () {
+            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
+              toast.visible = false;
+              toast.autoHideCallback.apply(this, arguments);
+            }
+          }.bind(this), toast.autoHideTime);
+        }
+      };
+
+      var resetAutoHideTimer = function () {
+        if (_autoRemoveTimeout) {
+          window.clearTimeout(_autoRemoveTimeout);
+        }
+        startAutoHideTimer();
+      };
+
+      var setAutoHideCallback = function (fn) {
+        toast.autoHideCallback = fn;
+        resetAutoHideTimer();
+      };
+
+      var replaceMessage = function (newMessage) {
+        toast.message = newMessage;
+        toast.replaceCount++;
+        resetAutoHideTimer();
+      };
+
+      toast.replaceMessage = replaceMessage;
+      toast.setAutoHideCallback = setAutoHideCallback;
+
 
       startAutoHideTimer();
 
