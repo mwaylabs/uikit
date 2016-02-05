@@ -446,6 +446,13 @@ angular.module('mwComponents', [])
         var helpIcon = angular.element('<div>').addClass('help-icon rln-icon support hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
+        var buildPopup = function () {
+          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
+          angular.forEach(scope.hintsToShow, function (hint) {
+            popup.find('ul').append('<li>' + hint.text + '</li>');
+          });
+        };
+
         helpIcon.hover(function () {
           buildPopup();
           var targetOffset = angular.element(this).offset();
@@ -455,13 +462,6 @@ angular.module('mwComponents', [])
         }, function () {
           angular.element('body > .mwButtonPopover').remove();
         });
-
-        var buildPopup = function () {
-          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
-          angular.forEach(scope.hintsToShow, function (hint) {
-            popup.find('ul').append('<li>' + hint.text + '</li>');
-          });
-        };
 
         scope.$watch('hintsToShow', function (newVal) {
           if (newVal.length) {
