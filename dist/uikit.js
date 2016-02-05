@@ -571,6 +571,13 @@ angular.module('mwComponents', [])
         var helpIcon = angular.element('<div>').addClass('help-icon rln-icon support hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
+        var buildPopup = function () {
+          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
+          angular.forEach(scope.hintsToShow, function (hint) {
+            popup.find('ul').append('<li>' + hint.text + '</li>');
+          });
+        };
+
         helpIcon.hover(function () {
           buildPopup();
           var targetOffset = angular.element(this).offset();
@@ -580,13 +587,6 @@ angular.module('mwComponents', [])
         }, function () {
           angular.element('body > .mwButtonPopover').remove();
         });
-
-        var buildPopup = function () {
-          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
-          angular.forEach(scope.hintsToShow, function (hint) {
-            popup.find('ul').append('<li>' + hint.text + '</li>');
-          });
-        };
 
         scope.$watch('hintsToShow', function (newVal) {
           if (newVal.length) {
@@ -1681,6 +1681,12 @@ angular.module('mwFileUpload', [])
           }
         };
 
+        var error = function(data, result){
+          handle(data, true).catch(function () {
+            $timeout(scope.successCallback.bind(this,{result:result}));
+          });
+        };
+
         var getResult = function(msg){
           if(msg && msg.results && _.isArray(msg.results) && msg.results.length>0){
             msg = msg.results[0];
@@ -1712,12 +1718,6 @@ angular.module('mwFileUpload', [])
             }
             error(data, data.result);
           }
-        };
-
-        var error = function(data, result){
-          handle(data, true).catch(function () {
-            $timeout(scope.successCallback.bind(this,{result:result}));
-          });
         };
 
         var stateChange = function(data){
@@ -2160,6 +2160,29 @@ angular.module('mwFileUpload')
           var that = this;
           that.element = null;
 
+          var buildValidationValues = function (element) {
+            var registeredValidators = mwValidationMessages.getRegisteredValidators(),
+              defaultValidators = {
+                required: i18n.get('errors.isRequired'),
+                email: i18n.get('errors.hasToBeAnEmail'),
+                pattern: i18n.get('errors.hasToMatchPattern'),
+                url: i18n.get('errors.validUrl'),
+                min: i18n.get('errors.minValue', {count: element.attr('min')}),
+                minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
+                max: i18n.get('errors.maxValue', {count: element.attr('max')}),
+                maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
+                phone: i18n.get('errors.phoneNumber'),
+                hex: i18n.get('errors.hex'),
+                unique: i18n.get('errors.notUnique'),
+                match: i18n.get('errors.doesNotMatch'),
+                emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
+                itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
+              };
+
+            $scope.validationValues = _.extend(defaultValidators, registeredValidators);
+
+          };
+
           this.buildValidationMessages = function (element) {
             if (!that.element) {
               that.element = element;
@@ -2176,34 +2199,14 @@ angular.module('mwFileUpload')
                 return element.attr('mw-validation-message');
               }, function (val) {
                 if (val) {
-                  buildValidationValues();
+                  buildValidationValues(element);
                 }
               });
 
-              var buildValidationValues = function () {
-                var registeredValidators = mwValidationMessages.getRegisteredValidators(),
-                  defaultValidators = {
-                    required: i18n.get('errors.isRequired'),
-                    email: i18n.get('errors.hasToBeAnEmail'),
-                    pattern: i18n.get('errors.hasToMatchPattern'),
-                    url: i18n.get('errors.validUrl'),
-                    min: i18n.get('errors.minValue', {count: element.attr('min')}),
-                    minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
-                    max: i18n.get('errors.maxValue', {count: element.attr('max')}),
-                    maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
-                    phone: i18n.get('errors.phoneNumber'),
-                    hex: i18n.get('errors.hex'),
-                    unique: i18n.get('errors.notUnique'),
-                    match: i18n.get('errors.doesNotMatch'),
-                    emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                    itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
-                  };
-
-                $scope.validationValues = _.extend(defaultValidators, registeredValidators);
-
-              };
-              buildValidationValues();
-              $scope.$on('mwValidationMessages:change', buildValidationValues);
+              buildValidationValues(element);
+              $scope.$on('mwValidationMessages:change', function(){
+                buildValidationValues(element);
+              });
             }
           };
         }]
@@ -3808,6 +3811,11 @@ angular.module('mwI18n', [])
       _oldLocale = null,
       _defaultLocale = null;
 
+    var _getActiveLocale = function () {
+      // This variable was set from 'LanguageService' in method setDefaultLocale()
+      return _.findWhere(_locales, {active: true});
+    };
+
     var _setActiveLocale = function (locale) {
       var oldLocale = _getActiveLocale(),
         newLocale = _.findWhere(_locales, {id: locale});
@@ -3821,11 +3829,6 @@ angular.module('mwI18n', [])
       } else {
         throw new Error('You can not set a locale that has not been registered. Please register the locale first by calling addLocale()');
       }
-    };
-
-    var _getActiveLocale = function () {
-      // This variable was set from 'LanguageService' in method setDefaultLocale()
-      return _.findWhere(_locales, {active: true});
     };
 
     /**
@@ -4231,175 +4234,177 @@ angular.module('mwCollection')
 
 angular.module('mwListable', [])
 
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListable
- * @element table
- * @description
- *
- * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
- * or pagination logic. Use this directive when you want to display items in a list without any hassle.
- *
- * @param {string} selectable Instance of selectable for this listable item
- * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
- * @example
- * <doc:example>
- *   <doc:source>
- *    <table mw-listable
- *           selectable="selectable"
- *           filterable="filterable">
- *      <thead>
- *        <tr>
- *          <th mw-listable-header>A column</th>
- *        </tr>
- *      </thead>
- *      <tbody>
- *        <tr ng-repeat="item in filterable.items()">
- *          <td>Column content</td>
- *        </tr>
- *      </tbody>
- *    </table>
- *   </doc:source>
- * </doc:example>
- */
-    .directive('mwListable', ['$compile', '$window', '$document', function ($compile, $window, $document) {
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListable
+   * @element table
+   * @description
+   *
+   * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+   * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+   *
+   * @param {string} selectable Instance of selectable for this listable item
+   * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
+   * @example
+   * <doc:example>
+   *   <doc:source>
+   *    <table mw-listable
+   *           selectable="selectable"
+   *           filterable="filterable">
+   *      <thead>
+   *        <tr>
+   *          <th mw-listable-header>A column</th>
+   *        </tr>
+   *      </thead>
+   *      <tbody>
+   *        <tr ng-repeat="item in filterable.items()">
+   *          <td>Column content</td>
+   *        </tr>
+   *      </tbody>
+   *    </table>
+   *   </doc:source>
+   * </doc:example>
+   */
+  .directive('mwListable', ['$compile', '$window', '$document', function ($compile, $window, $document) {
 
-      return {
-        restrict: 'A',
-        scope: {
-          selectable: '=',
-          filterable: '='
-        },
-        compile: function  (elm) {
+    return {
+      restrict: 'A',
+      scope: {
+        selectable: '=',
+        filterable: '='
+      },
+      compile: function (elm) {
 
-          elm.append('<tfoot mw-listable-footer></tfoot>');
+        elm.append('<tfoot mw-listable-footer></tfoot>');
 
-          return function (scope, elm) {
-            elm.addClass('table table-striped mw-listable');
+        return function (scope, elm) {
+          var modalBody,
+            w = angular.element($window),
+            d = angular.element($document);
 
-            /**
-             * Infinite scrolling
-             */
-            var scrollCallback = function () {
-              if(scope.filterable){
-                if (w.scrollTop() >= (d.height() - w.height())*0.8) {
-                  scope.filterable.loadMore();
-                }
-              }
-            };
-            var modalScrollCallback = function () {
-              if(scope.filterable &&
-                 modalBody[0].scrollHeight > 0 &&
-                 (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
+          elm.addClass('table table-striped mw-listable');
+
+          /**
+           * Infinite scrolling
+           */
+          var scrollCallback = function () {
+            if (scope.filterable) {
+              if (w.scrollTop() >= (d.height() - w.height()) * 0.8) {
                 scope.filterable.loadMore();
               }
-            };
-
-            if(elm.parents('.modal').length){
-              //filterable in modal
-              var modalBody = elm.parents('.modal-body');
-
-              // Register scroll callback
-              modalBody.on('scroll', modalScrollCallback);
-
-              // Deregister scroll callback if scope is destroyed
-              scope.$on('$destroy', function () {
-                modalBody.off('scroll', modalScrollCallback);
-              });
-            } else {
-              //filterable in document
-              var w = angular.element($window);
-              var d = angular.element($document);
-
-              // Register scroll callback
-              w.on('scroll', scrollCallback);
-
-              // Deregister scroll callback if scope is destroyed
-              scope.$on('$destroy', function () {
-                w.off('scroll', scrollCallback);
-              });
             }
           };
-        },
-        controller: ['$scope', function ($scope) {
-          var columns = $scope.columns = [];
-
-          this.actionColumns = [];
-
-          this.sort = function (property, order) {
-            if($scope.filterable){
-              $scope.filterable.setSortOrder(order + property);
+          var modalScrollCallback = function () {
+            if (scope.filterable &&
+              modalBody[0].scrollHeight > 0 &&
+              (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
+              scope.filterable.loadMore();
             }
           };
 
-          this.getSort = function () {
-            if($scope.filterable){
-              return $scope.filterable.sortOrder();
-            }
-          };
+          if (elm.parents('.modal').length) {
+            //filterable in modal
+            modalBody = elm.parents('.modal-body');
 
-          this.registerColumn = function (scope) {
-            columns.push(scope);
-          };
+            // Register scroll callback
+            modalBody.on('scroll', modalScrollCallback);
 
-          this.getColumns = function() {
-            return columns;
-          };
+            // Deregister scroll callback if scope is destroyed
+            scope.$on('$destroy', function () {
+              modalBody.off('scroll', modalScrollCallback);
+            });
+          } else {
+            //filterable in document
 
-          this.getFilterable = function () {
-            return $scope.filterable;
-          };
+            // Register scroll callback
+            w.on('scroll', scrollCallback);
 
-          this.getSelectable = function () {
-            return $scope.selectable;
-          };
+            // Deregister scroll callback if scope is destroyed
+            scope.$on('$destroy', function () {
+              w.off('scroll', scrollCallback);
+            });
+          }
+        };
+      },
+      controller: ['$scope', function ($scope) {
+        var columns = $scope.columns = [];
 
-          this.toggleAll = function () {
-            if ($scope.selectable.allSelected()) {
-              $scope.selectable.unselectAll();
-            } else {
-              $scope.selectable.selectAll();
-            }
-          };
+        this.actionColumns = [];
 
-          this.isRadio = function(){
-            if($scope.selectable){
-              return $scope.selectable.isRadio();
-            }
-            return false;
-          };
-        }]
-      };
-    }])
+        this.sort = function (property, order) {
+          if ($scope.filterable) {
+            $scope.filterable.setSortOrder(order + property);
+          }
+        };
 
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableHead
- * @element thead
- * @description
- *
- * Displays amount of items from filterable and the amount of selected items of the selectable
- *
- */
+        this.getSort = function () {
+          if ($scope.filterable) {
+            return $scope.filterable.sortOrder();
+          }
+        };
 
-  .directive('mwListableHead', ['$compile', function($compile) {
+        this.registerColumn = function (scope) {
+          columns.push(scope);
+        };
+
+        this.getColumns = function () {
+          return columns;
+        };
+
+        this.getFilterable = function () {
+          return $scope.filterable;
+        };
+
+        this.getSelectable = function () {
+          return $scope.selectable;
+        };
+
+        this.toggleAll = function () {
+          if ($scope.selectable.allSelected()) {
+            $scope.selectable.unselectAll();
+          } else {
+            $scope.selectable.selectAll();
+          }
+        };
+
+        this.isRadio = function () {
+          if ($scope.selectable) {
+            return $scope.selectable.isRadio();
+          }
+          return false;
+        };
+      }]
+    };
+  }])
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableHead
+   * @element thead
+   * @description
+   *
+   * Displays amount of items from filterable and the amount of selected items of the selectable
+   *
+   */
+
+  .directive('mwListableHead', ['$compile', function ($compile) {
     return {
       require: '^mwListable',
-      scope:{
-        title:'@mwListableHead'
+      scope: {
+        title: '@mwListableHead'
       },
-      link: function(scope,el,attr,mwListable){
+      link: function (scope, el, attr, mwListable) {
         scope.filterable = mwListable.getFilterable();
         scope.selectable = mwListable.getSelectable();
 
         var tmpl = '<tr>' +
-          '<th colspan="20" class="listable-amount" ng-if="filterable.total()">' +
+            '<th colspan="20" class="listable-amount" ng-if="filterable.total()">' +
             '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
             '<span ng-if="!selectable || selectable.selected().length<1">{{filterable.total()}} {{title}}</span>' +
-          '</th>' +
-        '</tr>',
-        $tmpl = angular.element(tmpl),
-        compiled = $compile($tmpl);
+            '</th>' +
+            '</tr>',
+          $tmpl = angular.element(tmpl),
+          compiled = $compile($tmpl);
 
         el.prepend($tmpl);
         compiled(scope);
@@ -4407,290 +4412,290 @@ angular.module('mwListable', [])
     };
   }])
 
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableFooter
- * @element tfoot
- * @description
- *
- * Displays footer with:
- * * loading spinner if list is loading
- * * 'none found' message if filterable is empty
- * * 'load more' button for pagination
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableFooter
+   * @element tfoot
+   * @description
+   *
+   * Displays footer with:
+   * * loading spinner if list is loading
+   * * 'none found' message if filterable is empty
+   * * 'load more' button for pagination
+   *
+   */
 
-    .directive('mwListableFooter', ['Loading', function(Loading) {
-      return {
-        require: '^mwListable',
-        templateUrl: 'uikit/templates/mwListable/mwListableFooter.html',
-        link: function(scope, elm, attr, mwListableCtrl) {
-          scope.Loading = Loading;
-          scope.columns = mwListableCtrl.getColumns();
-        }
-      };
-    }])
+  .directive('mwListableFooter', ['Loading', function (Loading) {
+    return {
+      require: '^mwListable',
+      templateUrl: 'uikit/templates/mwListable/mwListableFooter.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        scope.Loading = Loading;
+        scope.columns = mwListableCtrl.getColumns();
+      }
+    };
+  }])
 
 
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableHeader
- * @element th
- * @description
- *
- * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
- * or pagination logic. Use this directive when you want to display items in a list without any hassle.
- *
- * @param {string} sort Property key of the model to sort by
- */
-    .directive('mwListableHeader', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        scope: {
-          property: '@sort',
-          width:'@',
-          sortActive:'='
-        },
-        transclude: true,
-        replace:true,
-        templateUrl: 'uikit/templates/mwListable/mwListableHeader.html',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          var ascending = '+',
-              descending = '-';
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableHeader
+   * @element th
+   * @description
+   *
+   * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+   * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+   *
+   * @param {string} sort Property key of the model to sort by
+   */
+  .directive('mwListableHeader', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      scope: {
+        property: '@sort',
+        width: '@',
+        sortActive: '='
+      },
+      transclude: true,
+      replace: true,
+      templateUrl: 'uikit/templates/mwListable/mwListableHeader.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        var ascending = '+',
+          descending = '-';
 
-          scope.toggleSortOrder = function () {
-            if (scope.property) {
-              var sortOrder = ascending; //default
-              if (mwListableCtrl.getSort() === ascending + scope.property) {
-                sortOrder = descending;
-              }
-              mwListableCtrl.sort(scope.property, sortOrder);
+        scope.toggleSortOrder = function () {
+          if (scope.property) {
+            var sortOrder = ascending; //default
+            if (mwListableCtrl.getSort() === ascending + scope.property) {
+              sortOrder = descending;
             }
-          };
+            mwListableCtrl.sort(scope.property, sortOrder);
+          }
+        };
 
-          scope.isSelected = function (prefix) {
-            if(prefix){
-              return mwListableCtrl.getSort() === prefix + scope.property;
+        scope.isSelected = function (prefix) {
+          if (prefix) {
+            return mwListableCtrl.getSort() === prefix + scope.property;
+          } else {
+            return (mwListableCtrl.getSort() === '+' + scope.property || mwListableCtrl.getSort() === '-' + scope.property);
+          }
+        };
+
+        if (scope.property) {
+          elm.find('.title').on('click', scope.toggleSortOrder);
+        }
+
+        mwListableCtrl.registerColumn(scope);
+      }
+    };
+  })
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableColumnCheckbox
+   * @element th
+   * @description
+   *
+   * Directive for table to add 'Select item' checkbox in content.
+   *
+   * Note: this directive has to be nested inside an `mwListable` table.
+   */
+  .directive('mwListableColumnCheckbox', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      scope: {
+        mwDisabled: '=',
+        item: '='
+      },
+      templateUrl: 'uikit/templates/mwListable/mwListableColumnCheckbox.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        scope.selectable = mwListableCtrl.getSelectable();
+        scope.radio = mwListableCtrl.isRadio();
+        scope.click = function (item, $event) {
+          $event.stopPropagation();
+          scope.selectable.toggle(item);
+        };
+      }
+    };
+  })
+
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableHeaderCheckbox
+   * @element th
+   * @description
+   *
+   * Directive for table to add 'Select all' checkbox in header.
+   *
+   * @scope
+   *
+   * Note: this directive has to be nested inside an `mwListable` table.
+   */
+  .directive('mwListableHeaderCheckbox', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      scope: true,
+      templateUrl: 'uikit/templates/mwListable/mwListableHeaderCheckbox.html',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        scope.radio = mwListableCtrl.isRadio();
+        scope.filterable = mwListableCtrl.getFilterable();
+        scope.selectable = mwListableCtrl.getSelectable();
+        scope.toggleAll = mwListableCtrl.toggleAll;
+      }
+    };
+  })
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableRow
+   * @element tr
+   * @description
+   *
+   * Directive for table row. Adds click actions. And class 'selected' if row is selected.
+   *
+   * Note: this directive has to be nested inside an `mwListable` table.
+   */
+  .directive('mwListableBodyRow', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      compile: function (elm) {
+
+        elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox mw-disabled="isDisabled()" item="item"></td>');
+
+        return function (scope, elm, attr) {
+          var selectedClass = 'selected';
+          if (scope.selectable) {
+            elm.addClass('selectable');
+          }
+
+          elm.on('click', function () {
+            if (scope.selectable && !scope.isDisabled(scope.item)) {
+              scope.selectable.toggle(scope.item);
+              scope.$apply();
+            }
+          });
+
+          scope.$watch('selectable.isSelected(item)', function (value) {
+            if (value) {
+              elm.addClass(selectedClass);
             } else {
-              return (mwListableCtrl.getSort() === '+' + scope.property || mwListableCtrl.getSort() === '-' + scope.property);
+              elm.removeClass(selectedClass);
             }
+          });
+
+          scope.isDisabled = function () {
+            return scope.$eval(attr.mwListableDisabled, {item: scope.item});
           };
+        };
+      }
+    };
+  })
 
-          if(scope.property){
-            elm.find('.title').on('click',scope.toggleSortOrder);
-          }
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableHeaderRow
+   * @element tr
+   * @description
+   *
+   * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
+   *
+   * Note: this directive has to be nested inside an `mwListable` table.
+   */
+  .directive('mwListableHeaderRow', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      scope: true,
+      compile: function (elm) {
+        elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
+        elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
 
-          mwListableCtrl.registerColumn(scope);
-        }
-      };
-    })
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableColumnCheckbox
- * @element th
- * @description
- *
- * Directive for table to add 'Select item' checkbox in content.
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableColumnCheckbox', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        scope: {
-          mwDisabled: '=',
-          item: '='
-        },
-        templateUrl: 'uikit/templates/mwListable/mwListableColumnCheckbox.html',
-        link: function (scope, elm, attr, mwListableCtrl) {
+        return function (scope, elm, attr, mwListableCtrl) {
           scope.selectable = mwListableCtrl.getSelectable();
-          scope.radio = mwListableCtrl.isRadio();
-          scope.click = function (item, $event) {
-            $event.stopPropagation();
-            scope.selectable.toggle(item);
-          };
+          scope.actionColumns = mwListableCtrl.actionColumns;
+        };
+      }
+    };
+  })
+
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableLinkEdit
+   * @element td
+   * @description
+   *
+   * Directive to add a button link to edit a dataset.
+   *
+   * @param {string} mwListableLinkEdit URL as href
+   *
+   * Note: this directive has to be nested inside an `mwListable` table.
+   */
+  .directive('mwListableLinkEdit', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      scope: {
+        link: '@mwListableLinkEdit'
+      },
+      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        mwListableCtrl.actionColumns.push(null);
+      }
+    };
+  })
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwListableLinkShow
+   * @element td
+   * @description
+   *
+   * Directive to add a button link to show a dataset.
+   *
+   * @param {string} mwListableLinkShow URL as href
+   *
+   * Note: this directive has to be nested inside an `mwListable` table.
+   */
+  .directive('mwListableLinkShow', function () {
+    return {
+      restrict: 'A',
+      require: '^mwListable',
+      scope: {
+        link: '@mwListableLinkShow'
+      },
+      template: '<span mw-link-show="{{link}}"></span>',
+      link: function (scope, elm, attr, mwListableCtrl) {
+        mwListableCtrl.actionColumns.push(null);
+      }
+    };
+  })
+
+  /**
+   * @ngdoc directive
+   * @name mwListable.directive:mwRowIdentifier
+   * @description
+   *
+   * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
+   *
+   * @param {string} mwRowIdentifier the title to be used
+   *
+   */
+  .directive('mwRowIdentifier', function () {
+    return {
+      restrict: 'A',
+      link: function (scope, elm, attr) {
+        if (attr.mwRowIdentifier) {
+          attr.$set('title', attr.mwRowIdentifier);
         }
-      };
-    })
-
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableHeaderCheckbox
- * @element th
- * @description
- *
- * Directive for table to add 'Select all' checkbox in header.
- *
- * @scope
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableHeaderCheckbox', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        scope: true,
-        templateUrl: 'uikit/templates/mwListable/mwListableHeaderCheckbox.html',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          scope.radio = mwListableCtrl.isRadio();
-          scope.filterable = mwListableCtrl.getFilterable();
-          scope.selectable = mwListableCtrl.getSelectable();
-          scope.toggleAll = mwListableCtrl.toggleAll;
-        }
-      };
-    })
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableRow
- * @element tr
- * @description
- *
- * Directive for table row. Adds click actions. And class 'selected' if row is selected.
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableBodyRow', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        compile: function (elm) {
-
-          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox mw-disabled="isDisabled()" item="item"></td>');
-
-          return function (scope, elm, attr) {
-            var selectedClass = 'selected';
-            if(scope.selectable){
-              elm.addClass('selectable');
-            }
-
-            elm.on('click', function () {
-              if (scope.selectable && !scope.isDisabled(scope.item)) {
-                scope.selectable.toggle(scope.item);
-                scope.$apply();
-              }
-            });
-
-            scope.$watch('selectable.isSelected(item)', function (value) {
-              if(value) {
-                elm.addClass(selectedClass);
-              } else {
-                elm.removeClass(selectedClass);
-              }
-            });
-
-            scope.isDisabled = function () {
-              return scope.$eval(attr.mwListableDisabled, { item: scope.item });
-            };
-          };
-        }
-      };
-    })
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableHeaderRow
- * @element tr
- * @description
- *
- * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableHeaderRow', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        scope: true,
-        compile: function (elm) {
-          elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
-          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
-
-          return function (scope, elm, attr, mwListableCtrl) {
-            scope.selectable = mwListableCtrl.getSelectable();
-            scope.actionColumns = mwListableCtrl.actionColumns;
-          };
-        }
-      };
-    })
-
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableLinkEdit
- * @element td
- * @description
- *
- * Directive to add a button link to edit a dataset.
- *
- * @param {string} mwListableLinkEdit URL as href
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableLinkEdit', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        scope: {
-          link: '@mwListableLinkEdit'
-        },
-        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          mwListableCtrl.actionColumns.push(null);
-        }
-      };
-    })
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwListableLinkShow
- * @element td
- * @description
- *
- * Directive to add a button link to show a dataset.
- *
- * @param {string} mwListableLinkShow URL as href
- *
- * Note: this directive has to be nested inside an `mwListable` table.
- */
-    .directive('mwListableLinkShow', function () {
-      return {
-        restrict: 'A',
-        require: '^mwListable',
-        scope: {
-          link: '@mwListableLinkShow'
-        },
-        template: '<span mw-link-show="{{link}}"></span>',
-        link: function (scope, elm, attr, mwListableCtrl) {
-          mwListableCtrl.actionColumns.push(null);
-        }
-      };
-    })
-
-/**
- * @ngdoc directive
- * @name mwListable.directive:mwRowIdentifier
- * @description
- *
- * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
- *
- * @param {string} mwRowIdentifier the title to be used
- *
- */
-    .directive('mwRowIdentifier', function () {
-      return {
-        restrict: 'A',
-        link: function (scope, elm, attr) {
-          if(attr.mwRowIdentifier){
-            attr.$set('title', attr.mwRowIdentifier);
-          }
-        }
-      };
-    })
+      }
+    };
+  })
 ;
 'use strict';
 
@@ -6940,7 +6945,8 @@ angular.module('mwSidebar', [])
       templateUrl: 'uikit/templates/mwSidebar/mwSidebarPanel.html',
       link: function (scope, el) {
 
-        var windowEl = angular.element($window);
+        var windowEl = angular.element($window),
+          throttledRepositionFn, throttledSetMaxHeight;
 
         var reposition = function () {
           var offsetTop = angular.element(el).offset().top,
@@ -6949,7 +6955,7 @@ angular.module('mwSidebar', [])
             newOffset = offsetTop - offsetHeaderTop - spacer,
             scrollTop = $document.scrollTop();
 
-          if(newOffset <= 10 ){
+          if (newOffset <= 10) {
             //There is no element between sidebar and header so we can kill the scroll listener
             windowEl.off('scroll', throttledRepositionFn);
           } else if (scrollTop > newOffset) {
@@ -6976,8 +6982,8 @@ angular.module('mwSidebar', [])
           }
         };
 
-        var throttledRepositionFn = _.throttle(reposition,10),
-            throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
+        throttledRepositionFn = _.throttle(reposition, 10);
+        throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
 
         window.requestAnimFrame(setMaxHeight);
         setTimeout(setMaxHeight, 500);
@@ -6985,7 +6991,7 @@ angular.module('mwSidebar', [])
         windowEl.on('resize', throttledSetMaxHeight);
         windowEl.on('scroll', throttledRepositionFn);
 
-        scope.$on('$destroy', function(){
+        scope.$on('$destroy', function () {
           windowEl.off('resize', throttledSetMaxHeight);
           windowEl.off('scroll', throttledRepositionFn);
         });
@@ -7500,35 +7506,6 @@ angular.module('mwToast', [])
       options = options || {};
       options.button = options.button || {};
 
-      var replaceMessage = function (newMessage) {
-        toast.message = newMessage;
-        toast.replaceCount++;
-        resetAutoHideTimer();
-      };
-
-      var setAutoHideCallback = function (fn) {
-        toast.autoHideCallback = fn;
-        resetAutoHideTimer();
-      };
-
-      var resetAutoHideTimer = function () {
-        if (_autoRemoveTimeout) {
-          window.clearTimeout(_autoRemoveTimeout);
-        }
-        startAutoHideTimer();
-      };
-
-      var startAutoHideTimer = function () {
-        if (toast.autoHide) {
-          _autoRemoveTimeout = window.setTimeout(function () {
-            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
-              toast.visible = false;
-              toast.autoHideCallback.apply(this, arguments);
-            }
-          }.bind(this), toast.autoHideTime);
-        }
-      };
-
       var toast = {
           id: options.id || _.uniqueId('toast'),
           type: options.type || 'default',
@@ -7547,12 +7524,43 @@ angular.module('mwToast', [])
             isLink: options.button.isLink || !!options.button.link,
             action: options.button.action
           },
-          replaceMessage: replaceMessage,
           replaceCount: 0,
-          setAutoHideCallback: setAutoHideCallback,
           initDate: +new Date()
         },
         _autoRemoveTimeout;
+
+      var startAutoHideTimer = function () {
+        if (toast.autoHide) {
+          _autoRemoveTimeout = window.setTimeout(function () {
+            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
+              toast.visible = false;
+              toast.autoHideCallback.apply(this, arguments);
+            }
+          }.bind(this), toast.autoHideTime);
+        }
+      };
+
+      var resetAutoHideTimer = function () {
+        if (_autoRemoveTimeout) {
+          window.clearTimeout(_autoRemoveTimeout);
+        }
+        startAutoHideTimer();
+      };
+
+      var setAutoHideCallback = function (fn) {
+        toast.autoHideCallback = fn;
+        resetAutoHideTimer();
+      };
+
+      var replaceMessage = function (newMessage) {
+        toast.message = newMessage;
+        toast.replaceCount++;
+        resetAutoHideTimer();
+      };
+
+      toast.replaceMessage = replaceMessage;
+      toast.setAutoHideCallback = setAutoHideCallback;
+
 
       startAutoHideTimer();
 
