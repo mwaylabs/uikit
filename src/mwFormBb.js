@@ -108,20 +108,22 @@ angular.module('mwFormBb', [])
       scope: {
         mwModel: '=',
         mwOptionsCollection: '=',
-        mwOptionsKey: '@',
-        mwOptionsLabelKey: '@',
-        mwOptionsLabelI18nPrefix: '@',
-        mwRequired: '=',
-        mwDisabled: '=',
+        mwOptionsKey: '@',            //defines option attribute as _the value_ - optional. if undefined, assumes "key" as key value
+        mwOptionsLabelKey: '@',       //defines option attribute as _the label_
+        mwOptionsLabelI18nPrefix: '@',//defines a directory for i18n texts as _the label_ - optional
+        mwRequired: '=',              //determines, if a selection is required - optional, disables the _null option_
+        mwDisabled: '=',              //determines, if the select-box is disabled
         mwChange: '&',
         mwPlaceholder: '@placeholder',
-        mwNullLabel: '@',
+        mwNullLabel: '@',             //defines a string as _the label_ for _the null option_ - optional, only effective, if selection not required (mwRequired = false)
         mwAutoFetch: '=',
         name: '@'
       },
       templateUrl: 'uikit/templates/mwFormBb/mwFormSelect.html',
       link: function (scope) {
+        //if the optional options and label key are not set, specify a default value
         scope.optionsKey = scope.mwOptionsKey || 'key';
+        scope.labelKey = scope.mwOptionsLabelKey || 'label';
 
         scope.viewModel = {
           val: ''
@@ -132,13 +134,16 @@ angular.module('mwFormBb', [])
         };
 
         scope.getLabel = function (optionModel) {
-          //if the options list has a "null Option" {key:null} the i18n translation won't have a key for it.
-          //instead for the label use the default empty string or the value defined in scope attribute.
-          // (see "addNullOption" function below)
-          if (optionModel.get(scope.optionsKey) === null) {
-            return optionModel.get(scope.mwOptionsLabelKey);
+          //if a null option exists, label is the label key (specified in addNullOption)
+          if(optionModel.get(scope.optionsKey) === null){
+            return optionModel.get(scope.labelKey);
+          } else { //for any other option, first check if label can be [i18n-prefix + optionsKey]...
+            if(scope.mwOptionsLabelI18nPrefix){
+              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
+            } else { //...else label is, what get key returns (specified or default options key)
+              return scope.getKey(optionModel);
+            }
           }
-          return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
         };
 
         scope.getSelectedModel = function (val) {
@@ -153,12 +158,13 @@ angular.module('mwFormBb', [])
             var nullOption = {},
                 key = null,
                 referenceObj = {};
-
+            //create the null-option-object and a reference object with just the options-key
             referenceObj[scope.optionsKey] = key;
             nullOption[scope.optionsKey] = key;
-            nullOption[scope.mwOptionsLabelKey] = scope.mwNullLabel || '';
+            nullOption[scope.labelKey] = scope.mwNullLabel || '';
 
-            //only add the nullOption if not already exists in the options list. Don't override!
+            //if the collection already contains a null Option, we don't override it.
+            //By checking for the reference object, it just scans the collection for the options key
             if (!scope.mwOptionsCollection.findWhere(referenceObj)) {
               scope.mwOptionsCollection.add(nullOption);
             }
