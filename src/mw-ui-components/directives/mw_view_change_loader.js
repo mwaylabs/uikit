@@ -2,7 +2,7 @@ angular.module('mwUI.UiComponents')
 
   .directive('mwViewChangeLoader', function ($rootScope) {
     return {
-      templateUrl: 'uikit/mw-ui-components/templates/mw_view_change_loader.html',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_view_change_loader.html',
       link: function (scope) {
         scope.viewModel = {
           loading: false
