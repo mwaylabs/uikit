@@ -1,7 +1,7 @@
 /**
  * Created by zarges on 15/02/16.
  */
-window.mwUI.Backbone.NestedModel = window.Backbone.NestedModel = Backbone.Model.extend({
+mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
 
   nested: function () {
     return {};
@@ -34,7 +34,7 @@ window.mwUI.Backbone.NestedModel = window.Backbone.NestedModel = Backbone.Model.
       this.get(key).add(value);
     } else if (_.isArray(value)) {
       value.forEach(function (val) {
-        this._setNestedCollection(key, val)
+        this._setNestedCollection(key, val);
       }.bind(this));
     } else {
       var id = this.get(key).model.prototype.idAttribute,
@@ -138,7 +138,7 @@ window.mwUI.Backbone.NestedModel = window.Backbone.NestedModel = Backbone.Model.
     }
   },
 
-  clear: function (options) {
+  clear: function () {
     var superClear = Backbone.Model.prototype.clear.apply(this, arguments);
     this.attributes = this._prepare();
     return superClear;

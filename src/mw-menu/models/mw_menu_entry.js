@@ -12,12 +12,12 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       icon: null,
       activeUrls: [],
       order: null
-    }
+    };
   },
   nested: function(){
     return {
       subEntries: window.mwUI.Menu.MwMenuSubEntries
-    }
+    };
   },
   _throwMissingIdError: function(entry){
     throw new Error('No id is specified for the entry', entry);
@@ -42,7 +42,7 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
     return entry;
   },
   _missingUrl: function(entry){
-    return entry.type === 'ENTRY' && !entry.url && (!entry.subEntries || entry.subEntries.length === 0)
+    return entry.type === 'ENTRY' && !entry.url && (!entry.subEntries || entry.subEntries.length === 0);
   },
   _missingLabel: function(entry){
     return entry.type === 'ENTRY' && !entry.label && !entry.icon;

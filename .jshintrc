@@ -46,6 +46,9 @@
     "afterEach"  : false,
     "expect"     : false,
     "spyOn"      : false,
-    "inject"     : false
+    "inject"     : false,
+    "Backbone": false,
+    "sinon": false,
+    "mwUI": false
   }
 }

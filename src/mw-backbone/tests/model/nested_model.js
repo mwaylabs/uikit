@@ -18,7 +18,7 @@ describe('mwBackbone nested models', function () {
         nested: function () {
           return {
             nestedModelAttr: NestedModelAttr
-          }
+          };
         }
       });
     });
@@ -34,7 +34,7 @@ describe('mwBackbone nested models', function () {
         defaults: function () {
           return {
             name: 'Test'
-          }
+          };
         }
       }))();
 
@@ -63,7 +63,7 @@ describe('mwBackbone nested models', function () {
         nested: function () {
           return {
             nestedCollectionAttr: NestedCollectionAttr
-          }
+          };
         }
       });
     });
@@ -79,7 +79,7 @@ describe('mwBackbone nested models', function () {
         defaults: function () {
           return {
             name: 'Test'
-          }
+          };
         }
       }))();
 
@@ -122,18 +122,18 @@ describe('mwBackbone nested models', function () {
         defaults: function () {
           return {
             name: 'Test'
-          }
+          };
         },
         nested: function () {
           return {
             nestedModelAttr: NestedModelAttr
-          }
+          };
         }
       });
 
       CollectionWithNestedModels = window.Backbone.Collection.extend({
         model: ModelWithNestedModel
-      })
+      });
     });
 
     it('transforms object into nested models when collection is initialized with obj', function () {
@@ -213,7 +213,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/test/',
         function (xhr) {
-          xhr.respond(200, {"Content-Type": "application/json"}, JSON.stringify(this.responseObj));
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify(this.responseObj));
         }.bind(this)
       );
     });
@@ -232,7 +232,7 @@ describe('mwBackbone nested models', function () {
           nested: function () {
             return {
               nestedModelAttr: NestedModelAttr
-            }
+            };
           }
         });
         modelWithNestedModel = new ModelWithNestedModel();
@@ -281,7 +281,7 @@ describe('mwBackbone nested models', function () {
           nested: function () {
             return {
               nestedCollectionAttr: NestedCollectionAttr
-            }
+            };
           }
         });
         modelWithNestedCollection = new ModelWithNestedCollection();
@@ -351,7 +351,7 @@ describe('mwBackbone nested models', function () {
             return {
               members: Members,
               description: Description
-            }
+            };
           }
         });
         CollectionWithNestedModels = window.Backbone.Collection.extend({
@@ -412,8 +412,8 @@ describe('mwBackbone nested models', function () {
         expect(collectionWithNestedModels.length).toBe(2);
         expect(collectionWithNestedModels.first().get('description') instanceof Description).toBeTruthy();
         expect(collectionWithNestedModels.first().get('members') instanceof Members).toBeTruthy();
-      })
-    })
+      });
+    });
 
   });
 
@@ -431,7 +431,7 @@ describe('mwBackbone nested models', function () {
         nested: function () {
           return {
             nestedModelAttr: NestedModelAttr
-          }
+          };
         }
       });
 
@@ -441,7 +441,7 @@ describe('mwBackbone nested models', function () {
         nested: function () {
           return {
             nestedCollectionAttr: NestedCollectionAttr
-          }
+          };
         }
       });
 
@@ -586,7 +586,7 @@ describe('mwBackbone nested models', function () {
             return {
               createdAt: 'NOW',
               updatedAt: 'NOW'
-            }
+            };
           },
           nested: function () {
             return {
@@ -610,7 +610,7 @@ describe('mwBackbone nested models', function () {
               name: attrs.name,
               refId: attrs.nestedModel1.id,
               deepRefId: attrs.nestedModel1.nestedModel2
-            }
+            };
           }
         }),
         nestedModel = new NestedModel({
@@ -640,7 +640,7 @@ describe('mwBackbone nested models', function () {
             return {
               createdAt: 'NOW',
               updatedAt: 'NOW'
-            }
+            };
           },
           nested: function () {
             return {
@@ -664,7 +664,7 @@ describe('mwBackbone nested models', function () {
               name: attrs.name,
               refId: attrs.nestedModel1.id,
               deepRefId: attrs.nestedModel1.nestedCollection2
-            }
+            };
           }
         }),
         nestedModel = new NestedModel({
@@ -703,7 +703,7 @@ describe('mwBackbone nested models', function () {
           return {
             name: '',
             uniqueName:''
-          }
+          };
         }
       });
       var User = this.User = window.Backbone.Model.extend({
@@ -713,7 +713,7 @@ describe('mwBackbone nested models', function () {
             uniqueName: '',
             firstName: '',
             lastName: ''
-          }
+          };
         },
         getFullName: function(){
           return this.get('firstName') + ' ' + this.get('lastName');
@@ -729,13 +729,13 @@ describe('mwBackbone nested models', function () {
           return {
             uniqueName: '',
             name: ''
-          }
+          };
         },
         nested: function () {
           return {
             users: Users,
             organization: Organization
-          }
+          };
         }
       });
       this.Groups = window.Backbone.Collection.extend({
@@ -756,7 +756,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/groups',
         function (xhr) {
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             data: [
               {
                 id: 1,
@@ -824,7 +824,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/groups',
         function (xhr) {
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             data: [
               {
                 id: 1,
@@ -856,7 +856,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/groups',
         function (xhr) {
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             data: [
               {
                 id: 1,
@@ -873,7 +873,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/users/1',
         function (xhr) {
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             uniqueName:'m.mustermann',
             firstName: 'Max',
@@ -885,7 +885,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/organizations/1',
         function (xhr) {
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             uniqueName:'TComp',
             name: 'Test Company'
@@ -909,7 +909,7 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/groups/1',
         function (xhr) {
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             name: 'International Group',
             uniqueName: 'IntGroup',
@@ -923,7 +923,7 @@ describe('mwBackbone nested models', function () {
         '/groups/1',
         function (xhr) {
           this.processReqBody(JSON.parse(xhr.requestBody));
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             name: 'International Group',
             uniqueName: 'IntGroup',
@@ -971,7 +971,7 @@ describe('mwBackbone nested models', function () {
         '/groups',
         function (xhr) {
           this.processReqBody(JSON.parse(xhr.requestBody));
-          xhr.respond(200,{"Content-Type": "application/json"}, JSON.stringify({
+          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             name: 'International Group',
             uniqueName: 'IntGroup',
@@ -996,6 +996,6 @@ describe('mwBackbone nested models', function () {
       expect(group.get('users').at(0).get('uniqueName')).toMatch('Ulf');
       expect(group.get('users').at(1).get('id')).toBe(4);
       expect(group.get('users').at(1).get('uniqueName')).toMatch('Erika');
-    })
+    });
   });
 });

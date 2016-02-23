@@ -8,11 +8,11 @@ angular.module('mwUI.Menu', [])
     var mwMenu = new mwUI.Menu.MwMenu();
 
     this.getMenu = function () {
-      return mwMenu
+      return mwMenu;
     };
 
     this.$get = function () {
-      return mwMenu
+      return mwMenu;
     };
 
   });

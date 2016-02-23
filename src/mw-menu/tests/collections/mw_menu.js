@@ -212,9 +212,9 @@ describe('mwUi Menu', function () {
           {
             id: 'a'
           }
-        ])
+        ]);
       }).toThrow();
-    })
+    });
   });
 
   describe('get entries in correct order', function () {
