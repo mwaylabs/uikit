@@ -34,8 +34,8 @@ body .rln-icon{
 
   @font-face {
     font-family: 'icomoon';
-    src:url('fonts/icomoon.eot?wzr8pt');
-    src:url('fonts/icomoon.eot?wzr8pt#iefix') format('embedded-opentype'),
+    src: url('fonts/icomoon.eot?wzr8pt');
+    src: url('fonts/icomoon.eot?wzr8pt#iefix') format('embedded-opentype'),
     url('fonts/icomoon.ttf?wzr8pt') format('truetype'),
     url('fonts/icomoon.woff?wzr8pt') format('woff'),
     url('fonts/icomoon.svg?wzr8pt#icomoon') format('svg');
@@ -300,23 +300,15 @@ body .rln-icon{
   &.mtrust:before {
     content: "\e850";
   }
-
   &.new_app_appstore:before {
     content: "\e851";
     color: #808080;
   }
-
   &.new_app_appstore:after {
     content: "\e852";
     margin-left: -1.4794921875em;
     color: rgb(255, 255, 255);
   }
-
-  &.new_app_native:before {
-    content: "\e600";
-  }
-
-
   &.new_app_native:before {
     content: "\e853";
   }
