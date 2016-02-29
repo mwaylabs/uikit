@@ -56,7 +56,8 @@ angular.module('mwSidebar', [])
       templateUrl: 'uikit/templates/mwSidebar/mwSidebarPanel.html',
       link: function (scope, el) {
 
-        var windowEl = angular.element($window);
+        var windowEl = angular.element($window),
+          throttledRepositionFn, throttledSetMaxHeight;
 
         var reposition = function () {
           var offsetTop = angular.element(el).offset().top,
@@ -65,7 +66,7 @@ angular.module('mwSidebar', [])
             newOffset = offsetTop - offsetHeaderTop - spacer,
             scrollTop = $document.scrollTop();
 
-          if(newOffset <= 10 ){
+          if (newOffset <= 10) {
             //There is no element between sidebar and header so we can kill the scroll listener
             windowEl.off('scroll', throttledRepositionFn);
           } else if (scrollTop > newOffset) {
@@ -92,8 +93,8 @@ angular.module('mwSidebar', [])
           }
         };
 
-        var throttledRepositionFn = _.throttle(reposition,10),
-            throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
+        throttledRepositionFn = _.throttle(reposition, 10);
+        throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
 
         window.requestAnimFrame(setMaxHeight);
         setTimeout(setMaxHeight, 500);
@@ -101,7 +102,7 @@ angular.module('mwSidebar', [])
         windowEl.on('resize', throttledSetMaxHeight);
         windowEl.on('scroll', throttledRepositionFn);
 
-        scope.$on('$destroy', function(){
+        scope.$on('$destroy', function () {
           windowEl.off('resize', throttledSetMaxHeight);
           windowEl.off('scroll', throttledRepositionFn);
         });

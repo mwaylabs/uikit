@@ -105,6 +105,12 @@ angular.module('mwFileUpload', [])
           }
         };
 
+        var error = function(data, result){
+          handle(data, true).catch(function () {
+            $timeout(scope.successCallback.bind(this,{result:result}));
+          });
+        };
+
         var getResult = function(msg){
           if(msg && msg.results && _.isArray(msg.results) && msg.results.length>0){
             msg = msg.results[0];
@@ -136,12 +142,6 @@ angular.module('mwFileUpload', [])
             }
             error(data, data.result);
           }
-        };
-
-        var error = function(data, result){
-          handle(data, true).catch(function () {
-            $timeout(scope.successCallback.bind(this,{result:result}));
-          });
         };
 
         var stateChange = function(data){

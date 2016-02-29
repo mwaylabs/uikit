@@ -204,6 +204,29 @@
           var that = this;
           that.element = null;
 
+          var buildValidationValues = function (element) {
+            var registeredValidators = mwValidationMessages.getRegisteredValidators(),
+              defaultValidators = {
+                required: i18n.get('errors.isRequired'),
+                email: i18n.get('errors.hasToBeAnEmail'),
+                pattern: i18n.get('errors.hasToMatchPattern'),
+                url: i18n.get('errors.validUrl'),
+                min: i18n.get('errors.minValue', {count: element.attr('min')}),
+                minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
+                max: i18n.get('errors.maxValue', {count: element.attr('max')}),
+                maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
+                phone: i18n.get('errors.phoneNumber'),
+                hex: i18n.get('errors.hex'),
+                unique: i18n.get('errors.notUnique'),
+                match: i18n.get('errors.doesNotMatch'),
+                emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
+                itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
+              };
+
+            $scope.validationValues = _.extend(defaultValidators, registeredValidators);
+
+          };
+
           this.buildValidationMessages = function (element) {
             if (!that.element) {
               that.element = element;
@@ -220,34 +243,14 @@
                 return element.attr('mw-validation-message');
               }, function (val) {
                 if (val) {
-                  buildValidationValues();
+                  buildValidationValues(element);
                 }
               });
 
-              var buildValidationValues = function () {
-                var registeredValidators = mwValidationMessages.getRegisteredValidators(),
-                  defaultValidators = {
-                    required: i18n.get('errors.isRequired'),
-                    email: i18n.get('errors.hasToBeAnEmail'),
-                    pattern: i18n.get('errors.hasToMatchPattern'),
-                    url: i18n.get('errors.validUrl'),
-                    min: i18n.get('errors.minValue', {count: element.attr('min')}),
-                    minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
-                    max: i18n.get('errors.maxValue', {count: element.attr('max')}),
-                    maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
-                    phone: i18n.get('errors.phoneNumber'),
-                    hex: i18n.get('errors.hex'),
-                    unique: i18n.get('errors.notUnique'),
-                    match: i18n.get('errors.doesNotMatch'),
-                    emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                    itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
-                  };
-
-                $scope.validationValues = _.extend(defaultValidators, registeredValidators);
-
-              };
-              buildValidationValues();
-              $scope.$on('mwValidationMessages:change', buildValidationValues);
+              buildValidationValues(element);
+              $scope.$on('mwValidationMessages:change', function(){
+                buildValidationValues(element);
+              });
             }
           };
         }
