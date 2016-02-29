@@ -70,11 +70,9 @@ angular.module('mwFileUpload', [])
           fileUploaderEl = elm.find('.mw-file-upload'),
           hiddenfileEl = elm.find('input[type=file]');
 
+        scope._showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
+
         scope.uploadState = 'none';
-
-        scope.showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
-
-        scope.labelAttribute = scope.labelAttribute || 'name';
 
         scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
 
@@ -165,10 +163,11 @@ angular.module('mwFileUpload', [])
 
         scope.getFileName = function () {
           if (scope.fileIsSet) {
+            var labelAttr = scope.labelAttribute || 'name';
             if (scope.model instanceof window.mCAP.Model) {
-              return scope.model.get(scope.labelAttribute);
+              return scope.model.get(labelAttr);
             } else {
-              return scope.model[scope.labelAttribute];
+              return scope.model[labelAttr];
             }
           }
         };
