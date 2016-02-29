@@ -2921,20 +2921,22 @@ angular.module('mwFormBb', [])
       scope: {
         mwModel: '=',
         mwOptionsCollection: '=',
-        mwOptionsKey: '@',
-        mwOptionsLabelKey: '@',
-        mwOptionsLabelI18nPrefix: '@',
-        mwRequired: '=',
-        mwDisabled: '=',
+        mwOptionsKey: '@',            //defines option attribute as _the value_ - optional. if undefined, assumes "key" as key value
+        mwOptionsLabelKey: '@',       //defines option attribute as _the label_
+        mwOptionsLabelI18nPrefix: '@',//defines a directory for i18n texts as _the label_ - optional
+        mwRequired: '=',              //determines, if a selection is required - optional, disables the _null option_
+        mwDisabled: '=',              //determines, if the select-box is disabled
         mwChange: '&',
         mwPlaceholder: '@placeholder',
-        mwNullLabel: '@',
+        mwNullLabel: '@',             //defines a string as _the label_ for _the null option_ - optional, only effective, if selection not required (mwRequired = false)
         mwAutoFetch: '=',
         name: '@'
       },
       templateUrl: 'uikit/templates/mwFormBb/mwFormSelect.html',
       link: function (scope) {
+        //if the optional options and label key are not set, specify a default value
         scope.optionsKey = scope.mwOptionsKey || 'key';
+        scope.labelKey = scope.mwOptionsLabelKey || 'label';
 
         scope.viewModel = {
           val: ''
@@ -2945,10 +2947,16 @@ angular.module('mwFormBb', [])
         };
 
         scope.getLabel = function (optionModel) {
-          if (!scope.mwOptionsLabelI18nPrefix) {
-            return optionModel.get(scope.mwOptionsLabelKey);
+          //if a null option exists, label is the label key (specified in addNullOption)
+          if(optionModel.get(scope.optionsKey) === null){
+            return optionModel.get(scope.labelKey);
+          } else { //for any other option, first check if label can be [i18n-prefix + optionsKey]...
+            if(scope.mwOptionsLabelI18nPrefix){
+              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
+            } else { //...else label is, what get key returns (specified or default options key)
+              return scope.getKey(optionModel);
+            }
           }
-          return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
         };
 
         scope.getSelectedModel = function (val) {
@@ -2958,18 +2966,20 @@ angular.module('mwFormBb', [])
           return scope.mwOptionsCollection.findWhere(searchObj);
         };
 
-        var addNullObj = function () {
+        var addNullOption = function () {
           if (!scope.mwRequired) {
-            var placeholderObj = {},
-              key = null,
-              findObj = {};
+            var nullOption = {},
+                key = null,
+                referenceObj = {};
+            //create the null-option-object and a reference object with just the options-key
+            referenceObj[scope.optionsKey] = key;
+            nullOption[scope.optionsKey] = key;
+            nullOption[scope.labelKey] = scope.mwNullLabel || '';
 
-            findObj[scope.optionsKey] = key;
-            placeholderObj[scope.optionsKey] = key;
-            placeholderObj[scope.mwOptionsLabelKey] = scope.mwNullLabel || '';
-
-            if (!scope.mwOptionsCollection.findWhere(findObj)) {
-              scope.mwOptionsCollection.add(placeholderObj);
+            //if the collection already contains a null Option, we don't override it.
+            //By checking for the reference object, it just scans the collection for the options key
+            if (!scope.mwOptionsCollection.findWhere(referenceObj)) {
+              scope.mwOptionsCollection.add(nullOption);
             }
           }
         };
@@ -3011,8 +3021,8 @@ angular.module('mwFormBb', [])
           //We are adding a null object so we can use a placeholder and a null option
           //It is not possible to use 2 options in ng-select when ng-options is in use
           //So we have to add it to the collection
-          addNullObj();
-          scope.mwOptionsCollection.on('reset sync', addNullObj, this);
+          addNullOption();
+          scope.mwOptionsCollection.on('reset sync', addNullOption, this);
         }
       }
     };

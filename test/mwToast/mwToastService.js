@@ -19,7 +19,7 @@ describe('mwUi Response Handler', function () {
 
   beforeEach(inject(function (_$rootScope_, _$timeout_, _Toast_) {
     $rootScope = _$rootScope_;
-    $timeout = _$timeout_,
+    $timeout = _$timeout_;
     Toast = _Toast_;
   }));
 
