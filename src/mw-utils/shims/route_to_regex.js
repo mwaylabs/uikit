@@ -7,6 +7,10 @@ window.mwUI.Utils.shims.routeToRegExp = function(route){
     splatParam = /\*\w?/g,
     escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
 
+  if(!_.isString(route)){
+    throw new Error('The route ' + JSON.stringify(route) + 'has to be a URL');
+  }
+
   route = route.replace(escapeRegExp, '\\$&')
     .replace(optionalParam, '(?:$1)?')
     .replace(namedParam, function (match, optional) {
