@@ -1,17 +1,17 @@
 mwUI.Backbone.Collection = Backbone.Collection.extend({
   selectable: true,
   filterable: true,
-  baseUrl: '',
+  basePath: '',
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableCollection.prototype.selectableOptions,
   filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
   model: mwUI.Backbone.Model,
   url: function () {
-    var baseUrl = _.result(this, 'baseUrl'),
+    var basePath = _.result(this, 'basePath'),
       endpoint = _.result(this, 'endpoint');
 
     if (endpoint) {
-      return window.mwUI.Utils.shims.concatUrlParts(baseUrl,endpoint);
+      return window.mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
     } else {
       throw new Error('An endpoint has to be specified');
     }

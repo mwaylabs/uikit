@@ -1,14 +1,14 @@
 mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   selectable: true,
-  baseUrl: '',
+  basePath: '',
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableModel.prototype.selectableOptions,
   urlRoot: function () {
-    var baseUrl = _.result(this, 'baseUrl'),
+    var basePath = _.result(this, 'basePath'),
       endpoint = _.result(this, 'endpoint');
 
     if (endpoint) {
-      return window.mwUI.Utils.shims.concatUrlParts(baseUrl,endpoint);
+      return window.mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
     } else {
       throw new Error('An endpoint has to be specified');
     }
