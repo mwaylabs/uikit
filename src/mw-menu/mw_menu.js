@@ -14,4 +14,6 @@ window.mwUI.Menu = {};
 // @include ./services/mw_sidebar_menu.js
 
 // @include ./directives/mw_menu.js
+// @include ./directives/mw_menu_entry.js
+// @include ./directives/mw_menu_sub_entry.js
 // @include ./directives/mw_sidebar_menu.js

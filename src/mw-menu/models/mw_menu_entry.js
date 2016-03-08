@@ -55,7 +55,11 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
     }
   },
   ownUrlIsActiveForUrl: function(url){
-    return this.get('url').match(routeToRegex(url));
+    if(this.get('url')){
+      return url.match(routeToRegex(this.get('url')));
+    } else {
+      return false;
+    }
   },
   activeUrlIsActiveForUrl: function(url){
     var isActive = false;

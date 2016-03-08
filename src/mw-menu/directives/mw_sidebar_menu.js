@@ -9,7 +9,17 @@ angular.module('mwUI.Menu')
       transclude: true,
       controllerAs: 'ctrl',
       controller: function(){
-        this.mwMenu = mwSidebarMenu;
+        var isOpened = false;
+        this.mwMenu = mwSidebarMenu.getMenu();
+        this.mwMenuLogo = mwSidebarMenu.getLogoUrl();
+
+        this.isOpened = function(){
+          return isOpened;
+        };
+
+        this.toggleState = function(){
+          isOpened = !isOpened;
+        };
       }
     };
   });

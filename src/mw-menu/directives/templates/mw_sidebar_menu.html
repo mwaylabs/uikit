@@ -1,7 +1,14 @@
-<div class="mw-sidebar-menu">
-  <div class="logo">
-
+<div class="mw-sidebar-menu" ng-class="{opened:ctrl.isOpened()}">
+  <div ng-if="ctrl.mwMenuLogo"
+       class="logo">
+    <img ng-src="{{ctrl.mwMenuLogo}}">
   </div>
   <div mw-menu="ctrl.mwMenu"></div>
-  <div class="additonal-content" ng-transclude></div>
+  <div class="additional-content" ng-transclude></div>
+  <div class="opener clickable" ng-click="ctrl.toggleState()">
+   <span class="mw-icon">
+     <span ng-if="ctrl.isOpened()" class="fa fa-angle-left"></span>
+     <span ng-if="!ctrl.isOpened()" class="fa fa-angle-right"></span>
+   </span>
+  </div>
 </div>
