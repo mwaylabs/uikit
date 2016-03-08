@@ -2,6 +2,7 @@
   'use strict';
 
   angular.module('mwUI', [
+    'mwUI.Backbone',
     'mwUI.Inputs',
     'mwUI.i18n',
     'mwUI.Layout',
