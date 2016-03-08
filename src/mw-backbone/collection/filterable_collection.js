@@ -13,13 +13,14 @@ mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Co
       sortOrder: ''
     };
   },
-  filterableCollectionConstructor: function(){
+  filterableCollectionConstructor: function(options){
     if (this.filterable) {
-      this.filterable = new Filterable(this, this.filterableOptions.apply(this));
+      this.filterable = new mwUI.Backbone.Filterable(this, this.filterableOptions.call(this, options));
     }
   },
   constructor: function (attributes, options) {
-    this.filterableCollectionConstructor();
-    return Backbone.Model.prototype.constructor.call(this, attributes, options);
+    var superConstructor =  Backbone.Model.prototype.constructor.call(this, attributes, options);
+    this.filterableCollectionConstructor(options);
+    return superConstructor;
   }
 });

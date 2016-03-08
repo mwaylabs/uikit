@@ -706,21 +706,21 @@ describe('Collection Selectable', function () {
       collection.selectable.unSelectAll();
       collection.each(function (model) {
         expect(model.selectable.isSelected()).toBeFalsy();
-      })
+      });
     });
   });
 
   describe('testing exception handling', function () {
     it('should throw an error if the collection parameter is not a collection', function () {
       var testFn = function () {
-        var selectable = new mwUI.Backbone.Selectable.Collection({}, {});
+        new mwUI.Backbone.Selectable.Collection({}, {});
       };
       expect(testFn).toThrow();
     });
 
     it('should throw an error if the selected option is not a collection or model', function () {
       var testFn = function () {
-        var selectable = new mwUI.Backbone.Selectable.Collection(collection, {preSelected: {}});
+        new mwUI.Backbone.Selectable.Collection(collection, {preSelected: {}});
       };
       expect(testFn).toThrow();
     });

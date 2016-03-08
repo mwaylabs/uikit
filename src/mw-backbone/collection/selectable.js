@@ -23,6 +23,22 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
     }
   };
 
+  var _bindModelOnSelectListener = function(model){
+    this.listenTo(model.selectable, 'change:select', function(){
+      if(!_selected.get(model)){
+        this.select(model);
+      }
+    }.bind(this));
+  };
+
+  var _bindModelOnUnSelectListener = function(model){
+    this.listenTo(model.selectable, 'change:unselect', function(){
+      if(_selected.get(model)) {
+        this.unSelect(model);
+      }
+    }.bind(this));
+  };
+
   var _setModelSelectableOptions = function (model, options) {
     if(model && model.selectable){
       var selectedModel = _selected.get(model);
@@ -44,22 +60,6 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
       _bindModelOnSelectListener.call(this,model);
       _bindModelOnUnSelectListener.call(this,model);
     }
-  };
-
-  var _bindModelOnSelectListener = function(model){
-    this.listenTo(model.selectable, 'change:select', function(){
-      if(!_selected.get(model)){
-        this.select(model);
-      }
-    }.bind(this));
-  };
-
-  var _bindModelOnUnSelectListener = function(model){
-    this.listenTo(model.selectable, 'change:unselect', function(){
-      if(_selected.get(model)) {
-        this.unSelect(model);
-      }
-    }.bind(this));
   };
 
   var _updatePreSelectedModel = function(preSelectedModel, model){

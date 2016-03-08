@@ -77,7 +77,7 @@ describe('Model Selectable', function () {
 
   it('should throw an error if provided model is not a Backbone model instance', function(){
     var createModel = function(){
-      new ModelSelectable({}, {});
+      new mwUI.Backbone.Selectable.Model({}, {});
     };
     expect(createModel).toThrow();
   });
