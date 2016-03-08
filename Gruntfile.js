@@ -31,21 +31,10 @@ module.exports = function (grunt) {
         'src/**/*.js'
       ]
     },
-    concat: {
-      dist: {
-        src: [
-          'src/mwUI.js',
-          'src/**/*.js',
-          '.tmp/templates.js',
-          'libs/angular-sanitize/angular-sanitize.js',
-          'libs/showdown/dist/showdown.js',
-          'libs/jquery-ui/ui/jquery.ui.widget.js',
-          'libs/blueimp-file-upload/js/jquery.fileupload.js',
-          'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
-          'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
-          'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
-        ],
-        dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
+    preprocess: {
+      js : {
+        src : 'src/mwUI.js',
+        dest : '<%= uikit.dist %>/<%= uikit.fileName %>.js'
       }
     },
     uglify: {
@@ -93,7 +82,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('watch', ['process', 'regarde']);
-  grunt.registerTask('process', ['ngtemplates:all', 'concat', 'ngAnnotate:dist']);
+  grunt.registerTask('process', ['ngtemplates:all', 'preprocess:js', 'ngAnnotate:dist']);
   grunt.registerTask('build', ['jshint', 'test', 'process', 'uglify', 'clean']);
-  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('test', ['preprocess:js','karma']);
 };
