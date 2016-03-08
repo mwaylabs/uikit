@@ -37,6 +37,15 @@ module.exports = function (grunt) {
         dest : '<%= uikit.dist %>/<%= uikit.fileName %>.js'
       }
     },
+    concat: {
+      dist: {
+        src: [
+          'dist/<%= uikit.fileName %>.js',
+          '.tmp/templates.js'
+        ],
+        dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
+      }
+    },
     uglify: {
       js: {
         files: {
@@ -82,7 +91,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('watch', ['process', 'regarde']);
-  grunt.registerTask('process', ['ngtemplates:all', 'preprocess:js', 'ngAnnotate:dist']);
+  grunt.registerTask('process', ['ngtemplates:all', 'preprocess:js','concat', 'ngAnnotate:dist']);
   grunt.registerTask('build', ['jshint', 'test', 'process', 'uglify', 'clean']);
-  grunt.registerTask('test', ['preprocess:js','karma']);
+  grunt.registerTask('test', ['process','karma']);
 };
