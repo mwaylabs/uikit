@@ -3,7 +3,16 @@
  */
 window.mwUI.Backbone = {
   baseUrl: '',
-  Selectable: {}
+  Selectable: {},
+  concatUrlParts: function () {
+    var concatUrl = '';
+    _.forEach(arguments, function (url) {
+      url = url.replace(/^\//, '');
+      url = url.replace(/\/$/, '');
+      concatUrl += ( url + ('/') );
+    });
+    return concatUrl;
+  }
 };
 
 angular.module('mwUI.Backbone', []);
