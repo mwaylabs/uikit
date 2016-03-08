@@ -8,7 +8,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
       endpoint = _.result(this, 'endpoint');
 
     if (endpoint) {
-      return window.mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
+      return window.mwUI.Backbone.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
     } else {
       throw new Error('An endpoint has to be specified');
     }
