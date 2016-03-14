@@ -1373,8 +1373,9 @@ angular.module('mwUI')
           hours: null,
           minutes: null,
           datepickerIsOpened: false,
-          showTimePicker: scope.showTimePicker || true
+          showTimePicker: angular.isDefined(scope.showTimePicker) ? scope.showTimePicker : true
         };
+
 
         scope.$watch('viewModel.showTimePicker', function (newVal) {
           scope.viewModel.showTimePicker = newVal;
