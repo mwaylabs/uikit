@@ -1372,8 +1372,13 @@ angular.module('mwUI')
           date: null,
           hours: null,
           minutes: null,
-          datepickerIsOpened: false
+          datepickerIsOpened: false,
+          showTimePicker: scope.showTimePicker || true
         };
+
+        scope.$watch('viewModel.showTimePicker', function (newVal) {
+          scope.viewModel.showTimePicker = newVal;
+        });
 
         scope.canChange = function (num, type) {
           var options = scope.options || {},
@@ -1399,7 +1404,7 @@ angular.module('mwUI')
               // otherwise the increment button is disabled as well
               // The time is reset to 0 pm for the current date and the end date
               // Otherwise it won't be possible to change minutes when the initial minutes of the same day are below the startdate hours
-              return new Date (currentDateTs).setHours(0,0,0,0) >= new Date(startDateTs).setHours(0,0,0,0);
+              return new Date(currentDateTs).setHours(0, 0, 0, 0) >= new Date(startDateTs).setHours(0, 0, 0, 0);
             }
           }
 
@@ -1414,7 +1419,7 @@ angular.module('mwUI')
               // otherwise the decrement button is disabled as well
               // The time is reset to 0 pm for the current date and the end date
               // Otherwise it won't be possible to change hours when the initial hours of the same day are over the enddate hours
-              return new Date(currentDateTs).setHours(0,0,0,0) <= new Date(endDateTs).setHours(0,0,0,0);
+              return new Date(currentDateTs).setHours(0, 0, 0, 0) <= new Date(endDateTs).setHours(0, 0, 0, 0);
             }
           }
 
@@ -1494,13 +1499,13 @@ angular.module('mwUI')
 
         var bindChangeListener = function (datepicker) {
           datepicker.on('changeDate', updateMwModel.bind(this, datepicker.data().datepicker));
-          datepicker.on('show', function(){
-            $timeout(function(){
+          datepicker.on('show', function () {
+            $timeout(function () {
               scope.viewModel.datepickerIsOpened = true;
             });
           });
-          datepicker.on('hide', function(){
-            $timeout(function(){
+          datepicker.on('hide', function () {
+            $timeout(function () {
               scope.viewModel.datepickerIsOpened = false;
             });
           });
@@ -8019,7 +8024,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwDatePicker.html',
-    "<div class=\"mw-date-picker clearfix\" ng-class=\"{'datepicker-visible': viewModel.datepickerIsOpened}\" ng-form><div class=\"input-group date-picker-holder\"><div class=\"input-group-addon\"><span class=\"fa fa-calendar\"></span></div><input type=\"text\" class=\"date-picker pull-left\"></div><div class=\"time-picker-holder\"><div class=\"time-picker-icon\"><span class=\"fa fa-clock-o\"></span></div><fieldset ng-disabled=\"!viewModel.date\"><div class=\"number-spinner-holder hours\"><input type=\"number\" min=\"0\" max=\"23\" ng-model=\"viewModel.hours\" mw-leading-zero ng-disabled=\"!canChange(1,'HOURS') && !canChange(-1,'HOURS')\"> <button class=\"btn btn-default btn-link number-spinner increment clickable\" ng-mousedown=\"startIncrementCounter('hours', 0, 23)\" ng-mouseup=\"stopIncrementCounter()\" ng-click=\"increment('hours', 0, 23)\" tabindex=\"-1\" ng-disabled=\"!canChange(1,'HOURS')\"><span class=\"fa fa-angle-up\"></span></button> <button class=\"btn btn-default btn-link number-spinner decrement clickable\" ng-mousedown=\"startDecrementCounter('hours', 0, 23)\" ng-mouseup=\"stopDecrementCounter()\" ng-click=\"decrement('hours', 0, 23)\" tabindex=\"-1\" ng-disabled=\"!canChange(-1, 'HOURS')\"><span class=\"fa fa-angle-down\"></span></button></div><div class=\"number-spinner-holder minutes\"><input type=\"number\" min=\"0\" max=\"59\" ng-model=\"viewModel.minutes\" mw-leading-zero ng-disabled=\"!canChange(1,'MINUTES') && !canChange(-1,'MINUTES')\"> <button class=\"btn btn-default btn-link number-spinner increment clickable\" ng-mousedown=\"startIncrementCounter('minutes', 0, 59)\" ng-mouseup=\"stopIncrementCounter()\" ng-click=\"increment('minutes', 0, 59)\" tabindex=\"-1\" ng-disabled=\"!canChange(1,'MINUTES')\"><span class=\"fa fa-angle-up\"></span></button> <button class=\"btn btn-default btn-link number-spinner decrement clickable\" ng-mousedown=\"startDecrementCounter('minutes', 0, 59)\" ng-mouseup=\"stopDecrementCounter()\" ng-click=\"decrement('minutes', 0, 59)\" tabindex=\"-1\" ng-disabled=\"!canChange(-1,'MINUTES')\"><span class=\"fa fa-angle-down\"></span></button></div></fieldset></div><div mw-form-input><input type=\"hidden\" name=\"dateValidator\" ng-model=\"mwModel\" ng-required=\"mwRequired\" mw-validate-date min-date=\"options.startDate\"></div></div>"
+    "<div class=\"mw-date-picker clearfix\" ng-class=\"{'datepicker-visible': viewModel.datepickerIsOpened}\" ng-form><div class=\"input-group date-picker-holder\"><div class=\"input-group-addon\"><span class=\"fa fa-calendar\"></span></div><input type=\"text\" class=\"date-picker pull-left\"></div><div class=\"time-picker-holder\"><div class=\"time-picker-icon\"><span class=\"fa fa-clock-o\"></span></div><fieldset ng-disabled=\"!viewModel.date\" ng-if=\"viewModel.showTimePicker\"><div class=\"number-spinner-holder hours\"><input type=\"number\" min=\"0\" max=\"23\" ng-model=\"viewModel.hours\" mw-leading-zero ng-disabled=\"!canChange(1,'HOURS') && !canChange(-1,'HOURS')\"> <button class=\"btn btn-default btn-link number-spinner increment clickable\" ng-mousedown=\"startIncrementCounter('hours', 0, 23)\" ng-mouseup=\"stopIncrementCounter()\" ng-click=\"increment('hours', 0, 23)\" tabindex=\"-1\" ng-disabled=\"!canChange(1,'HOURS')\"><span class=\"fa fa-angle-up\"></span></button> <button class=\"btn btn-default btn-link number-spinner decrement clickable\" ng-mousedown=\"startDecrementCounter('hours', 0, 23)\" ng-mouseup=\"stopDecrementCounter()\" ng-click=\"decrement('hours', 0, 23)\" tabindex=\"-1\" ng-disabled=\"!canChange(-1, 'HOURS')\"><span class=\"fa fa-angle-down\"></span></button></div><div class=\"number-spinner-holder minutes\"><input type=\"number\" min=\"0\" max=\"59\" ng-model=\"viewModel.minutes\" mw-leading-zero ng-disabled=\"!canChange(1,'MINUTES') && !canChange(-1,'MINUTES')\"> <button class=\"btn btn-default btn-link number-spinner increment clickable\" ng-mousedown=\"startIncrementCounter('minutes', 0, 59)\" ng-mouseup=\"stopIncrementCounter()\" ng-click=\"increment('minutes', 0, 59)\" tabindex=\"-1\" ng-disabled=\"!canChange(1,'MINUTES')\"><span class=\"fa fa-angle-up\"></span></button> <button class=\"btn btn-default btn-link number-spinner decrement clickable\" ng-mousedown=\"startDecrementCounter('minutes', 0, 59)\" ng-mouseup=\"stopDecrementCounter()\" ng-click=\"decrement('minutes', 0, 59)\" tabindex=\"-1\" ng-disabled=\"!canChange(-1,'MINUTES')\"><span class=\"fa fa-angle-down\"></span></button></div></fieldset></div><div mw-form-input><input type=\"hidden\" name=\"dateValidator\" ng-model=\"mwModel\" ng-required=\"mwRequired\" mw-validate-date min-date=\"options.startDate\"></div></div>"
   );
 
 

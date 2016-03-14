@@ -40,8 +40,13 @@ angular.module('mwUI')
           date: null,
           hours: null,
           minutes: null,
-          datepickerIsOpened: false
+          datepickerIsOpened: false,
+          showTimePicker: scope.showTimePicker || true
         };
+
+        scope.$watch('viewModel.showTimePicker', function (newVal) {
+          scope.viewModel.showTimePicker = newVal;
+        });
 
         scope.canChange = function (num, type) {
           var options = scope.options || {},
@@ -67,7 +72,7 @@ angular.module('mwUI')
               // otherwise the increment button is disabled as well
               // The time is reset to 0 pm for the current date and the end date
               // Otherwise it won't be possible to change minutes when the initial minutes of the same day are below the startdate hours
-              return new Date (currentDateTs).setHours(0,0,0,0) >= new Date(startDateTs).setHours(0,0,0,0);
+              return new Date(currentDateTs).setHours(0, 0, 0, 0) >= new Date(startDateTs).setHours(0, 0, 0, 0);
             }
           }
 
@@ -82,7 +87,7 @@ angular.module('mwUI')
               // otherwise the decrement button is disabled as well
               // The time is reset to 0 pm for the current date and the end date
               // Otherwise it won't be possible to change hours when the initial hours of the same day are over the enddate hours
-              return new Date(currentDateTs).setHours(0,0,0,0) <= new Date(endDateTs).setHours(0,0,0,0);
+              return new Date(currentDateTs).setHours(0, 0, 0, 0) <= new Date(endDateTs).setHours(0, 0, 0, 0);
             }
           }
 
@@ -162,13 +167,13 @@ angular.module('mwUI')
 
         var bindChangeListener = function (datepicker) {
           datepicker.on('changeDate', updateMwModel.bind(this, datepicker.data().datepicker));
-          datepicker.on('show', function(){
-            $timeout(function(){
+          datepicker.on('show', function () {
+            $timeout(function () {
               scope.viewModel.datepickerIsOpened = true;
             });
           });
-          datepicker.on('hide', function(){
-            $timeout(function(){
+          datepicker.on('hide', function () {
+            $timeout(function () {
               scope.viewModel.datepickerIsOpened = false;
             });
           });
