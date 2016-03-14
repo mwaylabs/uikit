@@ -5,11 +5,11 @@
     </div>
     <input type="text" class="date-picker pull-left">
   </div>
-  <div class="time-picker-holder">
+  <div class="time-picker-holder" ng-if="viewModel.showTimePicker">
     <div class="time-picker-icon">
       <span class="fa fa-clock-o"></span>
     </div>
-    <fieldset ng-disabled="!viewModel.date" ng-if="viewModel.showTimePicker">
+    <fieldset ng-disabled="!viewModel.date" >
       <div class="number-spinner-holder hours">
         <input type="number" min="0" max="23" ng-model="viewModel.hours" mw-leading-zero ng-disabled="!canChange(1,'HOURS') && !canChange(-1,'HOURS')">
         <button class="btn btn-default btn-link number-spinner increment clickable" ng-mousedown="startIncrementCounter('hours', 0, 23)" ng-mouseup="stopIncrementCounter()" ng-click="increment('hours', 0, 23)" tabindex="-1" ng-disabled="!canChange(1,'HOURS')">
