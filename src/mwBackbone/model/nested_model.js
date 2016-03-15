@@ -11,10 +11,14 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
     var nestedAttributes = this.nested(),
       instanceObject = {};
     for (var key in nestedAttributes) {
-      var instance = new nestedAttributes[key]();
+      if (typeof nestedAttributes[key] === 'function') {
+        var instance = new nestedAttributes[key]();
 
-      instance.parent = this;
-      instanceObject[key] = instance;
+        instance.parent = this;
+        instanceObject[key] = instance;
+      } else {
+        throw new Error('Nested attribute ' + key + ' is not a valid constructor. Do not set an instance as nested attribute.');
+      }
     }
 
     return instanceObject;
