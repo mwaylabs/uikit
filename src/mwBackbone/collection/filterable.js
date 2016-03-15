@@ -23,6 +23,10 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   this.fields = options.fields;
   this.filterIsSet = false;
 
+  this.hasFilterChanged = function(filter){
+    return JSON.stringify(filter) !== JSON.stringify(_lastFilter);
+  };
+
   this.getRequestParams = function (options) {
     options.params = options.params || {};
 
@@ -33,10 +37,9 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     }
 
     //reset pagination if filter values change
-    if (JSON.stringify(filter) !== JSON.stringify(_lastFilter)) {
+    if (this.hasFilterChanged(filter)) {
       _page = 1;
     }
-    _lastFilter = filter;
 
     // Pagination functionality
     if (_perPage && _page && (_limit || _.isUndefined(_limit))) {
@@ -72,6 +75,8 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
     //always set non paged parameter
     options.params.getNonpagedCount = true;
+
+    _lastFilter = filter;
 
     return options.params;
   };
