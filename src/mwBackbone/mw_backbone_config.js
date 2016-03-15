@@ -16,7 +16,6 @@ angular.module('mwUI.Backbone')
         return model;
       });
     };
-    // We are the backbone
     Backbone.ajax = function (options) {
       if (_$http) {
         // Set HTTP Verb as 'method'

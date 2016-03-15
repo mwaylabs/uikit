@@ -23,62 +23,65 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   this.fields = options.fields;
   this.filterIsSet = false;
 
-  this.getRequestParams = function (method, model, options) {
-    options.params = options.params || {};
-
-    if (method === 'read') {
-      // Filter functionality
-      var filter = this.getFilters();
-      if (filter) {
-        options.params.filter = filter;
-      }
-
-      //reset pagination if filter values change
-      if(JSON.stringify(filter) !== JSON.stringify(_lastFilter)){
-        _page = 1;
-      }
-      _lastFilter = filter;
-
-      // Pagination functionality
-      if (_perPage && _page && (_limit || _.isUndefined(_limit))) {
-        options.params.limit = _perPage;
-
-        // Calculate offset
-        options.params.offset = _page > 1 ? _perPage * (_page - 1) : 0;
-      }
-
-      // Sort order
-      if (_sortOrder && _sortOrder.length>0) {
-        options.params.sortOrder = _sortOrder;
-      }
-
-      // Fallback to limit and offset if they're set manually, overwrites pagination settings
-      if (_limit || _offset) {
-        options.params.limit = _limit;
-        options.params.offset = _offset;
-      }
-
-      if(_limit === false){
-        delete options.params.limit;
-      }
-
-      if(this.fields && this.fields.length>0){
-        options.params.field = this.fields;
-      }
-
-      // Custom URL parameters
-      if (this.customUrlParams) {
-        _.extend(options.params, _.result(this,'customUrlParams'));
-      }
-
-      //always set non paged parameter
-      options.params.getNonpagedCount = true;
-
-      return options;
-    }
+  this.hasFilterChanged = function(filter){
+    return JSON.stringify(filter) !== JSON.stringify(_lastFilter);
   };
 
-  this.setLimit = function(limit){
+  this.getRequestParams = function (options) {
+    options.params = options.params || {};
+
+    // Filter functionality
+    var filter = this.getFilters();
+    if (filter) {
+      options.params.filter = filter;
+    }
+
+    //reset pagination if filter values change
+    if (this.hasFilterChanged(filter)) {
+      _page = 1;
+    }
+
+    // Pagination functionality
+    if (_perPage && _page && (_limit || _.isUndefined(_limit))) {
+      options.params.limit = _perPage;
+
+      // Calculate offset
+      options.params.offset = _page > 1 ? _perPage * (_page - 1) : 0;
+    }
+
+    // Sort order
+    if (_sortOrder && _sortOrder.length > 0) {
+      options.params.sortOrder = _sortOrder;
+    }
+
+    // Fallback to limit and offset if they're set manually, overwrites pagination settings
+    if (_limit || _offset) {
+      options.params.limit = _limit;
+      options.params.offset = _offset;
+    }
+
+    if (_limit === false) {
+      delete options.params.limit;
+    }
+
+    if (this.fields && this.fields.length > 0) {
+      options.params.field = this.fields;
+    }
+
+    // Custom URL parameters
+    if (this.customUrlParams) {
+      _.extend(options.params, _.result(this, 'customUrlParams'));
+    }
+
+    //always set non paged parameter
+    options.params.getNonpagedCount = true;
+
+    _lastFilter = filter;
+
+    return options.params;
+  };
+
+  this.setLimit = function (limit) {
     _limit = limit;
     _offset = _offset || 0;
   };
@@ -153,7 +156,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   (function _main() {
-    if ( !(_collection instanceof Backbone.Collection) ) {
+    if (!(_collection instanceof Backbone.Collection)) {
       throw new Error('First parameter has to be the instance of a collection');
     }
 
