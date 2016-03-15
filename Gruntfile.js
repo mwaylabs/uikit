@@ -41,7 +41,14 @@ module.exports = function (grunt) {
       dist: {
         src: [
           'dist/<%= uikit.fileName %>.js',
-          '.tmp/templates.js'
+          '.tmp/templates.js',
+          'libs/angular-sanitize/angular-sanitize.js',
+          'libs/showdown/dist/showdown.js',
+          'libs/jquery-ui/ui/jquery.ui.widget.js',
+          'libs/blueimp-file-upload/js/jquery.fileupload.js',
+          'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
+          'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
+          'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
         ],
         dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
       }
