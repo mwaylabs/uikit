@@ -238,7 +238,7 @@ describe('mwBackbone nested models', function () {
         modelWithNestedModel = new ModelWithNestedModel();
       });
 
-      it('parses the model correctly transforms object into nested model', function () {
+      it('parses the model and transforms object into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedModelAttr: {
@@ -255,7 +255,7 @@ describe('mwBackbone nested models', function () {
         expect(modelWithNestedModel.get('name')).toEqual('abc');
       });
 
-      it('parses the model correctly transforms string into nested model', function () {
+      it('parses the model and transforms string into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedModelAttrId: 1
@@ -280,7 +280,7 @@ describe('mwBackbone nested models', function () {
 
       });
 
-      it('parses the model correctly transforms string into nested model when custom parse method is provided', function () {
+      it('parses the model and transforms string into nested model when custom parse method is provided', function () {
         this.responseObj = {
           name: 'abc',
           nestedModelAttr: 1
@@ -313,7 +313,7 @@ describe('mwBackbone nested models', function () {
         spyOn(modelWithNestedCollection, 'fetch').and.callThrough();
       });
 
-      it('parses the model correctly transforms str into nested model', function () {
+      it('parses the model and transforms string into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedCollectionAttr: 1
@@ -327,7 +327,7 @@ describe('mwBackbone nested models', function () {
         expect(modelWithNestedCollection.get('nestedCollectionAttr').first().get('id')).toBe(1);
       });
 
-      it('parses the model correctly transforms object into nested model', function () {
+      it('parses the model and transforms object into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedCollectionAttr: [
@@ -350,7 +350,7 @@ describe('mwBackbone nested models', function () {
         expect(modelWithNestedCollection.get('nestedCollectionAttr').first().get('id')).toBe(1);
       });
 
-      it('parses the model correctly transforms string into nested model', function () {
+      it('parses the model and transforms string into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedCollectionAttr: [1, 2]
@@ -389,7 +389,7 @@ describe('mwBackbone nested models', function () {
         collectionWithNestedModels = new CollectionWithNestedModels();
       });
 
-      it('parses nested models of each model correctly', function () {
+      it('parses nested models of each model', function () {
         this.responseObj = {
           data: [
             {
@@ -439,7 +439,7 @@ describe('mwBackbone nested models', function () {
         expect(collectionWithNestedModels.first().get('members') instanceof Members).toBeTruthy();
       });
 
-      it('parses nested models of each model correctly when custom parse method of model is provided', function () {
+      it('parses nested models of each model when custom parse method of model is provided', function () {
         this.responseObj = {
           data: [
             {
@@ -826,7 +826,7 @@ describe('mwBackbone nested models', function () {
       this.processReqBody = jasmine.createSpy('serverReqSpy');
     });
 
-    it('fetches groups and sets nested users correctly when backend return groups with referenced users objects', function () {
+    it('fetches groups and sets nested users when backend return groups with referenced users objects', function () {
       var groups = new this.Groups();
       this.server.respondWith(
         'GET',
@@ -894,7 +894,7 @@ describe('mwBackbone nested models', function () {
 
     });
 
-    it('fetches groups and sets nested users correctly when backend return groups with referenced user ids', function () {
+    it('fetches groups and sets nested users when backend return groups with referenced user ids', function () {
       var groups = new this.Groups();
       this.server.respondWith(
         'GET',
@@ -925,8 +925,8 @@ describe('mwBackbone nested models', function () {
 
     });
 
-    it('fetches groups and sets nested users correctly when backend return groups with referenced user ids ' +
-      'and it should be possible to fetch meta infos of the referenced users', function () {
+    it('fetches groups and sets nested users when backend return groups with referenced user ids ' +
+      'and meta infos of the referenced users can be fetched', function () {
       var groups = new this.Groups();
       this.server.respondWith(
         'GET',
