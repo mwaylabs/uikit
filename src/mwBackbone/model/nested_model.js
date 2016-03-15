@@ -103,6 +103,11 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
   },
 
   constructor: function (attributes, options) {
+    options = options || {};
+    if(options.parse){
+      attributes = this.parse(attributes);
+      options.parse = false;
+    }
     this.attributes = this._prepare();
     this.set(attributes);
     attributes = this.attributes;
