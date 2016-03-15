@@ -108,7 +108,7 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
 
   constructor: function (attributes, options) {
     options = options || {};
-    if(options.parse){
+    if (options.parse) {
       attributes = this.parse(attributes);
       options.parse = false;
     }
@@ -136,14 +136,14 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
     return attrs;
   },
 
-  toJSON: function(options){
+  toJSON: function (options) {
     // When options are set toJSON is called from the sync method so it is called before the object is send to the server
     // We use this to transform our data before we are sending it to the server
     // It is the counterpart of parse for the server
-    if(options){
+    if (options) {
       return this._prepareDataForServer();
     } else {
-      return Backbone.Model.prototype.toJSON.apply(this,arguments);
+      return Backbone.Model.prototype.toJSON.apply(this, arguments);
     }
   },
 
