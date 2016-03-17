@@ -31,11 +31,16 @@ module.exports = function (grunt) {
         'src/**/*.js'
       ]
     },
+    preprocess: {
+      js : {
+        src : 'src/mwUI.js',
+        dest : '<%= uikit.dist %>/<%= uikit.fileName %>.js'
+      }
+    },
     concat: {
       dist: {
         src: [
-          'src/mwUI.js',
-          'src/**/*.js',
+          'dist/<%= uikit.fileName %>.js',
           '.tmp/templates.js',
           'libs/angular-sanitize/angular-sanitize.js',
           'libs/showdown/dist/showdown.js',
@@ -93,7 +98,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('watch', ['process', 'regarde']);
-  grunt.registerTask('process', ['ngtemplates:all', 'concat', 'ngAnnotate:dist']);
+  grunt.registerTask('process', ['ngtemplates:all', 'preprocess:js','concat', 'ngAnnotate:dist']);
   grunt.registerTask('build', ['jshint', 'test', 'process', 'uglify', 'clean']);
-  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('test', ['process','karma']);
 };
