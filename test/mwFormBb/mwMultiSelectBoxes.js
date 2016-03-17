@@ -8,16 +8,17 @@ describe('mwUi mwMultiSelectBoxes', function(){
       $rootScope,
       $compile;
 
-  beforeEach(module('mCAP'));
   beforeEach(module('karmaDirectiveTemplates'));
   beforeEach(module('mwUI'));
 
   beforeEach(function(){
-    inputCollection = new mCAP.Collection();
+    var RelutionModel =  mwUI.Backbone.Model.extend({idAttribute:'uuid'}),
+        RelutionCollection = mwUI.Backbone.Collection.extend({model: RelutionModel});
+    inputCollection = new RelutionCollection();
     for(var i=0;i<10;i++){
-      inputCollection.add(new mCAP.Model({uuid: i}));
+      inputCollection.add(new RelutionModel({uuid: i}));
     }
-    selectedCollection = new mCAP.Collection();
+    selectedCollection = new RelutionCollection();
   });
 
   beforeEach(module(function($provide){
@@ -58,6 +59,7 @@ describe('mwUi mwMultiSelectBoxes', function(){
         isolateScope;
     scope.inputCollection = inputCollection;
     scope.selectedCollection = selectedCollection;
+
     element = $compile('<div mw-multi-select-boxes mw-options-collection="inputCollection" mw-collection="selectedCollection"></div>')(scope);
     scope.$digest();
     isolateScope = element.isolateScope();

@@ -1,2339 +1,3854 @@
-angular.module('mwUI', [
-  'ngSanitize',
-  'mwModal',
-  'mwWizard',
-  'mwCollection',
-  'mwListable',
-  'mwListableBb',
-  'mwForm',
-  'mwFormBb',
-  'mwComponents',
-  'mwComponentsBb',
-  'mwTabs',
-  'mwSidebar',
-  'mwSidebarBb',
-  'mwFormValidators',
-  'mwNav',
-  'mwPopover',
-  'mwHelper',
-  'mwMap',
-  'mwI18n',
-  'mwResponseHandler',
-  'mwResponseToastHandler',
-  'mwFilters',
-  'mwFileUpload'
-]).config(function(){
+(function(root, angular){
   'use strict';
-  window.requestAnimFrame = (function () {
-    return  window.requestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-      function (callback) {
-        window.setTimeout(callback, 1000 / 60);
-      };
-  })();
 
-  window.ieVersion = (function () {
-    if (new RegExp(/MSIE ([0-9]{1,}[\.0-9]{0,})/).exec(navigator.userAgent) !== null) {
-      return parseFloat(RegExp.$1);
-    } else {
+  angular.module('mwUI', [
+    'ngSanitize',
+    'mwModal',
+    'mwWizard',
+    'mwCollection',
+    'mwListable',
+    'mwListableBb',
+    'mwForm',
+    'mwFormBb',
+    'mwComponents',
+    'mwComponentsBb',
+    'mwTabs',
+    'mwSidebar',
+    'mwSidebarBb',
+    'mwFormValidators',
+    'mwNav',
+    'mwPopover',
+    'mwHelper',
+    'mwMap',
+    'mwI18n',
+    'mwResponseHandler',
+    'mwResponseToastHandler',
+    'mwFilters',
+    'mwFileUpload'
+  ]).config(function(){
+
+    window.requestAnimFrame = (function () {
+      return  window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        function (callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+    })();
+
+    window.ieVersion = (function () {
+      if (new RegExp(/MSIE ([0-9]{1,}[\.0-9]{0,})/).exec(navigator.userAgent) !== null) {
+        return parseFloat(RegExp.$1);
+      } else {
+        return false;
+      }
+    })();
+
+  });
+
+  root.mwUI = {};
+
+  /**
+   * Created by zarges on 15/02/16.
+   */
+  window.mwUI.Backbone = {
+    baseUrl: '',
+    Selectable: {},
+    concatUrlParts: function () {
+      var concatUrl = '';
+      _.forEach(arguments, function (url) {
+        url = url.replace(/^\//, '');
+        url = url.replace(/\/$/, '');
+        concatUrl += ( url + ('/') );
+      });
+      return concatUrl;
+    }
+  };
+  
+  angular.module('mwUI.Backbone', []);
+  
+  
+  /**
+   * Created by zarges on 15/02/16.
+   */
+  mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
+  
+    nested: function () {
+      return {};
+    },
+  
+    _prepare: function () {
+      var nestedAttributes = this.nested(),
+        instanceObject = {};
+      for (var key in nestedAttributes) {
+        if (typeof nestedAttributes[key] === 'function') {
+          var instance = new nestedAttributes[key]();
+  
+          instance.parent = this;
+          instanceObject[key] = instance;
+        } else {
+          throw new Error('Nested attribute ' + key + ' is not a valid constructor. Do not set an instance as nested attribute.');
+        }
+      }
+  
+      return instanceObject;
+    },
+  
+    _setNestedModel: function (key, value) {
+      if (_.isObject(value)) {
+        this.get(key).set(value);
+      } else {
+        var id = this.get(key).idAttribute;
+        this.get(key).set(id, value);
+      }
+    },
+  
+    _setNestedCollection: function (key, value) {
+      if (_.isObject(value) && !_.isArray(value)) {
+        this.get(key).add(value);
+      } else if (_.isArray(value)) {
+        value.forEach(function (val) {
+          this._setNestedCollection(key, val);
+        }.bind(this));
+      } else {
+        var id = this.get(key).model.prototype.idAttribute,
+          obj = {};
+  
+        obj[id] = value;
+        this.get(key).add(obj);
+      }
+    },
+  
+    _setNestedAttributes: function (obj) {
+  
+      for (var key in obj) {
+        var nestedAttrs = this.nested(),
+          value = obj[key],
+          nestedValue = nestedAttrs[key];
+  
+        if (nestedValue && !(value instanceof nestedValue) && this.get(key)) {
+  
+          if (this.get(key) instanceof Backbone.Model) {
+            this._setNestedModel(key, value);
+          } else if (this.get(key) instanceof Backbone.Collection) {
+            this._setNestedCollection(key, value);
+          }
+  
+          delete obj[key];
+        }
+      }
+  
+      return obj;
+    },
+  
+    _nestedModelToJson: function (model) {
+      var result;
+  
+      if (model instanceof Backbone.NestedModel) {
+        result = model._prepareDataForServer();
+      } else {
+        result = model.toJSON();
+      }
+  
+      return result;
+    },
+  
+    _prepareDataForServer: function () {
+      var attrs = _.extend({}, this.attributes),
+        nestedAttrs = this.nested();
+  
+      for (var key in nestedAttrs) {
+        var nestedAttr = this.get(key);
+  
+        if (nestedAttr instanceof Backbone.Model) {
+          attrs[key] = this._nestedModelToJson(nestedAttr);
+        } else if (nestedAttr instanceof Backbone.Collection) {
+          var result = [];
+  
+          nestedAttr.each(function (model) {
+            result.push(this._nestedModelToJson(model));
+          }.bind(this));
+  
+          attrs[key] = result;
+        }
+      }
+  
+      return this.compose(attrs);
+    },
+  
+    constructor: function (attributes, options) {
+      options = options || {};
+      if (options.parse) {
+        attributes = this.parse(attributes);
+        options.parse = false;
+      }
+      this.attributes = this._prepare();
+      this.set(attributes);
+      attributes = this.attributes;
+      return Backbone.Model.prototype.constructor.call(this, attributes, options);
+    },
+  
+    set: function (attributes, options) {
+      var obj = {};
+  
+      if (_.isString(attributes)) {
+        obj[attributes] = options;
+      } else if (_.isObject(attributes)) {
+        obj = attributes;
+      }
+  
+      obj = this._setNestedAttributes(obj);
+  
+      return Backbone.Model.prototype.set.call(this, obj);
+    },
+  
+    compose: function (attrs) {
+      return attrs;
+    },
+  
+    toJSON: function (options) {
+      // When options are set toJSON is called from the sync method so it is called before the object is send to the server
+      // We use this to transform our data before we are sending it to the server
+      // It is the counterpart of parse for the server
+      if (options) {
+        return this._prepareDataForServer();
+      } else {
+        return Backbone.Model.prototype.toJSON.apply(this, arguments);
+      }
+    },
+  
+    clear: function () {
+      var superClear = Backbone.Model.prototype.clear.apply(this, arguments);
+      this.attributes = this._prepare();
+      return superClear;
+    }
+  });
+  
+  
+  /*jshint unused:false */
+  mwUI.Backbone.Selectable.Model = function (modelInstance, options) {
+  
+    var _model = modelInstance,
+        _selected = options.selected || false;
+  
+    this.isInCollection = false;
+  
+    this.hasDisabledFn = (typeof options.isDisabled === 'function') || false;
+  
+    this.isDisabled = function () {
+      if (this.hasDisabledFn) {
+        return options.isDisabled.apply(modelInstance, arguments);
+      }
       return false;
-    }
-  })();
-});
-'use strict';
-
-angular.module('mwFilters', [])
-
-.filter('humanize', function () {
-  return function (input) {
-    return input ? 'common.yes' : 'common.no';
-  };
-})
-
-.filter('neverIfZero', ['i18n', function (i18n) {
-  var filterFn =  function (input) {
-    return input === 0 ? i18n.get('common.never') : input;
-  };
-  filterFn.$stateful = true;
-  return filterFn;
-}])
-
-.filter('dashIfBlank', function () {
-  return function (input) {
-    return input ? input : '-';
-  };
-})
-
-.filter('starIfBlank', function () {
-  return function (input) {
-    return input ? input : '*';
-  };
-})
-
-.filter('join', function () {
-  return function (input, opts) {
-
-    if(!angular.isArray(input)){
-      return input;
-    }
-    if(opts.lastSeparator){
-      var els = _.clone(input),
-      lastEl = els.pop();
-      return els.join(opts.separator)+' '+opts.lastSeparator+' '+lastEl;
-    } else {
-      return input.join(opts.separator);
-    }
-
-  };
-})
-
-.filter('zeroIfEmpty', function () {
-  return function (input) {
-    return input ? input : 0;
-  };
-})
-
-.filter('readableFilesize', function () {
-  return function (fileSizeInBytes, startUnit) {
-    if (fileSizeInBytes === 0) {
-      return '0.0 kB';
-    }
-    var i = -1,
-    byteUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-    if(startUnit !== undefined) {
-      i = byteUnits.indexOf(startUnit);
-    }
-    do {
-      fileSizeInBytes = fileSizeInBytes / 1024;
-      i++;
-    } while (fileSizeInBytes > 1024);
-
-    return Math.max(fileSizeInBytes, 0.1).toFixed(1) + ' ' + byteUnits[i];
-  };
-})
-
-.filter('reduceStringTo', function () {
-  return function (input, count) {
-    if(count && input && input.length > count) {
-      return input.substr(0, count) + '...';
-    }
-    return input;
-  };
-});
-
-'use strict';
-
-angular.module('mwComponents', [])
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwPanel
-   * @element div
-   * @description
-   *
-   * Wrapper directive for {@link http://getbootstrap.com/components/#panels Bootstraps Panel}.
-   *
-   * @param {string} mwPanel Panel title
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <div mw-panel>
-   *      Panel content
-   *    </div>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwPanel', function () {
-    return {
-      restrict: 'A',
-      transclude: true,
-      templateUrl: 'uikit/templates/mwComponents/mwPanel.html',
     };
-  })
-
-
-  .directive('mwContentHeader', function () {
-    return {
-      transclude: true,
-      template: '<div class="mw-content-header" ng-transclude></div>'
+  
+    this.isSelected = function () {
+      return _selected;
     };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwSortIndicator
-   * @element span
-   * @description
-   *
-   * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
-   *
-   * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
-   * @param {boolean} isReversed display an arrow up or down
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwSortIndicator', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        isActive: '=',
-        isReversed: '='
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwComponents/mwSortIndicator.html'
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwAlert
-   * @element div
-   * @description
-   *
-   * Wrapper directive for {@link http://getbootstrap.com/components/#alerts Bootstraps Alert}.
-   *
-   * @param {string} mwAlert Alert type. Can be one of the following:
-   *
-   * - warning
-   * - danger
-   * - success
-   * - info
-   *
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <div mw-alert="warning">
-   *      Alert content
-   *    </div>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwAlert', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        type: '@mwAlert'
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwComponents/mwAlert.html'
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwHeader
-   * @element div
-   * @description
-   *
-   * Header bar for content pages.
-   *
-   * @param {string} title Header title
-   *
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <div mw-header title="A nice page">
-   *      Header content, Buttons etc...
-   *    </div>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwHeader', ['$location', '$route', '$rootScope', function ($location, $route, $rootScope) {
-    return {
-      transclude: true,
-      scope: {
-        title: '@',
-        url: '@',
-        mwTitleIcon: '@',
-        showBackButton: '=',
-        warningText: '@',
-        warningCondition: '=',
-        mwBreadCrumbs: '='
-      },
-      templateUrl: 'uikit/templates/mwComponents/mwHeader.html',
-      link: function (scope, el, attrs, ctrl, $transclude) {
-        $rootScope.siteTitleDetails = scope.title;
-
-        $transclude(function (clone) {
-          if ((!clone || clone.length === 0) && !scope.showBackButton) {
-            el.find('.mw-header').addClass('no-buttons');
-          }
-        });
-
-        scope.refresh = function () {
-          $route.reload();
-        };
-
-        if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
-          scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
-          scope.url = scope.url.replace('#', '');
-        } else if (!scope.url && scope.showBackButton) {
-          console.error('Url attribute in header is missing!!');
+  
+    this.select = function (options) {
+      options = options || {};
+      if ( (!this.isDisabled() || options.force) && !this.isSelected()) {
+        _selected = true;
+        if(!options.silent){
+          this.trigger('change change:select',modelInstance,this);
         }
-
-        scope.back = function () {
-          $location.path(scope.url);
-        };
-
       }
     };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwIcon
-   * @element span
-   * @description
-   *
-   * Wrapper for bootstrap glyphicons.
-   *
-   * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
-   * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
-   *
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <span mw-icon="search"></span>
-   *    <span mw-icon="search" tooltip="This is a tooltip"></span>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwIcon', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        mwIcon: '@',
-        tooltip: '@',
-        placement: '@',
-        style: '@'
-      },
-      template: '<i ng-class="iconClasses" style="{{style}}" mw-tooltip="{{tooltip}}" placement="{{placement}}"></i>',
-      link: function (scope, el) {
-
-        el.addClass('mw-icon');
-        //set icon classes
-        scope.$watch('mwIcon', function (newVal) {
-          if (newVal) {
-            var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
-              isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
-            if (isFontAwesome) {
-              scope.iconClasses = 'fa ' + scope.mwIcon;
-            } else if (isRlnIcon) {
-              scope.iconClasses = 'rln-icon ' + scope.mwIcon;
-            } else {
-              scope.iconClasses = 'glyphicon glyphicon-' + scope.mwIcon;
-            }
-          }
-        });
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name Relution.Common.directive:rlnTooltip
-   * @element span
-   *
-   * @description
-   * Creates a tooltip element using Bootstraps popover component.
-   *
-   * @param {String} mwTooltip Content of the tooltip
-   *
-   * @example
-   <span mw-tooltip="foobar"></span>
-   */
-  .directive('mwTooltip', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        text: '@mwTooltip',
-        placement: '@'
-      },
-      link: function (scope, el) {
-        scope.$watch('text', function () {
-          el.data('bs.popover').setContent();
-        });
-
-        el.popover({
-          trigger: 'hover',
-          placement: scope.placement || 'bottom',
-          content: function () {
-            return scope.text;
-          },
-          container: 'body'
-        });
-
-        var destroyPopOver = function () {
-          var popover = el.data('bs.popover');
-          if (popover && popover.tip()) {
-            popover.tip().detach().remove();
-          }
-        };
-
-        scope.$on('$destroy', function () {
-          destroyPopOver();
-        });
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwBadge
-   * @element span
-   * @description
-   *
-   * Wrapper for bootstrap labels.
-   *
-   * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
-   *
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <span mw-badge="info"></span>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwBadge', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {mwBadge: '@'},
-      transclude: true,
-      template: '<span class="mw-badge label label-{{mwBadge}}" ng-transclude></span>'
-    };
-  })
-
-  .directive('mwEmptyState', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {mwBadge: '@'},
-      transclude: true,
-      template: '<div class="mw-empty-state"> <img src="images/logo-grey.png"><h2 ng-transclude class="lead"></h2> </div>'
-    };
-  })
-
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwFilterableSearch
-   * @element div
-   * @description
-   *
-   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
-   *
-   * @param {filterable} filterable Filterable instance.
-   * @param {expression} disabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   */
-  .directive('mwFilterableSearch', ['$timeout', '$animate', 'Loading', 'Detect', function ($timeout, $animate, Loading, Detect) {
-    return {
-      scope: {
-        filterable: '=',
-        mwDisabled: '=',
-        property: '@'
-//        loading: '='
-      },
-      templateUrl: 'uikit/templates/mwComponents/mwFilterableSearch.html',
-      link: function (scope, elm) {
-        $animate.enabled(false, elm.find('.search-indicator'));
-        scope.model = scope.filterable.properties[scope.property];
-        scope.inputLength = 0;
-        scope.isMobile = Detect.isMobile();
-
-        var timeout;
-
-        var search = function () {
-          return scope.filterable.applyFilters();
-        };
-
-        var throttler = function () {
-          scope.searching = true;
-
-          $timeout.cancel(timeout);
-
-          timeout = $timeout(function () {
-
-            search().then(function () {
-              $timeout.cancel(timeout);
-              scope.searching = false;
-            }, function () {
-              scope.searching = false;
-            });
-
-          }, 500);
-        };
-
-        scope.search = function (event) {
-
-          if (!event || event.keyCode === 13) {
-            search();
-          } else {
-
-            if (!scope.isMobile) {
-              throttler();
-            }
-          }
-        };
-
-        scope.reset = function () {
-          scope.model.value = '';
-          search();
-        };
-      }
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwRating
-   * @element span
-   * @description
-   *
-   * Converts a rating number into stars
-   *
-   * @param {number | expression} mwRating rating score
-   * @param {number} max the maximun number of stars
-   *
-   * @example
-   * <doc:example>
-   *  <doc:source>
-   *    <span mw-rating="3"></span>
-   *  </doc:source>
-   * </doc:example>
-   */
-  .directive('mwRating', function () {
-    return {
-      restrict: 'A',
-      scope: true,
-      template: '<i ng-repeat="star in stars" ng-class="star.state" class="fa"></i>',
-      link: function (scope, elm, attr) {
-
-        elm.addClass('mw-star-rating');
-
-        scope.stars = [];
-
-        var buildStars = function () {
-          scope.stars = [];
-
-          var rating = scope.$eval(attr.mwRating) || 0;
-          var starsMax = scope.$eval(attr.max) || 5;
-
-          if (rating > starsMax) {
-            rating = starsMax;
-          }
-
-          if (rating < 0) {
-            rating = 0;
-          }
-
-          for (var i = 0; i < Math.floor(rating); i++) {
-            scope.stars.push({state: 'fa-star'});
-          }
-
-          if (rating - Math.floor(rating) >= 0.5) {
-            scope.stars.push({state: 'fa-star-half-full'});
-          }
-
-          while (attr.max && scope.stars.length < starsMax) {
-            scope.stars.push({state: 'fa-star-o'});
-          }
-        };
-
-        attr.$observe('mwRating', function () {
-          buildStars();
-        });
-
-        attr.$observe('max', function () {
-          buildStars();
-        });
-      }
-    };
-  })
-
-
-  .directive('mwButtonHelp', ['i18n', function (i18n) {
-    return {
-      restrict: 'A',
-      scope: true,
-      link: function (scope, elm) {
-        var popup;
-        elm.addClass('mwButtonHelp');
-        var helpIcon = angular.element('<div>').addClass('help-icon rln-icon support hidden-sm hidden-xs');
-        elm.prepend(helpIcon);
-
-        var buildPopup = function () {
-          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
-          angular.forEach(scope.hintsToShow, function (hint) {
-            popup.find('ul').append('<li>' + hint.text + '</li>');
-          });
-        };
-
-        helpIcon.hover(function () {
-          buildPopup();
-          var targetOffset = angular.element(this).offset();
-          angular.element('body').append(popup);
-          popup.css('top', targetOffset.top - (popup.height() / 2) + 10 - angular.element(document).scrollTop());
-          popup.css('left', (targetOffset.left + 40));
-        }, function () {
-          angular.element('body > .mwButtonPopover').remove();
-        });
-
-        scope.$watch('hintsToShow', function (newVal) {
-          if (newVal.length) {
-            helpIcon.removeClass('hidden');
-          } else {
-            helpIcon.addClass('hidden');
-          }
-        });
-
-        scope.$on('$destroy', function () {
-          if (popup) {
-            popup.remove();
-          }
-        });
-      },
-      controller: ['$scope', function ($scope) {
-        $scope.registeredHints = [];
-        $scope.hintsToShow = [];
-        $scope.helpText = i18n.get('common.buttonHelp');
-        $scope.$on('i18n:localeChanged', function () {
-          $scope.helpText = i18n.get('common.buttonHelp');
-        });
-
-        var showHelp = function () {
-          $scope.hintsToShow = [];
-          angular.forEach($scope.registeredHints, function (registered) {
-            if (registered.condition) {
-              $scope.hintsToShow.push(registered);
-            }
-          });
-        };
-
-        //check if any condition changes
-        this.register = function (registered) {
-          $scope.$watch(function () {
-            return registered.condition;
-          }, showHelp);
-          $scope.registeredHints.push(registered);
-        };
-
-
-      }]
-    };
-  }])
-
-  .directive('mwButtonHelpCondition', function () {
-    return {
-      restrict: 'A',
-      require: '^mwButtonHelp',
-      scope: {
-        condition: '=mwButtonHelpCondition',
-        text: '@mwButtonHelpText'
-      },
-      link: function (scope, elm, attr, ctrl) {
-        ctrl.register(scope);
-      }
-    };
-  })
-
-  .directive('mwLinkShow', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        link: '@mwLinkShow'
-      },
-      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show" mw-stop-propagation="click"><span mw-icon="fa-angle-right"></span></a>'
-    };
-  })
-
-  .directive('mwOptionGroup', function () {
-    return {
-      scope: {
-        title: '@',
-        description: '@',
-        icon: '@',
-        mwDisabled: '='
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwComponents/mwOptionGroup.html',
-      link: function (scope, el) {
-        scope.randomId = _.uniqueId('option_group_');
-        el.find('input').attr('id', scope.randomId);
-      }
-
-    };
-  })
-
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwToggle
-   * @element span
-   * @description
-   *
-   * Displays a toggle button to toggle a boolean value
-   *
-   * @param {expression} mwModel model
-   * @param {function} mwChange the function which should be executed when the value has changed
-   *
-   */
-  .directive('mwToggle', ['$timeout', function ($timeout) {
-    return {
-      scope: {
-        mwModel: '=',
-        mwDisabled: '=',
-        mwChange: '&'
-      },
-      replace: true,
-      templateUrl: 'uikit/templates/mwComponents/mwToggle.html',
-      link: function (scope) {
-        scope.toggle = function (value) {
-          if (scope.mwModel !== value) {
-            scope.mwModel = !scope.mwModel;
-            $timeout(function () {
-              scope.mwChange({value: scope.mwModel});
-            });
-          }
-        };
-      }
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwTimeline
-   * @element div
-   * @description
-   *
-   * Vertical timeline Is the container element for timeline entries
-   *
-   */
-  .directive('mwTimeline', function () {
-    return {
-      transclude: true,
-      replace: true,
-      template: '<div class="mw-timeline timeline clearfix"><hr class="vertical-line"><div class="content" ng-transclude></div></div>'
-    };
-  })
-
-  .directive('mwTimelineFieldset', ['$q', function ($q) {
-    return {
-      scope: {
-        mwTitle: '@',
-        collapsable: '='
-      },
-      transclude: true,
-      replace: true,
-      templateUrl: 'uikit/templates/mwComponents/mwTimelineFieldset.html',
-      controller: ['$scope', function ($scope) {
-        $scope.entries = [];
-        this.register = function (entry) {
-          if (!_.findWhere($scope.entries, {$id: entry.$id})) {
-            $scope.entries.push(entry);
-          }
-        };
-        $scope.entriesVisible = true;
-        $scope.toggleEntries = function () {
-          if (!$scope.collapsable) {
-            return;
-          }
-          var toggleEntryHideFns = [];
-          $scope.entries.forEach(function (entry) {
-            if ($scope.entriesVisible) {
-              toggleEntryHideFns.push(entry.hide());
-            } else {
-              toggleEntryHideFns.push(entry.show());
-            }
-          });
-          if (!$scope.entriesVisible) {
-            $scope.entriesVisible = !$scope.entriesVisible;
-          } else {
-            $q.all(toggleEntryHideFns).then(function () {
-              $scope.entriesVisible = !$scope.entriesVisible;
-            });
-          }
-        };
-        $scope.hiddenEntriesText = function () {
-          if ($scope.entries.length > 1) {
-            return 'common.entriesHiddenPlural';
-          } else {
-            return 'common.entriesHiddenSingular';
-          }
-        };
-      }]
-    };
-  }])
-
-  .directive('mwTimelineEntry', ['$q', function ($q) {
-    return {
-      transclude: true,
-      replace: true,
-      template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>',
-      scope: true,
-      require: '^mwTimelineFieldset',
-      link: function (scope, el, attrs, mwTimelineFieldsetController) {
-        mwTimelineFieldsetController.register(scope);
-
-        scope.hide = function () {
-          var dfd = $q.defer();
-          el.fadeOut('slow', function () {
-            dfd.resolve();
-          });
-          return dfd.promise;
-        };
-
-        scope.show = function () {
-          var dfd = $q.defer();
-          el.fadeIn('slow', function () {
-            dfd.resolve();
-          });
-          return dfd.promise;
-        };
-      }
-
-    };
-  }])
-
-
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwDraggable
-   * @description
-   *
-   * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
-   * The drop callback of the mwDroppable element will receive this data.
-   *
-   */
-  .directive('mwDraggable', ['$timeout', function ($timeout) {
-    return {
-      restrict: 'A',
-      scope: {
-        mwDragData: '=',
-        //We can not use camelcase because *-start is a reserved word from angular!
-        mwDragstart: '&',
-        mwDragend: '&',
-        mwDropEffect: '@'
-      },
-      link: function (scope, el) {
-
-        el.attr('draggable', true);
-        el.addClass('draggable', true);
-
-        if (scope.mwDragstart) {
-          el.on('dragstart', function (event) {
-            event.originalEvent.dataTransfer.setData('text', JSON.stringify(scope.mwDragData));
-            event.originalEvent.dataTransfer.effectAllowed = scope.mwDropEffect;
-            $timeout(function () {
-              scope.mwDragstart({event: event, dragData: scope.mwDragData});
-            });
-          });
+  
+    this.unSelect = function (options) {
+      options = options || {};
+      if(this.isSelected()){
+        _selected = false;
+        if(!options.silent){
+          this.trigger('change change:unselect',modelInstance,this);
         }
-
-
-        el.on('dragend', function (event) {
-          if (scope.mwDragend) {
-            $timeout(function () {
-              scope.mwDragend({event: event});
-            });
-          }
-        });
       }
     };
-  }])
-
-  .directive('mwDroppable', ['$timeout', function ($timeout) {
-    return {
-      restrict: 'A',
-      scope: {
-        mwDropData: '=',
-        mwDragenter: '&',
-        mwDragleave: '&',
-        mwDragover: '&',
-        mwDrop: '&',
-        disableDrop: '='
-      },
-      link: function (scope, el) {
-
-        el.addClass('droppable');
-
-        var getDragData = function (event) {
-          var text = event.originalEvent.dataTransfer.getData('text');
-          if (text) {
-            return JSON.parse(text);
-          }
-        };
-
-        if (scope.mwDragenter) {
-          el.on('dragenter', function (event) {
-            if (scope.disableDrop !== true) {
-              el.addClass('drag-over');
-            }
-            $timeout(function () {
-              scope.mwDragenter({event: event});
-            });
-          });
-        }
-
-        if (scope.mwDragleave) {
-          el.on('dragleave', function (event) {
-            el.removeClass('drag-over');
-            $timeout(function () {
-              scope.mwDragleave({event: event});
-            });
-          });
-        }
-
-        if (scope.mwDrop) {
-          el.on('drop', function (event) {
-            el.removeClass('drag-over');
-            if (event.stopPropagation) {
-              event.stopPropagation(); // stops the browser executing other event listeners which are maybe deined in parent elements.
-            }
-            var data = getDragData(event);
-            $timeout(function () {
-              scope.mwDrop({
-                event: event,
-                dragData: data,
-                dropData: scope.mwDropData
-              });
-            });
-            return false;
-          });
-        }
-
-        // Necessary. Allows us to drop.
-        var handleDragOver = function (ev) {
-          if (scope.disableDrop !== true) {
-            if (ev.preventDefault) {
-              ev.preventDefault();
-            }
-            return false;
-          }
-        };
-        el.on('dragover', handleDragOver);
-
-        if (scope.mwDragover) {
-          el.on('dragover', function (event) {
-            $timeout(function () {
-              scope.mwDragover({event: event});
-            });
-          });
-        }
-
-        scope.$on('$destroy', function () {
-          el.off();
-        });
+  
+    this.toggleSelect = function () {
+      if (this.isSelected()) {
+        this.unSelect();
+      } else {
+        this.select();
       }
     };
-  }])
-
-  .directive('mwTextCollapse', ['$filter', function ($filter) {
+  
+    var main = function(){
+      if (!(_model instanceof Backbone.Model)) {
+        throw new Error('First parameter has to be the instance of a model');
+      }
+    };
+  
+    main.call(this);
+  };
+  
+  _.extend(mwUI.Backbone.Selectable.Model.prototype, Backbone.Events);
+  /**
+   * Created by zarges on 04/03/16.
+   */
+  mwUI.Backbone.SelectableModel = Backbone.SelectableModel = Backbone.Model.extend({
+    selectable: true,
+    selectableOptions: function(){
+      return {
+        selected: false,
+        isDisabled: null
+      };
+    },
+    selectableModelConstructor: function(options){
+      if (this.selectable) {
+        this.selectable = new mwUI.Backbone.Selectable.Model(this, this.selectableOptions.call(this, options));
+      }
+    },
+    constructor: function (attributes, options) {
+      var superConstructor = Backbone.Model.prototype.constructor.call(this, attributes, options);
+      this.selectableModelConstructor(options);
+      return superConstructor;
+    }
+  
+  });
+  mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
+    selectable: true,
+    basePath: '',
+    endpoint: null,
+    selectableOptions: mwUI.Backbone.SelectableModel.prototype.selectableOptions,
+    urlRoot: function () {
+      var basePath = _.result(this, 'basePath'),
+        endpoint = _.result(this, 'endpoint');
+  
+      if (endpoint) {
+        return window.mwUI.Backbone.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
+      } else {
+        throw new Error('An endpoint has to be specified');
+      }
+    },
+    constructor: function () {
+      var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this, arguments);
+      mwUI.Backbone.SelectableModel.prototype.selectableModelConstructor.apply(this, arguments);
+      return superConstructor;
+    },
+    getEndpoint: function () {
+      return this.urlRoot();
+    },
+    setEndpoint: function (endpoint) {
+      this.endpoint = endpoint;
+    },
+    sync: function (method, model, options) {
+      options.instance = this;
+      return mwUI.Backbone.NestedModel.prototype.sync.call(this, method, model, options);
+    },
+    request: function (url, method, options) {
+      options = options || {};
+      var requestOptions = {
+        url: url,
+        type: method,
+        instance: this
+      };
+      return Backbone.ajax(_.extend(requestOptions, options));
+    }
+  });
+  
+  
+  /**
+   * Created by zarges on 04/03/16.
+   */
+  mwUI.Backbone.Filter = function () {
+    // If it is an invalid value return null otherwise the provided object
+    var returnNullOrObjectFor = function (value, object) {
+      return (_.isUndefined(value) || value === null || value === '' || value.length===0 || (_.isArray(value) && _.compact(value).length===0)) ? null : object;
+    };
+  
     return {
-      restrict: 'A',
-      scope: {
-        mwTextCollapse: '@',
-        length: '=',
-        markdown: '='
+      containsString: function (fieldName, value) {
+        return returnNullOrObjectFor(value, {
+          type: 'containsString',
+          fieldName: fieldName,
+          contains: value
+        });
       },
-      templateUrl: 'uikit/templates/mwComponents/mwTextCollapse.html',
-      link: function (scope) {
-
-        // set default length
-        if (scope.length && typeof scope.length === 'number') {
-          scope.defaultLength = scope.length;
+  
+      string: function (fieldName, value) {
+        return returnNullOrObjectFor(value, {
+          type: 'string',
+          fieldName: fieldName,
+          value: value
+        });
+      },
+  
+      and: function (filters) {
+        return this.logOp(filters, 'AND');
+      },
+  
+      nand: function (filters) {
+        return this.logOp(filters, 'NAND');
+      },
+  
+      or: function (filters) {
+        return this.logOp(filters, 'OR');
+      },
+  
+      logOp: function (filters, operator) {
+        filters = _.without(filters, null); // Removing null values from existing filters
+  
+        return filters.length === 0 ? null : { // Ignore logOps with empty filters
+          type: 'logOp',
+          operation: operator,
+          filters: filters
+        };
+      },
+  
+      boolean: function (fieldName, value) {
+        return returnNullOrObjectFor(value, {
+          type: 'boolean',
+          fieldName: fieldName,
+          value: value
+        });
+      },
+  
+      stringMap: function (fieldName, key, value) {
+        if(value === '%%'){
+          value = '';
+        }
+        return returnNullOrObjectFor(value, {
+          type: 'stringMap',
+          fieldName: fieldName,
+          value: value,
+          key: key
+        });
+      },
+  
+      stringEnum: function (fieldName, values) {
+        return returnNullOrObjectFor(values, {
+          type: 'stringEnum',
+          fieldName: fieldName,
+          values: _.flatten(values)
+        });
+      },
+  
+      long: function (fieldName, value) {
+        return returnNullOrObjectFor(value, {
+          type: 'long',
+          fieldName: fieldName,
+          value: value
+        });
+      },
+  
+      like: function (fieldName, value) {
+        return returnNullOrObjectFor(value, {
+          type: 'like',
+          fieldName: fieldName,
+          like: value
+        });
+      },
+  
+      notNull: function (fieldName) {
+        return returnNullOrObjectFor(true, {
+          type: 'null',
+          fieldName: fieldName
+        });
+      },
+  
+      dateRange: function(fieldName, min, max){
+        return returnNullOrObjectFor(max, returnNullOrObjectFor(min, {
+          type: 'dateRange',
+          fieldName: fieldName,
+          min: min,
+          max: max
+        }));
+      }
+    };
+  
+  };
+  
+  /**
+   * Created by zarges on 04/03/16.
+   */
+  /*jshint unused:false */
+  mwUI.Backbone.Filterable = function (collectionInstance, options) {
+  
+    options = options || {};
+  
+    var _collection = collectionInstance,
+      _limit = options.limit,
+      _offset = _limit ? options.offset : false,
+      _page = options.page || 1,
+      _perPage = options.perPage || 30,
+      _initialFilterValues = options.filterValues ? JSON.parse(JSON.stringify(options.filterValues)) : options.filterValues,
+      _initialCustomUrlParams = _.clone(options.customUrlParams),
+      _filterDefinition = options.filterDefinition,
+      _sortOrder = options.sortOrder,
+      _totalAmount,
+      _lastFilter;
+  
+    this.filterValues = options.filterValues || {};
+    this.customUrlParams = options.customUrlParams || {};
+    this.fields = options.fields;
+    this.filterIsSet = false;
+  
+    this.hasFilterChanged = function(filter){
+      return JSON.stringify(filter) !== JSON.stringify(_lastFilter);
+    };
+  
+    this.getRequestParams = function (options) {
+      options.params = options.params || {};
+  
+      // Filter functionality
+      var filter = this.getFilters();
+      if (filter) {
+        options.params.filter = filter;
+      }
+  
+      //reset pagination if filter values change
+      if (this.hasFilterChanged(filter)) {
+        _page = 1;
+      }
+  
+      // Pagination functionality
+      if (_perPage && _page && (_limit || _.isUndefined(_limit))) {
+        options.params.limit = _perPage;
+  
+        // Calculate offset
+        options.params.offset = _page > 1 ? _perPage * (_page - 1) : 0;
+      }
+  
+      // Sort order
+      if (_sortOrder && _sortOrder.length > 0) {
+        options.params.sortOrder = _sortOrder;
+      }
+  
+      // Fallback to limit and offset if they're set manually, overwrites pagination settings
+      if (_limit || _offset) {
+        options.params.limit = _limit;
+        options.params.offset = _offset;
+      }
+  
+      if (_limit === false) {
+        delete options.params.limit;
+      }
+  
+      if (this.fields && this.fields.length > 0) {
+        options.params.field = this.fields;
+      }
+  
+      // Custom URL parameters
+      if (this.customUrlParams) {
+        _.extend(options.params, _.result(this, 'customUrlParams'));
+      }
+  
+      //always set non paged parameter
+      options.params.getNonpagedCount = true;
+  
+      _lastFilter = filter;
+  
+      return options.params;
+    };
+  
+    this.setLimit = function (limit) {
+      _limit = limit;
+      _offset = _offset || 0;
+    };
+  
+    this.setTotalAmount = function (totalAmount) {
+      _totalAmount = totalAmount;
+    };
+  
+    this.getTotalAmount = function () {
+      return _totalAmount;
+    };
+  
+    this.loadPreviousPage = function () {
+      _page -= 1;
+      return _collection.fetch({remove: false});
+    };
+  
+    this.hasPreviousPage = function () {
+      return _page >= 1;
+    };
+  
+    this.loadNextPage = function () {
+      _page += 1;
+      return _collection.fetch({remove: false});
+    };
+  
+    this.hasNextPage = function () {
+      return _totalAmount && _totalAmount > _collection.length;
+    };
+  
+    this.getPage = function () {
+      return _page;
+    };
+  
+    this.getTotalPages = function () {
+      return Math.floor(_totalAmount / _perPage);
+    };
+  
+    this.setSortOrder = function (sortOrder) {
+      _page = 1;
+      _sortOrder = sortOrder;
+    };
+  
+    this.getSortOrder = function () {
+      return _sortOrder;
+    };
+  
+    this.setFilters = function (filterMap) {
+  
+      _.forEach(filterMap, function (value, key) {
+        if (_.has(this.filterValues, key)) {
+          this.filterValues[key] = value;
         } else {
-          scope.defaultLength = 200;
+          throw new Error('Filter named \'' + key + '\' not found, did you add it to filterValues of the model?');
         }
-
-        // set start length for filter
-        scope.filterLength = scope.defaultLength;
-
-        // apply filter length to text
-        scope.text = function () {
-          return $filter('reduceStringTo')(
-            scope.mwTextCollapse, scope.filterLength
-          );
-        };
-
-        // show Button if text is longer than desired
-        scope.showButton = false;
-        if (scope.mwTextCollapse.length > scope.defaultLength) {
-          scope.showButton = true;
-        }
-
-        // set button to "show more" or "show less"
-        scope.showLessOrMore = function () {
-          if (scope.filterLength === scope.defaultLength) {
-            return 'common.showMore';
-          } else {
-            return 'common.showLess';
-          }
-        };
-
-        // collapse/expand text by setting filter length
-        scope.toggleLength = function () {
-          if (scope.filterLength === scope.defaultLength) {
-            delete scope.filterLength;
-          } else {
-            scope.filterLength = scope.defaultLength;
-          }
-        };
+      }, this);
+  
+      this.filterIsSet = true;
+  
+    };
+  
+    this.getFilters = function () {
+      if (_.isFunction(_filterDefinition)) {
+        return _filterDefinition.apply(this);
       }
     };
-  }])
-
-
-  .directive('mwInfiniteScroll', ['$window', '$document', function ($window, $document) {
-    return {
-      restrict: 'A',
-      link: function (scope, el, attrs) {
-
-        var collection,
-          loading = false,
-          throttledScrollFn,
-          scrollFn,
-          documentEl,
-          scrollEl;
-
-        if (attrs.mwListCollection) {
-          collection = scope.$eval(attrs.mwListCollection).getCollection();
-        } else if (attrs.collection) {
-          collection = scope.$eval(attrs.collection);
-        } else {
-          console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
+  
+    this.resetFilters = function () {
+      this.filterValues = _initialFilterValues ? JSON.parse(JSON.stringify(_initialFilterValues)) : _initialFilterValues;
+      this.customUrlParams = _initialCustomUrlParams;
+      this.filterIsSet = false;
+    };
+  
+    (function _main() {
+      if (!(_collection instanceof Backbone.Collection)) {
+        throw new Error('First parameter has to be the instance of a collection');
+      }
+  
+    }());
+  };
+  mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Collection.extend({
+    selectable: true,
+    filterableOptions: function () {
+      return {
+        limit: undefined,
+        offset: false,
+        page: 1,
+        perPage: 30,
+        filterValues: {},
+        customUrlParams: {},
+        filterDefinition: function () {
+        },
+        fields: [],
+        sortOrder: ''
+      };
+    },
+    filterableCollectionConstructor: function (options) {
+      if (this.filterable) {
+        this.filterable = new mwUI.Backbone.Filterable(this, this.filterableOptions.call(this, options));
+      }
+    },
+    constructor: function (attributes, options) {
+      var superConstructor = Backbone.Model.prototype.constructor.call(this, attributes, options);
+      this.filterableCollectionConstructor(options);
+      return superConstructor;
+    },
+    fetch: function (options) {
+      options = options || {};
+      options.params = options.params || {};
+  
+      if (this.filterable) {
+        var filterableParams = this.filterable.getRequestParams(options);
+        _.extend(options.params, filterableParams);
+      }
+  
+      return Backbone.Collection.prototype.fetch.call(this, options);
+    }
+  });
+  /**
+   * Created by zarges on 04/03/16.
+   */
+  mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
+    var _collection = collectionInstance,
+      _options = options || {},
+      _modelHasDisabledFn = true,
+      _isSingleSelection = _options.isSingleSelection || false,
+      _addPreSelectedToCollection = _options.addPreSelectedToCollection || false,
+      _unSelectOnRemove = _options.unSelectOnRemove,
+      _preSelected = options.preSelected,
+      _selected = new Backbone.Collection();
+  
+    var _preselect = function () {
+      if (_preSelected instanceof Backbone.Model) {
+        _isSingleSelection = true;
+        this.preSelectModel(_preSelected);
+      } else if (_preSelected instanceof Backbone.Collection) {
+        _isSingleSelection = false;
+        this.preSelectCollection(_preSelected);
+      } else {
+        throw new Error('The option preSelected has to be either a Backbone Model or Collection');
+      }
+    };
+  
+    var _bindModelOnSelectListener = function(model){
+      this.listenTo(model.selectable, 'change:select', function(){
+        if(!_selected.get(model)){
+          this.select(model);
         }
-
-        if (!collection || (collection && !collection.filterable)) {
+      }.bind(this));
+    };
+  
+    var _bindModelOnUnSelectListener = function(model){
+      this.listenTo(model.selectable, 'change:unselect', function(){
+        if(_selected.get(model)) {
+          this.unSelect(model);
+        }
+      }.bind(this));
+    };
+  
+    var _setModelSelectableOptions = function (model, options) {
+      if(model && model.selectable){
+        var selectedModel = _selected.get(model);
+  
+        if (selectedModel) {
+          if (_collection.get(model)) {
+            model.selectable.isInCollection = true;
+            selectedModel.selectable.isInCollection = true;
+          } else {
+            model.selectable.isInCollection = false;
+            selectedModel.selectable.isInCollection = false;
+          }
+          model.selectable.select(options);
+          selectedModel.selectable.select(options);
+        } else {
+          model.selectable.unSelect(options);
+        }
+  
+        _bindModelOnSelectListener.call(this,model);
+        _bindModelOnUnSelectListener.call(this,model);
+      }
+    };
+  
+    var _updatePreSelectedModel = function(preSelectedModel, model){
+      if(_preSelected){
+        if(this.isSingleSelection()){
+          _preSelected = model;
+        } else {
+          _preSelected.remove(preSelectedModel, {silent: true});
+          _preSelected.add(model, {silent: true});
+        }
+      }
+    };
+  
+    var _updateSelectedModel = function(model){
+      var selectedModel = this.getSelected().get(model);
+      if(selectedModel){
+        _selected.remove(selectedModel, {silent: true});
+        _selected.add(model, {silent: true});
+        _updatePreSelectedModel.call(this,selectedModel, model);
+        _setModelSelectableOptions.call(this,model,{silent: true});
+      }
+    };
+  
+    this.getSelected = function () {
+      return _selected;
+    };
+  
+    this.getDisabled = function () {
+      var disabled = new Backbone.Collection();
+      if(_modelHasDisabledFn){
+        _collection.each(function (model) {
+          if (model.selectable && model.selectable.isDisabled()) {
+            disabled.add(model);
+          }
+        });
+      }
+  
+      return disabled;
+    };
+  
+    /**
+     *
+     * @param model
+     */
+    this.select = function (model, options) {
+      options = options || {};
+      if (model instanceof Backbone.Model) {
+        if (!(model instanceof _collection.model)) {
+          model = new _collection.model(model.toJSON());
+        }
+  
+        if (!model.selectable || (model.selectable.isDisabled() && !options.force)) {
           return;
         }
-
-        var scrollCallback = function () {
-          if (!loading && scrollEl.scrollTop() >= ((documentEl.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
-            loading = true;
-            collection.filterable.loadNextPage().then(function () {
-              loading = false;
-            });
-          }
-        };
-        var modalScrollCallback = function () {
-          if (!loading &&
-            collection.filterable.hasNextPage() &&
-            scrollEl[0].scrollHeight > 0 &&
-            (scrollEl[0].scrollHeight - scrollEl.scrollTop() - scrollEl[0].clientHeight < 2)) {
-            loading = true;
-            collection.filterable.loadNextPage().then(function () {
-              loading = false;
-            });
-          }
-        };
-
-        if (el.parents('.modal').length) {
-          //element in modal
-          scrollEl = el.parents('.modal-body');
-          scrollFn = modalScrollCallback;
+  
+        if (_isSingleSelection) {
+          this.unSelectAll();
         }
-        else {
-          //element in window
-          documentEl = angular.element($document);
-          scrollEl = angular.element($window);
-          scrollFn = scrollCallback;
-        }
-
-        throttledScrollFn = _.throttle(scrollFn, 500);
-
-        // Register scroll callback
-        scrollEl.on('scroll', throttledScrollFn);
-
-        // Deregister scroll callback if scope is destroyed
-        scope.$on('$destroy', function () {
-          scrollEl.off('scroll', throttledScrollFn);
-        });
-
-      }
-    };
-  }])
-
-  .directive('mwViewChangeLoader', ['$rootScope', function ($rootScope) {
-    return {
-      replace: true,
-      template: '<div class="mw-view-change-loader" ng-if="model.loading"><div class="spinner"></div></div>',
-      link: function (scope) {
-        scope.model = {
-          loading: false
-        };
-
-        var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function () {
-          scope.model.loading = true;
-        });
-
-        var routeChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
-          scope.model.loading = false;
-        });
-
-        var routeChangeErrorListener = $rootScope.$on('$routeChangeError', function () {
-          scope.model.loading = false;
-        });
-
-        scope.$on('$destroy', function () {
-          locationChangeSuccessListener();
-          routeChangeSuccessListener();
-          routeChangeErrorListener();
-        });
-      }
-    };
-  }])
-
-
-  .directive('mwCollapsable', function () {
-    return {
-      transclude: true,
-      scope: {
-        mwCollapsable: '=',
-        title: '@mwTitle'
-      },
-      templateUrl: 'uikit/templates/mwComponents/mwCollapsable.html',
-      link: function (scope, elm) {
-        scope.viewModel = {};
-        scope.viewModel.collapsed = false;
-        if (scope.mwCollapsable === false) {
-          scope.viewModel.collapsed = true;
-        }
-        var level = elm.parents('.mw-collapsable').length;
-        if (level) {
-          elm.css('margin-left', level * 20 + 'px');
-        }
-
-        scope.toggle = function () {
-          scope.viewModel.collapsed = !scope.viewModel.collapsed;
-        };
-      }
-    };
-  })
-
-  .service('mwMarkdown', function () {
-    var converter = new window.showdown.Converter({
-      headerLevelStart: 3,
-      smoothLivePreview: true,
-      extensions: [function () {
-        return [
-          // Replace escaped @ symbols
-          {type: 'lang', regex: '•', replace: '-'},
-          {
-            type: 'lang', filter: function (text) {
-            return text.replace(/https?:\/\/\S*/g, function (link) {
-              return '<' + link + '>';
-            });
+  
+        model.on('change', function(model, opts){
+          opts = opts || {};
+          if(opts.unset || !model.id || model.id.length<1){
+            this.unSelect(model);
           }
-          }
-        ];
-      }]
-    });
-    return {
-      convert: function (val) {
-        return converter.makeHtml(val);
+        }, this);
+  
+        _selected.add(model);
+        _setModelSelectableOptions.call(this, model, options);
+        this.trigger('change change:add', model, this);
+      } else {
+        throw new Error('The first argument has to be a Backbone Model');
       }
     };
-  })
-
-
-  .directive('mwMarkdownPreview', function () {
-    return {
-      scope: {
-        mwModel: '=mwMarkdownPreview'
-      },
-      templateUrl: 'uikit/templates/mwComponents/mwMarkdownPreview.html',
-      link: function (scope, elm) {
-        elm.addClass('mw-markdown-preview');
+  
+    this.selectAll = function () {
+      _collection.each(function (model) {
+        this.select(model);
+      }, this);
+    };
+  
+    this.unSelect = function (model, options) {
+      options = options || {};
+      _selected.remove(model);
+      _setModelSelectableOptions.call(this, model, options);
+      this.trigger('change change:remove', model, this);
+    };
+  
+    this.unSelectAll = function () {
+      var selection = this.getSelected().clone();
+      selection.each(function (model) {
+        this.unSelect(model);
+      },this);
+    };
+  
+    this.toggleSelectAll = function () {
+      if (this.allSelected()) {
+        this.unSelectAll();
+      } else {
+        this.selectAll();
       }
     };
-  })
-
-
-  .directive('mwMarkdown', ['$sanitize', 'mwMarkdown', function ($sanitize, mwMarkdown) {
-    return {
-      restrict: 'AE',
-      link: function (scope, element, attrs) {
-        if (attrs.mwMarkdown) {
-          scope.$watch(attrs.mwMarkdown, function (newVal) {
-            try {
-              var html = newVal ? $sanitize(mwMarkdown.convert(newVal)) : '';
-              element.html(html);
-            } catch (e) {
-              element.text(newVal);
-            }
-          });
+  
+    this.allSelected = function () {
+      var disabledModelsAmount = this.getDisabled().length;
+  
+      return this.getSelected().length === _collection.length - disabledModelsAmount;
+    };
+  
+    this.allDisabled = function () {
+      return this.getDisabled().length === _collection.length;
+    };
+  
+    this.isSingleSelection = function () {
+      return _isSingleSelection;
+    };
+  
+    this.reset = function () {
+      this.unSelectAll();
+      _preselect.call(this);
+    };
+  
+    this.preSelectModel = function (model) {
+      if (model.id) {
+  
+        if (!_collection.get(model) && _addPreSelectedToCollection) {
+          _collection.add(model);
+        }
+  
+        this.select(model, {force: true, silent: true});
+      }
+    };
+  
+    this.preSelectCollection = function (collection) {
+      collection.each(function (model) {
+        this.preSelectModel(model);
+      }, this);
+  
+      collection.on('add', function (model) {
+        this.preSelectModel(model);
+      }, this);
+  
+      collection.on('remove', function (model) {
+        this.unSelect(model);
+      }, this);
+  
+    };
+  
+  
+    var main = function(){
+      if(!(_collection instanceof Backbone.Collection)){
+        throw new Error('The first parameter has to be from type Backbone.Collection');
+      }
+  
+      _collection.on('add', function (model) {
+        _modelHasDisabledFn = model.selectable.hasDisabledFn;
+        _setModelSelectableOptions.call(this,model);
+        _updateSelectedModel.call(this,model);
+      }, this);
+  
+      _collection.on('remove', function (model) {
+        if (_unSelectOnRemove) {
+          this.unSelect(model);
         } else {
-          var html = $sanitize(mwMarkdown.convert(element.text()));
-          element.html(html);
+          _setModelSelectableOptions.call(this,model);
         }
+      }, this);
+  
+      _collection.on('reset', function () {
+        if (_unSelectOnRemove) {
+          this.unSelectAll();
+        } else {
+          this.getSelected().each(function(model){
+            _setModelSelectableOptions.call(this,model);
+          }, this);
+        }
+      }, this);
+  
+      if (_preSelected) {
+        _preselect.call(this);
       }
     };
-  }])
-
-
-  .directive('mwBreadCrumbsHolder', function () {
-    return {
-      transclude: true,
-      template: '<div class="mw-bread-crumbs" ng-transclude></div>'
-    };
-  })
-
-  .directive('mwBreadCrumb', function () {
-    return {
-      scope: {
-        url: '@',
-        title: '@'
-      },
-      templateUrl: 'uikit/templates/mwComponents/mwBreadCrumb.html'
-    };
+  
+    main.call(this);
+  
+  };
+  
+  _.extend(mwUI.Backbone.Selectable.Collection.prototype, Backbone.Events);
+  mwUI.Backbone.SelectableCollection = Backbone.SelectableCollection = Backbone.Collection.extend({
+    selectable: true,
+    selectableOptions: function(){
+      return {
+        isSingleSelection: false,
+        addPreSelectedToCollection: false,
+        unSelectOnRemove: false,
+        preSelected: new Backbone.Collection()
+      };
+    },
+    selectableCollectionConstructor: function(options){
+      if (this.selectable) {
+        this.selectable = new mwUI.Backbone.Selectable.Collection(this, this.selectableOptions.call(this,options));
+      }
+    },
+    constructor: function (attributes, options) {
+      var superConstructor = Backbone.Collection.prototype.constructor.call(this, attributes, options);
+      this.selectableCollectionConstructor(options);
+      return superConstructor;
+    }
   });
-
-'use strict';
-
-angular.module('mwComponentsBb', [])
+  mwUI.Backbone.Collection = Backbone.Collection.extend({
+    selectable: true,
+    filterable: true,
+    basePath: '',
+    endpoint: null,
+    selectableOptions: mwUI.Backbone.SelectableCollection.prototype.selectableOptions,
+    filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
+    model: mwUI.Backbone.Model,
+    url: function () {
+      var basePath = _.result(this, 'basePath'),
+        endpoint = _.result(this, 'endpoint');
+  
+      if (endpoint) {
+        return window.mwUI.Backbone.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
+      } else {
+        throw new Error('An endpoint has to be specified');
+      }
+    },
+    getEndpoint: function () {
+      return this.url();
+    },
+    setEndpoint: function (endpoint) {
+      this.endpoint = endpoint;
+    },
+    replace: function (models) {
+      this.reset(models);
+      this.trigger('replace', this);
+    },
+    constructor: function () {
+      var superConstructor = Backbone.Collection.prototype.constructor.apply(this, arguments);
+      mwUI.Backbone.SelectableCollection.prototype.selectableCollectionConstructor.apply(this, arguments);
+      mwUI.Backbone.FilterableCollection.prototype.filterableCollectionConstructor.apply(this, arguments);
+      return superConstructor;
+    },
+    fetch: function () {
+      return mwUI.Backbone.FilterableCollection.prototype.fetch.apply(this, arguments);
+    }
+  });
+  
+  /**
+   * Created by zarges on 15/02/16.
+   */
+  
+  var _$http,
+    _$q,
+    _sync = Backbone.sync,
+    _ajax = Backbone.ajax;
+  
+  angular.module('mwUI.Backbone')
+  
+    .config(function () {
+      Backbone.sync = function (method, model, options) {
+        // Instead of the response object we are returning the backbone model in the promise
+        return _sync.call(Backbone, method, model, options).then(function () {
+          return model;
+        });
+      };
+      Backbone.ajax = function (options) {
+        if (_$http) {
+          // Set HTTP Verb as 'method'
+          options.method = options.type;
+          // Use angulars $http implementation for requests
+          return _$http.apply(angular, arguments);
+        } else {
+          return _ajax.apply(this, arguments);
+        }
+      };
+    })
+  
+    .run(['$http', '$q', function ($http, $q) {
+      _$http = $http;
+      _$q = $q;
+    }]);
 
   /**
+   * Created by zarges on 30/11/15.
+   */
+  /**
    * @ngdoc directive
-   * @name mwComponents.directive:mwFilterableSearch
+   * @name Relution.Common.directive:rlnSimpleUpload
    * @element div
    * @description
    *
-   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   * Simple upload button with progressbar
+   * Uploads a file to the mCap Asset pipeline and show a progressbar during this progress. You can pass a mimeType
+   * in the validator attribute to disable a files in the file dialog which not match the mimetype
+   * When upload has finished the Response File object will be checked if the response mimetype matches with the
+   * required one. When the file passed the validation it will be passed into the passed model. Otherwise an error
+   * will be thrown
    *
-   * @param {filterable} filterable Filterable instance.
-   * @param {expression} disabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
+   * @scope
+   *
+   * @param {string} name The name of the inputfield. Required for input validation purposes
+   * @param {boolean} required Specifies if a file has to be uploaded. Upload has to be finished and reponse passed validation
+   * @param {object} model Model where the response should be saved
+   * @validator {string} validator Mimetype of accepted file e.g image/jpg or image/*
    */
-  .directive('mwFilterableSearchBb', ['$timeout', function ($timeout) {
-    return {
-      scope: {
-        collection: '=',
-        property: '@',
-        customUrlParameter: '@',
-        mwDisabled: '=',
-        placeholder: '@'
-      },
-      templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-      link: function (scope, el) {
-        var inputEl = el.find('input');
-
-        var setFilterVal = function (val) {
-          if (scope.customUrlParameter) {
-            scope.collection.filterable.customUrlParams[scope.customUrlParameter] = val;
-          } else {
-            var filter = {};
-            filter[scope.property] = val;
-            scope.collection.filterable.setFilters(filter);
-          }
-        };
-
-        scope.viewModel = {
-          searchVal: ''
-        };
-
-        scope.search = function () {
-          scope.searching = true;
-          //backup searched text to reset after fetch complete in case of search text was empty
-          setFilterVal(scope.viewModel.searchVal);
-          return scope.collection.fetch().finally(function () {
-            $timeout(function () {
-              scope.searching = false;
-            }, 500);
-          });
-        };
-
-        scope.reset = function () {
-          scope.viewModel.searchVal = '';
-          scope.search();
-        };
-
-        scope.hasValue = function () {
-          return inputEl.val().length > 0;
-        };
-
-        scope.keyUp = function () {
-          scope.searching = true;
-        };
-
-        scope.focus = function () {
-          inputEl.focus();
-        };
-
-        el.on('focus', 'input[type=text]', function () {
-          el.children().addClass('is-focused');
-        });
-
-        el.on('blur', 'input[type=text]', function () {
-          el.children().removeClass('is-focused');
-        });
-      }
-    };
-  }])
-
-  .directive('mwEmptyStateBb', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        collection: '=',
-        text: '@mwEmptyStateBb',
-        button: '&',
-        buttonText: '@'
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
-      link: function (scope) {
-
-        if (scope.collection) {
-          scope.showEmptyState = function () {
-            return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
-          };
-        } else {
-          scope.showEmptyState = function () {
-            return true;
-          };
-        }
-      }
-    };
-  })
-
-  .directive('mwVersionSelector', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        currentVersionModel: '=',
-        versionCollection: '=',
-        versionNumberKey: '@',
-        url: '@'
-      },
-      templateUrl: 'uikit/templates/mwComponentsBb/mwVersionSelector.html',
-      link: function (scope) {
-        scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
-        scope.getUrl = function (uuid) {
-          return scope.url.replace('VERSION_UUID', uuid);
-        };
-      }
-    };
-  });
-
-
-
-
-
-/**
- * Created by zarges on 09/12/15.
- */
-'use strict';
-angular.module('mwUI')
-
-  .directive('mwLeadingZero', function () {
-    return {
-      require: 'ngModel',
-      link: function (scope, el, attrs, ngModel) {
-        ngModel.$formatters.unshift(function (val) {
-          if (val < 10) {
-            return '0' + val;
-          } else {
-            return val;
-          }
-        });
-      }
-    };
-  })
-
-  .directive('mwDatePicker', ['$rootScope', '$compile', '$interval', '$timeout', 'i18n', function ($rootScope, $compile, $interval, $timeout, i18n) {
-    return {
-      templateUrl: 'uikit/templates/mwDatePicker.html',
-      scope: {
-        mwModel: '=',
-        mwRequired: '=',
-        showTimePicker: '=',
-        options: '='
-      },
-      link: function (scope, el) {
-        var _defaultDatePickerOptions = {
-            clearBtn: !scope.mwRequired
-          },
-          _datePicker,
-          _incrementInterval,
-          _decrementInterval;
-
-        scope.viewModel = {
-          date: null,
-          hours: null,
-          minutes: null,
-          datepickerIsOpened: false,
-          showTimePicker: angular.isDefined(scope.showTimePicker) ? scope.showTimePicker : true
-        };
-
-
-        scope.$watch('viewModel.showTimePicker', function (newVal) {
-          scope.viewModel.showTimePicker = newVal;
-        });
-
-        scope.canChange = function (num, type) {
-          var options = scope.options || {},
-            currentDateTs = +new Date(scope.mwModel);
-
-          num = num || 0;
-
-          if (type === 'MINUTES') {
-            num = num * 60 * 1000;
-          } else if (type === 'HOURS') {
-            num = num * 60 * 60 * 1000;
-          }
-
-
-          if (options.startDate) {
-            var startDateTs = +new Date(options.startDate);
-            // Num param is passed as parameter to check if the previous hour or minute can be set
-            // It checks if decrement by one is possible
-            if (num < 0) {
-              return ( currentDateTs + num ) >= startDateTs;
-            } else {
-              // This block checks if the date is in valid date range
-              // otherwise the increment button is disabled as well
-              // The time is reset to 0 pm for the current date and the end date
-              // Otherwise it won't be possible to change minutes when the initial minutes of the same day are below the startdate hours
-              return new Date(currentDateTs).setHours(0, 0, 0, 0) >= new Date(startDateTs).setHours(0, 0, 0, 0);
-            }
-          }
-
-          if (options.endDate) {
-            var endDateTs = +new Date(options.endDate);
-            // Num param is passed as parameter to check if the next hour or minute can be set
-            // It checks if increment by one is possible
-            if (num > 0) {
-              return ( currentDateTs + num ) <= endDateTs;
-            } else {
-              // This block checks if the date is in valid date range
-              // otherwise the decrement button is disabled as well
-              // The time is reset to 0 pm for the current date and the end date
-              // Otherwise it won't be possible to change hours when the initial hours of the same day are over the enddate hours
-              return new Date(currentDateTs).setHours(0, 0, 0, 0) <= new Date(endDateTs).setHours(0, 0, 0, 0);
-            }
-          }
-
-          return true;
-        };
-
-        scope.increment = function (attr, min, max) {
-          var val = scope.viewModel[attr];
-          if (val < max) {
-            val++;
-          } else {
-            val = min;
-          }
-          scope.viewModel[attr] = val;
-        };
-
-        scope.startIncrementCounter = function () {
-          var args = arguments;
-
-          _incrementInterval = $interval(function () {
-            scope.increment.apply(this, args);
-          }.bind(this), 200);
-        };
-
-        scope.stopIncrementCounter = function () {
-          $interval.cancel(_incrementInterval);
-        };
-
-        scope.decrement = function (attr, min, max) {
-          var val = scope.viewModel[attr];
-          if (val > min) {
-            val--;
-          } else {
-            val = max;
-          }
-          scope.viewModel[attr] = val;
-        };
-
-        scope.startDecrementCounter = function () {
-          var args = arguments;
-          _decrementInterval = $interval(function () {
-            scope.decrement.apply(this, args);
-          }.bind(this), 200);
-        };
-
-        scope.stopDecrementCounter = function () {
-          $interval.cancel(_decrementInterval);
-        };
-
-        var updateMwModel = function (datePicker) {
-          $timeout(function () {
-            if (datePicker.dates.length > 0) {
-              var selectedDate = new Date(datePicker.getDate());
-
-              if (scope.viewModel.hours) {
-                selectedDate.setHours(scope.viewModel.hours);
-              } else {
-                scope.viewModel.hours = selectedDate.getHours();
-              }
-
-              if (scope.viewModel.minutes) {
-                selectedDate.setMinutes(scope.viewModel.minutes);
-              } else {
-                scope.viewModel.minutes = selectedDate.getMinutes();
-              }
-
-              scope.mwModel = selectedDate;
-              scope.viewModel.date = selectedDate.toLocaleDateString();
-            } else {
-              scope.viewModel.date = null;
-              scope.viewModel.hours = null;
-              scope.viewModel.minutes = null;
-              scope.mwModel = null;
-            }
-          });
-        };
-
-        var bindChangeListener = function (datepicker) {
-          datepicker.on('changeDate', updateMwModel.bind(this, datepicker.data().datepicker));
-          datepicker.on('show', function () {
-            $timeout(function () {
-              scope.viewModel.datepickerIsOpened = true;
-            });
-          });
-          datepicker.on('hide', function () {
-            $timeout(function () {
-              scope.viewModel.datepickerIsOpened = false;
-            });
-          });
-        };
-
-        var setDateValue = function (el, date, datepicker) {
-          if (date) {
-            date = new Date(date);
-
-            var parsedDateStr = date.toLocaleDateString(),
-              hours = date.getHours(),
-              minutes = date.getMinutes();
-
-            el.val(parsedDateStr);
-            scope.viewModel.hours = hours;
-            scope.viewModel.minutes = minutes;
-            scope.viewModel.date = parsedDateStr;
-
-            datepicker.setDate(date);
-            datepicker.update();
-            // we need to set this val manually for the case that it is out of daterange
-            // when we don't set it manually it will be empty because the datpicker sets
-            // the textfield val only when it is in valid date range
-            _datePicker.val(parsedDateStr);
-          }
-        };
-
-        var setDatepicker = function (options) {
-          var datePickerEl;
-
-          if (_datePicker && _datePicker.data().datepicker) {
-            _datePicker.data().datepicker.remove();
-          }
-
-          datePickerEl = el.find('.date-picker');
-          _datePicker = datePickerEl.datepicker(_.extend(_defaultDatePickerOptions, options));
-          setDateValue(datePickerEl, scope.mwModel, _datePicker.data().datepicker);
-          bindChangeListener(_datePicker);
-        };
-
-        var setDatepickerLanguage = function () {
-          var locale = 'en';
-          if (i18n.getActiveLocale().id === 'de_DE') {
-            locale = 'de';
-          }
-          setDatepicker({
-            language: locale
-          });
-        };
-        $rootScope.$on('i18n:localeChanged', setDatepickerLanguage);
-        setDatepickerLanguage();
-
-        var _updater = function (val) {
-          if (_datePicker && val) {
-            updateMwModel(_datePicker.data().datepicker);
-          }
-        };
-        scope.$watch('viewModel.minutes', _updater);
-        scope.$watch('viewModel.hours', _updater);
-
-        scope.$watchCollection('options', function (options) {
-          if (options) {
-            setDatepicker(options);
-          }
-        });
-
-        el.on('mouseout', '.number-spinner', function () {
-          scope.stopDecrementCounter();
-          scope.stopIncrementCounter();
-        });
-      }
-    };
-  }]);
-/**
- * Created by zarges on 30/11/15.
- */
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:rlnSimpleUpload
- * @element div
- * @description
- *
- * Simple upload button with progressbar
- * Uploads a file to the mCap Asset pipeline and show a progressbar during this progress. You can pass a mimeType
- * in the validator attribute to disable a files in the file dialog which not match the mimetype
- * When upload has finished the Response File object will be checked if the response mimetype matches with the
- * required one. When the file passed the validation it will be passed into the passed model. Otherwise an error
- * will be thrown
- *
- * @scope
- *
- * @param {string} name The name of the inputfield. Required for input validation purposes
- * @param {boolean} required Specifies if a file has to be uploaded. Upload has to be finished and reponse passed validation
- * @param {object} model Model where the response should be saved
- * @validator {string} validator Mimetype of accepted file e.g image/jpg or image/*
- */
-'use strict';
-
-angular.module('mwFileUpload', [])
-
-  .provider('mwFileUpload', function(){
-    var _defaultConfig = {};
-
-    this.setGlobalConfig = function(conf){
-      _.extend(_defaultConfig, conf);
-    };
-
-    this.$get = function(){
-      return {
-        getGlobalConfig: function(){
-          return _defaultConfig;
-        }
+  'use strict';
+  
+  angular.module('mwFileUpload', [])
+  
+    .provider('mwFileUpload', function(){
+      var _defaultConfig = {};
+  
+      this.setGlobalConfig = function(conf){
+        _.extend(_defaultConfig, conf);
       };
-    };
-
-  })
-
-  .directive('mwFileUpload', ['$q', 'mwFileUpload', 'ResponseHandler', 'mwMimetype', '$timeout', function ($q, mwFileUpload, ResponseHandler, mwMimetype, $timeout) {
-    return {
-      restrict: 'A',
-      scope: {
-        url: '@',
-        name: '@',
-        model: '=',
-        attribute: '@',
-        labelAttribute: '@',
-        showFileName: '=',
-        mwRequired: '=',
-        validator: '@',
-        text: '@',
-        formData: '=',
-        successCallback: '&',
-        errorCallback: '&',
-        stateChangeCallback: '&',
-        fullScreen: '=',
-        hiddenBtn: '='
-      },
-      require: '?^form',
-      templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
-      link: function (scope, elm, attrs, formController) {
-
-        var timeout,
-          fileUploaderEl = elm.find('.mw-file-upload'),
-          hiddenfileEl = elm.find('input[type=file]');
-
-        scope._showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
-
-        scope.uploadState = 'none';
-
-        scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
-
-        if (!scope.mimeTypeGroup) {
-          scope.inputValidator = '*/*';
-        } else {
-          scope.inputValidator = attrs.validator;
-        }
-
-        var handle = function (response, isError) {
-          var ngResponse = {
-            config: {
-              method: response.type,
-              url: response.url
-            },
-            data: response.result,
-            headers: response.headers,
-            status: response.xhr().status,
-            statusText: response.xhr().statusText
-          };
-          var handler = ResponseHandler.handle(ngResponse, isError);
-          if (handler) {
-            return handler;
-          } else if (isError) {
-            return $q.reject(ngResponse);
+  
+      this.$get = function(){
+        return {
+          getGlobalConfig: function(){
+            return _defaultConfig;
+          }
+        };
+      };
+  
+    })
+  
+    .directive('mwFileUpload', ['$q', 'mwFileUpload', 'ResponseHandler', 'mwMimetype', '$timeout', function ($q, mwFileUpload, ResponseHandler, mwMimetype, $timeout) {
+      return {
+        restrict: 'A',
+        scope: {
+          url: '@',
+          name: '@',
+          model: '=',
+          attribute: '@',
+          labelAttribute: '@',
+          showFileName: '=',
+          mwRequired: '=',
+          validator: '@',
+          text: '@',
+          formData: '=',
+          successCallback: '&',
+          errorCallback: '&',
+          stateChangeCallback: '&',
+          fullScreen: '=',
+          hiddenBtn: '='
+        },
+        require: '?^form',
+        templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
+        link: function (scope, elm, attrs, formController) {
+  
+          var timeout,
+            fileUploaderEl = elm.find('.mw-file-upload'),
+            hiddenfileEl = elm.find('input[type=file]');
+  
+          scope._showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
+  
+          scope.uploadState = 'none';
+  
+          scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
+  
+          if (!scope.mimeTypeGroup) {
+            scope.inputValidator = '*/*';
           } else {
-            return $q.when(ngResponse);
+            scope.inputValidator = attrs.validator;
           }
-        };
-
-        var error = function(data, result){
-          handle(data, true).catch(function () {
-            $timeout(scope.successCallback.bind(this,{result:result}));
-          });
-        };
-
-        var getResult = function(msg){
-          if(msg && msg.results && _.isArray(msg.results) && msg.results.length>0){
-            msg = msg.results[0];
-          }
-          return msg;
-        };
-
-        var success = function(data, result){
-          var parsedResult = getResult(result);
-          if (!attrs.validator || mwMimetype.checkMimeType(parsedResult.contentType, attrs.validator)) {
-            if (scope.model instanceof window.mCAP.Model) {
-              scope.model.set(scope.model.parse(parsedResult));
-            } else if (scope.attribute) {
-              scope.model = parsedResult[scope.attribute];
+  
+          var handle = function (response, isError) {
+            var ngResponse = {
+              config: {
+                method: response.type,
+                url: response.url
+              },
+              data: response.result,
+              headers: response.headers,
+              status: response.xhr().status,
+              statusText: response.xhr().statusText
+            };
+            var handler = ResponseHandler.handle(ngResponse, isError);
+            if (handler) {
+              return handler;
+            } else if (isError) {
+              return $q.reject(ngResponse);
             } else {
-              scope.model = parsedResult;
+              return $q.when(ngResponse);
             }
-
+          };
+  
+          var error = function(data, result){
+            handle(data, true).catch(function () {
+              $timeout(scope.successCallback.bind(this,{result:result}));
+            });
+          };
+  
+          var getResult = function(msg){
+            if(msg && msg.results && _.isArray(msg.results) && msg.results.length>0){
+              msg = msg.results[0];
+            }
+            return msg;
+          };
+  
+          var success = function(data, result){
+            var parsedResult = getResult(result);
+            if (!attrs.validator || mwMimetype.checkMimeType(parsedResult.contentType, attrs.validator)) {
+              if (scope.model instanceof window.mCAP.Model) {
+                scope.model.set(scope.model.parse(parsedResult));
+              } else if (scope.attribute) {
+                scope.model = parsedResult[scope.attribute];
+              } else {
+                scope.model = parsedResult;
+              }
+  
+              if (formController) {
+                formController.$setDirty();
+              }
+  
+              handle(data, false).then(function () {
+                $timeout(scope.successCallback.bind(this,{result:parsedResult}));
+              });
+            } else {
+              if (data.result && data.result.message) {
+                data.result.message = 'Validation failed. File has to be ' + attrs.validator;
+              }
+              error(data, data.result);
+            }
+          };
+  
+          var stateChange = function(data){
+            scope.dataLoaded = data.loaded;
+            scope.dataTotal = data.total;
+            scope.uploadProgress = parseInt(scope.dataLoaded / scope.dataTotal * 100, 10);
+            scope.stateChangeCallback({data:data, progress: scope.uploadProgress});
+          };
+  
+          scope.triggerUploadDialog = function () {
+            elm.find('input').click();
+          };
+  
+          scope.fileIsSet = function () {
+            if (scope.model instanceof window.mCAP.Model) {
+              return !scope.model.isNew();
+            } else {
+              return !!scope.model;
+            }
+          };
+  
+          scope.getFileName = function () {
+            if (scope.fileIsSet) {
+              var labelAttr = scope.labelAttribute || 'name';
+              if (scope.model instanceof window.mCAP.Model) {
+                return scope.model.get(labelAttr);
+              } else {
+                return scope.model[labelAttr];
+              }
+            }
+          };
+  
+          scope.remove = function () {
             if (formController) {
               formController.$setDirty();
             }
-
-            handle(data, false).then(function () {
-              $timeout(scope.successCallback.bind(this,{result:parsedResult}));
-            });
-          } else {
-            if (data.result && data.result.message) {
-              data.result.message = 'Validation failed. File has to be ' + attrs.validator;
-            }
-            error(data, data.result);
-          }
-        };
-
-        var stateChange = function(data){
-          scope.dataLoaded = data.loaded;
-          scope.dataTotal = data.total;
-          scope.uploadProgress = parseInt(scope.dataLoaded / scope.dataTotal * 100, 10);
-          scope.stateChangeCallback({data:data, progress: scope.uploadProgress});
-        };
-
-        scope.triggerUploadDialog = function () {
-          elm.find('input').click();
-        };
-
-        scope.fileIsSet = function () {
-          if (scope.model instanceof window.mCAP.Model) {
-            return !scope.model.isNew();
-          } else {
-            return !!scope.model;
-          }
-        };
-
-        scope.getFileName = function () {
-          if (scope.fileIsSet) {
-            var labelAttr = scope.labelAttribute || 'name';
             if (scope.model instanceof window.mCAP.Model) {
-              return scope.model.get(labelAttr);
+              scope.model.clear();
             } else {
-              return scope.model[labelAttr];
+              scope.model = null;
             }
-          }
-        };
-
-        scope.remove = function () {
-          if (formController) {
-            formController.$setDirty();
-          }
-          if (scope.model instanceof window.mCAP.Model) {
-            scope.model.clear();
-          } else {
-            scope.model = null;
-          }
-        };
-
-        /*
-         * This implementation was found on https://github.com/blueimp/jQuery-File-Upload/wiki/Drop-zone-effects
-         * The tricky part is the dragleave stuff when the user decides not to drop the file
-         * You can not just use the dragleave event. This implemtation did solve the problem
-         * It was a bit modified
-         */
-        angular.element(document).on('dragover', function () {
-          if (!timeout) {
-            $timeout(function () {
-              scope.isInDragState = true;
-            });
-          }
-          else {
-            clearTimeout(timeout);
-          }
-
-          timeout = setTimeout(function () {
-            timeout = null;
-            $timeout(function () {
-              scope.isInDragState = false;
-            });
-          }, 100);
-        });
-
-        fileUploaderEl.on('dragover', function () {
-          $timeout(function () {
-            scope.isInDragOverState = true;
-          });
-        });
-
-        fileUploaderEl.on('dragleave', function () {
-          $timeout(function () {
-            scope.isInDragOverState = false;
-          });
-        });
-
-        angular.element(document).on('drop dragover', function (ev) {
-          ev.preventDefault();
-        });
-
-        hiddenfileEl.fileupload({
-          url: scope.url,
-          dropZone: elm.find('.drop-zone'),
-          dataType: 'json',
-          formData: scope.formData,
-          send: function () {
-            $timeout(function () {
-              scope.uploadState = 'uploading';
-            });
-          },
-          progress: function (e, data) {
-            $timeout(function () {
-              stateChange(data);
-            });
-          },
-          done: function (e, data) {
-            $timeout(function () {
-              scope.uploadState = 'done';
-              scope.uploadProgress = 0;
-              success(data, data.result);
-            });
-          },
-          error: function (rsp) {
-            $timeout(function () {
-              scope.uploadState = 'done';
-              scope.uploadProgress = 0;
-              error(this,rsp.responseJSON);
-            }.bind(this));
-          }
-        });
-
-        hiddenfileEl.fileupload('option', mwFileUpload.getGlobalConfig());
-
-        scope.$watch('url', function (val) {
-          if (val) {
-            hiddenfileEl.fileupload('option', {
-              url: val
-            });
-          }
-        });
-
-        scope.$watch('formData', function (val) {
-          if (val) {
-            hiddenfileEl.fileupload('option', {
-              formData: scope.formData
-            });
-          }
-        }, true);
-      }
-    };
-  }]);
-'use strict';
-
-angular.module('mwFileUpload')
-
-    .service('mwMimetype', function () {
-
-      return {
-        application: [
-          'application/atom+xml',
-          'application/ecmascript',
-          'application/EDIFACT',
-          'application/json',
-          'application/javascript',
-          'application/octet-stream',
-          'application/ogg',
-          'application/pdf',
-          'application/postscript',
-          'application/rdf+xml',
-          'application/rss+xml',
-          'application/soap+xml',
-          'application/font-woff',
-          'application/xhtml+xml',
-          'application/xml',
-          'application/xml-dtd',
-          'application/xop+xml',
-          'application/zip',
-          'application/*'
-        ],
-
-        audio: [
-          'audio/basic',
-          'audio/L24',
-          'audio/mp4',
-          'audio/mpeg',
-          'audio/ogg',
-          'audio/opus',
-          'audio/vorbis',
-          'audio/vnd.rn-realaudio',
-          'audio/vnd.wave',
-          'audio/webm',
-          'audio/*'
-        ],
-
-        image: [
-          'image/gif',
-          'image/jpg',
-          'image/jpeg',
-          'image/pjpeg',
-          'image/png',
-          'image/svg+xml',
-          'image/*'
-        ],
-
-        video: [
-          'video/mpeg',
-          'video/mp4',
-          'video/ogg',
-          'video/quicktime',
-          'video/webm',
-          'video/x-matroska',
-          'video/x-ms-wmv',
-          'video/x-flv',
-          'video/*'
-        ],
-
-        text: [
-          'text/cmd',
-          'text/css',
-          'text/csv',
-          'text/html',
-          'text/javascript (Obsolete)',
-          'text/plain',
-          'text/vcard',
-          'text/xml',
-          'text/*'
-        ],
-
-        getMimeTypeGroup: function (mimeType) {
-          if (this.text.indexOf(mimeType) !== -1) {
-            return 'text';
-          } else if (this.video.indexOf(mimeType) !== -1) {
-            return 'video';
-          } else if (this.image.indexOf(mimeType) !== -1) {
-            return 'image';
-          } else if (this.audio.indexOf(mimeType) !== -1) {
-            return 'audio';
-          } else if (this.application.indexOf(mimeType) !== -1) {
-            return 'application';
-          } else {
-            return false;
-          }
-        },
-
-        checkMimeType: function (is, should) {
-          if (is === '*/*' || should === '*/*') {
-            return true;
-          } else {
-            return this.getMimeTypeGroup(is) === this.getMimeTypeGroup(should);
-          }
-        }
-      };
-
-    });
-'use strict';
-
-(function () {
-
-  // Common used function to put defaults onto some HTML elements
-  var extendHTMLElement = function () {
-    return {
-      restrict: 'E',
-      require: '?^mwFormInput',
-      link: function (scope, elm, attr, ctrl) {
-        var formInputController = ctrl,
-          skipTheFollowing = ['checkbox', 'radio'],
-          dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1;
-
-        // Add default class coming from bootstrap
-        if (dontSkipIt) {
-          elm.addClass('form-control');
-        }
-
-        //append validation messages to element
-        if (dontSkipIt && formInputController) {
-          formInputController.buildValidationMessages(elm);
-        }
-      }
-    };
-  };
-
-  var addDefaultValidations = function () {
-    return {
-      restrict: 'E',
-      require: '?ngModel',
-      link: function (scope, elm, attr, ctrl) {
-
-        var ngModelController = ctrl,
-          skipTheFollowing = ['checkbox', 'radio', 'hidden', 'file'],
-          dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
-          _maxlength = 255, // for input fields of all types
-          _maxIntValue = 2147483647;
-
-        // use higher maxLength for textareas
-        if (!attr.type) {
-          _maxlength = 4000;
-        }
-
-        // Don't overwrite existing values for ngMaxlength
-        if (attr.type !== 'number' && ngModelController && dontSkipIt && !ngModelController.$validators.maxlength && !attr.ngMaxlength) {
-          attr.$set('ngMaxlength', _maxlength);
-          ngModelController.$validators.maxlength = function (modelValue, viewValue) {
-            return (_maxlength < 0) || ngModelController.$isEmpty(modelValue) || (viewValue.length <= _maxlength);
           };
-        }
-
-        //set max value for number fields
-        if (attr.type === 'number' && !ctrl.$validators.max) {
-          attr.$set('max', _maxIntValue);
-          ctrl.$validators.max = function (value) {
-            return ctrl.$isEmpty(value) || angular.isUndefined(_maxIntValue) || value <= _maxIntValue;
-          };
-        }
-      }
-    };
-  };
-
-
-  angular.module('mwForm', [])
-
-    .provider('mwValidationMessages', function () {
-      var _registeredValidators = {},
-        _translatedValidators = {},
-        _functionValidators = {},
-        _executedValidators = {};
-
-      var _setValidationMessage = function (key, validationMessage) {
-        if (typeof validationMessage === 'function') {
-          _functionValidators[key] = validationMessage;
-        } else {
-          _registeredValidators[key] = validationMessage;
-        }
-      };
-
-      this.registerValidator = function (key, validationMessage) {
-        if (!_registeredValidators[key] && !_functionValidators[key]) {
-          _setValidationMessage(key, validationMessage);
-        } else {
-          throw new Error('The key ' + key + ' has already been registered');
-        }
-      };
-
-      this.$get = ['$rootScope', 'i18n', function ($rootScope, i18n) {
-        var _translateRegisteredValidators = function () {
-          _.pairs(_registeredValidators).forEach(function (pair) {
-            var key = pair[0],
-              value = pair[1];
-            if (i18n.translationIsAvailable(value)) {
-              _translatedValidators[key] = i18n.get(value);
-            } else {
-              _translatedValidators[key] = value;
+  
+          /*
+           * This implementation was found on https://github.com/blueimp/jQuery-File-Upload/wiki/Drop-zone-effects
+           * The tricky part is the dragleave stuff when the user decides not to drop the file
+           * You can not just use the dragleave event. This implemtation did solve the problem
+           * It was a bit modified
+           */
+          angular.element(document).on('dragover', function () {
+            if (!timeout) {
+              $timeout(function () {
+                scope.isInDragState = true;
+              });
+            }
+            else {
+              clearTimeout(timeout);
+            }
+  
+            timeout = setTimeout(function () {
+              timeout = null;
+              $timeout(function () {
+                scope.isInDragState = false;
+              });
+            }, 100);
+          });
+  
+          fileUploaderEl.on('dragover', function () {
+            $timeout(function () {
+              scope.isInDragOverState = true;
+            });
+          });
+  
+          fileUploaderEl.on('dragleave', function () {
+            $timeout(function () {
+              scope.isInDragOverState = false;
+            });
+          });
+  
+          angular.element(document).on('drop dragover', function (ev) {
+            ev.preventDefault();
+          });
+  
+          hiddenfileEl.fileupload({
+            url: scope.url,
+            dropZone: elm.find('.drop-zone'),
+            dataType: 'json',
+            formData: scope.formData,
+            send: function () {
+              $timeout(function () {
+                scope.uploadState = 'uploading';
+              });
+            },
+            progress: function (e, data) {
+              $timeout(function () {
+                stateChange(data);
+              });
+            },
+            done: function (e, data) {
+              $timeout(function () {
+                scope.uploadState = 'done';
+                scope.uploadProgress = 0;
+                success(data, data.result);
+              });
+            },
+            error: function (rsp) {
+              $timeout(function () {
+                scope.uploadState = 'done';
+                scope.uploadProgress = 0;
+                error(this,rsp.responseJSON);
+              }.bind(this));
             }
           });
-        };
-
-        var _executeFunctionValidators = function () {
-          _.pairs(_functionValidators).forEach(function (pair) {
-            var key = pair[0],
-              fn = pair[1];
-            _executedValidators[key] = fn();
+  
+          hiddenfileEl.fileupload('option', mwFileUpload.getGlobalConfig());
+  
+          scope.$watch('url', function (val) {
+            if (val) {
+              hiddenfileEl.fileupload('option', {
+                url: val
+              });
+            }
           });
-        };
-
-        var _setValidationMessages = function () {
-          _translateRegisteredValidators();
-          _executeFunctionValidators();
-          $rootScope.$broadcast('mwValidationMessages:change');
-        };
-
-        _setValidationMessages();
-        $rootScope.$on('i18n:localeChanged', function () {
-          _setValidationMessages();
-        });
-
+  
+          scope.$watch('formData', function (val) {
+            if (val) {
+              hiddenfileEl.fileupload('option', {
+                formData: scope.formData
+              });
+            }
+          }, true);
+        }
+      };
+    }]);
+  'use strict';
+  
+  angular.module('mwFileUpload')
+  
+      .service('mwMimetype', function () {
+  
         return {
-          getRegisteredValidators: function () {
-            return _.extend(_translatedValidators, _executedValidators);
-          },
-          updateMessage: function (key, message) {
-            if (_registeredValidators[key] || _functionValidators[key]) {
-              _setValidationMessage(key, message);
-              _setValidationMessages();
+          application: [
+            'application/atom+xml',
+            'application/ecmascript',
+            'application/EDIFACT',
+            'application/json',
+            'application/javascript',
+            'application/octet-stream',
+            'application/ogg',
+            'application/pdf',
+            'application/postscript',
+            'application/rdf+xml',
+            'application/rss+xml',
+            'application/soap+xml',
+            'application/font-woff',
+            'application/xhtml+xml',
+            'application/xml',
+            'application/xml-dtd',
+            'application/xop+xml',
+            'application/zip',
+            'application/*'
+          ],
+  
+          audio: [
+            'audio/basic',
+            'audio/L24',
+            'audio/mp4',
+            'audio/mpeg',
+            'audio/ogg',
+            'audio/opus',
+            'audio/vorbis',
+            'audio/vnd.rn-realaudio',
+            'audio/vnd.wave',
+            'audio/webm',
+            'audio/*'
+          ],
+  
+          image: [
+            'image/gif',
+            'image/jpg',
+            'image/jpeg',
+            'image/pjpeg',
+            'image/png',
+            'image/svg+xml',
+            'image/*'
+          ],
+  
+          video: [
+            'video/mpeg',
+            'video/mp4',
+            'video/ogg',
+            'video/quicktime',
+            'video/webm',
+            'video/x-matroska',
+            'video/x-ms-wmv',
+            'video/x-flv',
+            'video/*'
+          ],
+  
+          text: [
+            'text/cmd',
+            'text/css',
+            'text/csv',
+            'text/html',
+            'text/javascript (Obsolete)',
+            'text/plain',
+            'text/vcard',
+            'text/xml',
+            'text/*'
+          ],
+  
+          getMimeTypeGroup: function (mimeType) {
+            if (this.text.indexOf(mimeType) !== -1) {
+              return 'text';
+            } else if (this.video.indexOf(mimeType) !== -1) {
+              return 'video';
+            } else if (this.image.indexOf(mimeType) !== -1) {
+              return 'image';
+            } else if (this.audio.indexOf(mimeType) !== -1) {
+              return 'audio';
+            } else if (this.application.indexOf(mimeType) !== -1) {
+              return 'application';
             } else {
-              throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
+              return false;
+            }
+          },
+  
+          checkMimeType: function (is, should) {
+            if (is === '*/*' || should === '*/*') {
+              return true;
+            } else {
+              return this.getMimeTypeGroup(is) === this.getMimeTypeGroup(should);
             }
           }
         };
-      }];
-    })
+  
+      });
 
+  'use strict';
+  
+  angular.module('mwFilters', [])
+  
+  .filter('humanize', function () {
+    return function (input) {
+      return input ? 'common.yes' : 'common.no';
+    };
+  })
+  
+  .filter('neverIfZero', ['i18n', function (i18n) {
+    var filterFn =  function (input) {
+      return input === 0 ? i18n.get('common.never') : input;
+    };
+    filterFn.$stateful = true;
+    return filterFn;
+  }])
+  
+  .filter('dashIfBlank', function () {
+    return function (input) {
+      return input ? input : '-';
+    };
+  })
+  
+  .filter('starIfBlank', function () {
+    return function (input) {
+      return input ? input : '*';
+    };
+  })
+  
+  .filter('join', function () {
+    return function (input, opts) {
+  
+      if(!angular.isArray(input)){
+        return input;
+      }
+      if(opts.lastSeparator){
+        var els = _.clone(input),
+        lastEl = els.pop();
+        return els.join(opts.separator)+' '+opts.lastSeparator+' '+lastEl;
+      } else {
+        return input.join(opts.separator);
+      }
+  
+    };
+  })
+  
+  .filter('zeroIfEmpty', function () {
+    return function (input) {
+      return input ? input : 0;
+    };
+  })
+  
+  .filter('readableFilesize', function () {
+    return function (fileSizeInBytes, startUnit) {
+      if (fileSizeInBytes === 0) {
+        return '0.0 kB';
+      }
+      var i = -1,
+      byteUnits = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  
+      if(startUnit !== undefined) {
+        i = byteUnits.indexOf(startUnit);
+      }
+      do {
+        fileSizeInBytes = fileSizeInBytes / 1024;
+        i++;
+      } while (fileSizeInBytes > 1024);
+  
+      return Math.max(fileSizeInBytes, 0.1).toFixed(1) + ' ' + byteUnits[i];
+    };
+  })
+  
+  .filter('reduceStringTo', function () {
+    return function (input, count) {
+      if(count && input && input.length > count) {
+        return input.substr(0, count) + '...';
+      }
+      return input;
+    };
+  });
+  
+  'use strict';
+  
+  angular.module('mwComponents', [])
+  
     /**
      * @ngdoc directive
-     * @name mwForm.directive:mwFormInput
+     * @name mwComponents.directive:mwPanel
      * @element div
      * @description
      *
-     * Wrapper for input elements. Adds validation messages, form HTML and corresponding CSS.
-     * The following elements can register itself on mwFormInput:
+     * Wrapper directive for {@link http://getbootstrap.com/components/#panels Bootstraps Panel}.
      *
-     * - select
-     * - input[text]
-     * - textarea
-     *
-     * @scope
-     *
-     * @param {string} label Label to show
-     * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
-     *
+     * @param {string} mwPanel Panel title
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <div mw-panel>
+     *      Panel content
+     *    </div>
+     *  </doc:source>
+     * </doc:example>
      */
-    .directive('mwFormInput', ['i18n', function (i18n) {
+    .directive('mwPanel', function () {
       return {
         restrict: 'A',
         transclude: true,
-        require: '^form',
+        templateUrl: 'uikit/templates/mwComponents/mwPanel.html',
+      };
+    })
+  
+  
+    .directive('mwContentHeader', function () {
+      return {
+        transclude: true,
+        template: '<div class="mw-content-header" ng-transclude></div>'
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwSortIndicator
+     * @element span
+     * @description
+     *
+     * Displays a sort indicator. Arrow up when sort is active and not reversed arrow down vise versa.
+     *
+     * @param {boolean} isActive display an arrow up or down when true otherwise an up and down arrow
+     * @param {boolean} isReversed display an arrow up or down
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <div mw-sort-indicator is-active="true" is-reversed="false"></div>
+     *  </doc:source>
+     * </doc:example>
+     */
+    .directive('mwSortIndicator', function () {
+      return {
+        restrict: 'A',
+        replace: true,
         scope: {
-          label: '@',
-          tooltip: '@',
-          hideErrors: '='
+          isActive: '=',
+          isReversed: '='
         },
-        templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
-        link: function (scope, elm, attr, ctrl) {
-
-          var getElementCtrl = function () {
-            if (ctrl && scope.elementName && ctrl[scope.elementName]) {
-              return ctrl[scope.elementName];
+        transclude: true,
+        templateUrl: 'uikit/templates/mwComponents/mwSortIndicator.html'
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwAlert
+     * @element div
+     * @description
+     *
+     * Wrapper directive for {@link http://getbootstrap.com/components/#alerts Bootstraps Alert}.
+     *
+     * @param {string} mwAlert Alert type. Can be one of the following:
+     *
+     * - warning
+     * - danger
+     * - success
+     * - info
+     *
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <div mw-alert="warning">
+     *      Alert content
+     *    </div>
+     *  </doc:source>
+     * </doc:example>
+     */
+    .directive('mwAlert', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+          type: '@mwAlert'
+        },
+        transclude: true,
+        templateUrl: 'uikit/templates/mwComponents/mwAlert.html'
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwHeader
+     * @element div
+     * @description
+     *
+     * Header bar for content pages.
+     *
+     * @param {string} title Header title
+     *
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <div mw-header title="A nice page">
+     *      Header content, Buttons etc...
+     *    </div>
+     *  </doc:source>
+     * </doc:example>
+     */
+    .directive('mwHeader', ['$location', '$route', '$rootScope', function ($location, $route, $rootScope) {
+      return {
+        transclude: true,
+        scope: {
+          title: '@',
+          url: '@',
+          mwTitleIcon: '@',
+          showBackButton: '=',
+          warningText: '@',
+          warningCondition: '=',
+          mwBreadCrumbs: '='
+        },
+        templateUrl: 'uikit/templates/mwComponents/mwHeader.html',
+        link: function (scope, el, attrs, ctrl, $transclude) {
+          $rootScope.siteTitleDetails = scope.title;
+  
+          $transclude(function (clone) {
+            if ((!clone || clone.length === 0) && !scope.showBackButton) {
+              el.find('.mw-header').addClass('no-buttons');
+            }
+          });
+  
+          scope.refresh = function () {
+            $route.reload();
+          };
+  
+          if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
+            scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
+            scope.url = scope.url.replace('#', '');
+          } else if (!scope.url && scope.showBackButton) {
+            console.error('Url attribute in header is missing!!');
+          }
+  
+          scope.back = function () {
+            $location.path(scope.url);
+          };
+  
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwIcon
+     * @element span
+     * @description
+     *
+     * Wrapper for bootstrap glyphicons.
+     *
+     * @param {string} mwIcon Glyphicon class suffix. Example suffix for 'glyphicon glyphicon-search' is 'search'
+     * @param {string} tooltip Optional string which will be displayed as a tooltip when hovering over the icon
+     *
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <span mw-icon="search"></span>
+     *    <span mw-icon="search" tooltip="This is a tooltip"></span>
+     *  </doc:source>
+     * </doc:example>
+     */
+    .directive('mwIcon', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          mwIcon: '@',
+          tooltip: '@',
+          placement: '@',
+          style: '@'
+        },
+        template: '<i ng-class="iconClasses" style="{{style}}" mw-tooltip="{{tooltip}}" placement="{{placement}}"></i>',
+        link: function (scope, el) {
+  
+          el.addClass('mw-icon');
+          //set icon classes
+          scope.$watch('mwIcon', function (newVal) {
+            if (newVal) {
+              var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
+                isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
+              if (isFontAwesome) {
+                scope.iconClasses = 'fa ' + scope.mwIcon;
+              } else if (isRlnIcon) {
+                scope.iconClasses = 'rln-icon ' + scope.mwIcon;
+              } else {
+                scope.iconClasses = 'glyphicon glyphicon-' + scope.mwIcon;
+              }
+            }
+          });
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name Relution.Common.directive:rlnTooltip
+     * @element span
+     *
+     * @description
+     * Creates a tooltip element using Bootstraps popover component.
+     *
+     * @param {String} mwTooltip Content of the tooltip
+     *
+     * @example
+     <span mw-tooltip="foobar"></span>
+     */
+    .directive('mwTooltip', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          text: '@mwTooltip',
+          placement: '@'
+        },
+        link: function (scope, el) {
+          scope.$watch('text', function () {
+            el.data('bs.popover').setContent();
+          });
+  
+          el.popover({
+            trigger: 'hover',
+            placement: scope.placement || 'bottom',
+            content: function () {
+              return scope.text;
+            },
+            container: 'body'
+          });
+  
+          var destroyPopOver = function () {
+            var popover = el.data('bs.popover');
+            if (popover && popover.tip()) {
+              popover.tip().detach().remove();
             }
           };
-
-
-          scope.isInvalid = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl) ? elCtrl.$invalid : false;
-          };
-
-          scope.isDirty = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl) ? elCtrl.$dirty : false;
-          };
-
-          scope.getCurrentErrors = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl) ? elCtrl.$error : undefined;
-          };
-
-          scope.isRequiredError = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
-          };
-
-          scope.isRequired = function () {
-            var requiredInputs = elm.find('input[required],select[required],textarea[required]');
-            return requiredInputs.length > 0;
-          };
-
-
+  
+          scope.$on('$destroy', function () {
+            destroyPopOver();
+          });
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwBadge
+     * @element span
+     * @description
+     *
+     * Wrapper for bootstrap labels.
+     *
+     * @param {string} mwBadge label class suffix. Example: suffix for 'label label-info' is 'search'
+     *
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <span mw-badge="info"></span>
+     *  </doc:source>
+     * </doc:example>
+     */
+    .directive('mwBadge', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {mwBadge: '@'},
+        transclude: true,
+        template: '<span class="mw-badge label label-{{mwBadge}}" ng-transclude></span>'
+      };
+    })
+  
+    .directive('mwEmptyState', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {mwBadge: '@'},
+        transclude: true,
+        template: '<div class="mw-empty-state"> <img src="images/logo-grey.png"><h2 ng-transclude class="lead"></h2> </div>'
+      };
+    })
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwFilterableSearch
+     * @element div
+     * @description
+     *
+     * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+     *
+     * @param {filterable} filterable Filterable instance.
+     * @param {expression} disabled If expression evaluates to true, input is disabled.
+     * @param {string} property The name of the property on which the filtering should happen.
+     */
+    .directive('mwFilterableSearch', ['$timeout', '$animate', 'Loading', 'Detect', function ($timeout, $animate, Loading, Detect) {
+      return {
+        scope: {
+          filterable: '=',
+          mwDisabled: '=',
+          property: '@'
+  //        loading: '='
         },
-        controller: ['$scope', 'mwValidationMessages', function ($scope, mwValidationMessages) {
-          var that = this;
-          that.element = null;
-
-          var buildValidationValues = function (element) {
-            var registeredValidators = mwValidationMessages.getRegisteredValidators(),
-              defaultValidators = {
-                required: i18n.get('errors.isRequired'),
-                email: i18n.get('errors.hasToBeAnEmail'),
-                pattern: i18n.get('errors.hasToMatchPattern'),
-                url: i18n.get('errors.validUrl'),
-                min: i18n.get('errors.minValue', {count: element.attr('min')}),
-                minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
-                max: i18n.get('errors.maxValue', {count: element.attr('max')}),
-                maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
-                phone: i18n.get('errors.phoneNumber'),
-                hex: i18n.get('errors.hex'),
-                unique: i18n.get('errors.notUnique'),
-                match: i18n.get('errors.doesNotMatch'),
-                emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
-              };
-
-            $scope.validationValues = _.extend(defaultValidators, registeredValidators);
-
+        templateUrl: 'uikit/templates/mwComponents/mwFilterableSearch.html',
+        link: function (scope, elm) {
+          $animate.enabled(false, elm.find('.search-indicator'));
+          scope.model = scope.filterable.properties[scope.property];
+          scope.inputLength = 0;
+          scope.isMobile = Detect.isMobile();
+  
+          var timeout;
+  
+          var search = function () {
+            return scope.filterable.applyFilters();
           };
-
-          this.buildValidationMessages = function (element) {
-            if (!that.element) {
-              that.element = element;
-
-              $scope.$watch(function () {
-                return element.attr('name');
-              }, function (val) {
-                if (val) {
-                  $scope.elementName = val;
-                }
+  
+          var throttler = function () {
+            scope.searching = true;
+  
+            $timeout.cancel(timeout);
+  
+            timeout = $timeout(function () {
+  
+              search().then(function () {
+                $timeout.cancel(timeout);
+                scope.searching = false;
+              }, function () {
+                scope.searching = false;
               });
-
-              $scope.$watch(function () {
-                return element.attr('mw-validation-message');
-              }, function (val) {
-                if (val) {
-                  buildValidationValues(element);
-                }
+  
+            }, 500);
+          };
+  
+          scope.search = function (event) {
+  
+            if (!event || event.keyCode === 13) {
+              search();
+            } else {
+  
+              if (!scope.isMobile) {
+                throttler();
+              }
+            }
+          };
+  
+          scope.reset = function () {
+            scope.model.value = '';
+            search();
+          };
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwRating
+     * @element span
+     * @description
+     *
+     * Converts a rating number into stars
+     *
+     * @param {number | expression} mwRating rating score
+     * @param {number} max the maximun number of stars
+     *
+     * @example
+     * <doc:example>
+     *  <doc:source>
+     *    <span mw-rating="3"></span>
+     *  </doc:source>
+     * </doc:example>
+     */
+    .directive('mwRating', function () {
+      return {
+        restrict: 'A',
+        scope: true,
+        template: '<i ng-repeat="star in stars" ng-class="star.state" class="fa"></i>',
+        link: function (scope, elm, attr) {
+  
+          elm.addClass('mw-star-rating');
+  
+          scope.stars = [];
+  
+          var buildStars = function () {
+            scope.stars = [];
+  
+            var rating = scope.$eval(attr.mwRating) || 0;
+            var starsMax = scope.$eval(attr.max) || 5;
+  
+            if (rating > starsMax) {
+              rating = starsMax;
+            }
+  
+            if (rating < 0) {
+              rating = 0;
+            }
+  
+            for (var i = 0; i < Math.floor(rating); i++) {
+              scope.stars.push({state: 'fa-star'});
+            }
+  
+            if (rating - Math.floor(rating) >= 0.5) {
+              scope.stars.push({state: 'fa-star-half-full'});
+            }
+  
+            while (attr.max && scope.stars.length < starsMax) {
+              scope.stars.push({state: 'fa-star-o'});
+            }
+          };
+  
+          attr.$observe('mwRating', function () {
+            buildStars();
+          });
+  
+          attr.$observe('max', function () {
+            buildStars();
+          });
+        }
+      };
+    })
+  
+  
+    .directive('mwButtonHelp', ['i18n', function (i18n) {
+      return {
+        restrict: 'A',
+        scope: true,
+        link: function (scope, elm) {
+          var popup;
+          elm.addClass('mwButtonHelp');
+          var helpIcon = angular.element('<div>').addClass('help-icon rln-icon support hidden-sm hidden-xs');
+          elm.prepend(helpIcon);
+  
+          var buildPopup = function () {
+            popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mwButtonPopover popover');
+            angular.forEach(scope.hintsToShow, function (hint) {
+              popup.find('ul').append('<li>' + hint.text + '</li>');
+            });
+          };
+  
+          helpIcon.hover(function () {
+            buildPopup();
+            var targetOffset = angular.element(this).offset();
+            angular.element('body').append(popup);
+            popup.css('top', targetOffset.top - (popup.height() / 2) + 10 - angular.element(document).scrollTop());
+            popup.css('left', (targetOffset.left + 40));
+          }, function () {
+            angular.element('body > .mwButtonPopover').remove();
+          });
+  
+          scope.$watch('hintsToShow', function (newVal) {
+            if (newVal.length) {
+              helpIcon.removeClass('hidden');
+            } else {
+              helpIcon.addClass('hidden');
+            }
+          });
+  
+          scope.$on('$destroy', function () {
+            if (popup) {
+              popup.remove();
+            }
+          });
+        },
+        controller: ['$scope', function ($scope) {
+          $scope.registeredHints = [];
+          $scope.hintsToShow = [];
+          $scope.helpText = i18n.get('common.buttonHelp');
+          $scope.$on('i18n:localeChanged', function () {
+            $scope.helpText = i18n.get('common.buttonHelp');
+          });
+  
+          var showHelp = function () {
+            $scope.hintsToShow = [];
+            angular.forEach($scope.registeredHints, function (registered) {
+              if (registered.condition) {
+                $scope.hintsToShow.push(registered);
+              }
+            });
+          };
+  
+          //check if any condition changes
+          this.register = function (registered) {
+            $scope.$watch(function () {
+              return registered.condition;
+            }, showHelp);
+            $scope.registeredHints.push(registered);
+          };
+  
+  
+        }]
+      };
+    }])
+  
+    .directive('mwButtonHelpCondition', function () {
+      return {
+        restrict: 'A',
+        require: '^mwButtonHelp',
+        scope: {
+          condition: '=mwButtonHelpCondition',
+          text: '@mwButtonHelpText'
+        },
+        link: function (scope, elm, attr, ctrl) {
+          ctrl.register(scope);
+        }
+      };
+    })
+  
+    .directive('mwLinkShow', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          link: '@mwLinkShow'
+        },
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm mw-link-show" mw-stop-propagation="click"><span mw-icon="fa-angle-right"></span></a>'
+      };
+    })
+  
+    .directive('mwOptionGroup', function () {
+      return {
+        scope: {
+          title: '@',
+          description: '@',
+          icon: '@',
+          mwDisabled: '='
+        },
+        transclude: true,
+        templateUrl: 'uikit/templates/mwComponents/mwOptionGroup.html',
+        link: function (scope, el) {
+          scope.randomId = _.uniqueId('option_group_');
+          el.find('input').attr('id', scope.randomId);
+        }
+  
+      };
+    })
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwToggle
+     * @element span
+     * @description
+     *
+     * Displays a toggle button to toggle a boolean value
+     *
+     * @param {expression} mwModel model
+     * @param {function} mwChange the function which should be executed when the value has changed
+     *
+     */
+    .directive('mwToggle', ['$timeout', function ($timeout) {
+      return {
+        scope: {
+          mwModel: '=',
+          mwDisabled: '=',
+          mwChange: '&'
+        },
+        replace: true,
+        templateUrl: 'uikit/templates/mwComponents/mwToggle.html',
+        link: function (scope) {
+          scope.toggle = function (value) {
+            if (scope.mwModel !== value) {
+              scope.mwModel = !scope.mwModel;
+              $timeout(function () {
+                scope.mwChange({value: scope.mwModel});
               });
-
-              buildValidationValues(element);
-              $scope.$on('mwValidationMessages:change', function(){
-                buildValidationValues(element);
+            }
+          };
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwComponents.directive:mwTimeline
+     * @element div
+     * @description
+     *
+     * Vertical timeline Is the container element for timeline entries
+     *
+     */
+    .directive('mwTimeline', function () {
+      return {
+        transclude: true,
+        replace: true,
+        template: '<div class="mw-timeline timeline clearfix"><hr class="vertical-line"><div class="content" ng-transclude></div></div>'
+      };
+    })
+  
+    .directive('mwTimelineFieldset', ['$q', function ($q) {
+      return {
+        scope: {
+          mwTitle: '@',
+          collapsable: '='
+        },
+        transclude: true,
+        replace: true,
+        templateUrl: 'uikit/templates/mwComponents/mwTimelineFieldset.html',
+        controller: ['$scope', function ($scope) {
+          $scope.entries = [];
+          this.register = function (entry) {
+            if (!_.findWhere($scope.entries, {$id: entry.$id})) {
+              $scope.entries.push(entry);
+            }
+          };
+          $scope.entriesVisible = true;
+          $scope.toggleEntries = function () {
+            if (!$scope.collapsable) {
+              return;
+            }
+            var toggleEntryHideFns = [];
+            $scope.entries.forEach(function (entry) {
+              if ($scope.entriesVisible) {
+                toggleEntryHideFns.push(entry.hide());
+              } else {
+                toggleEntryHideFns.push(entry.show());
+              }
+            });
+            if (!$scope.entriesVisible) {
+              $scope.entriesVisible = !$scope.entriesVisible;
+            } else {
+              $q.all(toggleEntryHideFns).then(function () {
+                $scope.entriesVisible = !$scope.entriesVisible;
               });
+            }
+          };
+          $scope.hiddenEntriesText = function () {
+            if ($scope.entries.length > 1) {
+              return 'common.entriesHiddenPlural';
+            } else {
+              return 'common.entriesHiddenSingular';
             }
           };
         }]
       };
     }])
-
+  
+    .directive('mwTimelineEntry', ['$q', function ($q) {
+      return {
+        transclude: true,
+        replace: true,
+        template: '<li class="timeline-entry"><span class="bubble"></span><div ng-transclude></div></li>',
+        scope: true,
+        require: '^mwTimelineFieldset',
+        link: function (scope, el, attrs, mwTimelineFieldsetController) {
+          mwTimelineFieldsetController.register(scope);
+  
+          scope.hide = function () {
+            var dfd = $q.defer();
+            el.fadeOut('slow', function () {
+              dfd.resolve();
+            });
+            return dfd.promise;
+          };
+  
+          scope.show = function () {
+            var dfd = $q.defer();
+            el.fadeIn('slow', function () {
+              dfd.resolve();
+            });
+            return dfd.promise;
+          };
+        }
+  
+      };
+    }])
+  
+  
     /**
      * @ngdoc directive
-     * @name mwForm.directive:mwFormWrapper
-     * @element div
+     * @name mwComponents.directive:mwDraggable
      * @description
      *
-     * Wrapper for custom elements. Adds form HTML and corresponding CSS.
-     * Does not include validation or any other functional components.
-     *
-     * @scope
-     *
-     * @param {string} label Label to show
-     * @param {string} tooltip Tooltip to display
+     * Offers drag and drop functionality on any element. Data can be set with the mwDragData parameter.
+     * The drop callback of the mwDroppable element will receive this data.
      *
      */
-    .directive('mwFormWrapper', function () {
+    .directive('mwDraggable', ['$timeout', function ($timeout) {
       return {
         restrict: 'A',
+        scope: {
+          mwDragData: '=',
+          //We can not use camelcase because *-start is a reserved word from angular!
+          mwDragstart: '&',
+          mwDragend: '&',
+          mwDropEffect: '@'
+        },
+        link: function (scope, el) {
+  
+          el.attr('draggable', true);
+          el.addClass('draggable', true);
+  
+          if (scope.mwDragstart) {
+            el.on('dragstart', function (event) {
+              event.originalEvent.dataTransfer.setData('text', JSON.stringify(scope.mwDragData));
+              event.originalEvent.dataTransfer.effectAllowed = scope.mwDropEffect;
+              $timeout(function () {
+                scope.mwDragstart({event: event, dragData: scope.mwDragData});
+              });
+            });
+          }
+  
+  
+          el.on('dragend', function (event) {
+            if (scope.mwDragend) {
+              $timeout(function () {
+                scope.mwDragend({event: event});
+              });
+            }
+          });
+        }
+      };
+    }])
+  
+    .directive('mwDroppable', ['$timeout', function ($timeout) {
+      return {
+        restrict: 'A',
+        scope: {
+          mwDropData: '=',
+          mwDragenter: '&',
+          mwDragleave: '&',
+          mwDragover: '&',
+          mwDrop: '&',
+          disableDrop: '='
+        },
+        link: function (scope, el) {
+  
+          el.addClass('droppable');
+  
+          var getDragData = function (event) {
+            var text = event.originalEvent.dataTransfer.getData('text');
+            if (text) {
+              return JSON.parse(text);
+            }
+          };
+  
+          if (scope.mwDragenter) {
+            el.on('dragenter', function (event) {
+              if (scope.disableDrop !== true) {
+                el.addClass('drag-over');
+              }
+              $timeout(function () {
+                scope.mwDragenter({event: event});
+              });
+            });
+          }
+  
+          if (scope.mwDragleave) {
+            el.on('dragleave', function (event) {
+              el.removeClass('drag-over');
+              $timeout(function () {
+                scope.mwDragleave({event: event});
+              });
+            });
+          }
+  
+          if (scope.mwDrop) {
+            el.on('drop', function (event) {
+              el.removeClass('drag-over');
+              if (event.stopPropagation) {
+                event.stopPropagation(); // stops the browser executing other event listeners which are maybe deined in parent elements.
+              }
+              var data = getDragData(event);
+              $timeout(function () {
+                scope.mwDrop({
+                  event: event,
+                  dragData: data,
+                  dropData: scope.mwDropData
+                });
+              });
+              return false;
+            });
+          }
+  
+          // Necessary. Allows us to drop.
+          var handleDragOver = function (ev) {
+            if (scope.disableDrop !== true) {
+              if (ev.preventDefault) {
+                ev.preventDefault();
+              }
+              return false;
+            }
+          };
+          el.on('dragover', handleDragOver);
+  
+          if (scope.mwDragover) {
+            el.on('dragover', function (event) {
+              $timeout(function () {
+                scope.mwDragover({event: event});
+              });
+            });
+          }
+  
+          scope.$on('$destroy', function () {
+            el.off();
+          });
+        }
+      };
+    }])
+  
+    .directive('mwTextCollapse', ['$filter', function ($filter) {
+      return {
+        restrict: 'A',
+        scope: {
+          mwTextCollapse: '@',
+          length: '=',
+          markdown: '='
+        },
+        templateUrl: 'uikit/templates/mwComponents/mwTextCollapse.html',
+        link: function (scope) {
+  
+          // set default length
+          if (scope.length && typeof scope.length === 'number') {
+            scope.defaultLength = scope.length;
+          } else {
+            scope.defaultLength = 200;
+          }
+  
+          // set start length for filter
+          scope.filterLength = scope.defaultLength;
+  
+          // apply filter length to text
+          scope.text = function () {
+            return $filter('reduceStringTo')(
+              scope.mwTextCollapse, scope.filterLength
+            );
+          };
+  
+          // show Button if text is longer than desired
+          scope.showButton = false;
+          if (scope.mwTextCollapse.length > scope.defaultLength) {
+            scope.showButton = true;
+          }
+  
+          // set button to "show more" or "show less"
+          scope.showLessOrMore = function () {
+            if (scope.filterLength === scope.defaultLength) {
+              return 'common.showMore';
+            } else {
+              return 'common.showLess';
+            }
+          };
+  
+          // collapse/expand text by setting filter length
+          scope.toggleLength = function () {
+            if (scope.filterLength === scope.defaultLength) {
+              delete scope.filterLength;
+            } else {
+              scope.filterLength = scope.defaultLength;
+            }
+          };
+        }
+      };
+    }])
+  
+  
+    .directive('mwInfiniteScroll', ['$window', '$document', function ($window, $document) {
+      return {
+        restrict: 'A',
+        link: function (scope, el, attrs) {
+  
+          var collection,
+            loading = false,
+            throttledScrollFn,
+            scrollFn,
+            documentEl,
+            scrollEl;
+  
+          if (attrs.mwListCollection) {
+            collection = scope.$eval(attrs.mwListCollection).getCollection();
+          } else if (attrs.collection) {
+            collection = scope.$eval(attrs.collection);
+          } else {
+            console.warn('No collection was found for the infinite scroll pleas pass it as scope attribute');
+          }
+  
+          if (!collection || (collection && !collection.filterable)) {
+            return;
+          }
+  
+          var scrollCallback = function () {
+            if (!loading && scrollEl.scrollTop() >= ((documentEl.height() - scrollEl.height()) - 100) && collection.filterable.hasNextPage()) {
+              loading = true;
+              collection.filterable.loadNextPage().then(function () {
+                loading = false;
+              });
+            }
+          };
+          var modalScrollCallback = function () {
+            if (!loading &&
+              collection.filterable.hasNextPage() &&
+              scrollEl[0].scrollHeight > 0 &&
+              (scrollEl[0].scrollHeight - scrollEl.scrollTop() - scrollEl[0].clientHeight < 2)) {
+              loading = true;
+              collection.filterable.loadNextPage().then(function () {
+                loading = false;
+              });
+            }
+          };
+  
+          if (el.parents('.modal').length) {
+            //element in modal
+            scrollEl = el.parents('.modal-body');
+            scrollFn = modalScrollCallback;
+          }
+          else {
+            //element in window
+            documentEl = angular.element($document);
+            scrollEl = angular.element($window);
+            scrollFn = scrollCallback;
+          }
+  
+          throttledScrollFn = _.throttle(scrollFn, 500);
+  
+          // Register scroll callback
+          scrollEl.on('scroll', throttledScrollFn);
+  
+          // Deregister scroll callback if scope is destroyed
+          scope.$on('$destroy', function () {
+            scrollEl.off('scroll', throttledScrollFn);
+          });
+  
+        }
+      };
+    }])
+  
+    .directive('mwViewChangeLoader', ['$rootScope', function ($rootScope) {
+      return {
         replace: true,
+        template: '<div class="mw-view-change-loader" ng-if="model.loading"><div class="spinner"></div></div>',
+        link: function (scope) {
+          scope.model = {
+            loading: false
+          };
+  
+          var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function () {
+            scope.model.loading = true;
+          });
+  
+          var routeChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
+            scope.model.loading = false;
+          });
+  
+          var routeChangeErrorListener = $rootScope.$on('$routeChangeError', function () {
+            scope.model.loading = false;
+          });
+  
+          scope.$on('$destroy', function () {
+            locationChangeSuccessListener();
+            routeChangeSuccessListener();
+            routeChangeErrorListener();
+          });
+        }
+      };
+    }])
+  
+  
+    .directive('mwCollapsable', function () {
+      return {
         transclude: true,
         scope: {
-          label: '@',
-          tooltip: '@'
+          mwCollapsable: '=',
+          title: '@mwTitle'
         },
-        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
-        link: function (scope, el) {
-          scope.isRequired = function () {
-            var requiredInputs = el.find('input[required],select[required],textarea[required]');
-            return requiredInputs.length > 0;
+        templateUrl: 'uikit/templates/mwComponents/mwCollapsable.html',
+        link: function (scope, elm) {
+          scope.viewModel = {};
+          scope.viewModel.collapsed = false;
+          if (scope.mwCollapsable === false) {
+            scope.viewModel.collapsed = true;
+          }
+          var level = elm.parents('.mw-collapsable').length;
+          if (level) {
+            elm.css('margin-left', level * 20 + 'px');
+          }
+  
+          scope.toggle = function () {
+            scope.viewModel.collapsed = !scope.viewModel.collapsed;
           };
         }
       };
     })
-
+  
+    .service('mwMarkdown', function () {
+      var converter = new window.showdown.Converter({
+        headerLevelStart: 3,
+        smoothLivePreview: true,
+        extensions: [function () {
+          return [
+            // Replace escaped @ symbols
+            {type: 'lang', regex: '•', replace: '-'},
+            {
+              type: 'lang', filter: function (text) {
+              return text.replace(/https?:\/\/\S*/g, function (link) {
+                return '<' + link + '>';
+              });
+            }
+            }
+          ];
+        }]
+      });
+      return {
+        convert: function (val) {
+          return converter.makeHtml(val);
+        }
+      };
+    })
+  
+  
+    .directive('mwMarkdownPreview', function () {
+      return {
+        scope: {
+          mwModel: '=mwMarkdownPreview'
+        },
+        templateUrl: 'uikit/templates/mwComponents/mwMarkdownPreview.html',
+        link: function (scope, elm) {
+          elm.addClass('mw-markdown-preview');
+        }
+      };
+    })
+  
+  
+    .directive('mwMarkdown', ['$sanitize', 'mwMarkdown', function ($sanitize, mwMarkdown) {
+      return {
+        restrict: 'AE',
+        link: function (scope, element, attrs) {
+          if (attrs.mwMarkdown) {
+            scope.$watch(attrs.mwMarkdown, function (newVal) {
+              try {
+                var html = newVal ? $sanitize(mwMarkdown.convert(newVal)) : '';
+                element.html(html);
+              } catch (e) {
+                element.text(newVal);
+              }
+            });
+          } else {
+            var html = $sanitize(mwMarkdown.convert(element.text()));
+            element.html(html);
+          }
+        }
+      };
+    }])
+  
+  
+    .directive('mwBreadCrumbsHolder', function () {
+      return {
+        transclude: true,
+        template: '<div class="mw-bread-crumbs" ng-transclude></div>'
+      };
+    })
+  
+    .directive('mwBreadCrumb', function () {
+      return {
+        scope: {
+          url: '@',
+          title: '@'
+        },
+        templateUrl: 'uikit/templates/mwComponents/mwBreadCrumb.html'
+      };
+    });
+  
+  'use strict';
+  
+  angular.module('mwComponentsBb', [])
+  
     /**
      * @ngdoc directive
-     * @name mwForm.directive:mwMultiSelect
+     * @name mwComponents.directive:mwFilterableSearch
      * @element div
      * @description
      *
-     * Can be used for a selectbox where multiple values can be selected
-     * Generates checkboxes and pushes or removes values into an array
+     * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
      *
-     * @scope
-     *
-     * @param {expression} model Model where the selected values should be saved in
-     * @param {expression} options Options which can be selected
-     *
+     * @param {filterable} filterable Filterable instance.
+     * @param {expression} disabled If expression evaluates to true, input is disabled.
+     * @param {string} property The name of the property on which the filtering should happen.
      */
-    .directive('mwFormMultiSelect', function () {
+    .directive('mwFilterableSearchBb', ['$timeout', function ($timeout) {
+      return {
+        scope: {
+          collection: '=',
+          property: '@',
+          customUrlParameter: '@',
+          mwDisabled: '=',
+          placeholder: '@'
+        },
+        templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
+        link: function (scope, el) {
+          var inputEl = el.find('input');
+  
+          var setFilterVal = function (val) {
+            if (scope.customUrlParameter) {
+              scope.collection.filterable.customUrlParams[scope.customUrlParameter] = val;
+            } else {
+              var filter = {};
+              filter[scope.property] = val;
+              scope.collection.filterable.setFilters(filter);
+            }
+          };
+  
+          scope.viewModel = {
+            searchVal: ''
+          };
+  
+          scope.search = function () {
+            scope.searching = true;
+            //backup searched text to reset after fetch complete in case of search text was empty
+            setFilterVal(scope.viewModel.searchVal);
+            return scope.collection.fetch().finally(function () {
+              $timeout(function () {
+                scope.searching = false;
+              }, 500);
+            });
+          };
+  
+          scope.reset = function () {
+            scope.viewModel.searchVal = '';
+            scope.search();
+          };
+  
+          scope.hasValue = function () {
+            return inputEl.val().length > 0;
+          };
+  
+          scope.keyUp = function () {
+            scope.searching = true;
+          };
+  
+          scope.focus = function () {
+            inputEl.focus();
+          };
+  
+          el.on('focus', 'input[type=text]', function () {
+            el.children().addClass('is-focused');
+          });
+  
+          el.on('blur', 'input[type=text]', function () {
+            el.children().removeClass('is-focused');
+          });
+        }
+      };
+    }])
+  
+    .directive('mwEmptyStateBb', function () {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+          collection: '=',
+          text: '@mwEmptyStateBb',
+          button: '&',
+          buttonText: '@'
+        },
+        transclude: true,
+        templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
+        link: function (scope) {
+  
+          if (scope.collection) {
+            scope.showEmptyState = function () {
+              return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
+            };
+          } else {
+            scope.showEmptyState = function () {
+              return true;
+            };
+          }
+        }
+      };
+    })
+  
+    .directive('mwVersionSelector', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          currentVersionModel: '=',
+          versionCollection: '=',
+          versionNumberKey: '@',
+          url: '@'
+        },
+        templateUrl: 'uikit/templates/mwComponentsBb/mwVersionSelector.html',
+        link: function (scope) {
+          scope.versionNumberKey = scope.versionNumberKey || 'versionNumber';
+          scope.getUrl = function (uuid) {
+            return scope.url.replace('VERSION_UUID', uuid);
+          };
+        }
+      };
+    });
+  
+  
+  
+  
+  
+  /**
+   * Created by zarges on 09/12/15.
+   */
+  'use strict';
+  angular.module('mwUI')
+  
+    .directive('mwLeadingZero', function () {
+      return {
+        require: 'ngModel',
+        link: function (scope, el, attrs, ngModel) {
+          ngModel.$formatters.unshift(function (val) {
+            if (val < 10) {
+              return '0' + val;
+            } else {
+              return val;
+            }
+          });
+        }
+      };
+    })
+  
+    .directive('mwDatePicker', ['$rootScope', '$compile', '$interval', '$timeout', 'i18n', function ($rootScope, $compile, $interval, $timeout, i18n) {
+      return {
+        templateUrl: 'uikit/templates/mwDatePicker.html',
+        scope: {
+          mwModel: '=',
+          mwRequired: '=',
+          showTimePicker: '=',
+          options: '='
+        },
+        link: function (scope, el) {
+          var _defaultDatePickerOptions = {
+              clearBtn: !scope.mwRequired
+            },
+            _datePicker,
+            _incrementInterval,
+            _decrementInterval;
+  
+          scope.viewModel = {
+            date: null,
+            hours: null,
+            minutes: null,
+            datepickerIsOpened: false,
+            showTimePicker: angular.isDefined(scope.showTimePicker) ? scope.showTimePicker : true
+          };
+  
+  
+          scope.$watch('viewModel.showTimePicker', function (newVal) {
+            scope.viewModel.showTimePicker = newVal;
+          });
+  
+          scope.canChange = function (num, type) {
+            var options = scope.options || {},
+              currentDateTs = +new Date(scope.mwModel);
+  
+            num = num || 0;
+  
+            if (type === 'MINUTES') {
+              num = num * 60 * 1000;
+            } else if (type === 'HOURS') {
+              num = num * 60 * 60 * 1000;
+            }
+  
+  
+            if (options.startDate) {
+              var startDateTs = +new Date(options.startDate);
+              // Num param is passed as parameter to check if the previous hour or minute can be set
+              // It checks if decrement by one is possible
+              if (num < 0) {
+                return ( currentDateTs + num ) >= startDateTs;
+              } else {
+                // This block checks if the date is in valid date range
+                // otherwise the increment button is disabled as well
+                // The time is reset to 0 pm for the current date and the end date
+                // Otherwise it won't be possible to change minutes when the initial minutes of the same day are below the startdate hours
+                return new Date(currentDateTs).setHours(0, 0, 0, 0) >= new Date(startDateTs).setHours(0, 0, 0, 0);
+              }
+            }
+  
+            if (options.endDate) {
+              var endDateTs = +new Date(options.endDate);
+              // Num param is passed as parameter to check if the next hour or minute can be set
+              // It checks if increment by one is possible
+              if (num > 0) {
+                return ( currentDateTs + num ) <= endDateTs;
+              } else {
+                // This block checks if the date is in valid date range
+                // otherwise the decrement button is disabled as well
+                // The time is reset to 0 pm for the current date and the end date
+                // Otherwise it won't be possible to change hours when the initial hours of the same day are over the enddate hours
+                return new Date(currentDateTs).setHours(0, 0, 0, 0) <= new Date(endDateTs).setHours(0, 0, 0, 0);
+              }
+            }
+  
+            return true;
+          };
+  
+          scope.increment = function (attr, min, max) {
+            var val = scope.viewModel[attr];
+            if (val < max) {
+              val++;
+            } else {
+              val = min;
+            }
+            scope.viewModel[attr] = val;
+          };
+  
+          scope.startIncrementCounter = function () {
+            var args = arguments;
+  
+            _incrementInterval = $interval(function () {
+              scope.increment.apply(this, args);
+            }.bind(this), 200);
+          };
+  
+          scope.stopIncrementCounter = function () {
+            $interval.cancel(_incrementInterval);
+          };
+  
+          scope.decrement = function (attr, min, max) {
+            var val = scope.viewModel[attr];
+            if (val > min) {
+              val--;
+            } else {
+              val = max;
+            }
+            scope.viewModel[attr] = val;
+          };
+  
+          scope.startDecrementCounter = function () {
+            var args = arguments;
+            _decrementInterval = $interval(function () {
+              scope.decrement.apply(this, args);
+            }.bind(this), 200);
+          };
+  
+          scope.stopDecrementCounter = function () {
+            $interval.cancel(_decrementInterval);
+          };
+  
+          var updateMwModel = function (datePicker) {
+            $timeout(function () {
+              if (datePicker.dates.length > 0) {
+                var selectedDate = new Date(datePicker.getDate());
+  
+                if (scope.viewModel.hours) {
+                  selectedDate.setHours(scope.viewModel.hours);
+                } else {
+                  scope.viewModel.hours = selectedDate.getHours();
+                }
+  
+                if (scope.viewModel.minutes) {
+                  selectedDate.setMinutes(scope.viewModel.minutes);
+                } else {
+                  scope.viewModel.minutes = selectedDate.getMinutes();
+                }
+  
+                scope.mwModel = selectedDate;
+                scope.viewModel.date = selectedDate.toLocaleDateString();
+              } else {
+                scope.viewModel.date = null;
+                scope.viewModel.hours = null;
+                scope.viewModel.minutes = null;
+                scope.mwModel = null;
+              }
+            });
+          };
+  
+          var bindChangeListener = function (datepicker) {
+            datepicker.on('changeDate', updateMwModel.bind(this, datepicker.data().datepicker));
+            datepicker.on('show', function () {
+              $timeout(function () {
+                scope.viewModel.datepickerIsOpened = true;
+              });
+            });
+            datepicker.on('hide', function () {
+              $timeout(function () {
+                scope.viewModel.datepickerIsOpened = false;
+              });
+            });
+          };
+  
+          var setDateValue = function (el, date, datepicker) {
+            if (date) {
+              date = new Date(date);
+  
+              var parsedDateStr = date.toLocaleDateString(),
+                hours = date.getHours(),
+                minutes = date.getMinutes();
+  
+              el.val(parsedDateStr);
+              scope.viewModel.hours = hours;
+              scope.viewModel.minutes = minutes;
+              scope.viewModel.date = parsedDateStr;
+  
+              datepicker.setDate(date);
+              datepicker.update();
+              // we need to set this val manually for the case that it is out of daterange
+              // when we don't set it manually it will be empty because the datpicker sets
+              // the textfield val only when it is in valid date range
+              _datePicker.val(parsedDateStr);
+            }
+          };
+  
+          var setDatepicker = function (options) {
+            var datePickerEl;
+  
+            if (_datePicker && _datePicker.data().datepicker) {
+              _datePicker.data().datepicker.remove();
+            }
+  
+            datePickerEl = el.find('.date-picker');
+            _datePicker = datePickerEl.datepicker(_.extend(_defaultDatePickerOptions, options));
+            setDateValue(datePickerEl, scope.mwModel, _datePicker.data().datepicker);
+            bindChangeListener(_datePicker);
+          };
+  
+          var setDatepickerLanguage = function () {
+            var locale = 'en';
+            if (i18n.getActiveLocale().id === 'de_DE') {
+              locale = 'de';
+            }
+            setDatepicker({
+              language: locale
+            });
+          };
+          $rootScope.$on('i18n:localeChanged', setDatepickerLanguage);
+          setDatepickerLanguage();
+  
+          var _updater = function (val) {
+            if (_datePicker && val) {
+              updateMwModel(_datePicker.data().datepicker);
+            }
+          };
+          scope.$watch('viewModel.minutes', _updater);
+          scope.$watch('viewModel.hours', _updater);
+  
+          scope.$watchCollection('options', function (options) {
+            if (options) {
+              setDatepicker(options);
+            }
+          });
+  
+          el.on('mouseout', '.number-spinner', function () {
+            scope.stopDecrementCounter();
+            scope.stopIncrementCounter();
+          });
+        }
+      };
+    }]);
+  'use strict';
+  
+  (function () {
+  
+    // Common used function to put defaults onto some HTML elements
+    var extendHTMLElement = function () {
+      return {
+        restrict: 'E',
+        require: '?^mwFormInput',
+        link: function (scope, elm, attr, ctrl) {
+          var formInputController = ctrl,
+            skipTheFollowing = ['checkbox', 'radio'],
+            dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1;
+  
+          // Add default class coming from bootstrap
+          if (dontSkipIt) {
+            elm.addClass('form-control');
+          }
+  
+          //append validation messages to element
+          if (dontSkipIt && formInputController) {
+            formInputController.buildValidationMessages(elm);
+          }
+        }
+      };
+    };
+  
+    var addDefaultValidations = function () {
+      return {
+        restrict: 'E',
+        require: '?ngModel',
+        link: function (scope, elm, attr, ctrl) {
+  
+          var ngModelController = ctrl,
+            skipTheFollowing = ['checkbox', 'radio', 'hidden', 'file'],
+            dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1,
+            _maxlength = 255, // for input fields of all types
+            _maxIntValue = 2147483647;
+  
+          // use higher maxLength for textareas
+          if (!attr.type) {
+            _maxlength = 4000;
+          }
+  
+          // Don't overwrite existing values for ngMaxlength
+          if (attr.type !== 'number' && ngModelController && dontSkipIt && !ngModelController.$validators.maxlength && !attr.ngMaxlength) {
+            attr.$set('ngMaxlength', _maxlength);
+            ngModelController.$validators.maxlength = function (modelValue, viewValue) {
+              return (_maxlength < 0) || ngModelController.$isEmpty(modelValue) || (viewValue.length <= _maxlength);
+            };
+          }
+  
+          //set max value for number fields
+          if (attr.type === 'number' && !ctrl.$validators.max) {
+            attr.$set('max', _maxIntValue);
+            ctrl.$validators.max = function (value) {
+              return ctrl.$isEmpty(value) || angular.isUndefined(_maxIntValue) || value <= _maxIntValue;
+            };
+          }
+        }
+      };
+    };
+  
+  
+    angular.module('mwForm', [])
+  
+      .provider('mwValidationMessages', function () {
+        var _registeredValidators = {},
+          _translatedValidators = {},
+          _functionValidators = {},
+          _executedValidators = {};
+  
+        var _setValidationMessage = function (key, validationMessage) {
+          if (typeof validationMessage === 'function') {
+            _functionValidators[key] = validationMessage;
+          } else {
+            _registeredValidators[key] = validationMessage;
+          }
+        };
+  
+        this.registerValidator = function (key, validationMessage) {
+          if (!_registeredValidators[key] && !_functionValidators[key]) {
+            _setValidationMessage(key, validationMessage);
+          } else {
+            throw new Error('The key ' + key + ' has already been registered');
+          }
+        };
+  
+        this.$get = ['$rootScope', 'i18n', function ($rootScope, i18n) {
+          var _translateRegisteredValidators = function () {
+            _.pairs(_registeredValidators).forEach(function (pair) {
+              var key = pair[0],
+                value = pair[1];
+              if (i18n.translationIsAvailable(value)) {
+                _translatedValidators[key] = i18n.get(value);
+              } else {
+                _translatedValidators[key] = value;
+              }
+            });
+          };
+  
+          var _executeFunctionValidators = function () {
+            _.pairs(_functionValidators).forEach(function (pair) {
+              var key = pair[0],
+                fn = pair[1];
+              _executedValidators[key] = fn();
+            });
+          };
+  
+          var _setValidationMessages = function () {
+            _translateRegisteredValidators();
+            _executeFunctionValidators();
+            $rootScope.$broadcast('mwValidationMessages:change');
+          };
+  
+          _setValidationMessages();
+          $rootScope.$on('i18n:localeChanged', function () {
+            _setValidationMessages();
+          });
+  
+          return {
+            getRegisteredValidators: function () {
+              return _.extend(_translatedValidators, _executedValidators);
+            },
+            updateMessage: function (key, message) {
+              if (_registeredValidators[key] || _functionValidators[key]) {
+                _setValidationMessage(key, message);
+                _setValidationMessages();
+              } else {
+                throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
+              }
+            }
+          };
+        }];
+      })
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwFormInput
+       * @element div
+       * @description
+       *
+       * Wrapper for input elements. Adds validation messages, form HTML and corresponding CSS.
+       * The following elements can register itself on mwFormInput:
+       *
+       * - select
+       * - input[text]
+       * - textarea
+       *
+       * @scope
+       *
+       * @param {string} label Label to show
+       * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
+       *
+       */
+      .directive('mwFormInput', ['i18n', function (i18n) {
+        return {
+          restrict: 'A',
+          transclude: true,
+          require: '^form',
+          scope: {
+            label: '@',
+            tooltip: '@',
+            hideErrors: '='
+          },
+          templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
+          link: function (scope, elm, attr, ctrl) {
+  
+            var getElementCtrl = function () {
+              if (ctrl && scope.elementName && ctrl[scope.elementName]) {
+                return ctrl[scope.elementName];
+              }
+            };
+  
+  
+            scope.isInvalid = function () {
+              var elCtrl = getElementCtrl();
+              return (elCtrl) ? elCtrl.$invalid : false;
+            };
+  
+            scope.isDirty = function () {
+              var elCtrl = getElementCtrl();
+              return (elCtrl) ? elCtrl.$dirty : false;
+            };
+  
+            scope.getCurrentErrors = function () {
+              var elCtrl = getElementCtrl();
+              return (elCtrl) ? elCtrl.$error : undefined;
+            };
+  
+            scope.isRequiredError = function () {
+              var elCtrl = getElementCtrl();
+              return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
+            };
+  
+            scope.isRequired = function () {
+              var requiredInputs = elm.find('input[required],select[required],textarea[required]');
+              return requiredInputs.length > 0;
+            };
+  
+  
+          },
+          controller: ['$scope', 'mwValidationMessages', function ($scope, mwValidationMessages) {
+            var that = this;
+            that.element = null;
+  
+            var buildValidationValues = function (element) {
+              var registeredValidators = mwValidationMessages.getRegisteredValidators(),
+                defaultValidators = {
+                  required: i18n.get('errors.isRequired'),
+                  email: i18n.get('errors.hasToBeAnEmail'),
+                  pattern: i18n.get('errors.hasToMatchPattern'),
+                  url: i18n.get('errors.validUrl'),
+                  min: i18n.get('errors.minValue', {count: element.attr('min')}),
+                  minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
+                  max: i18n.get('errors.maxValue', {count: element.attr('max')}),
+                  maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
+                  phone: i18n.get('errors.phoneNumber'),
+                  hex: i18n.get('errors.hex'),
+                  unique: i18n.get('errors.notUnique'),
+                  match: i18n.get('errors.doesNotMatch'),
+                  emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
+                  itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
+                };
+  
+              $scope.validationValues = _.extend(defaultValidators, registeredValidators);
+  
+            };
+  
+            this.buildValidationMessages = function (element) {
+              if (!that.element) {
+                that.element = element;
+  
+                $scope.$watch(function () {
+                  return element.attr('name');
+                }, function (val) {
+                  if (val) {
+                    $scope.elementName = val;
+                  }
+                });
+  
+                $scope.$watch(function () {
+                  return element.attr('mw-validation-message');
+                }, function (val) {
+                  if (val) {
+                    buildValidationValues(element);
+                  }
+                });
+  
+                buildValidationValues(element);
+                $scope.$on('mwValidationMessages:change', function(){
+                  buildValidationValues(element);
+                });
+              }
+            };
+          }]
+        };
+      }])
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwFormWrapper
+       * @element div
+       * @description
+       *
+       * Wrapper for custom elements. Adds form HTML and corresponding CSS.
+       * Does not include validation or any other functional components.
+       *
+       * @scope
+       *
+       * @param {string} label Label to show
+       * @param {string} tooltip Tooltip to display
+       *
+       */
+      .directive('mwFormWrapper', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          transclude: true,
+          scope: {
+            label: '@',
+            tooltip: '@'
+          },
+          templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
+          link: function (scope, el) {
+            scope.isRequired = function () {
+              var requiredInputs = el.find('input[required],select[required],textarea[required]');
+              return requiredInputs.length > 0;
+            };
+          }
+        };
+      })
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwMultiSelect
+       * @element div
+       * @description
+       *
+       * Can be used for a selectbox where multiple values can be selected
+       * Generates checkboxes and pushes or removes values into an array
+       *
+       * @scope
+       *
+       * @param {expression} model Model where the selected values should be saved in
+       * @param {expression} options Options which can be selected
+       *
+       */
+      .directive('mwFormMultiSelect', function () {
+        return {
+          restrict: 'A',
+          transclude: true,
+          require: '^?form',
+          scope: {
+            model: '=',
+            options: '=',
+            query: '=filter',
+            mwRequired: '='
+          },
+          templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect.html',
+          controller: ['$scope', function ($scope) {
+  
+            if (!angular.isArray($scope.model)) {
+              $scope.model = [];
+            }
+  
+            if (angular.isArray($scope.options)) {
+              var objOptions = {};
+              $scope.options.forEach(function (option) {
+                objOptions[option] = option;
+              });
+  
+              $scope.options = objOptions;
+            }
+  
+            $scope.getObjectSize = function (obj) {
+              return _.size(obj);
+            };
+  
+            $scope.filter = function (items) {
+              var result = {};
+  
+              angular.forEach(items, function (value, key) {
+  
+                if (!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase())) {
+                  result[key] = value;
+                }
+              });
+              return result;
+            };
+  
+            $scope.toggleKeyIntoModelArray = function (key) {
+  
+              $scope.model = $scope.model || [];
+              //Check if key is already in the model array
+              //When user unselects a checkbox it will be deleted from the model array
+              if ($scope.model.indexOf(key) >= 0) {
+                // Delete key from model array
+                $scope.model.splice($scope.model.indexOf(key), 1);
+                // Delete model if no attribute is in there (for validation purposes)
+                if ($scope.model.length === 0) {
+                  delete $scope.model;
+                }
+              } else {
+                $scope.model.push(key);
+              }
+            };
+  
+          }],
+          link: function (scope, el, attr, form) {
+  
+            scope.showRequiredMessage = function () {
+              return ( (!scope.model || scope.model.length < 1) && scope.required);
+            };
+  
+            scope.setDirty = function () {
+              if (form) {
+                form.$setDirty();
+              }
+            };
+          }
+        };
+      })
+  
+      .directive('mwFormMultiSelect2', function () {
+        return {
+          restrict: 'A',
+          transclude: true,
+          require: '^?form',
+          scope: {
+            mwCollection: '=',
+            mwOptionsCollection: '=',
+            mwOptionsLabelKey: '@',
+            mwOptionsLabelI18nPrefix: '@',
+            mwRequired: '=',
+            mwDisabled: '='
+          },
+          templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect2.html',
+          link: function (scope, elm, attr, formCtrl) {
+            if (scope.mwOptionsCollection.length === 0) {
+              scope.mwOptionsCollection.fetch();
+            }
+  
+            scope.toggleModel = function (model) {
+              var existingModel = scope.mwCollection.findWhere(model.toJSON());
+              if (existingModel) {
+                scope.mwCollection.remove(existingModel);
+              } else {
+                scope.mwCollection.add(model.toJSON());
+              }
+              if (formCtrl) {
+                formCtrl.$setDirty();
+              }
+            };
+          }
+        };
+      })
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwFormCheckbox
+       * @element div
+       * @description
+       *
+       * Wrapper for checkbox elements. Adds form HTML and corresponding CSS.
+       *
+       * @scope
+       *
+       * @param {string} label Label to show
+       *
+       */
+      .directive('mwFormCheckbox', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          transclude: true,
+          scope: {
+            mwClass: '@class',
+            label: '@',
+            tooltip: '@',
+            badges: '@'
+          },
+          templateUrl: 'uikit/templates/mwForm/mwFormCheckbox.html',
+          link: function (scope) {
+            if (scope.badges) {
+              var formatBadges = function () {
+                scope.typedBadges = [];
+                var splittedBadges = scope.badges.split(',');
+                angular.forEach(splittedBadges, function (badge) {
+                  var type = 'info';
+                  if (badge.toLowerCase().indexOf('android') > -1) {
+                    type = 'android';
+                  }
+                  if (badge.toLowerCase().indexOf('ios') > -1) {
+                    type = 'ios';
+                  }
+                  if (badge.toLowerCase().indexOf('knox') > -1) {
+                    type = 'knox';
+                  }
+                  if (badge.toLowerCase().indexOf('-knox-') > -1) {
+                    badge = 'KNOX';
+                    type = 'notsafe';
+                  }
+                  if (badge.toLowerCase().indexOf('knox') > -1 &&
+                    badge.toLowerCase().indexOf('android') > -1) {
+                    type = 'multi';
+                  }
+                  scope.typedBadges.push({
+                    text: badge,
+                    type: type
+                  });
+                });
+              };
+              scope.$watch('badges', formatBadges);
+            }
+          }
+        };
+      })
+  
+      .directive('mwCustomSelect', function () {
+        return {
+          require: '^?ngModel',
+          link: function (scope, el) {
+            var customSelectWrapper = angular.element('<span class="custom-select mw-select"></span>');
+  
+            var render = function () {
+              el.wrap(customSelectWrapper);
+              el.addClass('custom');
+            };
+  
+            render();
+          }
+        };
+      })
+  
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwCustomCheckbox
+       * @element input
+       * @scope
+       *
+       * @param {boolean} radio If true, adds class 'round' to wrapping span element
+       * @description
+       *
+       * Replaces native checkbox with custom checkbox
+       *
+       */
+      .directive('mwCustomCheckbox', function () {
+        return {
+          restrict: 'A',
+          link: function (scope, el, attr) {
+            attr.$observe('radio', function (newVal) {
+              if (newVal === true) {
+                el.parent().addClass('round');
+              }
+            });
+  
+            // render custom checkbox
+            // to preserve the functionality of the original checkbox we just wrap it with a custom element
+            // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
+            // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
+            var render = function () {
+              var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
+                customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>'),
+                customCheckboxStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
+  
+              el.wrap(customCheckbox);
+              customCheckboxStateIndicator.insertAfter(el);
+              customCheckboxStateFocusIndicator.insertAfter(customCheckboxStateIndicator);
+            };
+  
+            (function init() {
+              //after this the remaining element is removed
+              scope.$on('$destroy', function () {
+                el.off();
+                el.parent('.mw-checkbox').remove();
+              });
+  
+              render();
+  
+            }());
+          }
+        };
+      })
+  
+      .directive('mwCustomRadio', function () {
+        return {
+          restrict: 'A',
+          link: function (scope, el) {
+            // render custom checkbox
+            // to preserve the functionality of the original checkbox we just wrap it with a custom element
+            // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
+            // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
+            var render = function () {
+              var customRadio = angular.element('<span class="custom-radio mw-radio"></span>'),
+                customRadioStateIndicator = angular.element('<span class="state-indicator"></span>'),
+                customRadioStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
+  
+              el.wrap(customRadio);
+              customRadioStateIndicator.insertAfter(el);
+              customRadioStateFocusIndicator.insertAfter(customRadioStateIndicator);
+            };
+  
+            (function init() {
+              //after this the remaining element is removed
+              scope.$on('$destroy', function () {
+                el.off();
+                el.parent('.mw-radio').remove();
+              });
+  
+              render();
+  
+            }());
+          }
+        };
+      })
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwFormValidation
+       * @element span
+       * @description
+       * **Important!:** Can only be placed inside of {@link mwForm.directive:mwFormInput mwFormInput}.
+       *
+       * Adds validation messages if validation for given key fails.
+       *
+       * @scope
+       *
+       * @param {string} mwFormsValidation The key to validate a model
+       */
+      .directive('mwFormValidation', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          transclude: true,
+          require: ['^mwFormInput', '^form'],
+          scope: {
+            validation: '@mwFormValidation'
+          },
+          template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
+          link: function (scope, elm, attr, controllers) {
+            var mwFormInputCtrl = controllers[0],
+              inputName = mwFormInputCtrl.element.attr('name'),
+              form = controllers[1],
+              invalid = false;
+  
+            if (!inputName) {
+              invalid = true;
+              throw new Error('element doesn\'t have name attribute');
+            }
+  
+            if (form && !form[inputName]) {
+              invalid = true;
+              throw new Error('element ' + inputName + ' not found');
+            }
+  
+            scope.isValid = function () {
+              if (invalid || !form) {
+                return false;
+              } else {
+                if (form[inputName]) {
+                  return form[inputName].$error[scope.validation];
+                }
+              }
+            };
+          }
+        };
+      })
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwForm
+       * @element form
+       * @description
+       *
+       * Adds form specific behaviour
+       *
+       */
+      .directive('form', function () {
+        return {
+          restrict: 'E',
+          link: function (scope, el) {
+            el.addClass('form-horizontal');
+            el.attr('novalidate', 'true');
+  
+            var noPasswordAutocomplete = angular.element(
+              '<!-- fake fields are a workaround for chrome autofill getting the wrong fields -->' +
+              '<input style="display:none" type="text" name="fakeusernameremembered"/>' +
+              '<input style="display:none" type="password" name="fakepasswordremembered"/>'
+            );
+  
+            el.prepend(noPasswordAutocomplete);
+          }
+        };
+      })
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwLeaveConfirmation
+       * @element form
+       * @description
+       *
+       * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
+       *
+       */
+  
+      .directive('mwFormLeaveConfirmation', ['$window', '$document', '$location', 'i18n', 'Modal', '$compile', function ($window, $document, $location, i18n, Modal, $compile) {
+        return {
+          require: '^form',
+          link: function (scope, elm, attr, form) {
+            scope.form = form;
+            scope.text = i18n.get('common.confirmModal.description');
+            var confirmation = $compile('<div mw-leave-confirmation="form.$dirty" text="{{text}}"></div>')(scope);
+            elm.append(confirmation);
+  
+            scope.$on('$destroy', function () {
+              scope.form.$dirty = false;
+            });
+          }
+        };
+      }])
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwFormActions
+       * @element form
+       * @description
+       *
+       * Adds buttons for save and cancel. Must be placed inside a form tag.
+       * (Form controller has to be available on the parent scope!)
+       *
+       * @scope
+       *
+       * @param {expression} save Expression to evaluate on click on 'Save' button
+       * @param {expression} cancel Expression to evaluate on click on 'cancel' button
+       *
+       */
+      .directive('mwFormActions', ['Loading', '$route', function (Loading, $route) {
+        return {
+          replace: true,
+          scope: {
+            save: '&',
+            cancel: '&',
+            showSave: '=',
+            showCancel: '='
+          },
+          templateUrl: 'uikit/templates/mwForm/mwFormActions.html',
+          link: function (scope, elm, attr) {
+  
+            scope.isLoading = Loading.isLoading;
+  
+            scope.form = elm.inheritedData('$formController');
+            scope.hasCancel = angular.isDefined(attr.cancel);
+            scope.hasSave = angular.isDefined(attr.save);
+            scope._showSave = true;
+            scope._showCancel = true;
+            scope.executeDefaultCancel = (attr.cancel === 'true');
+  
+            scope.$watch('showSave', function (val) {
+              if (angular.isDefined(val)) {
+                scope._showSave = val;
+              }
+            });
+  
+            scope.$watch('showCancel', function (val) {
+              if (angular.isDefined(val)) {
+                scope._showCancel = val;
+              }
+            });
+  
+            var setFormPristineAndEvaluate = function (exec) {
+              if (scope.form) {
+                scope.form.$setPristine();
+              }
+              scope.$eval(exec);
+            };
+  
+            scope.saveFacade = function () {
+              setFormPristineAndEvaluate(scope.save);
+            };
+  
+            scope.cancelFacade = function () {
+              if (scope.cancel && scope.executeDefaultCancel) {
+                setFormPristineAndEvaluate(function () {
+                  $route.reload();
+                });
+              } else {
+                setFormPristineAndEvaluate(scope.cancel);
+              }
+            };
+          }
+        };
+      }])
+  
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:select
+       * @restrict E
+       * @description
+       *
+       * Extends the select element, by adding class 'form-control' and registers
+       * it on {@link mwForm.directive:mwFormInput mwFormInput}.
+       *
+       */
+      .directive('select', extendHTMLElement)
+  
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:input
+       * @restrict E
+       * @description
+       *
+       * Extends the input[text] element, by adding class 'form-control' and
+       * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
+       *
+       */
+      .directive('input', extendHTMLElement)
+      .directive('input', addDefaultValidations)
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:textarea
+       * @restrict E
+       * @description
+       *
+       * Extends the textarea element, by adding class 'form-control' and
+       * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
+       *
+       */
+      .directive('textarea', extendHTMLElement)
+      .directive('textarea', addDefaultValidations)
+  
+      /**
+       * @ngdoc directive
+       * @name mwForm.directive:mwPasswordToggler
+       * @element input
+       * @description
+       *
+       * Adds an eye button for password fields to show the password in clear text
+       *
+       */
+      .directive('mwPasswordToggler', ['$compile', function ($compile) {
+        return {
+          restrict: 'A',
+          link: function (scope, el) {
+  
+            var render = function () {
+              var passwordWrapper = angular.element('<div class="mw-password-toggler input-group"></div>'),
+                passwordToggleBtn = $compile(
+                  '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()" ng-if="showToggler()">' +
+                  '<span ng-if="isPassword()" mw-icon="fa-eye"></span>' +
+                  '<span ng-if="!isPassword()" mw-icon="fa-eye-slash"></span>' +
+                  '</span>')(scope);
+  
+              el.wrap(passwordWrapper);
+              passwordToggleBtn.insertAfter(el);
+            };
+  
+            scope.isPassword = function () {
+              return el.attr('type') === 'password';
+            };
+  
+            scope.togglePassword = function () {
+              if (scope.isPassword()) {
+                el.attr('type', 'text');
+              } else {
+                el.attr('type', 'password');
+              }
+            };
+  
+  
+            scope.showToggler = function () {
+              return !el.is(':disabled');
+            };
+  
+            // remove input group class when input is disabled so it is displaaed like a normal input element
+            scope.$watch(scope.showToggler, function (showToggler) {
+              var passwordWrapper = el.parent('.mw-password-toggler');
+              if (showToggler) {
+                passwordWrapper.addClass('input-group');
+              } else {
+                passwordWrapper.removeClass('input-group');
+              }
+            });
+  
+            render();
+          }
+        };
+      }]);
+  
+  })();
+  
+  
+  
+  'use strict';
+  
+  angular.module('mwFormBb', [])
+  
+    .directive('mwFormMultiSelectBb', function () {
       return {
         restrict: 'A',
         transclude: true,
         require: '^?form',
         scope: {
           model: '=',
-          options: '=',
-          query: '=filter',
-          mwRequired: '='
+          collection: '=',
+          mwOptionsKey: '@',
+          translationPrefix: '@',
+          mwRequired: '=',
+          disabledCollection: '='
         },
-        templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect.html',
-        controller: ['$scope', function ($scope) {
-
-          if (!angular.isArray($scope.model)) {
-            $scope.model = [];
+        templateUrl: 'uikit/templates/mwFormBb/mwFormMultiSelect.html',
+        link: function (scope, el, attr, form) {
+          scope.optionsKey = scope.mwOptionsKey || 'key';
+  
+          if (!(scope.collection instanceof window.mCAP.Collection)) {
+            throw new Error('mwFormMultiSelect: collection attribute has to be a collection');
           }
-
-          if (angular.isArray($scope.options)) {
-            var objOptions = {};
-            $scope.options.forEach(function (option) {
-              objOptions[option] = option;
-            });
-
-            $scope.options = objOptions;
+  
+          if (scope.disabledCollection && !(scope.disabledCollection instanceof window.mCAP.Collection)) {
+            throw new Error('mwFormMultiSelect: disabledCollection attribuet has to be a collection');
           }
-
-          $scope.getObjectSize = function (obj) {
-            return _.size(obj);
-          };
-
-          $scope.filter = function (items) {
-            var result = {};
-
-            angular.forEach(items, function (value, key) {
-
-              if (!$scope.query || !value || value.match($scope.query.toLowerCase()) || value.match($scope.query.toUpperCase())) {
-                result[key] = value;
-              }
-            });
-            return result;
-          };
-
-          $scope.toggleKeyIntoModelArray = function (key) {
-
-            $scope.model = $scope.model || [];
-            //Check if key is already in the model array
-            //When user unselects a checkbox it will be deleted from the model array
-            if ($scope.model.indexOf(key) >= 0) {
+  
+          //When user unselects a checkbox it will be deleted from the model array
+          var removeFromModel = function (key) {
+            if (scope.model.indexOf(key) >= 0) {
               // Delete key from model array
-              $scope.model.splice($scope.model.indexOf(key), 1);
+              scope.model.splice(scope.model.indexOf(key), 1);
               // Delete model if no attribute is in there (for validation purposes)
-              if ($scope.model.length === 0) {
-                delete $scope.model;
+              if (scope.model.length === 0) {
+                delete scope.model;
               }
-            } else {
-              $scope.model.push(key);
+              return true;
+            }
+            return false;
+          };
+  
+          if (scope.disabledCollection) {
+            //if a an item is in the disabledCollection it will be removed from the model
+            scope.disabledCollection.each(function (disabledModel) {
+              removeFromModel(disabledModel.get(scope.optionsKey));
+            });
+          }
+  
+          scope.isDisabled = function (model) {
+            if (scope.disabledCollection) {
+              return !!scope.disabledCollection.get(model);
             }
           };
-
-        }],
-        link: function (scope, el, attr, form) {
-
-          scope.showRequiredMessage = function () {
-            return ( (!scope.model || scope.model.length < 1) && scope.required);
+  
+          scope.toggleKeyIntoModelArray = function (key) {
+            scope.model = scope.model || [];
+            if (!removeFromModel(key)) {
+              scope.model.push(key);
+            }
           };
-
+  
+          scope.showRequiredMessage = function () {
+            return ( (!scope.model || scope.model.length < 1) && scope.mwRequired);
+          };
+  
           scope.setDirty = function () {
             if (form) {
               form.$setDirty();
@@ -2342,5606 +3857,5059 @@ angular.module('mwFileUpload')
         }
       };
     })
-
-    .directive('mwFormMultiSelect2', function () {
+  
+    .directive('mwFormRadioGroupBb', function () {
       return {
         restrict: 'A',
         transclude: true,
         require: '^?form',
         scope: {
-          mwCollection: '=',
+          mwModel: '=',
           mwOptionsCollection: '=',
+          mwOptionsKey: '@',
           mwOptionsLabelKey: '@',
           mwOptionsLabelI18nPrefix: '@',
           mwRequired: '=',
-          mwDisabled: '='
+          mwDisabled: '=',
+          name: '@'
         },
-        templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect2.html',
-        link: function (scope, elm, attr, formCtrl) {
+        templateUrl: 'uikit/templates/mwFormBb/mwFormRadioGroup.html',
+        link: function (scope) {
+          scope.optionsKey = scope.mwOptionsKey || 'key';
+  
           if (scope.mwOptionsCollection.length === 0) {
             scope.mwOptionsCollection.fetch();
           }
-
-          scope.toggleModel = function (model) {
-            var existingModel = scope.mwCollection.findWhere(model.toJSON());
-            if (existingModel) {
-              scope.mwCollection.remove(existingModel);
-            } else {
-              scope.mwCollection.add(model.toJSON());
-            }
-            if (formCtrl) {
-              formCtrl.$setDirty();
-            }
-          };
         }
       };
     })
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwFormCheckbox
-     * @element div
-     * @description
-     *
-     * Wrapper for checkbox elements. Adds form HTML and corresponding CSS.
-     *
-     * @scope
-     *
-     * @param {string} label Label to show
-     *
-     */
-    .directive('mwFormCheckbox', function () {
+  
+    .directive('mwFormSelectBb', ['i18n', function (i18n) {
       return {
         restrict: 'A',
-        replace: true,
         transclude: true,
+        require: '^?form',
         scope: {
-          mwClass: '@class',
-          label: '@',
-          tooltip: '@',
-          badges: '@'
+          mwModel: '=',
+          mwOptionsCollection: '=',
+          mwOptionsKey: '@',            //defines option attribute as _the value_ - optional. if undefined, assumes "key" as key value
+          mwOptionsLabelKey: '@',       //defines option attribute as _the label_
+          mwOptionsLabelI18nPrefix: '@',//defines a directory for i18n texts as _the label_ - optional
+          mwRequired: '=',              //determines, if a selection is required - optional, disables the _null option_
+          mwDisabled: '=',              //determines, if the select-box is disabled
+          mwChange: '&',
+          mwPlaceholder: '@placeholder',
+          mwNullLabel: '@',             //defines a string as _the label_ for _the null option_ - optional, only effective, if selection not required (mwRequired = false)
+          mwAutoFetch: '=',
+          name: '@'
         },
-        templateUrl: 'uikit/templates/mwForm/mwFormCheckbox.html',
+        templateUrl: 'uikit/templates/mwFormBb/mwFormSelect.html',
         link: function (scope) {
-          if (scope.badges) {
-            var formatBadges = function () {
-              scope.typedBadges = [];
-              var splittedBadges = scope.badges.split(',');
-              angular.forEach(splittedBadges, function (badge) {
-                var type = 'info';
-                if (badge.toLowerCase().indexOf('android') > -1) {
-                  type = 'android';
-                }
-                if (badge.toLowerCase().indexOf('ios') > -1) {
-                  type = 'ios';
-                }
-                if (badge.toLowerCase().indexOf('knox') > -1) {
-                  type = 'knox';
-                }
-                if (badge.toLowerCase().indexOf('-knox-') > -1) {
-                  badge = 'KNOX';
-                  type = 'notsafe';
-                }
-                if (badge.toLowerCase().indexOf('knox') > -1 &&
-                  badge.toLowerCase().indexOf('android') > -1) {
-                  type = 'multi';
-                }
-                scope.typedBadges.push({
-                  text: badge,
-                  type: type
-                });
-              });
-            };
-            scope.$watch('badges', formatBadges);
-          }
-        }
-      };
-    })
-
-    .directive('mwCustomSelect', function () {
-      return {
-        require: '^?ngModel',
-        link: function (scope, el) {
-          var customSelectWrapper = angular.element('<span class="custom-select mw-select"></span>');
-
-          var render = function () {
-            el.wrap(customSelectWrapper);
-            el.addClass('custom');
+          //if the optional options and label key are not set, specify a default value
+          scope.optionsKey = scope.mwOptionsKey || 'key';
+          scope.labelKey = scope.mwOptionsLabelKey || 'label';
+  
+          scope.viewModel = {
+            val: ''
           };
-
-          render();
-        }
-      };
-    })
-
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwCustomCheckbox
-     * @element input
-     * @scope
-     *
-     * @param {boolean} radio If true, adds class 'round' to wrapping span element
-     * @description
-     *
-     * Replaces native checkbox with custom checkbox
-     *
-     */
-    .directive('mwCustomCheckbox', function () {
-      return {
-        restrict: 'A',
-        link: function (scope, el, attr) {
-          attr.$observe('radio', function (newVal) {
-            if (newVal === true) {
-              el.parent().addClass('round');
-            }
-          });
-
-          // render custom checkbox
-          // to preserve the functionality of the original checkbox we just wrap it with a custom element
-          // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
-          // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
-          var render = function () {
-            var customCheckbox = angular.element('<span class="custom-checkbox mw-checkbox"></span>'),
-              customCheckboxStateIndicator = angular.element('<span class="state-indicator"></span>'),
-              customCheckboxStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
-
-            el.wrap(customCheckbox);
-            customCheckboxStateIndicator.insertAfter(el);
-            customCheckboxStateFocusIndicator.insertAfter(customCheckboxStateIndicator);
+  
+          scope.getKey = function (optionModel) {
+            return optionModel.get(scope.optionsKey);
           };
-
-          (function init() {
-            //after this the remaining element is removed
-            scope.$on('$destroy', function () {
-              el.off();
-              el.parent('.mw-checkbox').remove();
-            });
-
-            render();
-
-          }());
-        }
-      };
-    })
-
-    .directive('mwCustomRadio', function () {
-      return {
-        restrict: 'A',
-        link: function (scope, el) {
-          // render custom checkbox
-          // to preserve the functionality of the original checkbox we just wrap it with a custom element
-          // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
-          // additionally a custom status indicator is appended as a sibling of the original checkbox inside the custom checkbox wrapper
-          var render = function () {
-            var customRadio = angular.element('<span class="custom-radio mw-radio"></span>'),
-              customRadioStateIndicator = angular.element('<span class="state-indicator"></span>'),
-              customRadioStateFocusIndicator = angular.element('<span class="state-focus-indicator"></span>');
-
-            el.wrap(customRadio);
-            customRadioStateIndicator.insertAfter(el);
-            customRadioStateFocusIndicator.insertAfter(customRadioStateIndicator);
-          };
-
-          (function init() {
-            //after this the remaining element is removed
-            scope.$on('$destroy', function () {
-              el.off();
-              el.parent('.mw-radio').remove();
-            });
-
-            render();
-
-          }());
-        }
-      };
-    })
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwFormValidation
-     * @element span
-     * @description
-     * **Important!:** Can only be placed inside of {@link mwForm.directive:mwFormInput mwFormInput}.
-     *
-     * Adds validation messages if validation for given key fails.
-     *
-     * @scope
-     *
-     * @param {string} mwFormsValidation The key to validate a model
-     */
-    .directive('mwFormValidation', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        require: ['^mwFormInput', '^form'],
-        scope: {
-          validation: '@mwFormValidation'
-        },
-        template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
-        link: function (scope, elm, attr, controllers) {
-          var mwFormInputCtrl = controllers[0],
-            inputName = mwFormInputCtrl.element.attr('name'),
-            form = controllers[1],
-            invalid = false;
-
-          if (!inputName) {
-            invalid = true;
-            throw new Error('element doesn\'t have name attribute');
-          }
-
-          if (form && !form[inputName]) {
-            invalid = true;
-            throw new Error('element ' + inputName + ' not found');
-          }
-
-          scope.isValid = function () {
-            if (invalid || !form) {
-              return false;
-            } else {
-              if (form[inputName]) {
-                return form[inputName].$error[scope.validation];
+  
+          scope.getLabel = function (optionModel) {
+            //if a null option exists, label is the label key (specified in addNullOption)
+            if(optionModel.get(scope.optionsKey) === null){
+              return optionModel.get(scope.labelKey);
+            } else { //for any other option, first check if label can be [i18n-prefix + optionsKey]...
+              if(scope.mwOptionsLabelI18nPrefix){
+                return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
+              } else { //...else label is, what get key returns (specified or default options key)
+                return scope.getKey(optionModel);
               }
             }
           };
-        }
-      };
-    })
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwForm
-     * @element form
-     * @description
-     *
-     * Adds form specific behaviour
-     *
-     */
-    .directive('form', function () {
-      return {
-        restrict: 'E',
-        link: function (scope, el) {
-          el.addClass('form-horizontal');
-          el.attr('novalidate', 'true');
-
-          var noPasswordAutocomplete = angular.element(
-            '<!-- fake fields are a workaround for chrome autofill getting the wrong fields -->' +
-            '<input style="display:none" type="text" name="fakeusernameremembered"/>' +
-            '<input style="display:none" type="password" name="fakepasswordremembered"/>'
-          );
-
-          el.prepend(noPasswordAutocomplete);
-        }
-      };
-    })
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwLeaveConfirmation
-     * @element form
-     * @description
-     *
-     * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
-     *
-     */
-
-    .directive('mwFormLeaveConfirmation', ['$window', '$document', '$location', 'i18n', 'Modal', '$compile', function ($window, $document, $location, i18n, Modal, $compile) {
-      return {
-        require: '^form',
-        link: function (scope, elm, attr, form) {
-          scope.form = form;
-          scope.text = i18n.get('common.confirmModal.description');
-          var confirmation = $compile('<div mw-leave-confirmation="form.$dirty" text="{{text}}"></div>')(scope);
-          elm.append(confirmation);
-
-          scope.$on('$destroy', function () {
-            scope.form.$dirty = false;
-          });
+  
+          scope.getSelectedModel = function (val) {
+            var searchObj = {};
+  
+            searchObj[scope.optionsKey] = val;
+            return scope.mwOptionsCollection.findWhere(searchObj);
+          };
+  
+          var addNullOption = function () {
+            if (!scope.mwRequired) {
+              var nullOption = {},
+                  key = null,
+                  referenceObj = {};
+              //create the null-option-object and a reference object with just the options-key
+              referenceObj[scope.optionsKey] = key;
+              nullOption[scope.optionsKey] = key;
+              nullOption[scope.labelKey] = scope.mwNullLabel || '';
+  
+              //if the collection already contains a null Option, we don't override it.
+              //By checking for the reference object, it just scans the collection for the options key
+              if (!scope.mwOptionsCollection.findWhere(referenceObj)) {
+                scope.mwOptionsCollection.add(nullOption);
+              }
+            }
+          };
+  
+          if (scope.mwModel instanceof window.Backbone.Model) {
+            // We need set it to null when it is undefined so the added null object will be selected
+            scope.viewModel.val = scope.mwModel.get(scope.optionsKey) || null;
+            scope.mwOptionsCollection.on('add', function () {
+              if (scope.viewModel.val && scope.getSelectedModel(scope.viewModel.val)) {
+                scope.mwModel.set(scope.getSelectedModel(scope.viewModel.val).toJSON());
+              }
+            });
+            scope.$watch('viewModel.val', function (val) {
+              if (val && scope.getSelectedModel(val)) {
+                scope.mwModel.set(scope.getSelectedModel(val).toJSON());
+              } else {
+                scope.mwModel.clear();
+              }
+            });
+          } else {
+            // We need set it to null when it is undefined so the added null object will be selected
+            scope.viewModel.val = scope.mwModel || null;
+            scope.$watch('mwModel', function (val) {
+              if (val || val === null) {
+                scope.viewModel.val = val;
+              }
+            });
+            scope.$watch('viewModel.val', function (val) {
+              scope.mwModel = val;
+            });
+          }
+  
+          //auto fetch is default true
+          if ((scope.mwAutoFetch || angular.isUndefined(scope.mwAutoFetch)) && scope.mwOptionsCollection.length === 0) {
+            scope.mwOptionsCollection.fetch();
+          }
+  
+          if (!scope.mwRequired) {
+            //We are adding a null object so we can use a placeholder and a null option
+            //It is not possible to use 2 options in ng-select when ng-options is in use
+            //So we have to add it to the collection
+            addNullOption();
+            scope.mwOptionsCollection.on('reset sync', addNullOption, this);
+          }
         }
       };
     }])
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwFormActions
-     * @element form
-     * @description
-     *
-     * Adds buttons for save and cancel. Must be placed inside a form tag.
-     * (Form controller has to be available on the parent scope!)
-     *
-     * @scope
-     *
-     * @param {expression} save Expression to evaluate on click on 'Save' button
-     * @param {expression} cancel Expression to evaluate on click on 'cancel' button
-     *
-     */
-    .directive('mwFormActions', ['Loading', '$route', function (Loading, $route) {
-      return {
-        replace: true,
-        scope: {
-          save: '&',
-          cancel: '&',
-          showSave: '=',
-          showCancel: '='
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormActions.html',
-        link: function (scope, elm, attr) {
-
-          scope.isLoading = Loading.isLoading;
-
-          scope.form = elm.inheritedData('$formController');
-          scope.hasCancel = angular.isDefined(attr.cancel);
-          scope.hasSave = angular.isDefined(attr.save);
-          scope._showSave = true;
-          scope._showCancel = true;
-          scope.executeDefaultCancel = (attr.cancel === 'true');
-
-          scope.$watch('showSave', function (val) {
-            if (angular.isDefined(val)) {
-              scope._showSave = val;
-            }
-          });
-
-          scope.$watch('showCancel', function (val) {
-            if (angular.isDefined(val)) {
-              scope._showCancel = val;
-            }
-          });
-
-          var setFormPristineAndEvaluate = function (exec) {
-            if (scope.form) {
-              scope.form.$setPristine();
-            }
-            scope.$eval(exec);
-          };
-
-          scope.saveFacade = function () {
-            setFormPristineAndEvaluate(scope.save);
-          };
-
-          scope.cancelFacade = function () {
-            if (scope.cancel && scope.executeDefaultCancel) {
-              setFormPristineAndEvaluate(function () {
-                $route.reload();
-              });
-            } else {
-              setFormPristineAndEvaluate(scope.cancel);
-            }
-          };
-        }
-      };
-    }])
-
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:select
-     * @restrict E
-     * @description
-     *
-     * Extends the select element, by adding class 'form-control' and registers
-     * it on {@link mwForm.directive:mwFormInput mwFormInput}.
-     *
-     */
-    .directive('select', extendHTMLElement)
-
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:input
-     * @restrict E
-     * @description
-     *
-     * Extends the input[text] element, by adding class 'form-control' and
-     * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
-     *
-     */
-    .directive('input', extendHTMLElement)
-    .directive('input', addDefaultValidations)
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:textarea
-     * @restrict E
-     * @description
-     *
-     * Extends the textarea element, by adding class 'form-control' and
-     * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
-     *
-     */
-    .directive('textarea', extendHTMLElement)
-    .directive('textarea', addDefaultValidations)
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwPasswordToggler
-     * @element input
-     * @description
-     *
-     * Adds an eye button for password fields to show the password in clear text
-     *
-     */
-    .directive('mwPasswordToggler', ['$compile', function ($compile) {
+  
+    .directive('mwMultiSelectBoxes', ['i18n', function (i18n) {
       return {
         restrict: 'A',
-        link: function (scope, el) {
-
-          var render = function () {
-            var passwordWrapper = angular.element('<div class="mw-password-toggler input-group"></div>'),
-              passwordToggleBtn = $compile(
-                '<span class="input-group-addon toggler-btn clickable" ng-click="togglePassword()" ng-if="showToggler()">' +
-                '<span ng-if="isPassword()" mw-icon="fa-eye"></span>' +
-                '<span ng-if="!isPassword()" mw-icon="fa-eye-slash"></span>' +
-                '</span>')(scope);
-
-            el.wrap(passwordWrapper);
-            passwordToggleBtn.insertAfter(el);
+        scope: {
+          mwOptionsCollection: '=',
+          mwCollection: '=',
+          labelProperty: '@mwOptionsLabelKey',
+          i18nPrefix: '@mwOptionsLabelI18nPrefix',
+          mwRequired: '=',
+          mwDisabled: '=',
+          name: '@hiddenFormElementName',
+          placeholder: '@'
+        },
+        templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBoxes.html',
+        link: function (scope) {
+          scope.viewModel = {
+            tmpModel: new scope.mwCollection.model()
           };
-
-          scope.isPassword = function () {
-            return el.attr('type') === 'password';
+  
+          //add empty model on + button
+          scope.add = function (model) {
+            scope.mwCollection.add(model.toJSON());
           };
-
-          scope.togglePassword = function () {
-            if (scope.isPassword()) {
-              el.attr('type', 'text');
-            } else {
-              el.attr('type', 'password');
+  
+          //remove the specific model or the last (empty) one if model is not found
+          scope.remove = function (model) {
+            scope.mwCollection.remove(model);
+          };
+  
+          //get label to show in select boxes
+          scope.getLabel = function (model) {
+            var label = scope.labelProperty ? model.get(scope.labelProperty) : model.get('key');
+            if (scope.i18nPrefix) {
+              return i18n.get(scope.i18nPrefix + '.' + label);
             }
           };
-
-
-          scope.showToggler = function () {
-            return !el.is(':disabled');
-          };
-
-          // remove input group class when input is disabled so it is displaaed like a normal input element
-          scope.$watch(scope.showToggler, function (showToggler) {
-            var passwordWrapper = el.parent('.mw-password-toggler');
-            if (showToggler) {
-              passwordWrapper.addClass('input-group');
-            } else {
-              passwordWrapper.removeClass('input-group');
-            }
+  
+          scope.mwCollection.on('add', function (model) {
+            scope.mwOptionsCollection.remove(model);
           });
-
-          render();
+  
+          scope.mwCollection.on('remove', function (model) {
+            scope.mwOptionsCollection.add(model.toJSON());
+          });
+  
+          scope.mwCollection.each(function (model) {
+            scope.mwOptionsCollection.remove(model);
+          });
+  
         }
       };
     }]);
-
-})();
-
-
-
-'use strict';
-
-angular.module('mwFormBb', [])
-
-  .directive('mwFormMultiSelectBb', function () {
-    return {
-      restrict: 'A',
-      transclude: true,
-      require: '^?form',
-      scope: {
-        model: '=',
-        collection: '=',
-        mwOptionsKey: '@',
-        translationPrefix: '@',
-        mwRequired: '=',
-        disabledCollection: '='
-      },
-      templateUrl: 'uikit/templates/mwFormBb/mwFormMultiSelect.html',
-      link: function (scope, el, attr, form) {
-        scope.optionsKey = scope.mwOptionsKey || 'key';
-
-        if (!(scope.collection instanceof window.mCAP.Collection)) {
-          throw new Error('mwFormMultiSelect: collection attribute has to be a collection');
-        }
-
-        if (scope.disabledCollection && !(scope.disabledCollection instanceof window.mCAP.Collection)) {
-          throw new Error('mwFormMultiSelect: disabledCollection attribuet has to be a collection');
-        }
-
-        //When user unselects a checkbox it will be deleted from the model array
-        var removeFromModel = function (key) {
-          if (scope.model.indexOf(key) >= 0) {
-            // Delete key from model array
-            scope.model.splice(scope.model.indexOf(key), 1);
-            // Delete model if no attribute is in there (for validation purposes)
-            if (scope.model.length === 0) {
-              delete scope.model;
-            }
-            return true;
-          }
-          return false;
-        };
-
-        if (scope.disabledCollection) {
-          //if a an item is in the disabledCollection it will be removed from the model
-          scope.disabledCollection.each(function (disabledModel) {
-            removeFromModel(disabledModel.get(scope.optionsKey));
-          });
-        }
-
-        scope.isDisabled = function (model) {
-          if (scope.disabledCollection) {
-            return !!scope.disabledCollection.get(model);
-          }
-        };
-
-        scope.toggleKeyIntoModelArray = function (key) {
-          scope.model = scope.model || [];
-          if (!removeFromModel(key)) {
-            scope.model.push(key);
-          }
-        };
-
-        scope.showRequiredMessage = function () {
-          return ( (!scope.model || scope.model.length < 1) && scope.mwRequired);
-        };
-
-        scope.setDirty = function () {
-          if (form) {
-            form.$setDirty();
-          }
-        };
+  
+  'use strict';
+  
+  (function () {
+  
+    var validateRegex = function (value, regex) {
+      if (value) {
+        return !!value.match(regex);
+      } else {
+        return true;
       }
     };
-  })
-
-  .directive('mwFormRadioGroupBb', function () {
-    return {
-      restrict: 'A',
-      transclude: true,
-      require: '^?form',
-      scope: {
-        mwModel: '=',
-        mwOptionsCollection: '=',
-        mwOptionsKey: '@',
-        mwOptionsLabelKey: '@',
-        mwOptionsLabelI18nPrefix: '@',
-        mwRequired: '=',
-        mwDisabled: '=',
-        name: '@'
-      },
-      templateUrl: 'uikit/templates/mwFormBb/mwFormRadioGroup.html',
-      link: function (scope) {
-        scope.optionsKey = scope.mwOptionsKey || 'key';
-
-        if (scope.mwOptionsCollection.length === 0) {
-          scope.mwOptionsCollection.fetch();
-        }
-      }
-    };
-  })
-
-  .directive('mwFormSelectBb', ['i18n', function (i18n) {
-    return {
-      restrict: 'A',
-      transclude: true,
-      require: '^?form',
-      scope: {
-        mwModel: '=',
-        mwOptionsCollection: '=',
-        mwOptionsKey: '@',            //defines option attribute as _the value_ - optional. if undefined, assumes "key" as key value
-        mwOptionsLabelKey: '@',       //defines option attribute as _the label_
-        mwOptionsLabelI18nPrefix: '@',//defines a directory for i18n texts as _the label_ - optional
-        mwRequired: '=',              //determines, if a selection is required - optional, disables the _null option_
-        mwDisabled: '=',              //determines, if the select-box is disabled
-        mwChange: '&',
-        mwPlaceholder: '@placeholder',
-        mwNullLabel: '@',             //defines a string as _the label_ for _the null option_ - optional, only effective, if selection not required (mwRequired = false)
-        mwAutoFetch: '=',
-        name: '@'
-      },
-      templateUrl: 'uikit/templates/mwFormBb/mwFormSelect.html',
-      link: function (scope) {
-        //if the optional options and label key are not set, specify a default value
-        scope.optionsKey = scope.mwOptionsKey || 'key';
-        scope.labelKey = scope.mwOptionsLabelKey || 'label';
-
-        scope.viewModel = {
-          val: ''
-        };
-
-        scope.getKey = function (optionModel) {
-          return optionModel.get(scope.optionsKey);
-        };
-
-        scope.getLabel = function (optionModel) {
-          //if a null option exists, label is the label key (specified in addNullOption)
-          if(optionModel.get(scope.optionsKey) === null){
-            return optionModel.get(scope.labelKey);
-          } else { //for any other option, first check if label can be [i18n-prefix + optionsKey]...
-            if(scope.mwOptionsLabelI18nPrefix){
-              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + scope.getKey(optionModel));
-            } else { //...else label is, what get key returns (specified or default options key)
-              return scope.getKey(optionModel);
-            }
+  
+    angular.module('mwFormValidators', [])
+  
+    /**
+     * @ngdoc directive
+     * @name mwFormValidators.directive:mwValidatePhone
+     * @element input
+     * @description
+     *
+     * Adds validation for phone numbers.
+     * Valid Examples are: +491234567 or 00491234567
+     *
+     * Note: this directive requires `ngModel` to be present.
+     *
+     */
+      .directive('mwValidatePhone', function () {
+        return {
+          restrict: 'A',
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var regex = /^\+(?:[0-9]){6,14}[0-9]$/;
+  
+            var removeNonDigitValues = function (value) {
+              if (value) {
+                value = value.replace(/[^ 0-9+]/g, '');
+              }
+              return value;
+            };
+  
+            var validateNumber = function (value) {
+              return validateRegex(value, regex);
+            };
+  
+            ngModel.$validators.phone = validateNumber;
+            ngModel.$formatters.push(removeNonDigitValues);
           }
         };
-
-        scope.getSelectedModel = function (val) {
-          var searchObj = {};
-
-          searchObj[scope.optionsKey] = val;
-          return scope.mwOptionsCollection.findWhere(searchObj);
-        };
-
-        var addNullOption = function () {
-          if (!scope.mwRequired) {
-            var nullOption = {},
-                key = null,
-                referenceObj = {};
-            //create the null-option-object and a reference object with just the options-key
-            referenceObj[scope.optionsKey] = key;
-            nullOption[scope.optionsKey] = key;
-            nullOption[scope.labelKey] = scope.mwNullLabel || '';
-
-            //if the collection already contains a null Option, we don't override it.
-            //By checking for the reference object, it just scans the collection for the options key
-            if (!scope.mwOptionsCollection.findWhere(referenceObj)) {
-              scope.mwOptionsCollection.add(nullOption);
-            }
+      })
+  
+      .directive('mwValidateHex', function () {
+        return {
+          restrict: 'A',
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var regex = /^(0x)?([0-9A-Fa-f])+$/;
+  
+            var validateHex = function (value) {
+              ngModel.$setValidity('hex', validateRegex(value, regex));
+              return value;
+            };
+  
+            ngModel.$formatters.push(validateHex);
+            ngModel.$parsers.push(validateHex);
           }
         };
-
-        if (scope.mwModel instanceof window.Backbone.Model) {
-          // We need set it to null when it is undefined so the added null object will be selected
-          scope.viewModel.val = scope.mwModel.get(scope.optionsKey) || null;
-          scope.mwOptionsCollection.on('add', function () {
-            if (scope.viewModel.val && scope.getSelectedModel(scope.viewModel.val)) {
-              scope.mwModel.set(scope.getSelectedModel(scope.viewModel.val).toJSON());
-            }
-          });
-          scope.$watch('viewModel.val', function (val) {
-            if (val && scope.getSelectedModel(val)) {
-              scope.mwModel.set(scope.getSelectedModel(val).toJSON());
-            } else {
-              scope.mwModel.clear();
-            }
-          });
-        } else {
-          // We need set it to null when it is undefined so the added null object will be selected
-          scope.viewModel.val = scope.mwModel || null;
-          scope.$watch('mwModel', function (val) {
-            if (val || val === null) {
-              scope.viewModel.val = val;
-            }
-          });
-          scope.$watch('viewModel.val', function (val) {
-            scope.mwModel = val;
-          });
-        }
-
-        //auto fetch is default true
-        if ((scope.mwAutoFetch || angular.isUndefined(scope.mwAutoFetch)) && scope.mwOptionsCollection.length === 0) {
-          scope.mwOptionsCollection.fetch();
-        }
-
-        if (!scope.mwRequired) {
-          //We are adding a null object so we can use a placeholder and a null option
-          //It is not possible to use 2 options in ng-select when ng-options is in use
-          //So we have to add it to the collection
-          addNullOption();
-          scope.mwOptionsCollection.on('reset sync', addNullOption, this);
-        }
-      }
-    };
-  }])
-
-  .directive('mwMultiSelectBoxes', ['i18n', function (i18n) {
-    return {
-      restrict: 'A',
-      scope: {
-        mwOptionsCollection: '=',
-        mwCollection: '=',
-        labelProperty: '@mwOptionsLabelKey',
-        i18nPrefix: '@mwOptionsLabelI18nPrefix',
-        mwRequired: '=',
-        mwDisabled: '=',
-        name: '@hiddenFormElementName',
-        placeholder: '@'
-      },
-      templateUrl: 'uikit/templates/mwFormBb/mwMultiSelectBoxes.html',
-      link: function (scope) {
-        scope.viewModel = {
-          tmpModel: new scope.mwCollection.model()
-        };
-
-        //add empty model on + button
-        scope.add = function (model) {
-          scope.mwCollection.add(model.toJSON());
-        };
-
-        //remove the specific model or the last (empty) one if model is not found
-        scope.remove = function (model) {
-          scope.mwCollection.remove(model);
-        };
-
-        //get label to show in select boxes
-        scope.getLabel = function (model) {
-          var label = scope.labelProperty ? model.get(scope.labelProperty) : model.get('key');
-          if (scope.i18nPrefix) {
-            return i18n.get(scope.i18nPrefix + '.' + label);
-          }
-        };
-
-        scope.mwCollection.on('add', function (model) {
-          scope.mwOptionsCollection.remove(model);
-        });
-
-        scope.mwCollection.on('remove', function (model) {
-          scope.mwOptionsCollection.add(model.toJSON());
-        });
-
-        scope.mwCollection.each(function (model) {
-          scope.mwOptionsCollection.remove(model);
-        });
-
-      }
-    };
-  }]);
-
-'use strict';
-
-(function () {
-
-  var validateRegex = function (value, regex) {
-    if (value) {
-      return !!value.match(regex);
-    } else {
-      return true;
-    }
-  };
-
-  angular.module('mwFormValidators', [])
-
-  /**
-   * @ngdoc directive
-   * @name mwFormValidators.directive:mwValidatePhone
-   * @element input
-   * @description
-   *
-   * Adds validation for phone numbers.
-   * Valid Examples are: +491234567 or 00491234567
-   *
-   * Note: this directive requires `ngModel` to be present.
-   *
-   */
-    .directive('mwValidatePhone', function () {
-      return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var regex = /^\+(?:[0-9]){6,14}[0-9]$/;
-
-          var removeNonDigitValues = function (value) {
-            if (value) {
-              value = value.replace(/[^ 0-9+]/g, '');
-            }
-            return value;
-          };
-
-          var validateNumber = function (value) {
-            return validateRegex(value, regex);
-          };
-
-          ngModel.$validators.phone = validateNumber;
-          ngModel.$formatters.push(removeNonDigitValues);
-        }
-      };
-    })
-
-    .directive('mwValidateHex', function () {
-      return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var regex = /^(0x)?([0-9A-Fa-f])+$/;
-
-          var validateHex = function (value) {
-            ngModel.$setValidity('hex', validateRegex(value, regex));
-            return value;
-          };
-
-          ngModel.$formatters.push(validateHex);
-          ngModel.$parsers.push(validateHex);
-        }
-      };
-    })
-
-    .directive('mwValidateCollectionOrModel', function () {
-      return {
-        restrict: 'A',
-        scope: {
-          mwModel: '=mwValidateCollectionOrModel',
-          mwRequired: '=',
-          mwKey: '@'
-        },
-        require: '^?form',
-        template: '<input type="text" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}" style="display: none">',
-        link: function (scope, el, attr, formController) {
-
-          var key = scope.mwKey || 'uuid';
-
-          scope.model = {};
-          scope.uId = _.uniqueId('validator_');
-
-          var setDirty = function(){
-            if(formController){
-              formController.$setDirty();
-            }
-          };
-
-          var unwatch = scope.$watch('mwModel', function () {
-            var val = scope.mwModel;
-            if (val) {
-              if (val instanceof window.Backbone.Collection) {
-                val.on('add remove reset', function () {
+      })
+  
+      .directive('mwValidateCollectionOrModel', function () {
+        return {
+          restrict: 'A',
+          scope: {
+            mwModel: '=mwValidateCollectionOrModel',
+            mwRequired: '=',
+            mwKey: '@'
+          },
+          require: '^?form',
+          template: '<input type="text" ng-required="mwRequired" ng-model="model.tmp" name="{{uId}}" style="display: none">',
+          link: function (scope, el, attr, formController) {
+  
+            var key = scope.mwKey || 'uuid';
+  
+            scope.model = {};
+            scope.uId = _.uniqueId('validator_');
+  
+            var setDirty = function(){
+              if(formController){
+                formController.$setDirty();
+              }
+            };
+  
+            var unwatch = scope.$watch('mwModel', function () {
+              var val = scope.mwModel;
+              if (val) {
+                if (val instanceof window.Backbone.Collection) {
+                  val.on('add remove reset', function () {
+                    if(val.length > 0){
+                      scope.model.tmp = val.first().get(key);
+                    } else {
+                      scope.model.tmp = undefined;
+                    }
+                    setDirty();
+                  });
                   if(val.length > 0){
                     scope.model.tmp = val.first().get(key);
                   } else {
                     scope.model.tmp = undefined;
                   }
-                  setDirty();
-                });
-                if(val.length > 0){
-                  scope.model.tmp = val.first().get(key);
-                } else {
-                  scope.model.tmp = undefined;
-                }
-              } else if (val instanceof window.Backbone.Model) {
-                key = scope.mwKey || val.idAttribute;
-                val.on('change:'+key, function () {
+                } else if (val instanceof window.Backbone.Model) {
+                  key = scope.mwKey || val.idAttribute;
+                  val.on('change:'+key, function () {
+                    scope.model.tmp = val.get(key);
+                    setDirty();
+                  });
                   scope.model.tmp = val.get(key);
-                  setDirty();
-                });
-                scope.model.tmp = val.get(key);
-              } else {
-                throw new Error('Value is neither a model nor a collection! Make its one of them', val);
+                } else {
+                  throw new Error('Value is neither a model nor a collection! Make its one of them', val);
+                }
+                unwatch();
               }
-              unwatch();
+            });
+          }
+        };
+      })
+  
+      .directive('mwValidatePlaceholder', function () {
+        return {
+          restrict: 'A',
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var regex = /\$\{.*\}/;
+  
+  
+            var validatePlaceholder = function (value) {
+              ngModel.$setValidity('placeholder', validateRegex(value, regex));
+              return value;
+            };
+  
+            ngModel.$formatters.push(validatePlaceholder);
+            ngModel.$parsers.push(validatePlaceholder);
+          }
+        };
+      })
+  
+      .directive('mwValidatePlaceholderOrMail', function () {
+        return {
+          restrict: 'A',
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var mailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+([.][a-zA-Z0-9_-]+)*[.][a-zA-Z0-9._-]+$/,
+              placeholderRegex = /\$\{.+\}/;
+  
+            ngModel.$validators.emailOrPlaceholder = function(value){
+              return !!(validateRegex(value, mailRegex) || validateRegex(value, placeholderRegex));
+            };
+          }
+        };
+      })
+  
+      .directive('mwValidateMatch', function () {
+        return {
+          require: 'ngModel',
+          link: function (scope, elm, attr, ctrl) {
+            var pwdWidget = elm.inheritedData('$formController')[attr.mwValidateMatch];
+  
+            ctrl.$parsers.push(function (value) {
+              var isValid = false;
+              if (value === pwdWidget.$viewValue) {
+                isValid = true;
+              }
+              ctrl.$setValidity('match', isValid);
+              return value;
+            });
+  
+            pwdWidget.$parsers.push(function (value) {
+              var isValid = false;
+              if (value === ctrl.$viewValue) {
+                isValid = true;
+              }
+              ctrl.$setValidity('match', isValid);
+              return value;
+            });
+          }
+        };
+      })
+  
+    /**
+     * @ngdoc directive
+     * @name mwFormValidators.directive:mwValidateUniqueness
+     * @element input
+     * @description
+     *
+     * Adds validation of uniqueness for a given array of strings.
+     *
+     * @param {Array.<String>} mwValidateUniqueness Array of existing items to validate against
+     *
+     * Note: this directive requires `ngModel` to be present.
+     *
+     */
+      .directive('mwValidateUniqueness', function () {
+        return {
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var existingValues;
+  
+            scope.$watch(attr.mwValidateUniqueness, function (value) {
+              existingValues = value;
+            });
+  
+            /**
+             * Add parser/formatter to model which checks if the model value is
+             * a value that already exists and set validation state accordingly
+             */
+            var validateUniqueness = function (value) {
+              var isValid = true;
+              if (angular.isArray(existingValues) && existingValues.length > 0 && value && ngModel.$dirty) {
+                isValid = (existingValues.indexOf(value) === -1);
+              }
+              ngModel.$setValidity('unique', isValid);
+              return value;
+            };
+            ngModel.$parsers.unshift(validateUniqueness);
+            ngModel.$formatters.unshift(validateUniqueness);
+          }
+        };
+      })
+  
+      .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
+        mwValidationMessagesProvider.registerValidator('withoutChars','errors.withoutChar');
+        mwValidationMessagesProvider.registerValidator('withoutChar','errors.withoutChars');
+      }])
+  
+      .directive('mwValidateWithoutChar', ['$parse', 'mwValidationMessages', 'i18n', function($parse, mwValidationMessages, i18n){
+        return {
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var validatorChars,
+                validatorChar = attr.mwValidateWithoutChar;
+  
+            try{
+              validatorChars = $parse(attr.mwValidateWithoutChar)(scope);
+            } catch(err){}
+  
+            if(_.isArray(validatorChars)){
+              mwValidationMessages.updateMessage('withoutChars', function(){
+                return i18n.get('errors.withoutChars',{ chars: '"'+validatorChars.join('", "') + '"' });
+              });
+  
+              ngModel.$validators.withoutChars = function(value){
+                var valid = true;
+  
+                if(value){
+                  validatorChars.forEach(function(validatorChar){
+                    if(valid){
+                      valid = value.indexOf(validatorChar) < 0;
+                    }
+                  });
+                }
+  
+                return valid;
+              };
+            } else if(validatorChar){
+              mwValidationMessages.updateMessage('withoutChar', function(){
+                return i18n.get('errors.withoutChar',{ char: validatorChar });
+              });
+  
+              ngModel.$validators.withoutChar = function(value){
+                var valid = true;
+                if(value){
+                  valid = value.indexOf(validatorChar) < 0;
+                }
+                return valid;
+              };
             }
-          });
-        }
-      };
-    })
-
-    .directive('mwValidatePlaceholder', function () {
-      return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var regex = /\$\{.*\}/;
-
-
-          var validatePlaceholder = function (value) {
-            ngModel.$setValidity('placeholder', validateRegex(value, regex));
-            return value;
-          };
-
-          ngModel.$formatters.push(validatePlaceholder);
-          ngModel.$parsers.push(validatePlaceholder);
-        }
-      };
-    })
-
-    .directive('mwValidatePlaceholderOrMail', function () {
-      return {
-        restrict: 'A',
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var mailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+([.][a-zA-Z0-9_-]+)*[.][a-zA-Z0-9._-]+$/,
-            placeholderRegex = /\$\{.+\}/;
-
-          ngModel.$validators.emailOrPlaceholder = function(value){
-            return !!(validateRegex(value, mailRegex) || validateRegex(value, placeholderRegex));
-          };
-        }
-      };
-    })
-
-    .directive('mwValidateMatch', function () {
-      return {
-        require: 'ngModel',
-        link: function (scope, elm, attr, ctrl) {
-          var pwdWidget = elm.inheritedData('$formController')[attr.mwValidateMatch];
-
-          ctrl.$parsers.push(function (value) {
-            var isValid = false;
-            if (value === pwdWidget.$viewValue) {
-              isValid = true;
-            }
-            ctrl.$setValidity('match', isValid);
-            return value;
-          });
-
-          pwdWidget.$parsers.push(function (value) {
-            var isValid = false;
-            if (value === ctrl.$viewValue) {
-              isValid = true;
-            }
-            ctrl.$setValidity('match', isValid);
-            return value;
-          });
-        }
-      };
-    })
-
+          }
+        };
+      }])
+  
+      .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
+        mwValidationMessagesProvider.registerValidator('onlyWordChars','errors.onlyWordChars');
+      }])
+  
+      .directive('mwValidateWordChars', function(){
+        return {
+          require: 'ngModel',
+          link: function(scope, elm, attr, ngModel){
+            ngModel.$validators.onlyWordChars = function(value){
+              if(value){
+                return !value.match(/\W/g);
+              } else {
+                return true;
+              }
+            };
+          }
+        };
+      })
+  
+      .directive('mwValidateItunesOrHttpLink', function(){
+        return {
+          require: 'ngModel',
+          link: function (scope, elm, attr, ngModel) {
+            var itunesOrHttpLinkRegex = /^(https?|itms|itms-apps):\/\/.+$/;
+            ngModel.$validators.itunesOrHttpLink = function(value){
+              return validateRegex(value, itunesOrHttpLinkRegex);
+            };
+          }
+        };
+      })
+  
+      .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
+        mwValidationMessagesProvider.registerValidator('minValidDate','errors.minDate');
+        mwValidationMessagesProvider.registerValidator('maxValidDate','errors.maxDate');
+      }])
+  
+      .directive('mwValidateDate', ['mwValidationMessages', 'i18n', function(mwValidationMessages, i18n){
+        return {
+          require: 'ngModel',
+          link: function(scope, el, attrs, ngModel){
+  
+            ngModel.$validators.minValidDate = function(value){
+              var minDate = scope.$eval(attrs.minDate),
+                currentDateTs = +new Date(value),
+                minDateTs = +new Date(minDate);
+  
+              return !minDate || !value || currentDateTs > minDateTs;
+            };
+  
+            ngModel.$validators.maxValidDate = function(value){
+              var maxDate = scope.$eval(attrs.maxDate),
+                currentDateTs = +new Date(value),
+                maxDateTs = +new Date(maxDate);
+  
+              return !maxDate || !value || currentDateTs < maxDateTs;
+            };
+  
+            attrs.$observe('minDate', function(val){
+              if(val){
+                mwValidationMessages.updateMessage('minValidDate', function(){
+                  return i18n.get('errors.minValidDate',{ minDate: new Date( scope.$eval(val) ).toLocaleString() });
+                });
+              }
+            });
+            attrs.$observe('maxDate', function(val){
+              if(val){
+                mwValidationMessages.updateMessage('maxValidDate', function(){
+                  return i18n.get('errors.maxValidDate',{ maxDate: new Date( scope.$eval(val) ).toLocaleString() });
+                });
+              }
+            });
+          }
+        };
+      }]);
+  
+  })();
+  'use strict';
+  
+  angular.module('mwHelper', [])
+  
   /**
    * @ngdoc directive
-   * @name mwFormValidators.directive:mwValidateUniqueness
-   * @element input
+   * @name mwHelper.directive:mwStopPropagation
+   * @element ANY
+   * @param {string} mwStopPropagation the name of the event type
+   *
    * @description
-   *
-   * Adds validation of uniqueness for a given array of strings.
-   *
-   * @param {Array.<String>} mwValidateUniqueness Array of existing items to validate against
-   *
-   * Note: this directive requires `ngModel` to be present.
-   *
+   * Stops Propagation of specified event for this element
    */
-    .directive('mwValidateUniqueness', function () {
+    .directive('mwStopPropagation', function () {
       return {
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var existingValues;
-
-          scope.$watch(attr.mwValidateUniqueness, function (value) {
-            existingValues = value;
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          if (!attr.mwStopPropagation) {
+            throw new Error('Directive mwStopPropagation: This directive must have an event name as attribute e.g. mw-stop-propagation="keyup"');
+          }
+          elm.on(attr.mwStopPropagation, function (event) {
+            event.stopPropagation();
           });
-
-          /**
-           * Add parser/formatter to model which checks if the model value is
-           * a value that already exists and set validation state accordingly
-           */
-          var validateUniqueness = function (value) {
-            var isValid = true;
-            if (angular.isArray(existingValues) && existingValues.length > 0 && value && ngModel.$dirty) {
-              isValid = (existingValues.indexOf(value) === -1);
-            }
-            ngModel.$setValidity('unique', isValid);
-            return value;
-          };
-          ngModel.$parsers.unshift(validateUniqueness);
-          ngModel.$formatters.unshift(validateUniqueness);
         }
       };
     })
-
-    .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
-      mwValidationMessagesProvider.registerValidator('withoutChars','errors.withoutChar');
-      mwValidationMessagesProvider.registerValidator('withoutChar','errors.withoutChars');
-    }])
-
-    .directive('mwValidateWithoutChar', ['$parse', 'mwValidationMessages', 'i18n', function($parse, mwValidationMessages, i18n){
+  
+    .directive('mwPreventDefault', function () {
       return {
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var validatorChars,
-              validatorChar = attr.mwValidateWithoutChar;
-
-          try{
-            validatorChars = $parse(attr.mwValidateWithoutChar)(scope);
-          } catch(err){}
-
-          if(_.isArray(validatorChars)){
-            mwValidationMessages.updateMessage('withoutChars', function(){
-              return i18n.get('errors.withoutChars',{ chars: '"'+validatorChars.join('", "') + '"' });
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          if (!attr.mwPreventDefault) {
+            throw new Error('Directive mwPreventDefault: This directive must have an event name as attribute e.g. mw-prevent-default="click"');
+          }
+          elm.on(attr.mwPreventDefault, function (event) {
+            event.preventDefault();
+          });
+        }
+      };
+    })
+  
+  
+    .directive('mwSetDirtyOn', function(){
+      return {
+        restrict: 'A',
+        scope: {
+          mwSetDirtyOn: '@'
+        },
+        require: '^form',
+        link: function (scope, elm, attr, formCtrl) {
+          elm.on(scope.mwSetDirtyOn, function(){
+            formCtrl.$setDirty();
+          });
+        }
+      };
+    })
+  
+    .service('mwDefaultFocusService', function(){
+      var MwDefaultFocusService = function(){
+          var _registeredFocusFields = [];
+          this.register = function(id, el){
+            _registeredFocusFields.push({
+              id: id,
+              el: el,
+              active: false
             });
-
-            ngModel.$validators.withoutChars = function(value){
-              var valid = true;
-
-              if(value){
-                validatorChars.forEach(function(validatorChar){
-                  if(valid){
-                    valid = value.indexOf(validatorChar) < 0;
-                  }
-                });
+          };
+  
+          var update = function(id, newObj){
+            var inputField = _.findWhere(_registeredFocusFields,{id:id}),
+              index = _.indexOf(_registeredFocusFields,inputField);
+              if(index>=0){
+                _registeredFocusFields[index] = newObj;
               }
-
-              return valid;
-            };
-          } else if(validatorChar){
-            mwValidationMessages.updateMessage('withoutChar', function(){
-              return i18n.get('errors.withoutChar',{ char: validatorChar });
-            });
-
-            ngModel.$validators.withoutChar = function(value){
-              var valid = true;
-              if(value){
-                valid = value.indexOf(validatorChar) < 0;
+          };
+  
+          this.setFocus = function(id){
+            var inputField = _.findWhere(_registeredFocusFields,{id:id});
+            if(this.getFocusedField() && this.getFocusedField().id !== id){
+              throw new Error('There can be only one focused field');
+            }
+            if(inputField){
+              inputField.active = true;
+              update(inputField);
+            }
+          };
+  
+          this.removeFocus = function(id){
+            var inputField = _.findWhere(_registeredFocusFields,{id:id});
+            if (inputField){
+              inputField.active = false;
+              update(inputField);
+            }
+          };
+  
+          this.toggleFocus = function(id){
+            var inputField = _.findWhere(_registeredFocusFields,{id:id});
+            if(inputField){
+              inputField.active = !inputField.active;
+              update(inputField);
+            }
+          };
+  
+          this.getFocusedField = function(){
+            return _.findWhere(_registeredFocusFields,{active:true});
+          };
+  
+          this.remove = function(id){
+            var inputField = _.findWhere(_registeredFocusFields,{id:id}),
+                index = _.indexOf(_registeredFocusFields,inputField);
+            if(index>=0){
+              _registeredFocusFields.splice(index,1);
+            }
+          };
+      };
+  
+      return new MwDefaultFocusService();
+    })
+  
+    .directive('mwDefaultFocus', ['mwDefaultFocusService', function (mwDefaultFocusService) {
+      return {
+        restrict: 'A',
+        scope:{
+          isFocused: '=mwDefaultFocus'
+        },
+        link: function (scope, el) {
+          var id = _.uniqueId('focus_field');
+          mwDefaultFocusService.register(id, el);
+  
+          var setFocus = function(){
+            if(el.is(':focus')){
+              return;
+            } else {
+              try{
+                mwDefaultFocusService.setFocus(id);
+                el[0].focus();
+                window.requestAnimFrame(setFocus);
+              } catch(err){
+                console.warn(err);
               }
-              return valid;
+  
+            }
+          };
+  
+          scope.$watch('isFocused',function(isFocused){
+            if(isFocused){
+              window.requestAnimFrame(setFocus);
+            } else {
+              el[0].blur();
+              mwDefaultFocusService.removeFocus(id);
+            }
+          });
+  
+          scope.$on('$destroy',function(){
+            mwDefaultFocusService.remove(id);
+          });
+        }
+      };
+    }])
+  
+  /**
+   * @ngdoc directive
+   * @name mwForm.directive:mwLeaveConfirmation
+   * @element form
+   * @description
+   *
+   * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
+   *
+   */
+  
+    .directive('mwLeaveConfirmation', ['$window', '$document', '$location', '$rootScope', 'i18n', 'Modal', function ($window, $document, $location, $rootScope, i18n, Modal) {
+      return {
+        scope: {
+          alertBeforeLeave: '=mwLeaveConfirmation',
+          text:'@'
+        },
+        link: function (scope) {
+  
+          var confirmationModal = Modal.create({
+            templateUrl: 'uikit/templates/mwForm/mwLeaveConfirmation.html',
+            scope: scope
+          });
+  
+          // Prevent the original event so the routing will not be completed
+          // Save the url where it should be navigated to in a temp variable
+          var showConfirmModal = function (ev, next) {
+            if (scope.alertBeforeLeave) {
+              confirmationModal.show();
+              ev.preventDefault();
+              scope.next = next;
+            } else {
+              scope.changeLocationOff();
+            }
+          };
+  
+          // User wants to stay on the page
+          scope.stay = function () {
+            confirmationModal.hide();
+          };
+  
+          // User really wants to navigate to that page which was saved before in a temp variable
+          scope.continue = function () {
+            if (scope.next) {
+              //instead of scope.$off() we call the original eventhandler function
+              scope.changeLocationOff();
+  
+              //hide the modal and navigate to the page
+              confirmationModal.hide().then(function () {
+                  document.location.href=scope.next;
+                  scope.next = null;
+              });
+            }
+          };
+  
+          //In case that just a hashchange event was triggered
+          //Angular has no $off event unbinding so the original eventhandler is saved in a variable
+          scope.changeLocationOff = $rootScope.$on('$locationChangeStart', showConfirmModal);
+  
+          //In case that the user clicks the refresh/back button or makes a hard url change
+          $window.onbeforeunload = function () {
+            if (scope.alertBeforeLeave && $rootScope.leaveConfirmationEnabled) {
+              return scope.text;
+            }
+          };
+  
+          if(!angular.isDefined(scope.text)){
+            throw new Error('Please specify a text in the text attribute');
+          }
+  
+          $rootScope.leaveConfirmationEnabled = true;
+        }
+      };
+    }])
+  
+    .service('LayoutWatcher', ['$timeout', '$window', function ($timeout, $window) {
+  
+      var _callbacks = [];
+      var _notify = function(){
+        _callbacks.forEach(function(scopedCallback){
+          scopedCallback.callback.apply(scopedCallback.scope);
+        });
+      };
+      angular.element('body').on('DOMNodeInserted',_.throttle(_notify, 300));
+      angular.element('body').on('DOMNodeRemoved',_.throttle(_notify, 300));
+      angular.element($window).on('resize', _.throttle(_notify, 300));
+      $timeout(_notify,500);
+      return {
+        registerCallback: function(cb,scope){
+          if(typeof cb  === 'function'){
+            var scopedCallback = {
+              callback: cb,
+              scope: scope
             };
+            _callbacks.push(scopedCallback);
+          } else {
+            throw new Error('Callback has to be a function');
           }
         }
       };
     }])
-
-    .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
-      mwValidationMessagesProvider.registerValidator('onlyWordChars','errors.onlyWordChars');
-    }])
-
-    .directive('mwValidateWordChars', function(){
+  
+    .directive('mwSetFullScreenHeight', ['LayoutWatcher', function (LayoutWatcher) {
       return {
-        require: 'ngModel',
-        link: function(scope, elm, attr, ngModel){
-          ngModel.$validators.onlyWordChars = function(value){
-            if(value){
-              return !value.match(/\W/g);
-            } else {
-              return true;
+        restrict: 'A',
+        scope:{
+          'subtractElements':'=',
+          'offset':'@'
+        },
+        link: function (scope, el) {
+  
+          el.addClass('mw-full-screen-height');
+  
+          var setHeight = function(){
+            var height = angular.element(window).height();
+  
+            scope.subtractElements.forEach(function(elIdentifier){
+              var $el = angular.element(elIdentifier);
+              if($el){
+                var padding = {
+                      top: parseInt($el.css('padding-top'),10),
+                      bottom: parseInt($el.css('padding-bottom'),10)
+                    };
+                height -= $el.height();
+                height -= padding.top;
+                height -= padding.bottom;
+              }
+            });
+            if(scope.offset){
+              height -= scope.offset;
             }
+            el.css('height',height);
           };
+  
+          LayoutWatcher.registerCallback(setHeight);
+  
         }
       };
-    })
-
-    .directive('mwValidateItunesOrHttpLink', function(){
-      return {
-        require: 'ngModel',
-        link: function (scope, elm, attr, ngModel) {
-          var itunesOrHttpLinkRegex = /^(https?|itms|itms-apps):\/\/.+$/;
-          ngModel.$validators.itunesOrHttpLink = function(value){
-            return validateRegex(value, itunesOrHttpLinkRegex);
-          };
-        }
-      };
-    })
-
-    .config(['mwValidationMessagesProvider', function(mwValidationMessagesProvider){
-      mwValidationMessagesProvider.registerValidator('minValidDate','errors.minDate');
-      mwValidationMessagesProvider.registerValidator('maxValidDate','errors.maxDate');
     }])
-
-    .directive('mwValidateDate', ['mwValidationMessages', 'i18n', function(mwValidationMessages, i18n){
+  
+  
+    .directive('mwInvertModelValue', function (){
       return {
+        restrict: 'A',
         require: 'ngModel',
-        link: function(scope, el, attrs, ngModel){
-
-          ngModel.$validators.minValidDate = function(value){
-            var minDate = scope.$eval(attrs.minDate),
-              currentDateTs = +new Date(value),
-              minDateTs = +new Date(minDate);
-
-            return !minDate || !value || currentDateTs > minDateTs;
+        link: function(scope, elm, attr, ngModelCtrl){
+          var invert = function(value){
+            if(typeof(value) === 'boolean') {
+              return !value;
+            }
+            return value;
           };
-
-          ngModel.$validators.maxValidDate = function(value){
-            var maxDate = scope.$eval(attrs.maxDate),
-              currentDateTs = +new Date(value),
-              maxDateTs = +new Date(maxDate);
-
-            return !maxDate || !value || currentDateTs < maxDateTs;
-          };
-
-          attrs.$observe('minDate', function(val){
-            if(val){
-              mwValidationMessages.updateMessage('minValidDate', function(){
-                return i18n.get('errors.minValidDate',{ minDate: new Date( scope.$eval(val) ).toLocaleString() });
-              });
+          ngModelCtrl.$parsers.push(invert);
+          ngModelCtrl.$formatters.push(invert);
+        }
+      };
+    })
+  
+    .directive('mwRemoveXs', ['Detect', function(Detect){
+      return{
+        priority: 1,
+        link: function(scope,el){
+          if(Detect.isSmartphone()){
+            el.remove();
+            scope.$destroy();
+          }
+        }
+      };
+    }])
+  
+    .directive('mwRemoveMd', ['Detect', function(Detect){
+      return{
+        priority: 1,
+        link: function(scope,el){
+          if(Detect.isSmartphone() || Detect.isTablet()){
+            el.remove();
+            scope.$destroy();
+          }
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwHelper.directive:mwAutofillCheck
+     * @element ANY
+     *
+     * @description
+     * Workaround for Firefox auto fill bug for input directives. Place this directive on a form tag.
+     */
+    .directive('mwAutofillCheck', ['$interval', function($interval){
+      return {
+        restrict: 'A',
+        link: function( scope, elm ){
+          var inputElements = elm.find('input');
+          var stopInterval = null;
+  
+          inputElements.on('keyup', function(){
+            if(stopInterval === null){
+              stopInterval = $interval(function(){
+                inputElements.trigger('input').trigger('change').trigger('keydown');
+              }, 500);
             }
           });
-          attrs.$observe('maxDate', function(val){
-            if(val){
-              mwValidationMessages.updateMessage('maxValidDate', function(){
-                return i18n.get('errors.maxValidDate',{ maxDate: new Date( scope.$eval(val) ).toLocaleString() });
-              });
-            }
+  
+          scope.$on('$destroy', function(){
+            $interval.cancel(stopInterval);
           });
         }
       };
     }]);
-
-})();
-'use strict';
-
-angular.module('mwHelper', [])
-
-/**
- * @ngdoc directive
- * @name mwHelper.directive:mwStopPropagation
- * @element ANY
- * @param {string} mwStopPropagation the name of the event type
- *
- * @description
- * Stops Propagation of specified event for this element
- */
-  .directive('mwStopPropagation', function () {
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        if (!attr.mwStopPropagation) {
-          throw new Error('Directive mwStopPropagation: This directive must have an event name as attribute e.g. mw-stop-propagation="keyup"');
-        }
-        elm.on(attr.mwStopPropagation, function (event) {
-          event.stopPropagation();
-        });
-      }
-    };
-  })
-
-  .directive('mwPreventDefault', function () {
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        if (!attr.mwPreventDefault) {
-          throw new Error('Directive mwPreventDefault: This directive must have an event name as attribute e.g. mw-prevent-default="click"');
-        }
-        elm.on(attr.mwPreventDefault, function (event) {
-          event.preventDefault();
-        });
-      }
-    };
-  })
-
-
-  .directive('mwSetDirtyOn', function(){
-    return {
-      restrict: 'A',
-      scope: {
-        mwSetDirtyOn: '@'
-      },
-      require: '^form',
-      link: function (scope, elm, attr, formCtrl) {
-        elm.on(scope.mwSetDirtyOn, function(){
-          formCtrl.$setDirty();
-        });
-      }
-    };
-  })
-
-  .service('mwDefaultFocusService', function(){
-    var MwDefaultFocusService = function(){
-        var _registeredFocusFields = [];
-        this.register = function(id, el){
-          _registeredFocusFields.push({
-            id: id,
-            el: el,
-            active: false
-          });
-        };
-
-        var update = function(id, newObj){
-          var inputField = _.findWhere(_registeredFocusFields,{id:id}),
-            index = _.indexOf(_registeredFocusFields,inputField);
-            if(index>=0){
-              _registeredFocusFields[index] = newObj;
-            }
-        };
-
-        this.setFocus = function(id){
-          var inputField = _.findWhere(_registeredFocusFields,{id:id});
-          if(this.getFocusedField() && this.getFocusedField().id !== id){
-            throw new Error('There can be only one focused field');
-          }
-          if(inputField){
-            inputField.active = true;
-            update(inputField);
-          }
-        };
-
-        this.removeFocus = function(id){
-          var inputField = _.findWhere(_registeredFocusFields,{id:id});
-          if (inputField){
-            inputField.active = false;
-            update(inputField);
-          }
-        };
-
-        this.toggleFocus = function(id){
-          var inputField = _.findWhere(_registeredFocusFields,{id:id});
-          if(inputField){
-            inputField.active = !inputField.active;
-            update(inputField);
-          }
-        };
-
-        this.getFocusedField = function(){
-          return _.findWhere(_registeredFocusFields,{active:true});
-        };
-
-        this.remove = function(id){
-          var inputField = _.findWhere(_registeredFocusFields,{id:id}),
-              index = _.indexOf(_registeredFocusFields,inputField);
-          if(index>=0){
-            _registeredFocusFields.splice(index,1);
-          }
-        };
-    };
-
-    return new MwDefaultFocusService();
-  })
-
-  .directive('mwDefaultFocus', ['mwDefaultFocusService', function (mwDefaultFocusService) {
-    return {
-      restrict: 'A',
-      scope:{
-        isFocused: '=mwDefaultFocus'
-      },
-      link: function (scope, el) {
-        var id = _.uniqueId('focus_field');
-        mwDefaultFocusService.register(id, el);
-
-        var setFocus = function(){
-          if(el.is(':focus')){
-            return;
-          } else {
-            try{
-              mwDefaultFocusService.setFocus(id);
-              el[0].focus();
-              window.requestAnimFrame(setFocus);
-            } catch(err){
-              console.warn(err);
-            }
-
-          }
-        };
-
-        scope.$watch('isFocused',function(isFocused){
-          if(isFocused){
-            window.requestAnimFrame(setFocus);
-          } else {
-            el[0].blur();
-            mwDefaultFocusService.removeFocus(id);
-          }
-        });
-
-        scope.$on('$destroy',function(){
-          mwDefaultFocusService.remove(id);
-        });
-      }
-    };
-  }])
-
-/**
- * @ngdoc directive
- * @name mwForm.directive:mwLeaveConfirmation
- * @element form
- * @description
- *
- * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
- *
- */
-
-  .directive('mwLeaveConfirmation', ['$window', '$document', '$location', '$rootScope', 'i18n', 'Modal', function ($window, $document, $location, $rootScope, i18n, Modal) {
-    return {
-      scope: {
-        alertBeforeLeave: '=mwLeaveConfirmation',
-        text:'@'
-      },
-      link: function (scope) {
-
-        var confirmationModal = Modal.create({
-          templateUrl: 'uikit/templates/mwForm/mwLeaveConfirmation.html',
-          scope: scope
-        });
-
-        // Prevent the original event so the routing will not be completed
-        // Save the url where it should be navigated to in a temp variable
-        var showConfirmModal = function (ev, next) {
-          if (scope.alertBeforeLeave) {
-            confirmationModal.show();
-            ev.preventDefault();
-            scope.next = next;
-          } else {
-            scope.changeLocationOff();
-          }
-        };
-
-        // User wants to stay on the page
-        scope.stay = function () {
-          confirmationModal.hide();
-        };
-
-        // User really wants to navigate to that page which was saved before in a temp variable
-        scope.continue = function () {
-          if (scope.next) {
-            //instead of scope.$off() we call the original eventhandler function
-            scope.changeLocationOff();
-
-            //hide the modal and navigate to the page
-            confirmationModal.hide().then(function () {
-                document.location.href=scope.next;
-                scope.next = null;
-            });
-          }
-        };
-
-        //In case that just a hashchange event was triggered
-        //Angular has no $off event unbinding so the original eventhandler is saved in a variable
-        scope.changeLocationOff = $rootScope.$on('$locationChangeStart', showConfirmModal);
-
-        //In case that the user clicks the refresh/back button or makes a hard url change
-        $window.onbeforeunload = function () {
-          if (scope.alertBeforeLeave && $rootScope.leaveConfirmationEnabled) {
-            return scope.text;
-          }
-        };
-
-        if(!angular.isDefined(scope.text)){
-          throw new Error('Please specify a text in the text attribute');
-        }
-
-        $rootScope.leaveConfirmationEnabled = true;
-      }
-    };
-  }])
-
-  .service('LayoutWatcher', ['$timeout', '$window', function ($timeout, $window) {
-
-    var _callbacks = [];
-    var _notify = function(){
-      _callbacks.forEach(function(scopedCallback){
-        scopedCallback.callback.apply(scopedCallback.scope);
-      });
-    };
-    angular.element('body').on('DOMNodeInserted',_.throttle(_notify, 300));
-    angular.element('body').on('DOMNodeRemoved',_.throttle(_notify, 300));
-    angular.element($window).on('resize', _.throttle(_notify, 300));
-    $timeout(_notify,500);
-    return {
-      registerCallback: function(cb,scope){
-        if(typeof cb  === 'function'){
-          var scopedCallback = {
-            callback: cb,
-            scope: scope
-          };
-          _callbacks.push(scopedCallback);
-        } else {
-          throw new Error('Callback has to be a function');
-        }
-      }
-    };
-  }])
-
-  .directive('mwSetFullScreenHeight', ['LayoutWatcher', function (LayoutWatcher) {
-    return {
-      restrict: 'A',
-      scope:{
-        'subtractElements':'=',
-        'offset':'@'
-      },
-      link: function (scope, el) {
-
-        el.addClass('mw-full-screen-height');
-
-        var setHeight = function(){
-          var height = angular.element(window).height();
-
-          scope.subtractElements.forEach(function(elIdentifier){
-            var $el = angular.element(elIdentifier);
-            if($el){
-              var padding = {
-                    top: parseInt($el.css('padding-top'),10),
-                    bottom: parseInt($el.css('padding-bottom'),10)
-                  };
-              height -= $el.height();
-              height -= padding.top;
-              height -= padding.bottom;
-            }
-          });
-          if(scope.offset){
-            height -= scope.offset;
-          }
-          el.css('height',height);
-        };
-
-        LayoutWatcher.registerCallback(setHeight);
-
-      }
-    };
-  }])
-
-
-  .directive('mwInvertModelValue', function (){
-    return {
-      restrict: 'A',
-      require: 'ngModel',
-      link: function(scope, elm, attr, ngModelCtrl){
-        var invert = function(value){
-          if(typeof(value) === 'boolean') {
-            return !value;
-          }
-          return value;
-        };
-        ngModelCtrl.$parsers.push(invert);
-        ngModelCtrl.$formatters.push(invert);
-      }
-    };
-  })
-
-  .directive('mwRemoveXs', ['Detect', function(Detect){
-    return{
-      priority: 1,
-      link: function(scope,el){
-        if(Detect.isSmartphone()){
-          el.remove();
-          scope.$destroy();
-        }
-      }
-    };
-  }])
-
-  .directive('mwRemoveMd', ['Detect', function(Detect){
-    return{
-      priority: 1,
-      link: function(scope,el){
-        if(Detect.isSmartphone() || Detect.isTablet()){
-          el.remove();
-          scope.$destroy();
-        }
-      }
-    };
-  }])
-
   /**
-   * @ngdoc directive
-   * @name mwHelper.directive:mwAutofillCheck
-   * @element ANY
-   *
-   * @description
-   * Workaround for Firefox auto fill bug for input directives. Place this directive on a form tag.
+   * Created by zarges on 27/05/15.
    */
-  .directive('mwAutofillCheck', ['$interval', function($interval){
-    return {
-      restrict: 'A',
-      link: function( scope, elm ){
-        var inputElements = elm.find('input');
-        var stopInterval = null;
-
-        inputElements.on('keyup', function(){
-          if(stopInterval === null){
-            stopInterval = $interval(function(){
-              inputElements.trigger('input').trigger('change').trigger('keydown');
-            }, 500);
+  'use strict';
+  
+  angular.module('mwI18n', [])
+  
+    .provider('i18n', function () {
+  
+      var _resources = [],
+        _locales = [],
+        _dictionary = {},
+        _isLoadingresources = false,
+        _oldLocale = null,
+        _defaultLocale = null;
+  
+      var _getActiveLocale = function () {
+        // This variable was set from 'LanguageService' in method setDefaultLocale()
+        return _.findWhere(_locales, {active: true});
+      };
+  
+      var _setActiveLocale = function (locale) {
+        var oldLocale = _getActiveLocale(),
+          newLocale = _.findWhere(_locales, {id: locale});
+  
+        if (newLocale) {
+          if (oldLocale) {
+            oldLocale.active = false;
           }
-        });
-
-        scope.$on('$destroy', function(){
-          $interval.cancel(stopInterval);
-        });
-      }
-    };
-  }]);
-/**
- * Created by zarges on 27/05/15.
- */
-'use strict';
-
-angular.module('mwI18n', [])
-
-  .provider('i18n', function () {
-
-    var _resources = [],
-      _locales = [],
-      _dictionary = {},
-      _isLoadingresources = false,
-      _oldLocale = null,
-      _defaultLocale = null;
-
-    var _getActiveLocale = function () {
-      // This variable was set from 'LanguageService' in method setDefaultLocale()
-      return _.findWhere(_locales, {active: true});
-    };
-
-    var _setActiveLocale = function (locale) {
-      var oldLocale = _getActiveLocale(),
-        newLocale = _.findWhere(_locales, {id: locale});
-
-      if (newLocale) {
-        if (oldLocale) {
-          oldLocale.active = false;
+  
+          newLocale.active = true;
+        } else {
+          throw new Error('You can not set a locale that has not been registered. Please register the locale first by calling addLocale()');
         }
-
-        newLocale.active = true;
-      } else {
-        throw new Error('You can not set a locale that has not been registered. Please register the locale first by calling addLocale()');
-      }
-    };
-
-    /**
-     * Returns a translation for a key when a translation is available otherwise false
-     * @param key {String}
-     * @returns {*}
-     * @private
-     */
-    var _getTranslationForKey = function (key) {
-      var activeLocale = _oldLocale || _getActiveLocale();
-
-      if(activeLocale && _dictionary && _dictionary[activeLocale.id]){
-        var translation = _dictionary[activeLocale.id];
-        angular.forEach(key.split('.'), function (k) {
-          translation = translation ? translation[k] : null;
-        });
-        return translation;
-      } else {
-        return false;
-      }
-    };
-
-    /**
-     * Checks all locales for an available translation until it finds one
-     * @param property {String}
-     * @returns {*}
-     * @private
-     */
-    var _getContentOfOtherLocale = function (property) {
-      var result;
-      _.each(_locales, function (locale) {
-        if (!result && property[locale.id]) {
-          result = property[locale.id];
-        }
-      });
-      if(!result){
-        result = _.values(property)[0];
-      }
-      return result;
-    };
-
-    /**
-     * Return all placeholders that are available in the translation string
-     * @param property {String}
-     * @returns {String}
-     * @private
-     */
-    var _getUsedPlaceholdersInTranslationStr = function(str){
-
-      var re = /{{([a-zA-Z0-9$_]+)}}/g,
-          usedPlaceHolders = [],
-          matches;
-
-      while ((matches = re.exec(str)) !== null) {
-        if (matches.index === re.lastIndex) {
-          re.lastIndex++;
-        }
-        usedPlaceHolders.push(matches[1]);
-      }
-
-      return usedPlaceHolders;
-    };
-
-    /**
-     * Replaces placeholders in transaltion string with a value defined in the placeholder param
-     * @param str
-     * @param placeholder
-     * @returns {String}
-     * @private
-     */
-    var _replacePlaceholders = function (str, placeholders) {
-      if(placeholders){
-        var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
-        usedPlaceHolders.forEach(function(usedPlaceholder){
-          str = str.replace('{{' + usedPlaceholder + '}}', placeholders[usedPlaceholder]);
-        });
-      }
-      return str;
-    };
-
-    /**
-     * Registers a locale for which translations are available
-     * @param locale
-     * @param name
-     * @param fileExtension
-     */
-    this.addLocale = function (locale, name, fileExtension) {
-      if (!_.findWhere(_locales, {id: locale})) {
-        _locales.push({
-          id: locale,
-          name: name,
-          active: locale === _defaultLocale,
-          fileExtension: fileExtension || locale + '.json'
-        });
-        _dictionary[locale] = {};
-      }
-    };
-
-    /**
-     * Registers a resource so it can be accessed later by calling the public method get
-     * @param resourcePath {String}
-     * @param fileNameForLocale {String}
-     */
-    this.addResource = function (resourcePath) {
-      if (!_.findWhere(_resources, {path: resourcePath})) {
-        _resources.push({
-          path: resourcePath
-        });
-      }
-    };
-
-    this.setDefaultLocale = function (locale) {
-      _defaultLocale = locale;
-      if(_.findWhere(_locales, {id: locale})){
-        _setActiveLocale(locale);
-      }
-    };
-
-    this.$get = ['$templateRequest', '$q', '$rootScope', function ($templateRequest, $q, $rootScope) {
-      return {
-        /**
-         * Fills the dictionary with the translations by using the angular templateCache
-         * We need the dictionary because the get method has to be synchronous for the angular filter
-         * @param resourcePath {String}
-         */
-        _loadResource: function (resourcePath) {
-          var resource = _.findWhere(_resources, {path: resourcePath}),
-            activeLocale = this.getActiveLocale(),
-            fileName = '';
-
-          if (resource && activeLocale) {
-            fileName = activeLocale.fileExtension;
-
-            return $templateRequest(resource.path + '/' + fileName).then(function (content) {
-              _.extend(_dictionary[activeLocale.id], JSON.parse(content));
-              return content;
-            });
-          } else {
-            return $q.reject('Resource not available or no locale has been set');
-          }
-        },
-
-        /**
-         * Returns all registered locales
-         * @returns {Array}
-         */
-        getLocales: function(){
-          return _locales;
-        },
-
-        /**
-         * Return the currently active locale
-         * @returns {Object}
-         */
-        getActiveLocale: function () {
-          return _getActiveLocale();
-        },
-
-        /**
-         * translates key into current locale, given placeholders in {{placeholderName}} are replaced
-         * @param key {String}
-         * @param placeholder {Object}
-         */
-        get: function (key, placeholder) {
-            var translation = _getTranslationForKey(key);
-            if (translation) {
-              return _replacePlaceholders(translation, placeholder);
-            } else if(_isLoadingresources){
-              return '...';
-            } else {
-              return 'MISSING TRANSLATION ' + this.getActiveLocale().id + ': ' + key;
-            }
-        },
-
-        /**
-         * set the locale and loads all resources for that locale
-         * @param locale {String}
-         */
-        setLocale: function (localeid) {
-          var loadTasks = [];
-          _isLoadingresources = true;
-          _oldLocale = this.getActiveLocale();
-          _setActiveLocale(localeid);
-          _.each(_resources, function (resource) {
-            loadTasks.push(this._loadResource(resource.path));
-          }, this);
-          return $q.all(loadTasks).then(function () {
-            _isLoadingresources = false;
-            _oldLocale = null;
-            $rootScope.$broadcast('i18n:localeChanged', localeid);
-            return localeid;
+      };
+  
+      /**
+       * Returns a translation for a key when a translation is available otherwise false
+       * @param key {String}
+       * @returns {*}
+       * @private
+       */
+      var _getTranslationForKey = function (key) {
+        var activeLocale = _oldLocale || _getActiveLocale();
+  
+        if(activeLocale && _dictionary && _dictionary[activeLocale.id]){
+          var translation = _dictionary[activeLocale.id];
+          angular.forEach(key.split('.'), function (k) {
+            translation = translation ? translation[k] : null;
           });
-        },
-
-        /**
-         * checks if a translation for the key is available
-         * @param key {String}
-         * @returns {boolean}
-         */
-        translationIsAvailable: function(key){
-          return !!_getTranslationForKey(key);
-        },
-        /**
-         * return value of an internationalized object e.g {en_US:'English text', de_DE:'German text'}
-         * When no translation is availabe for the current set locale it tries the default locale.
-         * When no translation is available for the defaultLocale it tries all other available locales until
-         * a translation is found
-         * @param property {object}
-         * @returns {String}
-         */
-        localize: function (property) {
-          var activeLocale = this.getActiveLocale();
-          var p = property[activeLocale.id];
-          if (angular.isDefined(p) && p !== '') {
-            return p;
-          } else {
-            return property[_defaultLocale] || _getContentOfOtherLocale(property);
-          }
-        }
-      };
-    }];
-
-  })
-
-  .filter('i18n', ['i18n', function (i18n) {
-
-    function i18nFilter(translationKey, placeholder) {
-      if (_.isString(translationKey)) {
-        return i18n.get(translationKey, placeholder);
-      } else if(_.isObject(translationKey)){
-        return i18n.localize(translationKey);
-      }
-    }
-
-    i18nFilter.$stateful = true;
-
-    return i18nFilter;
-  }]);
-/**
- * Created by zarges on 27/05/15.
- */
-'use strict';
-
-angular.module('mwCollection', [])
-
-  .service('MwListCollection', ['$q', 'MCAPFilterHolders', 'MCAPFilterHolder', 'MwListCollectionFilter', function ($q, MCAPFilterHolders, MCAPFilterHolder, MwListCollectionFilter) {
-
-    var MwListCollection = function(collection, id){
-
-      var _collection = collection,
-          _id = (id || collection.endpoint) + '_V1',
-          _mwFilter = new MwListCollectionFilter(_id);
-
-      this.getMwListCollectionFilter = function(){
-        return _mwFilter;
-      };
-
-      this.getCollection = function(){
-        return _collection;
-      };
-
-      this.fetch = function(){
-        var mwListCollectionFilter = this.getMwListCollectionFilter();
-
-        return $q.all([mwListCollectionFilter.fetchAppliedFilter(),mwListCollectionFilter.fetchAppliedSortOrder()]).then(function(rsp){
-          var appliedFilter = rsp[0],
-              sortOrder = rsp[1],
-              filterValues = appliedFilter.get('filterValues');
-
-          if(sortOrder.property){
-            _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
-          }
-
-          if(appliedFilter.get('group')){
-            _collection.filterable.setFilters(filterValues);
-          } else {
-            _collection.filterable.filterIsSet = false;
-          }
-
-          return $q.all([_collection.fetch(),mwListCollectionFilter.fetchFilters()]).then(function(){
-            return this;
-          }.bind(this));
-        }.bind(this));
-      };
-    };
-
-    return MwListCollection;
-
-  }]);
-/**
- * Created by zarges on 27/05/15.
- */
-'use strict';
-
-angular.module('mwCollection')
-
-  .service('MwListCollectionFilter', ['$q', '$timeout', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolder', function ($q, $timeout, LocalForage, MCAPFilterHolders, MCAPFilterHolder) {
-
-    var Filter = function (type) {
-
-      var _type = type,
-        _localFilterIdentifier = 'applied_filter_' + _type,
-        _localSordOrderIdentifier = 'applied_sort_order_' + _type,
-        _filterHolders = new MCAPFilterHolders(null, type),
-        _appliedFilter = new MCAPFilterHolder(),
-        _appliedSortOrder = {
-          order: null,
-          property: null
-        };
-
-
-      this.getFilters = function(){
-        return _filterHolders;
-      };
-
-      // FilterHolders save in backend
-      this.fetchFilters = function () {
-        if (_filterHolders.length > 0) {
-          return $q.when(_filterHolders);
+          return translation;
         } else {
-          return _filterHolders.fetch();
+          return false;
         }
       };
-
-      this.saveFilter = function (filterModel) {
-        _filterHolders.add(filterModel, {merge: true});
-        return filterModel.save().then(function(savedModel){
-          _filterHolders.add(savedModel, {merge: true});
-          return savedModel;
+  
+      /**
+       * Checks all locales for an available translation until it finds one
+       * @param property {String}
+       * @returns {*}
+       * @private
+       */
+      var _getContentOfOtherLocale = function (property) {
+        var result;
+        _.each(_locales, function (locale) {
+          if (!result && property[locale.id]) {
+            result = property[locale.id];
+          }
         });
+        if(!result){
+          result = _.values(property)[0];
+        }
+        return result;
       };
-
-      this.deleteFilter = function (filterModel) {
-        var id = filterModel.id;
-
-        return filterModel.destroy().then(function () {
-          if (id === _appliedFilter.id) {
-            this.revokeFilter();
+  
+      /**
+       * Return all placeholders that are available in the translation string
+       * @param property {String}
+       * @returns {String}
+       * @private
+       */
+      var _getUsedPlaceholdersInTranslationStr = function(str){
+  
+        var re = /{{([a-zA-Z0-9$_]+)}}/g,
+            usedPlaceHolders = [],
+            matches;
+  
+        while ((matches = re.exec(str)) !== null) {
+          if (matches.index === re.lastIndex) {
+            re.lastIndex++;
           }
-        }.bind(this));
+          usedPlaceHolders.push(matches[1]);
+        }
+  
+        return usedPlaceHolders;
       };
-
-
-      this.getAppliedFilter = function(){
-        return _appliedFilter;
+  
+      /**
+       * Replaces placeholders in transaltion string with a value defined in the placeholder param
+       * @param str
+       * @param placeholder
+       * @returns {String}
+       * @private
+       */
+      var _replacePlaceholders = function (str, placeholders) {
+        if(placeholders){
+          var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
+          usedPlaceHolders.forEach(function(usedPlaceholder){
+            str = str.replace('{{' + usedPlaceholder + '}}', placeholders[usedPlaceholder]);
+          });
+        }
+        return str;
       };
-
-      // Filter that was applied and saved in local storage
-      this.fetchAppliedFilter = function () {
-        if (_appliedFilter.get('uuid')) {
-          return $q.when(_appliedFilter);
-        } else {
-          return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
-            _appliedFilter.set(appliedFilter);
-            return _appliedFilter;
+  
+      /**
+       * Registers a locale for which translations are available
+       * @param locale
+       * @param name
+       * @param fileExtension
+       */
+      this.addLocale = function (locale, name, fileExtension) {
+        if (!_.findWhere(_locales, {id: locale})) {
+          _locales.push({
+            id: locale,
+            name: name,
+            active: locale === _defaultLocale,
+            fileExtension: fileExtension || locale + '.json'
+          });
+          _dictionary[locale] = {};
+        }
+      };
+  
+      /**
+       * Registers a resource so it can be accessed later by calling the public method get
+       * @param resourcePath {String}
+       * @param fileNameForLocale {String}
+       */
+      this.addResource = function (resourcePath) {
+        if (!_.findWhere(_resources, {path: resourcePath})) {
+          _resources.push({
+            path: resourcePath
           });
         }
       };
-
-      this.applyFilter = function (filterModel) {
-        var jsonFilter = filterModel.toJSON();
-
-        _appliedFilter.set(jsonFilter);
-        return LocalForage.setItem(_localFilterIdentifier, jsonFilter);
-      };
-
-      this.revokeFilter = function () {
-        _appliedFilter.clear();
-        return LocalForage.removeItem(_localFilterIdentifier);
-      };
-
-      this.getAppliedSortOrder = function(){
-        return _appliedSortOrder;
-      };
-
-      // Sort order that was applied and saved in local storage
-      this.fetchAppliedSortOrder = function () {
-        if (_appliedSortOrder.order && _appliedSortOrder.property) {
-          return $q.when(_appliedSortOrder);
-        } else {
-          return LocalForage.getItem(_localSordOrderIdentifier).then(function (appliedSortOrder) {
-            _appliedSortOrder = appliedSortOrder || {order: null, property: null};
-            return _appliedSortOrder;
-          });
+  
+      this.setDefaultLocale = function (locale) {
+        _defaultLocale = locale;
+        if(_.findWhere(_locales, {id: locale})){
+          _setActiveLocale(locale);
         }
       };
-
-      this.applySortOrder = function (sortOrderObj) {
-
-        _appliedFilter.set(sortOrderObj);
-        return LocalForage.setItem(_localSordOrderIdentifier, sortOrderObj);
-      };
-
-      this.revokeSortOrder = function () {
-        return LocalForage.removeItem(_localSordOrderIdentifier);
-      };
-
-    };
-
-    return Filter;
-  }]);
-'use strict';
-
-angular.module('mwListable', [])
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListable
-   * @element table
-   * @description
-   *
-   * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
-   * or pagination logic. Use this directive when you want to display items in a list without any hassle.
-   *
-   * @param {string} selectable Instance of selectable for this listable item
-   * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
-   * @example
-   * <doc:example>
-   *   <doc:source>
-   *    <table mw-listable
-   *           selectable="selectable"
-   *           filterable="filterable">
-   *      <thead>
-   *        <tr>
-   *          <th mw-listable-header>A column</th>
-   *        </tr>
-   *      </thead>
-   *      <tbody>
-   *        <tr ng-repeat="item in filterable.items()">
-   *          <td>Column content</td>
-   *        </tr>
-   *      </tbody>
-   *    </table>
-   *   </doc:source>
-   * </doc:example>
-   */
-  .directive('mwListable', ['$compile', '$window', '$document', function ($compile, $window, $document) {
-
-    return {
-      restrict: 'A',
-      scope: {
-        selectable: '=',
-        filterable: '='
-      },
-      compile: function (elm) {
-
-        elm.append('<tfoot mw-listable-footer></tfoot>');
-
-        return function (scope, elm) {
-          var modalBody,
-            w = angular.element($window),
-            d = angular.element($document);
-
-          elm.addClass('table table-striped mw-listable');
-
+  
+      this.$get = ['$templateRequest', '$q', '$rootScope', function ($templateRequest, $q, $rootScope) {
+        return {
           /**
-           * Infinite scrolling
+           * Fills the dictionary with the translations by using the angular templateCache
+           * We need the dictionary because the get method has to be synchronous for the angular filter
+           * @param resourcePath {String}
            */
-          var scrollCallback = function () {
-            if (scope.filterable) {
-              if (w.scrollTop() >= (d.height() - w.height()) * 0.8) {
+          _loadResource: function (resourcePath) {
+            var resource = _.findWhere(_resources, {path: resourcePath}),
+              activeLocale = this.getActiveLocale(),
+              fileName = '';
+  
+            if (resource && activeLocale) {
+              fileName = activeLocale.fileExtension;
+  
+              return $templateRequest(resource.path + '/' + fileName).then(function (content) {
+                _.extend(_dictionary[activeLocale.id], JSON.parse(content));
+                return content;
+              });
+            } else {
+              return $q.reject('Resource not available or no locale has been set');
+            }
+          },
+  
+          /**
+           * Returns all registered locales
+           * @returns {Array}
+           */
+          getLocales: function(){
+            return _locales;
+          },
+  
+          /**
+           * Return the currently active locale
+           * @returns {Object}
+           */
+          getActiveLocale: function () {
+            return _getActiveLocale();
+          },
+  
+          /**
+           * translates key into current locale, given placeholders in {{placeholderName}} are replaced
+           * @param key {String}
+           * @param placeholder {Object}
+           */
+          get: function (key, placeholder) {
+              var translation = _getTranslationForKey(key);
+              if (translation) {
+                return _replacePlaceholders(translation, placeholder);
+              } else if(_isLoadingresources){
+                return '...';
+              } else {
+                return 'MISSING TRANSLATION ' + this.getActiveLocale().id + ': ' + key;
+              }
+          },
+  
+          /**
+           * set the locale and loads all resources for that locale
+           * @param locale {String}
+           */
+          setLocale: function (localeid) {
+            var loadTasks = [];
+            _isLoadingresources = true;
+            _oldLocale = this.getActiveLocale();
+            _setActiveLocale(localeid);
+            _.each(_resources, function (resource) {
+              loadTasks.push(this._loadResource(resource.path));
+            }, this);
+            return $q.all(loadTasks).then(function () {
+              _isLoadingresources = false;
+              _oldLocale = null;
+              $rootScope.$broadcast('i18n:localeChanged', localeid);
+              return localeid;
+            });
+          },
+  
+          /**
+           * checks if a translation for the key is available
+           * @param key {String}
+           * @returns {boolean}
+           */
+          translationIsAvailable: function(key){
+            return !!_getTranslationForKey(key);
+          },
+          /**
+           * return value of an internationalized object e.g {en_US:'English text', de_DE:'German text'}
+           * When no translation is availabe for the current set locale it tries the default locale.
+           * When no translation is available for the defaultLocale it tries all other available locales until
+           * a translation is found
+           * @param property {object}
+           * @returns {String}
+           */
+          localize: function (property) {
+            var activeLocale = this.getActiveLocale();
+            var p = property[activeLocale.id];
+            if (angular.isDefined(p) && p !== '') {
+              return p;
+            } else {
+              return property[_defaultLocale] || _getContentOfOtherLocale(property);
+            }
+          }
+        };
+      }];
+  
+    })
+  
+    .filter('i18n', ['i18n', function (i18n) {
+  
+      function i18nFilter(translationKey, placeholder) {
+        if (_.isString(translationKey)) {
+          return i18n.get(translationKey, placeholder);
+        } else if(_.isObject(translationKey)){
+          return i18n.localize(translationKey);
+        }
+      }
+  
+      i18nFilter.$stateful = true;
+  
+      return i18nFilter;
+    }]);
+  'use strict';
+  
+  angular.module('mwListable', [])
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListable
+     * @element table
+     * @description
+     *
+     * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+     * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+     *
+     * @param {string} selectable Instance of selectable for this listable item
+     * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
+     * @example
+     * <doc:example>
+     *   <doc:source>
+     *    <table mw-listable
+     *           selectable="selectable"
+     *           filterable="filterable">
+     *      <thead>
+     *        <tr>
+     *          <th mw-listable-header>A column</th>
+     *        </tr>
+     *      </thead>
+     *      <tbody>
+     *        <tr ng-repeat="item in filterable.items()">
+     *          <td>Column content</td>
+     *        </tr>
+     *      </tbody>
+     *    </table>
+     *   </doc:source>
+     * </doc:example>
+     */
+    .directive('mwListable', ['$compile', '$window', '$document', function ($compile, $window, $document) {
+  
+      return {
+        restrict: 'A',
+        scope: {
+          selectable: '=',
+          filterable: '='
+        },
+        compile: function (elm) {
+  
+          elm.append('<tfoot mw-listable-footer></tfoot>');
+  
+          return function (scope, elm) {
+            var modalBody,
+              w = angular.element($window),
+              d = angular.element($document);
+  
+            elm.addClass('table table-striped mw-listable');
+  
+            /**
+             * Infinite scrolling
+             */
+            var scrollCallback = function () {
+              if (scope.filterable) {
+                if (w.scrollTop() >= (d.height() - w.height()) * 0.8) {
+                  scope.filterable.loadMore();
+                }
+              }
+            };
+            var modalScrollCallback = function () {
+              if (scope.filterable &&
+                modalBody[0].scrollHeight > 0 &&
+                (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
                 scope.filterable.loadMore();
               }
-            }
-          };
-          var modalScrollCallback = function () {
-            if (scope.filterable &&
-              modalBody[0].scrollHeight > 0 &&
-              (modalBody[0].scrollHeight - modalBody.scrollTop() - modalBody[0].clientHeight < 2)) {
-              scope.filterable.loadMore();
-            }
-          };
-
-          if (elm.parents('.modal').length) {
-            //filterable in modal
-            modalBody = elm.parents('.modal-body');
-
-            // Register scroll callback
-            modalBody.on('scroll', modalScrollCallback);
-
-            // Deregister scroll callback if scope is destroyed
-            scope.$on('$destroy', function () {
-              modalBody.off('scroll', modalScrollCallback);
-            });
-          } else {
-            //filterable in document
-
-            // Register scroll callback
-            w.on('scroll', scrollCallback);
-
-            // Deregister scroll callback if scope is destroyed
-            scope.$on('$destroy', function () {
-              w.off('scroll', scrollCallback);
-            });
-          }
-        };
-      },
-      controller: ['$scope', function ($scope) {
-        var columns = $scope.columns = [];
-
-        this.actionColumns = [];
-
-        this.sort = function (property, order) {
-          if ($scope.filterable) {
-            $scope.filterable.setSortOrder(order + property);
-          }
-        };
-
-        this.getSort = function () {
-          if ($scope.filterable) {
-            return $scope.filterable.sortOrder();
-          }
-        };
-
-        this.registerColumn = function (scope) {
-          columns.push(scope);
-        };
-
-        this.getColumns = function () {
-          return columns;
-        };
-
-        this.getFilterable = function () {
-          return $scope.filterable;
-        };
-
-        this.getSelectable = function () {
-          return $scope.selectable;
-        };
-
-        this.toggleAll = function () {
-          if ($scope.selectable.allSelected()) {
-            $scope.selectable.unselectAll();
-          } else {
-            $scope.selectable.selectAll();
-          }
-        };
-
-        this.isRadio = function () {
-          if ($scope.selectable) {
-            return $scope.selectable.isRadio();
-          }
-          return false;
-        };
-      }]
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHead
-   * @element thead
-   * @description
-   *
-   * Displays amount of items from filterable and the amount of selected items of the selectable
-   *
-   */
-
-  .directive('mwListableHead', ['$compile', function ($compile) {
-    return {
-      require: '^mwListable',
-      scope: {
-        title: '@mwListableHead'
-      },
-      link: function (scope, el, attr, mwListable) {
-        scope.filterable = mwListable.getFilterable();
-        scope.selectable = mwListable.getSelectable();
-
-        var tmpl = '<tr>' +
-            '<th colspan="20" class="listable-amount" ng-if="filterable.total()">' +
-            '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
-            '<span ng-if="!selectable || selectable.selected().length<1">{{filterable.total()}} {{title}}</span>' +
-            '</th>' +
-            '</tr>',
-          $tmpl = angular.element(tmpl),
-          compiled = $compile($tmpl);
-
-        el.prepend($tmpl);
-        compiled(scope);
-      }
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableFooter
-   * @element tfoot
-   * @description
-   *
-   * Displays footer with:
-   * * loading spinner if list is loading
-   * * 'none found' message if filterable is empty
-   * * 'load more' button for pagination
-   *
-   */
-
-  .directive('mwListableFooter', ['Loading', function (Loading) {
-    return {
-      require: '^mwListable',
-      templateUrl: 'uikit/templates/mwListable/mwListableFooter.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        scope.Loading = Loading;
-        scope.columns = mwListableCtrl.getColumns();
-      }
-    };
-  }])
-
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHeader
-   * @element th
-   * @description
-   *
-   * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
-   * or pagination logic. Use this directive when you want to display items in a list without any hassle.
-   *
-   * @param {string} sort Property key of the model to sort by
-   */
-  .directive('mwListableHeader', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      scope: {
-        property: '@sort',
-        width: '@',
-        sortActive: '='
-      },
-      transclude: true,
-      replace: true,
-      templateUrl: 'uikit/templates/mwListable/mwListableHeader.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        var ascending = '+',
-          descending = '-';
-
-        scope.toggleSortOrder = function () {
-          if (scope.property) {
-            var sortOrder = ascending; //default
-            if (mwListableCtrl.getSort() === ascending + scope.property) {
-              sortOrder = descending;
-            }
-            mwListableCtrl.sort(scope.property, sortOrder);
-          }
-        };
-
-        scope.isSelected = function (prefix) {
-          if (prefix) {
-            return mwListableCtrl.getSort() === prefix + scope.property;
-          } else {
-            return (mwListableCtrl.getSort() === '+' + scope.property || mwListableCtrl.getSort() === '-' + scope.property);
-          }
-        };
-
-        if (scope.property) {
-          elm.find('.title').on('click', scope.toggleSortOrder);
-        }
-
-        mwListableCtrl.registerColumn(scope);
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableColumnCheckbox
-   * @element th
-   * @description
-   *
-   * Directive for table to add 'Select item' checkbox in content.
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableColumnCheckbox', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      scope: {
-        mwDisabled: '=',
-        item: '='
-      },
-      templateUrl: 'uikit/templates/mwListable/mwListableColumnCheckbox.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        scope.selectable = mwListableCtrl.getSelectable();
-        scope.radio = mwListableCtrl.isRadio();
-        scope.click = function (item, $event) {
-          $event.stopPropagation();
-          scope.selectable.toggle(item);
-        };
-      }
-    };
-  })
-
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHeaderCheckbox
-   * @element th
-   * @description
-   *
-   * Directive for table to add 'Select all' checkbox in header.
-   *
-   * @scope
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableHeaderCheckbox', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      scope: true,
-      templateUrl: 'uikit/templates/mwListable/mwListableHeaderCheckbox.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        scope.radio = mwListableCtrl.isRadio();
-        scope.filterable = mwListableCtrl.getFilterable();
-        scope.selectable = mwListableCtrl.getSelectable();
-        scope.toggleAll = mwListableCtrl.toggleAll;
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableRow
-   * @element tr
-   * @description
-   *
-   * Directive for table row. Adds click actions. And class 'selected' if row is selected.
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableBodyRow', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      compile: function (elm) {
-
-        elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox mw-disabled="isDisabled()" item="item"></td>');
-
-        return function (scope, elm, attr) {
-          var selectedClass = 'selected';
-          if (scope.selectable) {
-            elm.addClass('selectable');
-          }
-
-          elm.on('click', function () {
-            if (scope.selectable && !scope.isDisabled(scope.item)) {
-              scope.selectable.toggle(scope.item);
-              scope.$apply();
-            }
-          });
-
-          scope.$watch('selectable.isSelected(item)', function (value) {
-            if (value) {
-              elm.addClass(selectedClass);
+            };
+  
+            if (elm.parents('.modal').length) {
+              //filterable in modal
+              modalBody = elm.parents('.modal-body');
+  
+              // Register scroll callback
+              modalBody.on('scroll', modalScrollCallback);
+  
+              // Deregister scroll callback if scope is destroyed
+              scope.$on('$destroy', function () {
+                modalBody.off('scroll', modalScrollCallback);
+              });
             } else {
-              elm.removeClass(selectedClass);
-            }
-          });
-
-          scope.isDisabled = function () {
-            return scope.$eval(attr.mwListableDisabled, {item: scope.item});
-          };
-        };
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHeaderRow
-   * @element tr
-   * @description
-   *
-   * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableHeaderRow', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      scope: true,
-      compile: function (elm) {
-        elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
-        elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
-
-        return function (scope, elm, attr, mwListableCtrl) {
-          scope.selectable = mwListableCtrl.getSelectable();
-          scope.actionColumns = mwListableCtrl.actionColumns;
-        };
-      }
-    };
-  })
-
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableLinkEdit
-   * @element td
-   * @description
-   *
-   * Directive to add a button link to edit a dataset.
-   *
-   * @param {string} mwListableLinkEdit URL as href
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableLinkEdit', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      scope: {
-        link: '@mwListableLinkEdit'
-      },
-      template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        mwListableCtrl.actionColumns.push(null);
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableLinkShow
-   * @element td
-   * @description
-   *
-   * Directive to add a button link to show a dataset.
-   *
-   * @param {string} mwListableLinkShow URL as href
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableLinkShow', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListable',
-      scope: {
-        link: '@mwListableLinkShow'
-      },
-      template: '<span mw-link-show="{{link}}"></span>',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        mwListableCtrl.actionColumns.push(null);
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwRowIdentifier
-   * @description
-   *
-   * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
-   *
-   * @param {string} mwRowIdentifier the title to be used
-   *
-   */
-  .directive('mwRowIdentifier', function () {
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        if (attr.mwRowIdentifier) {
-          attr.$set('title', attr.mwRowIdentifier);
-        }
-      }
-    };
-  })
-;
-'use strict';
-
-angular.module('mwListableBb', [])
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListable
-   * @element table
-   * @description
-   *
-   * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
-   * or pagination logic. Use this directive when you want to display items in a list without any hassle.
-   *
-   * @param {string} selectable Instance of selectable for this listable item
-   * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
-   * @example
-   * <doc:example>
-   *   <doc:source>
-   *    <table mw-listable
-   *           selectable="selectable"
-   *           filterable="filterable">
-   *      <thead>
-   *        <tr>
-   *          <th mw-listable-header>A column</th>
-   *        </tr>
-   *      </thead>
-   *      <tbody>
-   *        <tr ng-repeat="item in filterable.items()">
-   *          <td>Column content</td>
-   *        </tr>
-   *      </tbody>
-   *    </table>
-   *   </doc:source>
-   * </doc:example>
-   */
-  .directive('mwListableBb', function () {
-
-    return {
-      restrict: 'A',
-      scope: {
-        collection: '=',
-        mwListCollection: '='
-      },
-      compile: function (elm) {
-        elm.append('<tfoot mw-listable-footer-bb></tfoot>');
-
-        return function (scope, elm) {
-          elm.addClass('table table-striped mw-listable');
-        };
-      },
-      controller: ['$scope', function ($scope) {
-        var _columns = $scope.columns = [],
-          _collection = null,
-          _mwListCollectionFilter = null;
-
-        this.actionColumns = [];
-
-        this.sort = function (property, order) {
-          var sortOrder = order + property;
-          _collection.filterable.setSortOrder(sortOrder);
-          _collection.fetch().then(function () {
-            if (_mwListCollectionFilter) {
-              _mwListCollectionFilter.applySortOrder({
-                property: property,
-                order: order
+              //filterable in document
+  
+              // Register scroll callback
+              w.on('scroll', scrollCallback);
+  
+              // Deregister scroll callback if scope is destroyed
+              scope.$on('$destroy', function () {
+                w.off('scroll', scrollCallback);
               });
             }
-            return _collection;
-          });
-
-        };
-
-        this.getSortOrder = function () {
-          return _collection.filterable.getSortOrder();
-        };
-
-        this.registerColumn = function (scope) {
-          _columns.push(scope);
-        };
-
-        this.unRegisterColumn = function (scope) {
-          if (scope && scope.$id) {
-            var scopeInArray = _.findWhere(_columns, {$id: scope.$id}),
-              indexOfScope = _.indexOf(_columns, scopeInArray);
-
-            if (indexOfScope > -1) {
-              _columns.splice(indexOfScope, 1);
-            }
-          }
-        };
-
-        this.getColumns = function () {
-          return _columns;
-        };
-
-        this.getCollection = function () {
-          return _collection;
-        };
-
-        this.isSingleSelection = function () {
-          if (_collection && _collection.selectable) {
-            return _collection.selectable.isSingleSelection();
-          }
-          return false;
-        };
-
-        $scope.$on('$destroy', function () {
+          };
+        },
+        controller: ['$scope', function ($scope) {
+          var columns = $scope.columns = [];
+  
           this.actionColumns = [];
-        }.bind(this));
-
-        if ($scope.mwListCollection) {
-          _collection = $scope.mwListCollection.getCollection();
-          _mwListCollectionFilter = $scope.mwListCollection.getMwListCollectionFilter();
-        } else if ($scope.collection) {
-          console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
-          _collection = $scope.collection;
-        }
-      }]
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHead
-   * @element thead
-   * @description
-   *
-   * Displays amount of items from filterable and the amount of selected items of the selectable
-   *
-   */
-
-  .directive('mwListableHeadBb', ['$compile', function ($compile) {
-    return {
-      require: '^mwListableBb',
-      scope: {
-        title: '@mwListableHeadBb',
-        noCounter: '='
-      },
-      link: function (scope, el, attr, mwListable) {
-        scope.collection = mwListable.getCollection();
-
-        if (angular.isUndefined(scope.noCounter)) {
+  
+          this.sort = function (property, order) {
+            if ($scope.filterable) {
+              $scope.filterable.setSortOrder(order + property);
+            }
+          };
+  
+          this.getSort = function () {
+            if ($scope.filterable) {
+              return $scope.filterable.sortOrder();
+            }
+          };
+  
+          this.registerColumn = function (scope) {
+            columns.push(scope);
+          };
+  
+          this.getColumns = function () {
+            return columns;
+          };
+  
+          this.getFilterable = function () {
+            return $scope.filterable;
+          };
+  
+          this.getSelectable = function () {
+            return $scope.selectable;
+          };
+  
+          this.toggleAll = function () {
+            if ($scope.selectable.allSelected()) {
+              $scope.selectable.unselectAll();
+            } else {
+              $scope.selectable.selectAll();
+            }
+          };
+  
+          this.isRadio = function () {
+            if ($scope.selectable) {
+              return $scope.selectable.isRadio();
+            }
+            return false;
+          };
+        }]
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHead
+     * @element thead
+     * @description
+     *
+     * Displays amount of items from filterable and the amount of selected items of the selectable
+     *
+     */
+  
+    .directive('mwListableHead', ['$compile', function ($compile) {
+      return {
+        require: '^mwListable',
+        scope: {
+          title: '@mwListableHead'
+        },
+        link: function (scope, el, attr, mwListable) {
+          scope.filterable = mwListable.getFilterable();
+          scope.selectable = mwListable.getSelectable();
+  
           var tmpl = '<tr>' +
-              '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount()">' +
-              '<span ng-if="collection.selectable.getSelected().length > 0">{{collection.selectable.getSelected().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
-              '<span ng-if="!collection.selectable || collection.selectable.getSelected().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
+              '<th colspan="20" class="listable-amount" ng-if="filterable.total()">' +
+              '<span ng-if="selectable.selected().length>0">{{selectable.selected().length}}/{{filterable.total()}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+              '<span ng-if="!selectable || selectable.selected().length<1">{{filterable.total()}} {{title}}</span>' +
               '</th>' +
               '</tr>',
             $tmpl = angular.element(tmpl),
             compiled = $compile($tmpl);
-
+  
           el.prepend($tmpl);
           compiled(scope);
         }
-      }
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableFooter
-   * @element tfoot
-   * @description
-   *
-   * Displays footer with:
-   * * loading spinner if list is loading
-   * * 'none found' message if filterable is empty
-   * * 'load more' button for pagination
-   *
-   */
-
-  .directive('mwListableFooterBb', ['Loading', function (Loading) {
-    return {
-      require: '^mwListableBb',
-      templateUrl: 'uikit/templates/mwListableBb/mwListableFooter.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        scope.Loading = Loading;
-        scope.collection = mwListableCtrl.getCollection();
-        scope.columns = mwListableCtrl.getColumns();
-      }
-    };
-  }])
-
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHeader
-   * @element th
-   * @description
-   *
-   * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
-   * or pagination logic. Use this directive when you want to display items in a list without any hassle.
-   *
-   * @param {string} sort Property key of the model to sort by
-   */
-  .directive('mwListableHeaderBb', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListableBb',
-      scope: {
-        property: '@sort'
-      },
-      transclude: true,
-      replace: true,
-      templateUrl: 'uikit/templates/mwListableBb/mwListableHeader.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        var ascending = '+',
-          descending = '-';
-
-        scope.toggleSortOrder = function () {
-          if (scope.property) {
-            var sortOrder = ascending; //default
-            if (mwListableCtrl.getSortOrder() === ascending + scope.property) {
-              sortOrder = descending;
-            }
-            mwListableCtrl.sort(scope.property, sortOrder);
-          }
-        };
-
-        scope.isSelected = function (prefix) {
-          if (prefix) {
-            return mwListableCtrl.getSortOrder() === prefix + scope.property;
-          } else {
-            return (mwListableCtrl.getSortOrder() === '+' + scope.property || mwListableCtrl.getSortOrder() === '-' + scope.property);
-          }
-        };
-
-        if (scope.property) {
-          elm.find('.title').on('click', scope.toggleSortOrder);
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableFooter
+     * @element tfoot
+     * @description
+     *
+     * Displays footer with:
+     * * loading spinner if list is loading
+     * * 'none found' message if filterable is empty
+     * * 'load more' button for pagination
+     *
+     */
+  
+    .directive('mwListableFooter', ['Loading', function (Loading) {
+      return {
+        require: '^mwListable',
+        templateUrl: 'uikit/templates/mwListable/mwListableFooter.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          scope.Loading = Loading;
+          scope.columns = mwListableCtrl.getColumns();
         }
-
-        mwListableCtrl.registerColumn(scope);
-
-        scope.$on('$destroy', function () {
-          mwListableCtrl.unRegisterColumn(scope);
-        });
-      }
-    };
-  })
-
+      };
+    }])
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHeader
+     * @element th
+     * @description
+     *
+     * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+     * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+     *
+     * @param {string} sort Property key of the model to sort by
+     */
+    .directive('mwListableHeader', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: {
+          property: '@sort',
+          width: '@',
+          sortActive: '='
+        },
+        transclude: true,
+        replace: true,
+        templateUrl: 'uikit/templates/mwListable/mwListableHeader.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          var ascending = '+',
+            descending = '-';
+  
+          scope.toggleSortOrder = function () {
+            if (scope.property) {
+              var sortOrder = ascending; //default
+              if (mwListableCtrl.getSort() === ascending + scope.property) {
+                sortOrder = descending;
+              }
+              mwListableCtrl.sort(scope.property, sortOrder);
+            }
+          };
+  
+          scope.isSelected = function (prefix) {
+            if (prefix) {
+              return mwListableCtrl.getSort() === prefix + scope.property;
+            } else {
+              return (mwListableCtrl.getSort() === '+' + scope.property || mwListableCtrl.getSort() === '-' + scope.property);
+            }
+          };
+  
+          if (scope.property) {
+            elm.find('.title').on('click', scope.toggleSortOrder);
+          }
+  
+          mwListableCtrl.registerColumn(scope);
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableColumnCheckbox
+     * @element th
+     * @description
+     *
+     * Directive for table to add 'Select item' checkbox in content.
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableColumnCheckbox', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: {
+          mwDisabled: '=',
+          item: '='
+        },
+        templateUrl: 'uikit/templates/mwListable/mwListableColumnCheckbox.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          scope.selectable = mwListableCtrl.getSelectable();
+          scope.radio = mwListableCtrl.isRadio();
+          scope.click = function (item, $event) {
+            $event.stopPropagation();
+            scope.selectable.toggle(item);
+          };
+        }
+      };
+    })
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHeaderCheckbox
+     * @element th
+     * @description
+     *
+     * Directive for table to add 'Select all' checkbox in header.
+     *
+     * @scope
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableHeaderCheckbox', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: true,
+        templateUrl: 'uikit/templates/mwListable/mwListableHeaderCheckbox.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          scope.radio = mwListableCtrl.isRadio();
+          scope.filterable = mwListableCtrl.getFilterable();
+          scope.selectable = mwListableCtrl.getSelectable();
+          scope.toggleAll = mwListableCtrl.toggleAll;
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableRow
+     * @element tr
+     * @description
+     *
+     * Directive for table row. Adds click actions. And class 'selected' if row is selected.
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableBodyRow', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        compile: function (elm) {
+  
+          elm.prepend('<td ng-if="selectable" mw-listable-column-checkbox mw-disabled="isDisabled()" item="item"></td>');
+  
+          return function (scope, elm, attr) {
+            var selectedClass = 'selected';
+            if (scope.selectable) {
+              elm.addClass('selectable');
+            }
+  
+            elm.on('click', function () {
+              if (scope.selectable && !scope.isDisabled(scope.item)) {
+                scope.selectable.toggle(scope.item);
+                scope.$apply();
+              }
+            });
+  
+            scope.$watch('selectable.isSelected(item)', function (value) {
+              if (value) {
+                elm.addClass(selectedClass);
+              } else {
+                elm.removeClass(selectedClass);
+              }
+            });
+  
+            scope.isDisabled = function () {
+              return scope.$eval(attr.mwListableDisabled, {item: scope.item});
+            };
+          };
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHeaderRow
+     * @element tr
+     * @description
+     *
+     * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableHeaderRow', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: true,
+        compile: function (elm) {
+          elm.prepend('<th ng-if="selectable" mw-listable-header-checkbox width="1%"></th>');
+          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
+  
+          return function (scope, elm, attr, mwListableCtrl) {
+            scope.selectable = mwListableCtrl.getSelectable();
+            scope.actionColumns = mwListableCtrl.actionColumns;
+          };
+        }
+      };
+    })
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableLinkEdit
+     * @element td
+     * @description
+     *
+     * Directive to add a button link to edit a dataset.
+     *
+     * @param {string} mwListableLinkEdit URL as href
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableLinkEdit', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: {
+          link: '@mwListableLinkEdit'
+        },
+        template: '<a ng-href="{{ link }}" class="btn btn-default btn-sm"><span mw-icon="rln-icon edit"></span></a>',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          mwListableCtrl.actionColumns.push(null);
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableLinkShow
+     * @element td
+     * @description
+     *
+     * Directive to add a button link to show a dataset.
+     *
+     * @param {string} mwListableLinkShow URL as href
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableLinkShow', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListable',
+        scope: {
+          link: '@mwListableLinkShow'
+        },
+        template: '<span mw-link-show="{{link}}"></span>',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          mwListableCtrl.actionColumns.push(null);
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwRowIdentifier
+     * @description
+     *
+     * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
+     *
+     * @param {string} mwRowIdentifier the title to be used
+     *
+     */
+    .directive('mwRowIdentifier', function () {
+      return {
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          if (attr.mwRowIdentifier) {
+            attr.$set('title', attr.mwRowIdentifier);
+          }
+        }
+      };
+    })
+  ;
+  'use strict';
+  
+  angular.module('mwListableBb', [])
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListable
+     * @element table
+     * @description
+     *
+     * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+     * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+     *
+     * @param {string} selectable Instance of selectable for this listable item
+     * @param {string} filterable Instance of filterable for this listable item. Needed for pagination.
+     * @example
+     * <doc:example>
+     *   <doc:source>
+     *    <table mw-listable
+     *           selectable="selectable"
+     *           filterable="filterable">
+     *      <thead>
+     *        <tr>
+     *          <th mw-listable-header>A column</th>
+     *        </tr>
+     *      </thead>
+     *      <tbody>
+     *        <tr ng-repeat="item in filterable.items()">
+     *          <td>Column content</td>
+     *        </tr>
+     *      </tbody>
+     *    </table>
+     *   </doc:source>
+     * </doc:example>
+     */
+    .directive('mwListableBb', function () {
+  
+      return {
+        restrict: 'A',
+        scope: {
+          collection: '=',
+          mwListCollection: '='
+        },
+        compile: function (elm) {
+          elm.append('<tfoot mw-listable-footer-bb></tfoot>');
+  
+          return function (scope, elm) {
+            elm.addClass('table table-striped mw-listable');
+          };
+        },
+        controller: ['$scope', function ($scope) {
+          var _columns = $scope.columns = [],
+            _collection = null,
+            _mwListCollectionFilter = null;
+  
+          this.actionColumns = [];
+  
+          this.sort = function (property, order) {
+            var sortOrder = order + property;
+            _collection.filterable.setSortOrder(sortOrder);
+            _collection.fetch().then(function () {
+              if (_mwListCollectionFilter) {
+                _mwListCollectionFilter.applySortOrder({
+                  property: property,
+                  order: order
+                });
+              }
+              return _collection;
+            });
+  
+          };
+  
+          this.getSortOrder = function () {
+            return _collection.filterable.getSortOrder();
+          };
+  
+          this.registerColumn = function (scope) {
+            _columns.push(scope);
+          };
+  
+          this.unRegisterColumn = function (scope) {
+            if (scope && scope.$id) {
+              var scopeInArray = _.findWhere(_columns, {$id: scope.$id}),
+                indexOfScope = _.indexOf(_columns, scopeInArray);
+  
+              if (indexOfScope > -1) {
+                _columns.splice(indexOfScope, 1);
+              }
+            }
+          };
+  
+          this.getColumns = function () {
+            return _columns;
+          };
+  
+          this.getCollection = function () {
+            return _collection;
+          };
+  
+          this.isSingleSelection = function () {
+            if (_collection && _collection.selectable) {
+              return _collection.selectable.isSingleSelection();
+            }
+            return false;
+          };
+  
+          $scope.$on('$destroy', function () {
+            this.actionColumns = [];
+          }.bind(this));
+  
+          if ($scope.mwListCollection) {
+            _collection = $scope.mwListCollection.getCollection();
+            _mwListCollectionFilter = $scope.mwListCollection.getMwListCollectionFilter();
+          } else if ($scope.collection) {
+            console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
+            _collection = $scope.collection;
+          }
+        }]
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHead
+     * @element thead
+     * @description
+     *
+     * Displays amount of items from filterable and the amount of selected items of the selectable
+     *
+     */
+  
+    .directive('mwListableHeadBb', ['$compile', function ($compile) {
+      return {
+        require: '^mwListableBb',
+        scope: {
+          title: '@mwListableHeadBb',
+          noCounter: '='
+        },
+        link: function (scope, el, attr, mwListable) {
+          scope.collection = mwListable.getCollection();
+  
+          if (angular.isUndefined(scope.noCounter)) {
+            var tmpl = '<tr>' +
+                '<th colspan="20" class="listable-amount" ng-if="collection.filterable.getTotalAmount()">' +
+                '<span ng-if="collection.selectable.getSelected().length > 0">{{collection.selectable.getSelected().length}}/{{collection.filterable.getTotalAmount() || collection.length}} {{title}} {{ \'common.selected\' | i18n }}</span>' +
+                '<span ng-if="!collection.selectable || collection.selectable.getSelected().length<1">{{collection.filterable.getTotalAmount() || collection.length}} {{title}}</span>' +
+                '</th>' +
+                '</tr>',
+              $tmpl = angular.element(tmpl),
+              compiled = $compile($tmpl);
+  
+            el.prepend($tmpl);
+            compiled(scope);
+          }
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableFooter
+     * @element tfoot
+     * @description
+     *
+     * Displays footer with:
+     * * loading spinner if list is loading
+     * * 'none found' message if filterable is empty
+     * * 'load more' button for pagination
+     *
+     */
+  
+    .directive('mwListableFooterBb', ['Loading', function (Loading) {
+      return {
+        require: '^mwListableBb',
+        templateUrl: 'uikit/templates/mwListableBb/mwListableFooter.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          scope.Loading = Loading;
+          scope.collection = mwListableCtrl.getCollection();
+          scope.columns = mwListableCtrl.getColumns();
+        }
+      };
+    }])
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHeader
+     * @element th
+     * @description
+     *
+     * Directive for table to add 'Select all' checkbox in header and content related displays like 'None found'
+     * or pagination logic. Use this directive when you want to display items in a list without any hassle.
+     *
+     * @param {string} sort Property key of the model to sort by
+     */
+    .directive('mwListableHeaderBb', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListableBb',
+        scope: {
+          property: '@sort'
+        },
+        transclude: true,
+        replace: true,
+        templateUrl: 'uikit/templates/mwListableBb/mwListableHeader.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          var ascending = '+',
+            descending = '-';
+  
+          scope.toggleSortOrder = function () {
+            if (scope.property) {
+              var sortOrder = ascending; //default
+              if (mwListableCtrl.getSortOrder() === ascending + scope.property) {
+                sortOrder = descending;
+              }
+              mwListableCtrl.sort(scope.property, sortOrder);
+            }
+          };
+  
+          scope.isSelected = function (prefix) {
+            if (prefix) {
+              return mwListableCtrl.getSortOrder() === prefix + scope.property;
+            } else {
+              return (mwListableCtrl.getSortOrder() === '+' + scope.property || mwListableCtrl.getSortOrder() === '-' + scope.property);
+            }
+          };
+  
+          if (scope.property) {
+            elm.find('.title').on('click', scope.toggleSortOrder);
+          }
+  
+          mwListableCtrl.registerColumn(scope);
+  
+          scope.$on('$destroy', function () {
+            mwListableCtrl.unRegisterColumn(scope);
+          });
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableColumnCheckbox
+     * @element th
+     * @description
+     *
+     * Directive for table to add 'Select item' checkbox in content.
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableColumnCheckboxBb', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListableBb',
+        scope: {
+          item: '='
+        },
+        templateUrl: 'uikit/templates/mwListableBb/mwListableColumnCheckbox.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          scope.isSingleSelection = mwListableCtrl.isSingleSelection();
+          scope.click = function (item, $event) {
+            $event.stopPropagation();
+            if (item.selectable) {
+              item.selectable.toggleSelect();
+            }
+          };
+  
+          scope.$watch('item.selectable.isDisabled()', function (isDisabled) {
+            if (isDisabled) {
+              scope.item.selectable.unSelect();
+            }
+          });
+        }
+      };
+    })
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHeaderCheckbox
+     * @element th
+     * @description
+     *
+     * Directive for table to add 'Select all' checkbox in header.
+     *
+     * @scope
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableHeaderCheckboxBb', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListableBb',
+        scope: true,
+        templateUrl: 'uikit/templates/mwListableBb/mwListableHeaderCheckbox.html',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          scope.isSingleSelection = mwListableCtrl.isSingleSelection();
+          scope.collection = mwListableCtrl.getCollection();
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableRow
+     * @element tr
+     * @description
+     *
+     * Directive for table row. Adds click actions. And class 'selected' if row is selected.
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableBodyRowBb', ['$timeout', function ($timeout) {
+      return {
+        restrict: 'A',
+        require: '^mwListableBb',
+        compile: function (elm) {
+  
+          elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb item="item"></td>');
+  
+          return function (scope, elm, attr, ctrl) {
+            var selectedClass = 'selected';
+  
+            scope.collection = ctrl.getCollection();
+  
+            if (!scope.item) {
+              throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');
+            }
+  
+            if (scope.item && scope.item.selectable && !scope.item.selectable.isDisabled()) {
+              elm.addClass('selectable clickable');
+            } else if (ctrl.actionColumns && ctrl.actionColumns.length > 0) {
+              elm.addClass('clickable');
+            }
+  
+            elm.on('click', function () {
+              if (scope.item && scope.item.selectable && !scope.item.selectable.isDisabled()) {
+                $timeout(function () {
+                  scope.item.selectable.toggleSelect();
+                });
+              }
+            });
+  
+            elm.on('dblclick', function () {
+              if (ctrl.actionColumns && angular.isNumber(scope.$index) && ctrl.actionColumns[scope.$index]) {
+                document.location.href = ctrl.actionColumns[scope.$index];
+              }
+            });
+  
+            scope.$watch('item.selectable.isSelected()', function (value) {
+              if (value) {
+                elm.addClass(selectedClass);
+              } else {
+                elm.removeClass(selectedClass);
+              }
+            });
+          };
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableHeaderRow
+     * @element tr
+     * @description
+     *
+     * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableHeaderRowBb', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListableBb',
+        scope: true,
+        compile: function (elm) {
+          elm.prepend('<th ng-if="hasCollection" width="1%"></th>');
+          elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
+  
+          return function (scope, elm, attr, mwListableCtrl) {
+            //empty collection is [] so ng-if would not work as expected
+            //we also have to check if the collection has a selectable
+            scope.hasCollection = false;
+            var collection = mwListableCtrl.getCollection();
+            if (collection) {
+              scope.hasCollection = angular.isDefined(collection.length) && collection.selectable;
+            }
+            scope.actionColumns = mwListableCtrl.actionColumns;
+          };
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwListableLinkShow
+     * @element td
+     * @description
+     *
+     * Directive to add a button link to show a dataset.
+     *
+     * @param {string} mwListableLinkShow URL as href
+     *
+     * Note: this directive has to be nested inside an `mwListable` table.
+     */
+    .directive('mwListableLinkShowBb', function () {
+      return {
+        restrict: 'A',
+        require: '^mwListableBb',
+        scope: {
+          link: '@mwListableLinkShowBb'
+        },
+        template: '<span mw-link-show="{{link}}"></span>',
+        link: function (scope, elm, attr, mwListableCtrl) {
+          mwListableCtrl.actionColumns.push(scope.link);
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwListable.directive:mwRowIdentifier
+     * @description
+     *
+     * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
+     *
+     * @param {string} mwRowIdentifier the title to be used
+     *
+     */
+    .directive('mwRowIdentifierBb', function () {
+      return {
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          if (attr.mwRowIdentifier) {
+            attr.$set('title', attr.mwRowIdentifier);
+          }
+        }
+      };
+    })
+  
+    .directive('mwListableHead2', ['$window', '$document', 'i18n', 'MCAPCollection', function ($window, $document, i18n, MCAPCollection) {
+      return {
+        scope: {
+          collection: '=',
+          affix: '=',
+          affixOffset: '=',
+          collectionName: '@',
+          nameFn: '&',
+          nameAttribute: '@',
+          localizeName: '@',
+          nameI18nPrefix: '@',
+          nameI18nSuffix: '@',
+          searchAttribute: '@'
+        },
+        transclude: true,
+        templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',
+        link: function (scope, el, attrs, ctrl, $transclude) {
+          var scrollEl,
+            bodyEl = angular.element('body'),
+            modalEl = el.parents('.modal .modal-body'),
+            canShowSelected = false,
+            _affix = angular.isDefined(scope.affix) ? scope.affix : true,
+            windowEl = angular.element($window);
+  
+          scope.selectable = false;
+          scope.selectedAmount = 0;
+          scope.collectionName = scope.collectionName || i18n.get('common.items');
+          scope.isModal = modalEl.length > 0;
+          scope.isLoadingModelsNotInCollection = false;
+          scope.hasFetchedModelsNotInCollection = false;
+          scope.isLoadingModelsNotInCollection = false;
+          scope.hasFetchedModelsNotInCollection = false;
+  
+  
+          var newOffset;
+  
+          var throttledScrollFn = _.throttle(function () {
+            if (!newOffset) {
+              var headerOffset,
+                headerHeight,
+                headerBottomOffset,
+                listHeaderOffset,
+                spacer;
+  
+              if (scope.isModal) {
+                headerOffset = angular.element('.modal-header').offset().top;
+                headerHeight = angular.element('.modal-header').innerHeight();
+                spacer = -3;
+              } else {
+                headerOffset = angular.element('[mw-header]').offset().top;
+                headerHeight = angular.element('[mw-header]').innerHeight();
+                spacer = 5;
+              }
+  
+              headerBottomOffset = headerOffset + headerHeight;
+              listHeaderOffset = el.offset().top;
+  
+              newOffset = listHeaderOffset - headerBottomOffset - spacer;
+              console.log(newOffset);
+            }
+  
+            var scrollTop = scrollEl.scrollTop();
+  
+            if (scrollTop > newOffset && _affix) {
+              el.find('.mw-listable-header').css('top', scrollTop - newOffset);
+              el.addClass('affixed');
+            } else if (!_affix) {
+              scrollEl.off('scroll', throttledScrollFn);
+            } else {
+              el.find('.mw-listable-header').css('top', 'initial');
+              el.removeClass('affixed');
+            }
+  
+          }, 10);
+  
+          var throttledRecalculate = _.throttle(function(){
+            el.find('.mw-listable-header').css('top', 'initial');
+            newOffset = null;
+          });
+  
+          var loadItemsNotInCollection = function () {
+            if (scope.hasFetchedModelsNotInCollection) {
+              return;
+            }
+            var selectedNotInCollection = [];
+            scope.selectable.getSelected().each(function (model) {
+              if (!model.selectable.isInCollection && !scope.getModelAttribute(model)) {
+                selectedNotInCollection.push(model);
+              }
+            });
+  
+            if (selectedNotInCollection.length === 0) {
+              return;
+            }
+  
+            var Collection = scope.collection.constructor.extend({
+              filterableOptions: function () {
+                return {
+                  filterDefinition: function () {
+                    var filter = new window.mCAP.Filter(),
+                      filters = [];
+  
+                    selectedNotInCollection.forEach(function (model) {
+                      if (model.id) {
+                        filters.push(
+                          filter.string(model.idAttribute, model.id)
+                        );
+                      }
+                    });
+  
+                    return filter.or(filters);
+                  }
+                };
+              }
+            });
+            var collection = new Collection();
+            collection.url = scope.collection.url();
+  
+            scope.isLoadingModelsNotInCollection = true;
+  
+            collection.fetch().then(function (collection) {
+              scope.hasFetchedModelsNotInCollection = true;
+              var selected = scope.selectable.getSelected();
+              collection.each(function (model) {
+                selected.get(model.id).set(model.toJSON());
+              });
+  
+              var deletedUuids = _.difference(_.pluck(selectedNotInCollection, 'id'), collection.pluck('uuid'));
+  
+              deletedUuids.forEach(function (id) {
+                selected.get(id).selectable.isDeletedItem = true;
+              });
+  
+              scope.isLoadingModelsNotInCollection = false;
+            });
+          };
+  
+          scope.showSelected = function () {
+            canShowSelected = true;
+            loadItemsNotInCollection();
+            setTimeout(function () {
+              var height;
+              if (scope.isModal) {
+                height = modalEl.height() + (modalEl.offset().top - el.find('.selected-items').offset().top) + 25;
+                modalEl.css('overflow', 'hidden');
+              } else {
+                height = angular.element($window).height() - el.find('.selected-items').offset().top + scrollEl.scrollTop() - 25;
+                bodyEl.css('overflow', 'hidden');
+              }
+  
+              el.find('.selected-items').css('height', height);
+              el.find('.selected-items').css('bottom', height * -1);
+            });
+          };
+  
+          scope.hideSelected = function () {
+            if (scope.isModal) {
+              modalEl.css('overflow', 'auto');
+            } else {
+              bodyEl.css('overflow', 'inherit');
+            }
+            canShowSelected = false;
+          };
+  
+          scope.canShowSelected = function () {
+            return scope.selectable && canShowSelected && scope.selectedAmount > 0;
+          };
+  
+          scope.unSelect = function (model) {
+            model.selectable.unSelect();
+          };
+  
+          scope.toggleSelectAll = function () {
+            scope.selectable.toggleSelectAll();
+          };
+  
+          scope.getTotalAmount = function () {
+            if (scope.collection.filterable && scope.collection.filterable.getTotalAmount()) {
+              return scope.collection.filterable.getTotalAmount();
+            } else {
+              return scope.collection.length;
+            }
+          };
+  
+          scope.toggleShowSelected = function () {
+            if (canShowSelected) {
+              scope.hideSelected();
+            } else {
+              scope.showSelected();
+            }
+          };
+  
+          scope.getModelAttribute = function (model) {
+            if (scope.nameAttribute) {
+              var modelAttr = model.get(scope.nameAttribute);
+  
+              if (scope.nameI18nPrefix || scope.nameI18nSuffix) {
+                var i18nPrefix = scope.nameI18nPrefix || '',
+                  i18nSuffix = scope.nameI18nSuffix || '';
+  
+                return i18n.get(i18nPrefix + '.' + modelAttr + '.' + i18nSuffix);
+              } else if (angular.isDefined(scope.localizeName)) {
+                return i18n.localize(modelAttr);
+              } else {
+                return modelAttr;
+              }
+            } else {
+              return scope.nameFn({item: model});
+            }
+          };
+  
+          var init = function () {
+            scope.selectable = scope.collection.selectable;
+            if (scope.isModal) {
+              //element in modal
+              scrollEl = modalEl;
+            }
+            else {
+              //element in window
+              scrollEl = windowEl;
+            }
+  
+            // Register scroll callback
+            scrollEl.on('scroll', throttledScrollFn);
+  
+            scrollEl.on('resize', throttledRecalculate);
+  
+            // Deregister scroll callback if scope is destroyed
+            scope.$on('$destroy', function () {
+              scrollEl.off('scroll', throttledScrollFn);
+            });
+  
+            scope.$on('$destroy', function () {
+              scrollEl.off('resize', throttledRecalculate);
+            });
+  
+            el.on('focus', 'input[type=text]', function () {
+              el.find('.search-bar').addClass('focused');
+            });
+  
+            el.on('blur', 'input[type=text]', function () {
+              el.find('.search-bar').removeClass('focused');
+            });
+          };
+  
+          $transclude(function (clone) {
+            if (clone && clone.length > 0) {
+              el.addClass('has-extra-content');
+            }
+          });
+  
+          scope.$watch(function () {
+            if (scope.selectable) {
+              return scope.selectable.getSelected().length;
+            } else {
+              return 0;
+            }
+          }, function (val) {
+            scope.selectedAmount = val;
+            if (val < 1) {
+              scope.hideSelected();
+            }
+          });
+  
+          scope.$watch('collection', function (collection) {
+            if (collection && collection instanceof MCAPCollection) {
+              init();
+            }
+          });
+        }
+      };
+    }])
+  ;
+  
   /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableColumnCheckbox
-   * @element th
-   * @description
-   *
-   * Directive for table to add 'Select item' checkbox in content.
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
+   * Created by zarges on 27/05/15.
    */
-  .directive('mwListableColumnCheckboxBb', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListableBb',
-      scope: {
-        item: '='
-      },
-      templateUrl: 'uikit/templates/mwListableBb/mwListableColumnCheckbox.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        scope.isSingleSelection = mwListableCtrl.isSingleSelection();
-        scope.click = function (item, $event) {
-          $event.stopPropagation();
-          if (item.selectable) {
-            item.selectable.toggleSelect();
+  'use strict';
+  
+  angular.module('mwCollection', [])
+  
+    .service('MwListCollection', ['$q', 'MCAPFilterHolders', 'MCAPFilterHolder', 'MwListCollectionFilter', function ($q, MCAPFilterHolders, MCAPFilterHolder, MwListCollectionFilter) {
+  
+      var MwListCollection = function(collection, id){
+  
+        var _collection = collection,
+            _id = (id || collection.endpoint) + '_V1',
+            _mwFilter = new MwListCollectionFilter(_id);
+  
+        this.getMwListCollectionFilter = function(){
+          return _mwFilter;
+        };
+  
+        this.getCollection = function(){
+          return _collection;
+        };
+  
+        this.fetch = function(){
+          var mwListCollectionFilter = this.getMwListCollectionFilter();
+  
+          return $q.all([mwListCollectionFilter.fetchAppliedFilter(),mwListCollectionFilter.fetchAppliedSortOrder()]).then(function(rsp){
+            var appliedFilter = rsp[0],
+                sortOrder = rsp[1],
+                filterValues = appliedFilter.get('filterValues');
+  
+            if(sortOrder.property){
+              _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
+            }
+  
+            if(appliedFilter.get('group')){
+              _collection.filterable.setFilters(filterValues);
+            } else {
+              _collection.filterable.filterIsSet = false;
+            }
+  
+            return $q.all([_collection.fetch(),mwListCollectionFilter.fetchFilters()]).then(function(){
+              return this;
+            }.bind(this));
+          }.bind(this));
+        };
+      };
+  
+      return MwListCollection;
+  
+    }]);
+  /**
+   * Created by zarges on 27/05/15.
+   */
+  'use strict';
+  
+  angular.module('mwCollection')
+  
+    .service('MwListCollectionFilter', ['$q', '$timeout', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolder', function ($q, $timeout, LocalForage, MCAPFilterHolders, MCAPFilterHolder) {
+  
+      var Filter = function (type) {
+  
+        var _type = type,
+          _localFilterIdentifier = 'applied_filter_' + _type,
+          _localSordOrderIdentifier = 'applied_sort_order_' + _type,
+          _filterHolders = new MCAPFilterHolders(null, type),
+          _appliedFilter = new MCAPFilterHolder(),
+          _appliedSortOrder = {
+            order: null,
+            property: null
+          };
+  
+  
+        this.getFilters = function(){
+          return _filterHolders;
+        };
+  
+        // FilterHolders save in backend
+        this.fetchFilters = function () {
+          if (_filterHolders.length > 0) {
+            return $q.when(_filterHolders);
+          } else {
+            return _filterHolders.fetch();
           }
         };
-
-        scope.$watch('item.selectable.isDisabled()', function (isDisabled) {
-          if (isDisabled) {
-            scope.item.selectable.unSelect();
+  
+        this.saveFilter = function (filterModel) {
+          _filterHolders.add(filterModel, {merge: true});
+          return filterModel.save().then(function(savedModel){
+            _filterHolders.add(savedModel, {merge: true});
+            return savedModel;
+          });
+        };
+  
+        this.deleteFilter = function (filterModel) {
+          var id = filterModel.id;
+  
+          return filterModel.destroy().then(function () {
+            if (id === _appliedFilter.id) {
+              this.revokeFilter();
+            }
+          }.bind(this));
+        };
+  
+  
+        this.getAppliedFilter = function(){
+          return _appliedFilter;
+        };
+  
+        // Filter that was applied and saved in local storage
+        this.fetchAppliedFilter = function () {
+          if (_appliedFilter.get('uuid')) {
+            return $q.when(_appliedFilter);
+          } else {
+            return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
+              _appliedFilter.set(appliedFilter);
+              return _appliedFilter;
+            });
           }
-        });
-      }
-    };
-  })
-
-
+        };
+  
+        this.applyFilter = function (filterModel) {
+          var jsonFilter = filterModel.toJSON();
+  
+          _appliedFilter.set(jsonFilter);
+          return LocalForage.setItem(_localFilterIdentifier, jsonFilter);
+        };
+  
+        this.revokeFilter = function () {
+          _appliedFilter.clear();
+          return LocalForage.removeItem(_localFilterIdentifier);
+        };
+  
+        this.getAppliedSortOrder = function(){
+          return _appliedSortOrder;
+        };
+  
+        // Sort order that was applied and saved in local storage
+        this.fetchAppliedSortOrder = function () {
+          if (_appliedSortOrder.order && _appliedSortOrder.property) {
+            return $q.when(_appliedSortOrder);
+          } else {
+            return LocalForage.getItem(_localSordOrderIdentifier).then(function (appliedSortOrder) {
+              _appliedSortOrder = appliedSortOrder || {order: null, property: null};
+              return _appliedSortOrder;
+            });
+          }
+        };
+  
+        this.applySortOrder = function (sortOrderObj) {
+  
+          _appliedFilter.set(sortOrderObj);
+          return LocalForage.setItem(_localSordOrderIdentifier, sortOrderObj);
+        };
+  
+        this.revokeSortOrder = function () {
+          return LocalForage.removeItem(_localSordOrderIdentifier);
+        };
+  
+      };
+  
+      return Filter;
+    }]);
+  'use strict';
+  
+  angular.module('mwMap', [])
+  
   /**
    * @ngdoc directive
-   * @name mwListable.directive:mwListableHeaderCheckbox
-   * @element th
+   * @name mwWizard.directive:mwWizard
+   * @element div
    * @description
    *
-   * Directive for table to add 'Select all' checkbox in header.
+   * Multiple wizard steps can be transcluded into this directive. This Directive handles the
+   * registration of every single wizard step
+   *
+   * @param {wizard} mw-wizard Wizard instance created by the Wizard service.
+   */
+    .directive('mwMap', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          centerLat: '=',
+          centerLng: '=',
+          zoom: '=',
+          type:'@'
+        },
+        transclude: true,
+        templateUrl: 'uikit/templates/mwMap/mwMap.html',
+        controller: ['$window', '$scope', 'LayoutWatcher', function ($window,$scope, LayoutWatcher) {
+          if(!$window.ol){
+            throw new Error('The directive mwMap needs the Openlayer 3 library. Make sure you included it!');
+          }
+  
+          var openlayer = this.openlayer = $window.ol;
+  
+  
+          var centerCoords = [$scope.lng || 9.178977, $scope.lat || 48.812951],
+              zoom = $scope.zoom || 1,
+              type = $scope.type || 'osm';
+  
+          var centerMap = function(){
+            if($scope.centerLat && $scope.centerLng){
+              $scope.map.getView().setCenter(openlayer.proj.transform([$scope.centerLng,$scope.centerLat], 'EPSG:4326', 'EPSG:3857'));
+            }
+          };
+  
+          var resize = function(){
+            $scope.map.updateSize();
+          };
+  
+          $scope.map = this.map = new openlayer.Map({
+            layers: [
+              new openlayer.layer.Tile({
+                source: new openlayer.source.MapQuest({layer: type,minZoom:6})
+              })
+            ],
+            ol3Logo:false,
+            view: new openlayer.View({
+              center: openlayer.proj.transform(centerCoords, 'EPSG:4326', 'EPSG:3857'),
+              zoom: zoom,
+              minZoom: 6
+            })
+          });
+  
+          $scope.$watch('zoom',function(value) {
+            if (value) {
+              $scope.map.getView().setZoom(value);
+            }
+          });
+  
+          $scope.$watch('centerLat',centerMap);
+          $scope.$watch('centerLng',centerMap);
+  
+          LayoutWatcher.registerCallback(resize);
+  
+          $scope.$on('$destroy',function(){
+            $scope.map.removeLayer();
+            $scope.map.removeOverlay();
+          });
+        }],
+        link:function(scope,el){
+          scope.map.setTarget(el.find('#map')[0]);
+        }
+      };
+    })
+  
+    .directive('mwMapMarker', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          lat: '=',
+          lng: '='
+        },
+        require: '^mwMap',
+        template: '<div class="marker"></div>',
+        link: function (scope,el,attr,mwMapCtrl) {
+          var map = mwMapCtrl.map,
+              openlayer = mwMapCtrl.openlayer,
+              coords = [scope.lng || 0, scope.lat || 0];
+  
+          var marker = new openlayer.Overlay({
+            position: openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'),
+            positioning: 'center-center',
+            element: el[0],
+            stopEvent: false
+          });
+  
+          var setPosition = function(){
+            if(scope.lat && scope.lng){
+              marker.setPosition(openlayer.proj.transform([scope.lng, scope.lat], 'EPSG:4326', 'EPSG:3857'));
+            }
+          };
+  
+          map.addOverlay(marker);
+  
+          scope.$watch('lat',setPosition);
+          scope.$watch('lng',setPosition);
+  
+          scope.$on('$destroy',function(){
+            map.removeOverlay(marker);
+          });
+        }
+      };
+    })
+  
+    .directive('mwMapOverlay', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          lat: '=',
+          lng: '=',
+          display: '='
+        },
+        transclude: true,
+        require: '^mwMap',
+        template: '<div ng-transclude class="overlay mw-map-overlay"></div>',
+        link: function (scope,el,attr,mwMapCtrl) {
+          var map = mwMapCtrl.map,
+            openlayer = mwMapCtrl.openlayer,
+            coords = [scope.lng || 0, scope.lat || 0];
+  
+          var overlay = new openlayer.Overlay({
+            position: openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'),
+            positioning: 'center-center',
+            element: el.find('.mw-map-overlay')[0],
+            stopEvent: false
+          });
+  
+          var setPosition = function(){
+            if(scope.lat && scope.lng){
+              overlay.setPosition(openlayer.proj.transform([scope.lng, scope.lat], 'EPSG:4326', 'EPSG:3857'));
+            }
+          };
+  
+          map.addOverlay(overlay);
+  
+          scope.$watch('lat',setPosition);
+          scope.$watch('lng',setPosition);
+  
+          scope.$watch('display',function(display){
+            if(display){
+              map.addOverlay(overlay);
+              setPosition();
+            } else {
+              map.removeOverlay(overlay);
+            }
+          });
+  
+          scope.$on('$destroy',function(){
+            map.removeOverlay(overlay);
+          });
+        }
+      };
+    })
+  
+    .directive('mwMapCircle', function () {
+      return {
+        restrict: 'A',
+        scope: {
+          lat: '=',
+          lng: '=',
+          radius: '=',
+          fill: '@',
+          stroke: '@',
+          strokeWidth: '@'
+        },
+        require: '^mwMap',
+        link: function (scope,el,attr,mwMapCtrl) {
+          var map = mwMapCtrl.map,
+            openlayer = mwMapCtrl.openlayer,
+            coords = [scope.lng || 0, scope.lat || 0],
+            radius = scope.radius || 1000,
+            fill = scope.fill || 'rgba(255, 255, 255, .5)',
+            stroke = scope.stroke || '#fff',
+            strokeWidth = scope.strokeWidth || 3;
+  
+          map.on('postcompose', function(evt) {
+            evt.vectorContext.setFillStrokeStyle(
+              new openlayer.style.Fill({color: fill}),
+              new openlayer.style.Stroke({color: stroke, width: strokeWidth}));
+            evt.vectorContext.drawCircleGeometry(
+              new openlayer.geom.Circle(openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'), radius));
+          });
+        }
+      };
+    });
+  
+  
+  'use strict';
+  
+  angular.module('mwModal', [])
+  
+  /**
+   *
+   * @ngdoc object
+   * @name mwModal.Modal
+   * @description The Modal service is used to manage Bootstrap modals.
+   * @example
+   * <doc:example>
+   *   <doc:source>
+   *     <script>
+   *       function Controller($scope, Modal) {
+   *        var modal = Modal.create({
+   *          templateUrl: 'myModal.html',
+   *          scope: $scope,
+   *          controller: function() {
+   *            // do something on initialization
+   *          }
+   *        });
+   *        $scope.onClick = function() {
+   *          Modal.show(modal)
+   *        }
+   *       }
+   *     </script>
+   *   </doc:source>
+   * </doc:example>
+   */
+    .service('Modal', ['$rootScope', '$templateCache', '$document', '$compile', '$controller', '$q', '$templateRequest', '$timeout', 'Toast', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest, $timeout, Toast) {
+  
+      var _body = $document.find('body').eq(0),
+        _openedModals = [];
+  
+      var Modal = function (modalOptions, bootStrapModalOptions) {
+  
+        var _id = modalOptions.templateUrl,
+          _scope = modalOptions.scope || $rootScope,
+          _scopeAttributes = modalOptions.scopeAttributes || {},
+          _controller = modalOptions.controller,
+          _class = modalOptions.class || '',
+          _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
+          _bootStrapModalOptions = bootStrapModalOptions || {},
+          _modalOpened = false,
+          _self = this,
+          _modal,
+          _usedScope,
+          _bootstrapModal,
+          _previousFocusedEl;
+  
+        var _getTemplate = function () {
+          if (!_id) {
+            throw new Error('Modal service: templateUrl options is required.');
+          }
+          return $templateRequest(_id);
+        };
+  
+        var _bindModalCloseEvent = function () {
+          _bootstrapModal.on('hidden.bs.modal', function () {
+            _self.destroy();
+          });
+        };
+  
+        var _destroyOnRouteChange = function () {
+          var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
+            if (_bootstrapModal && _modalOpened) {
+              ev.preventDefault();
+              _self.hide().then(function () {
+                document.location.href = newUrl;
+                changeLocationOff();
+              });
+            } else {
+              changeLocationOff();
+            }
+          });
+        };
+  
+        var _buildModal = function () {
+          var dfd = $q.defer();
+  
+          _usedScope = _scope.$new();
+  
+          _.extend(_usedScope, _scopeAttributes);
+  
+          if (_controller) {
+            $controller(_controller, {$scope: _usedScope, modalId: _id});
+          }
+  
+          _scope.hideModal = function () {
+            return _self.hide();
+          };
+  
+          _getTemplate().then(function (template) {
+            _modal = $compile(template.trim())(_usedScope);
+            _usedScope.$on('COMPILE:FINISHED', function () {
+              _modal.addClass('mw-modal');
+              _modal.addClass(_class);
+              _bootstrapModal = _modal.find('.modal');
+              _bootStrapModalOptions.show = false;
+              _bootstrapModal.modal(_bootStrapModalOptions);
+  
+              // We need to overwrite the the original backdrop method with our own one
+              // to make it possible to define the element where the backdrop should be placed
+              // This enables us a backdrop per modal because we are appending the backdrop to the modal
+              // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
+              /* jshint ignore:start */
+              _bootstrapModal.data()['bs.modal'].backdrop = function (callback) {
+                $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
+              };
+              /* jshint ignore:end */
+  
+              _bindModalCloseEvent();
+              _destroyOnRouteChange();
+              dfd.resolve();
+            });
+          });
+  
+          return dfd.promise;
+        };
+  
+        this.id = _id;
+  
+        this.getScope = function () {
+          return _scope;
+        };
+  
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#show
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Shows the modal
+         */
+        this.show = function () {
+          _body.css({
+            height: '100%',
+            width: '100%',
+            overflow: 'hidden'
+          });
+          Toast.clear();
+          _previousFocusedEl = angular.element(document.activeElement);
+  
+          _buildModal().then(function () {
+            angular.element(_holderEl).append(_modal);
+            _bootstrapModal.modal('show');
+            _modalOpened = true;
+            _openedModals.push(this);
+            _bootstrapModal.on('shown.bs.modal', function () {
+              angular.element(this).find('input:text:visible:first').focus();
+            });
+            if(_previousFocusedEl){
+              _bootstrapModal.on('hidden.bs.modal', function () {
+                _previousFocusedEl.focus();
+              });
+            }
+  
+          }.bind(this));
+        };
+  
+  
+        this.setScopeAttributes = function (obj) {
+          if (_.isObject(obj)) {
+            _.extend(_scopeAttributes, obj);
+          }
+        };
+  
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#hide
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Hides the modal
+         * @returns {Object} Promise which will be resolved when modal is successfully closed
+         */
+        this.hide = function () {
+          var dfd = $q.defer();
+  
+  
+          if (_bootstrapModal && _modalOpened) {
+            _bootstrapModal.one('hidden.bs.modal', function () {
+              _bootstrapModal.off();
+              _self.destroy();
+              _modalOpened = false;
+              dfd.resolve();
+            });
+            _bootstrapModal.modal('hide');
+          } else {
+            dfd.resolve();
+          }
+  
+          return dfd.promise;
+        };
+  
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#toggle
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Toggles the modal
+         * @param {String} modalId Modal identifier
+         */
+        this.toggle = function () {
+          _bootstrapModal.modal('toggle');
+        };
+  
+        /**
+         *
+         * @ngdoc function
+         * @name mwModal.Modal#destroy
+         * @methodOf mwModal.Modal
+         * @function
+         * @description Removes the modal from the dom
+         */
+        this.destroy = function () {
+          _openedModals = _.without(_openedModals, this);
+          var toasts = Toast.getToasts();
+          toasts.forEach(function(toast){
+            if(+new Date()-toast.initDate>500){
+              Toast.removeToast(toast.id);
+            }
+          });
+  
+          $timeout(function () {
+            _body.css({
+              height: '',
+              width: '',
+              overflow: ''
+            });
+            if (_modal) {
+              _modal.remove();
+              _modalOpened = false;
+            }
+  
+            if (_usedScope) {
+              _usedScope.$destroy();
+            }
+          }.bind(this));
+        };
+  
+        (function main() {
+  
+          _getTemplate();
+  
+          _scope.$on('$destroy', function () {
+            _self.hide();
+          });
+  
+        })();
+  
+      };
+  
+      /**
+       *
+       * @ngdoc function
+       * @name mwModal.Modal#create
+       * @methodOf mwModal.Modal
+       * @function
+       * @description Create and initialize the modal element in the DOM. Available options
+       *
+       * - **templateUrl**: URL to a template (_required_)
+       * - **scope**: scope that should be available in the controller
+       * - **controller**: controller instance for the modal
+       *
+       * @param {Object} modalOptions The options of the modal which are used to instantiate it
+       * @returns {Object} Modal
+       */
+      this.create = function (modalOptions) {
+        return new Modal(modalOptions);
+      };
+  
+      this.prepare = function (modalOptions, bootstrapModalOptions) {
+        var ModalDefinition = function () {
+          return new Modal(modalOptions, bootstrapModalOptions);
+        };
+        return ModalDefinition;
+      };
+  
+      this.getOpenedModals = function () {
+        return _openedModals;
+      };
+    }])
+  
+    .provider('mwModalTmpl', function () {
+  
+      var _logoPath;
+  
+      this.setLogoPath = function (path) {
+        _logoPath = path;
+      };
+  
+      this.$get = function () {
+        return {
+          getLogoPath: function () {
+            return _logoPath;
+          }
+        };
+      };
+    })
+  
+  /**
+   * @ngdoc directive
+   * @name mwModal.directive:mwModal
+   * @element div
+   * @description
+   * Shortcut directive for Bootstraps modal.
    *
    * @scope
    *
-   * Note: this directive has to be nested inside an `mwListable` table.
+   * @param {string} title Modal title
+   * @example
+   * <doc:example>
+   *   <doc:source>
+   *     <div mw-modal title="My modal">
+   *       <div mw-modal-body>
+   *         <p>One fine body&hellip;</p>
+   *       </div>
+   *       <div mw-modal-footer>
+   *         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+   *         <button type="button" class="btn btn-primary">Save changes</button>
+   *       </div>
+   *     </div>
+   *   </doc:source>
+   * </doc:example>
    */
-  .directive('mwListableHeaderCheckboxBb', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListableBb',
-      scope: true,
-      templateUrl: 'uikit/templates/mwListableBb/mwListableHeaderCheckbox.html',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        scope.isSingleSelection = mwListableCtrl.isSingleSelection();
-        scope.collection = mwListableCtrl.getCollection();
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableRow
-   * @element tr
-   * @description
-   *
-   * Directive for table row. Adds click actions. And class 'selected' if row is selected.
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableBodyRowBb', ['$timeout', function ($timeout) {
-    return {
-      restrict: 'A',
-      require: '^mwListableBb',
-      compile: function (elm) {
-
-        elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-listable-column-checkbox-bb item="item"></td>');
-
-        return function (scope, elm, attr, ctrl) {
-          var selectedClass = 'selected';
-
-          scope.collection = ctrl.getCollection();
-
-          if (!scope.item) {
-            throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');
-          }
-
-          if (scope.item && scope.item.selectable && !scope.item.selectable.isDisabled()) {
-            elm.addClass('selectable clickable');
-          } else if (ctrl.actionColumns && ctrl.actionColumns.length > 0) {
-            elm.addClass('clickable');
-          }
-
-          elm.on('click', function () {
-            if (scope.item && scope.item.selectable && !scope.item.selectable.isDisabled()) {
-              $timeout(function () {
-                scope.item.selectable.toggleSelect();
-              });
-            }
-          });
-
-          elm.on('dblclick', function () {
-            if (ctrl.actionColumns && angular.isNumber(scope.$index) && ctrl.actionColumns[scope.$index]) {
-              document.location.href = ctrl.actionColumns[scope.$index];
-            }
-          });
-
-          scope.$watch('item.selectable.isSelected()', function (value) {
-            if (value) {
-              elm.addClass(selectedClass);
-            } else {
-              elm.removeClass(selectedClass);
-            }
-          });
-        };
-      }
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableHeaderRow
-   * @element tr
-   * @description
-   *
-   * Directive for table header row. Adds mw-listable-header-checkbox if selectable is present and th tags for actionColumns.
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableHeaderRowBb', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListableBb',
-      scope: true,
-      compile: function (elm) {
-        elm.prepend('<th ng-if="hasCollection" width="1%"></th>');
-        elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
-
-        return function (scope, elm, attr, mwListableCtrl) {
-          //empty collection is [] so ng-if would not work as expected
-          //we also have to check if the collection has a selectable
-          scope.hasCollection = false;
-          var collection = mwListableCtrl.getCollection();
-          if (collection) {
-            scope.hasCollection = angular.isDefined(collection.length) && collection.selectable;
-          }
-          scope.actionColumns = mwListableCtrl.actionColumns;
-        };
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwListableLinkShow
-   * @element td
-   * @description
-   *
-   * Directive to add a button link to show a dataset.
-   *
-   * @param {string} mwListableLinkShow URL as href
-   *
-   * Note: this directive has to be nested inside an `mwListable` table.
-   */
-  .directive('mwListableLinkShowBb', function () {
-    return {
-      restrict: 'A',
-      require: '^mwListableBb',
-      scope: {
-        link: '@mwListableLinkShowBb'
-      },
-      template: '<span mw-link-show="{{link}}"></span>',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        mwListableCtrl.actionColumns.push(scope.link);
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwListable.directive:mwRowIdentifier
-   * @description
-   *
-   * Directive that adds title attribute to th and td elements. Used to hide columns in css for special branding
-   *
-   * @param {string} mwRowIdentifier the title to be used
-   *
-   */
-  .directive('mwRowIdentifierBb', function () {
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        if (attr.mwRowIdentifier) {
-          attr.$set('title', attr.mwRowIdentifier);
-        }
-      }
-    };
-  })
-
-  .directive('mwListableHead2', ['$window', '$document', 'i18n', 'MCAPCollection', function ($window, $document, i18n, MCAPCollection) {
-    return {
-      scope: {
-        collection: '=',
-        affix: '=',
-        affixOffset: '=',
-        collectionName: '@',
-        nameFn: '&',
-        nameAttribute: '@',
-        localizeName: '@',
-        nameI18nPrefix: '@',
-        nameI18nSuffix: '@',
-        searchAttribute: '@'
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwListableBb/mwListableHead.html',
-      link: function (scope, el, attrs, ctrl, $transclude) {
-        var scrollEl,
-          bodyEl = angular.element('body'),
-          modalEl = el.parents('.modal .modal-body'),
-          canShowSelected = false,
-          _affix = angular.isDefined(scope.affix) ? scope.affix : true,
-          windowEl = angular.element($window);
-
-        scope.selectable = false;
-        scope.selectedAmount = 0;
-        scope.collectionName = scope.collectionName || i18n.get('common.items');
-        scope.isModal = modalEl.length > 0;
-        scope.isLoadingModelsNotInCollection = false;
-        scope.hasFetchedModelsNotInCollection = false;
-        scope.isLoadingModelsNotInCollection = false;
-        scope.hasFetchedModelsNotInCollection = false;
-
-
-        var newOffset;
-
-        var throttledScrollFn = _.throttle(function () {
-          if (!newOffset) {
-            var headerOffset,
-              headerHeight,
-              headerBottomOffset,
-              listHeaderOffset,
-              spacer;
-
-            if (scope.isModal) {
-              headerOffset = angular.element('.modal-header').offset().top;
-              headerHeight = angular.element('.modal-header').innerHeight();
-              spacer = -3;
-            } else {
-              headerOffset = angular.element('[mw-header]').offset().top;
-              headerHeight = angular.element('[mw-header]').innerHeight();
-              spacer = 5;
-            }
-
-            headerBottomOffset = headerOffset + headerHeight;
-            listHeaderOffset = el.offset().top;
-
-            newOffset = listHeaderOffset - headerBottomOffset - spacer;
-            console.log(newOffset);
-          }
-
-          var scrollTop = scrollEl.scrollTop();
-
-          if (scrollTop > newOffset && _affix) {
-            el.find('.mw-listable-header').css('top', scrollTop - newOffset);
-            el.addClass('affixed');
-          } else if (!_affix) {
-            scrollEl.off('scroll', throttledScrollFn);
-          } else {
-            el.find('.mw-listable-header').css('top', 'initial');
-            el.removeClass('affixed');
-          }
-
-        }, 10);
-
-        var throttledRecalculate = _.throttle(function(){
-          el.find('.mw-listable-header').css('top', 'initial');
-          newOffset = null;
-        });
-
-        var loadItemsNotInCollection = function () {
-          if (scope.hasFetchedModelsNotInCollection) {
-            return;
-          }
-          var selectedNotInCollection = [];
-          scope.selectable.getSelected().each(function (model) {
-            if (!model.selectable.isInCollection && !scope.getModelAttribute(model)) {
-              selectedNotInCollection.push(model);
-            }
-          });
-
-          if (selectedNotInCollection.length === 0) {
-            return;
-          }
-
-          var Collection = scope.collection.constructor.extend({
-            filterableOptions: function () {
-              return {
-                filterDefinition: function () {
-                  var filter = new window.mCAP.Filter(),
-                    filters = [];
-
-                  selectedNotInCollection.forEach(function (model) {
-                    if (model.id) {
-                      filters.push(
-                        filter.string(model.idAttribute, model.id)
-                      );
-                    }
-                  });
-
-                  return filter.or(filters);
-                }
-              };
-            }
-          });
-          var collection = new Collection();
-          collection.url = scope.collection.url();
-
-          scope.isLoadingModelsNotInCollection = true;
-
-          collection.fetch().then(function (collection) {
-            scope.hasFetchedModelsNotInCollection = true;
-            var selected = scope.selectable.getSelected();
-            collection.each(function (model) {
-              selected.get(model.id).set(model.toJSON());
-            });
-
-            var deletedUuids = _.difference(_.pluck(selectedNotInCollection, 'id'), collection.pluck('uuid'));
-
-            deletedUuids.forEach(function (id) {
-              selected.get(id).selectable.isDeletedItem = true;
-            });
-
-            scope.isLoadingModelsNotInCollection = false;
-          });
-        };
-
-        scope.showSelected = function () {
-          canShowSelected = true;
-          loadItemsNotInCollection();
-          setTimeout(function () {
-            var height;
-            if (scope.isModal) {
-              height = modalEl.height() + (modalEl.offset().top - el.find('.selected-items').offset().top) + 25;
-              modalEl.css('overflow', 'hidden');
-            } else {
-              height = angular.element($window).height() - el.find('.selected-items').offset().top + scrollEl.scrollTop() - 25;
-              bodyEl.css('overflow', 'hidden');
-            }
-
-            el.find('.selected-items').css('height', height);
-            el.find('.selected-items').css('bottom', height * -1);
-          });
-        };
-
-        scope.hideSelected = function () {
-          if (scope.isModal) {
-            modalEl.css('overflow', 'auto');
-          } else {
-            bodyEl.css('overflow', 'inherit');
-          }
-          canShowSelected = false;
-        };
-
-        scope.canShowSelected = function () {
-          return scope.selectable && canShowSelected && scope.selectedAmount > 0;
-        };
-
-        scope.unSelect = function (model) {
-          model.selectable.unSelect();
-        };
-
-        scope.toggleSelectAll = function () {
-          scope.selectable.toggleSelectAll();
-        };
-
-        scope.getTotalAmount = function () {
-          if (scope.collection.filterable && scope.collection.filterable.getTotalAmount()) {
-            return scope.collection.filterable.getTotalAmount();
-          } else {
-            return scope.collection.length;
-          }
-        };
-
-        scope.toggleShowSelected = function () {
-          if (canShowSelected) {
-            scope.hideSelected();
-          } else {
-            scope.showSelected();
-          }
-        };
-
-        scope.getModelAttribute = function (model) {
-          if (scope.nameAttribute) {
-            var modelAttr = model.get(scope.nameAttribute);
-
-            if (scope.nameI18nPrefix || scope.nameI18nSuffix) {
-              var i18nPrefix = scope.nameI18nPrefix || '',
-                i18nSuffix = scope.nameI18nSuffix || '';
-
-              return i18n.get(i18nPrefix + '.' + modelAttr + '.' + i18nSuffix);
-            } else if (angular.isDefined(scope.localizeName)) {
-              return i18n.localize(modelAttr);
-            } else {
-              return modelAttr;
-            }
-          } else {
-            return scope.nameFn({item: model});
-          }
-        };
-
-        var init = function () {
-          scope.selectable = scope.collection.selectable;
-          if (scope.isModal) {
-            //element in modal
-            scrollEl = modalEl;
-          }
-          else {
-            //element in window
-            scrollEl = windowEl;
-          }
-
-          // Register scroll callback
-          scrollEl.on('scroll', throttledScrollFn);
-
-          scrollEl.on('resize', throttledRecalculate);
-
-          // Deregister scroll callback if scope is destroyed
-          scope.$on('$destroy', function () {
-            scrollEl.off('scroll', throttledScrollFn);
-          });
-
-          scope.$on('$destroy', function () {
-            scrollEl.off('resize', throttledRecalculate);
-          });
-
-          el.on('focus', 'input[type=text]', function () {
-            el.find('.search-bar').addClass('focused');
-          });
-
-          el.on('blur', 'input[type=text]', function () {
-            el.find('.search-bar').removeClass('focused');
-          });
-        };
-
-        $transclude(function (clone) {
-          if (clone && clone.length > 0) {
-            el.addClass('has-extra-content');
-          }
-        });
-
-        scope.$watch(function () {
-          if (scope.selectable) {
-            return scope.selectable.getSelected().length;
-          } else {
-            return 0;
-          }
-        }, function (val) {
-          scope.selectedAmount = val;
-          if (val < 1) {
-            scope.hideSelected();
-          }
-        });
-
-        scope.$watch('collection', function (collection) {
-          if (collection && collection instanceof MCAPCollection) {
-            init();
-          }
-        });
-      }
-    };
-  }])
-;
-
-'use strict';
-
-angular.module('mwMap', [])
-
-/**
- * @ngdoc directive
- * @name mwWizard.directive:mwWizard
- * @element div
- * @description
- *
- * Multiple wizard steps can be transcluded into this directive. This Directive handles the
- * registration of every single wizard step
- *
- * @param {wizard} mw-wizard Wizard instance created by the Wizard service.
- */
-  .directive('mwMap', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        centerLat: '=',
-        centerLng: '=',
-        zoom: '=',
-        type:'@'
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwMap/mwMap.html',
-      controller: ['$window', '$scope', 'LayoutWatcher', function ($window,$scope, LayoutWatcher) {
-        if(!$window.ol){
-          throw new Error('The directive mwMap needs the Openlayer 3 library. Make sure you included it!');
-        }
-
-        var openlayer = this.openlayer = $window.ol;
-
-
-        var centerCoords = [$scope.lng || 9.178977, $scope.lat || 48.812951],
-            zoom = $scope.zoom || 1,
-            type = $scope.type || 'osm';
-
-        var centerMap = function(){
-          if($scope.centerLat && $scope.centerLng){
-            $scope.map.getView().setCenter(openlayer.proj.transform([$scope.centerLng,$scope.centerLat], 'EPSG:4326', 'EPSG:3857'));
-          }
-        };
-
-        var resize = function(){
-          $scope.map.updateSize();
-        };
-
-        $scope.map = this.map = new openlayer.Map({
-          layers: [
-            new openlayer.layer.Tile({
-              source: new openlayer.source.MapQuest({layer: type,minZoom:6})
-            })
-          ],
-          ol3Logo:false,
-          view: new openlayer.View({
-            center: openlayer.proj.transform(centerCoords, 'EPSG:4326', 'EPSG:3857'),
-            zoom: zoom,
-            minZoom: 6
-          })
-        });
-
-        $scope.$watch('zoom',function(value) {
-          if (value) {
-            $scope.map.getView().setZoom(value);
-          }
-        });
-
-        $scope.$watch('centerLat',centerMap);
-        $scope.$watch('centerLng',centerMap);
-
-        LayoutWatcher.registerCallback(resize);
-
-        $scope.$on('$destroy',function(){
-          $scope.map.removeLayer();
-          $scope.map.removeOverlay();
-        });
-      }],
-      link:function(scope,el){
-        scope.map.setTarget(el.find('#map')[0]);
-      }
-    };
-  })
-
-  .directive('mwMapMarker', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        lat: '=',
-        lng: '='
-      },
-      require: '^mwMap',
-      template: '<div class="marker"></div>',
-      link: function (scope,el,attr,mwMapCtrl) {
-        var map = mwMapCtrl.map,
-            openlayer = mwMapCtrl.openlayer,
-            coords = [scope.lng || 0, scope.lat || 0];
-
-        var marker = new openlayer.Overlay({
-          position: openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'),
-          positioning: 'center-center',
-          element: el[0],
-          stopEvent: false
-        });
-
-        var setPosition = function(){
-          if(scope.lat && scope.lng){
-            marker.setPosition(openlayer.proj.transform([scope.lng, scope.lat], 'EPSG:4326', 'EPSG:3857'));
-          }
-        };
-
-        map.addOverlay(marker);
-
-        scope.$watch('lat',setPosition);
-        scope.$watch('lng',setPosition);
-
-        scope.$on('$destroy',function(){
-          map.removeOverlay(marker);
-        });
-      }
-    };
-  })
-
-  .directive('mwMapOverlay', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        lat: '=',
-        lng: '=',
-        display: '='
-      },
-      transclude: true,
-      require: '^mwMap',
-      template: '<div ng-transclude class="overlay mw-map-overlay"></div>',
-      link: function (scope,el,attr,mwMapCtrl) {
-        var map = mwMapCtrl.map,
-          openlayer = mwMapCtrl.openlayer,
-          coords = [scope.lng || 0, scope.lat || 0];
-
-        var overlay = new openlayer.Overlay({
-          position: openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'),
-          positioning: 'center-center',
-          element: el.find('.mw-map-overlay')[0],
-          stopEvent: false
-        });
-
-        var setPosition = function(){
-          if(scope.lat && scope.lng){
-            overlay.setPosition(openlayer.proj.transform([scope.lng, scope.lat], 'EPSG:4326', 'EPSG:3857'));
-          }
-        };
-
-        map.addOverlay(overlay);
-
-        scope.$watch('lat',setPosition);
-        scope.$watch('lng',setPosition);
-
-        scope.$watch('display',function(display){
-          if(display){
-            map.addOverlay(overlay);
-            setPosition();
-          } else {
-            map.removeOverlay(overlay);
-          }
-        });
-
-        scope.$on('$destroy',function(){
-          map.removeOverlay(overlay);
-        });
-      }
-    };
-  })
-
-  .directive('mwMapCircle', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        lat: '=',
-        lng: '=',
-        radius: '=',
-        fill: '@',
-        stroke: '@',
-        strokeWidth: '@'
-      },
-      require: '^mwMap',
-      link: function (scope,el,attr,mwMapCtrl) {
-        var map = mwMapCtrl.map,
-          openlayer = mwMapCtrl.openlayer,
-          coords = [scope.lng || 0, scope.lat || 0],
-          radius = scope.radius || 1000,
-          fill = scope.fill || 'rgba(255, 255, 255, .5)',
-          stroke = scope.stroke || '#fff',
-          strokeWidth = scope.strokeWidth || 3;
-
-        map.on('postcompose', function(evt) {
-          evt.vectorContext.setFillStrokeStyle(
-            new openlayer.style.Fill({color: fill}),
-            new openlayer.style.Stroke({color: stroke, width: strokeWidth}));
-          evt.vectorContext.drawCircleGeometry(
-            new openlayer.geom.Circle(openlayer.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'), radius));
-        });
-      }
-    };
-  });
-
-
-'use strict';
-
-angular.module('mwModal', [])
-
-/**
- *
- * @ngdoc object
- * @name mwModal.Modal
- * @description The Modal service is used to manage Bootstrap modals.
- * @example
- * <doc:example>
- *   <doc:source>
- *     <script>
- *       function Controller($scope, Modal) {
- *        var modal = Modal.create({
- *          templateUrl: 'myModal.html',
- *          scope: $scope,
- *          controller: function() {
- *            // do something on initialization
- *          }
- *        });
- *        $scope.onClick = function() {
- *          Modal.show(modal)
- *        }
- *       }
- *     </script>
- *   </doc:source>
- * </doc:example>
- */
-  .service('Modal', ['$rootScope', '$templateCache', '$document', '$compile', '$controller', '$q', '$templateRequest', '$timeout', 'Toast', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest, $timeout, Toast) {
-
-    var _body = $document.find('body').eq(0),
-      _openedModals = [];
-
-    var Modal = function (modalOptions, bootStrapModalOptions) {
-
-      var _id = modalOptions.templateUrl,
-        _scope = modalOptions.scope || $rootScope,
-        _scopeAttributes = modalOptions.scopeAttributes || {},
-        _controller = modalOptions.controller,
-        _class = modalOptions.class || '',
-        _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
-        _bootStrapModalOptions = bootStrapModalOptions || {},
-        _modalOpened = false,
-        _self = this,
-        _modal,
-        _usedScope,
-        _bootstrapModal,
-        _previousFocusedEl;
-
-      var _getTemplate = function () {
-        if (!_id) {
-          throw new Error('Modal service: templateUrl options is required.');
-        }
-        return $templateRequest(_id);
-      };
-
-      var _bindModalCloseEvent = function () {
-        _bootstrapModal.on('hidden.bs.modal', function () {
-          _self.destroy();
-        });
-      };
-
-      var _destroyOnRouteChange = function () {
-        var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
-          if (_bootstrapModal && _modalOpened) {
-            ev.preventDefault();
-            _self.hide().then(function () {
-              document.location.href = newUrl;
-              changeLocationOff();
-            });
-          } else {
-            changeLocationOff();
-          }
-        });
-      };
-
-      var _buildModal = function () {
-        var dfd = $q.defer();
-
-        _usedScope = _scope.$new();
-
-        _.extend(_usedScope, _scopeAttributes);
-
-        if (_controller) {
-          $controller(_controller, {$scope: _usedScope, modalId: _id});
-        }
-
-        _scope.hideModal = function () {
-          return _self.hide();
-        };
-
-        _getTemplate().then(function (template) {
-          _modal = $compile(template.trim())(_usedScope);
-          _usedScope.$on('COMPILE:FINISHED', function () {
-            _modal.addClass('mw-modal');
-            _modal.addClass(_class);
-            _bootstrapModal = _modal.find('.modal');
-            _bootStrapModalOptions.show = false;
-            _bootstrapModal.modal(_bootStrapModalOptions);
-
-            // We need to overwrite the the original backdrop method with our own one
-            // to make it possible to define the element where the backdrop should be placed
-            // This enables us a backdrop per modal because we are appending the backdrop to the modal
-            // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
-            /* jshint ignore:start */
-            _bootstrapModal.data()['bs.modal'].backdrop = function (callback) {
-              $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
-            };
-            /* jshint ignore:end */
-
-            _bindModalCloseEvent();
-            _destroyOnRouteChange();
-            dfd.resolve();
-          });
-        });
-
-        return dfd.promise;
-      };
-
-      this.id = _id;
-
-      this.getScope = function () {
-        return _scope;
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#show
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Shows the modal
-       */
-      this.show = function () {
-        _body.css({
-          height: '100%',
-          width: '100%',
-          overflow: 'hidden'
-        });
-        Toast.clear();
-        _previousFocusedEl = angular.element(document.activeElement);
-
-        _buildModal().then(function () {
-          angular.element(_holderEl).append(_modal);
-          _bootstrapModal.modal('show');
-          _modalOpened = true;
-          _openedModals.push(this);
-          _bootstrapModal.on('shown.bs.modal', function () {
-            angular.element(this).find('input:text:visible:first').focus();
-          });
-          if(_previousFocusedEl){
-            _bootstrapModal.on('hidden.bs.modal', function () {
-              _previousFocusedEl.focus();
-            });
-          }
-
-        }.bind(this));
-      };
-
-
-      this.setScopeAttributes = function (obj) {
-        if (_.isObject(obj)) {
-          _.extend(_scopeAttributes, obj);
-        }
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#hide
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Hides the modal
-       * @returns {Object} Promise which will be resolved when modal is successfully closed
-       */
-      this.hide = function () {
-        var dfd = $q.defer();
-
-
-        if (_bootstrapModal && _modalOpened) {
-          _bootstrapModal.one('hidden.bs.modal', function () {
-            _bootstrapModal.off();
-            _self.destroy();
-            _modalOpened = false;
-            dfd.resolve();
-          });
-          _bootstrapModal.modal('hide');
-        } else {
-          dfd.resolve();
-        }
-
-        return dfd.promise;
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#toggle
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Toggles the modal
-       * @param {String} modalId Modal identifier
-       */
-      this.toggle = function () {
-        _bootstrapModal.modal('toggle');
-      };
-
-      /**
-       *
-       * @ngdoc function
-       * @name mwModal.Modal#destroy
-       * @methodOf mwModal.Modal
-       * @function
-       * @description Removes the modal from the dom
-       */
-      this.destroy = function () {
-        _openedModals = _.without(_openedModals, this);
-        var toasts = Toast.getToasts();
-        toasts.forEach(function(toast){
-          if(+new Date()-toast.initDate>500){
-            Toast.removeToast(toast.id);
-          }
-        });
-
-        $timeout(function () {
-          _body.css({
-            height: '',
-            width: '',
-            overflow: ''
-          });
-          if (_modal) {
-            _modal.remove();
-            _modalOpened = false;
-          }
-
-          if (_usedScope) {
-            _usedScope.$destroy();
-          }
-        }.bind(this));
-      };
-
-      (function main() {
-
-        _getTemplate();
-
-        _scope.$on('$destroy', function () {
-          _self.hide();
-        });
-
-      })();
-
-    };
-
-    /**
-     *
-     * @ngdoc function
-     * @name mwModal.Modal#create
-     * @methodOf mwModal.Modal
-     * @function
-     * @description Create and initialize the modal element in the DOM. Available options
-     *
-     * - **templateUrl**: URL to a template (_required_)
-     * - **scope**: scope that should be available in the controller
-     * - **controller**: controller instance for the modal
-     *
-     * @param {Object} modalOptions The options of the modal which are used to instantiate it
-     * @returns {Object} Modal
-     */
-    this.create = function (modalOptions) {
-      return new Modal(modalOptions);
-    };
-
-    this.prepare = function (modalOptions, bootstrapModalOptions) {
-      var ModalDefinition = function () {
-        return new Modal(modalOptions, bootstrapModalOptions);
-      };
-      return ModalDefinition;
-    };
-
-    this.getOpenedModals = function () {
-      return _openedModals;
-    };
-  }])
-
-  .provider('mwModalTmpl', function () {
-
-    var _logoPath;
-
-    this.setLogoPath = function (path) {
-      _logoPath = path;
-    };
-
-    this.$get = function () {
-      return {
-        getLogoPath: function () {
-          return _logoPath;
-        }
-      };
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwModal.directive:mwModal
- * @element div
- * @description
- * Shortcut directive for Bootstraps modal.
- *
- * @scope
- *
- * @param {string} title Modal title
- * @example
- * <doc:example>
- *   <doc:source>
- *     <div mw-modal title="My modal">
- *       <div mw-modal-body>
- *         <p>One fine body&hellip;</p>
- *       </div>
- *       <div mw-modal-footer>
- *         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
- *         <button type="button" class="btn btn-primary">Save changes</button>
- *       </div>
- *     </div>
- *   </doc:source>
- * </doc:example>
- */
-
-  .directive('mwModal', ['mwModalTmpl', function (mwModalTmpl) {
-    return {
-      restrict: 'A',
-      scope: {
-        title: '@'
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwModal/mwModal.html',
-      link: function (scope) {
-        scope.$emit('COMPILE:FINISHED');
-        scope.mwModalTmpl = mwModalTmpl;
-      }
-    };
-  }])
-
-/**
- * @ngdoc directive
- * @name mwModal.directive:mwModalBody
- * @element div
- * @description
- * Shortcut directive for Bootstraps body. See {@link mwModal.directive:mwModal `mwModal`} for more information
- * about mwModal.
- */
-  .directive('mwModalBody', function () {
-    return {
-      restrict: 'A',
-      transclude: true,
-      replace: true,
-      template: '<div class="modal-body clearfix" ng-transclude></div>'
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwModal.directive:mwModalFooter
- * @element div
- * @description
- * Shortcut directive for Bootstraps footer. See {@link mwModal.directive:mwModal `mwModal`} for more information
- * about mwModal.
- */
-  .directive('mwModalFooter', function () {
-    return {
-      restrict: 'A',
-      transclude: true,
-      replace: true,
-      template: '<div class="modal-footer" ng-transclude></div>'
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwModal.directive:mwModalOnEnter
- * @element button
- * @description
- * Adds ability to trigger button with enter key. Checks validation if button is part of a form.
- */
-  .directive('mwModalOnEnter', function () {
-    return {
-      restrict: 'A',
-      require: '?^form',
-      link: function (scope, elm, attr, ctrl) {
-        elm.parents('.modal').first().on('keyup', function (event) {
-          if (event.keyCode === 13 && event.target.nodeName !== 'SELECT') {
-            if ((ctrl && ctrl.$valid) || !ctrl) {
-              elm.click();
-            }
-          }
-        });
-      }
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwModal.directive:mwModalConfirm
- * @element div
- * @description
- *
- * Opens a simple confirm modal.
- *
- * @scope
- *
- * @param {expression} ok Expression to evaluate on click on 'ok' button
- * @param {expression} cancel Expression to evaluate on click on 'cancel' button
- */
-  .directive('mwModalConfirm', function () {
-    return {
-      restrict: 'A',
-      transclude: true,
-      scope: true,
-      templateUrl: 'uikit/templates/mwModal/mwModalConfirm.html',
-      link: function (scope, elm, attr) {
-        angular.forEach(['ok', 'cancel'], function (action) {
-          scope[action] = function () {
-            scope.$eval(attr[action]);
-          };
-        });
-
-      }
-    };
-  });
-
-/* jshint ignore:start */
-// This is the orginal bootstrap backdrop implementation with the only
-// modification that the element can be defined as parameter where the backdrop should be placed
-var $bootstrapBackdrop = function (callback, holderEl) {
-  var animate = this.$element.hasClass('fade') ? 'fade' : '';
-
-  if (this.isShown && this.options.backdrop) {
-    var doAnimate = $.support.transition && animate;
-
-    this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
-      .appendTo(holderEl);
-
-    this.$backdrop.on('click', $.proxy(function (e) {
-      if (e.target !== e.currentTarget) {
-        return;
-      }
-      this.options.backdrop == 'static'
-        ? this.$element[0].focus.call(this.$element[0])
-        : this.hide.call(this)
-    }, this));
-
-    if (doAnimate) {
-      this.$backdrop[0].offsetWidth;
-    } // force reflow
-
-    this.$backdrop.addClass('in');
-
-    if (!callback) return;
-
-    doAnimate ?
-      this.$backdrop
-        .one($.support.transition.end, callback)
-        .emulateTransitionEnd(150) :
-      callback()
-
-  } else if (!this.isShown && this.$backdrop) {
-    this.$backdrop.removeClass('in');
-
-    $.support.transition && this.$element.hasClass('fade') ?
-      this.$backdrop
-        .one($.support.transition.end, callback)
-        .emulateTransitionEnd(150) :
-      callback()
-
-  } else if (callback) {
-    callback()
-  }
-};
-/* jshint ignore:end */
-
-'use strict';
-
-angular.module('mwNav', [])
-
-    .directive('mwSubNav', function () {
+  
+    .directive('mwModal', ['mwModalTmpl', function (mwModalTmpl) {
       return {
         restrict: 'A',
         scope: {
-          justified: '='
+          title: '@'
         },
-        replace: true,
         transclude: true,
-        template: '<div class="mw-nav"><ul class="nav nav-pills" ng-class="{\'nav-justified\':justified}" ng-transclude></ul></div>'
+        templateUrl: 'uikit/templates/mwModal/mwModal.html',
+        link: function (scope) {
+          scope.$emit('COMPILE:FINISHED');
+          scope.mwModalTmpl = mwModalTmpl;
+        }
       };
-    })
-
-    .directive('mwSubNavPill', ['$location', function ($location) {
+    }])
+  
+  /**
+   * @ngdoc directive
+   * @name mwModal.directive:mwModalBody
+   * @element div
+   * @description
+   * Shortcut directive for Bootstraps body. See {@link mwModal.directive:mwModal `mwModal`} for more information
+   * about mwModal.
+   */
+    .directive('mwModalBody', function () {
       return {
         restrict: 'A',
-        scope: {
-          url: '@mwSubNavPill',
-          mwDisabled: '='
-        },
         transclude: true,
         replace: true,
-        template:
-          '<li ng-class="{mwDisabled: mwDisabled}">' +
-            '<div class="btn btn-link" ' +
-                  'ng-click="navigate(url)" ' +
-                  'ng-class="{disabled: mwDisabled}" ' +
-                  'ng-transclude>' +
-            '</div>' +
-          '</li>',
-        link: function (scope, elm) {
-          var setActiveClassOnUrlMatch = function (url) {
-            if (scope.url && url === scope.url.slice(1)) {
-              elm.addClass('active');
-            } else {
-              elm.removeClass('active');
-            }
-          };
-
-          scope.$watch('url', function (newUrlAttr) {
-            if (newUrlAttr) {
-              setActiveClassOnUrlMatch($location.$$path);
-            }
-          });
-
-          scope.navigate = function(url){
-            if(!scope.mwDisabled){
-              url = url.replace(/#\//,'');
-              $location.path(url);
-              $location.replace();
-            }
-          };
-
-          setActiveClassOnUrlMatch($location.$$path);
-
-        }
-      };
-    }])
-
-    .directive('mwNavbar', ['$location', function ($location) {
-      return {
-        transclude: true,
-        replace: true,
-        templateUrl: 'uikit/templates/mwNav/mwNavbar.html',
-        controller: function () {
-          this.isActive = function (path, exact) {
-            if(!path) {
-              return false;
-            }
-            var newPath = path.substring(1);
-            if(exact){
-              return $location.path() === newPath;
-            }
-            return $location.path().indexOf(newPath) > -1;
-          };
-        }
-      };
-    }])
-
-    .directive('mwNavbarContent', function () {
-      return {
-        transclude: true,
-        replace: true,
-        template: '<div class="navbar-collapse collapse" ng-transclude></div>',
-        link: function(scope, elm) {
-          scope.uncollapse = function() {
-            if(elm.hasClass('in')) {
-              elm.collapse('hide');
-            }
-          };
-        }
+        template: '<div class="modal-body clearfix" ng-transclude></div>'
       };
     })
-
-    .directive('mwNavbarBrand', function () {
+  
+  /**
+   * @ngdoc directive
+   * @name mwModal.directive:mwModalFooter
+   * @element div
+   * @description
+   * Shortcut directive for Bootstraps footer. See {@link mwModal.directive:mwModal `mwModal`} for more information
+   * about mwModal.
+   */
+    .directive('mwModalFooter', function () {
       return {
+        restrict: 'A',
         transclude: true,
         replace: true,
-        templateUrl: 'uikit/templates/mwNav/mwNavbarBrand.html'
+        template: '<div class="modal-footer" ng-transclude></div>'
       };
     })
-
-    .directive('mwNavbarItems', function () {
+  
+  /**
+   * @ngdoc directive
+   * @name mwModal.directive:mwModalOnEnter
+   * @element button
+   * @description
+   * Adds ability to trigger button with enter key. Checks validation if button is part of a form.
+   */
+    .directive('mwModalOnEnter', function () {
       return {
-        transclude: true,
-        replace: true,
-        template: '<ul class="nav navbar-nav" ng-transclude></ul>',
-        link: function (scope, elm, attr) {
-
-          if(attr.mwNavbarItems) {
-            elm.addClass('navbar-' + attr.mwNavbarItems);
-          }
-
-          elm.on('click', function () {
-            if (elm.hasClass('in')) {
-              elm.collapse('hide');
+        restrict: 'A',
+        require: '?^form',
+        link: function (scope, elm, attr, ctrl) {
+          elm.parents('.modal').first().on('keyup', function (event) {
+            if (event.keyCode === 13 && event.target.nodeName !== 'SELECT') {
+              if ((ctrl && ctrl.$valid) || !ctrl) {
+                elm.click();
+              }
             }
           });
         }
       };
     })
-
-    .directive('mwNavbarItem', ['$rootScope', function ($rootScope) {
+  
+  /**
+   * @ngdoc directive
+   * @name mwModal.directive:mwModalConfirm
+   * @element div
+   * @description
+   *
+   * Opens a simple confirm modal.
+   *
+   * @scope
+   *
+   * @param {expression} ok Expression to evaluate on click on 'ok' button
+   * @param {expression} cancel Expression to evaluate on click on 'cancel' button
+   */
+    .directive('mwModalConfirm', function () {
       return {
+        restrict: 'A',
         transclude: true,
-        replace: true,
         scope: true,
-        require: '^mwNavbar',
-        template: '<li ng-class="{active: isActive}" ng-transclude></li>',
-        link: function (scope, elm, attr, mwNavbarCtrl) {
-          var isActive = function () {
-            scope.isActive = mwNavbarCtrl.isActive(elm.find('a').attr('href'));
-          };
-          isActive();
-          $rootScope.$on('$routeChangeSuccess', isActive);
-
-          elm.find('a').on('click', function() {
-            scope.uncollapse();
+        templateUrl: 'uikit/templates/mwModal/mwModalConfirm.html',
+        link: function (scope, elm, attr) {
+          angular.forEach(['ok', 'cancel'], function (action) {
+            scope[action] = function () {
+              scope.$eval(attr[action]);
+            };
           });
+  
         }
       };
-    }])
-
-    .directive('mwNavbarDropdown', ['$rootScope', function ($rootScope) {
-      return {
-        replace: true,
-        require: '^mwNavbar',
-        transclude: true,
-        template: '<li ng-class="{active: isActive}" class="dropdown" ng-transclude></li>',
-        link: function (scope, elm, attr, mwNavbarCtrl) {
-          var isActive = function () {
-            var active = false;
-            angular.forEach(scope.dropdownItems, function (path) {
-              if (!active) {
-                active = mwNavbarCtrl.isActive(path);
+    });
+  
+  /* jshint ignore:start */
+  // This is the orginal bootstrap backdrop implementation with the only
+  // modification that the element can be defined as parameter where the backdrop should be placed
+  var $bootstrapBackdrop = function (callback, holderEl) {
+    var animate = this.$element.hasClass('fade') ? 'fade' : '';
+  
+    if (this.isShown && this.options.backdrop) {
+      var doAnimate = $.support.transition && animate;
+  
+      this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+        .appendTo(holderEl);
+  
+      this.$backdrop.on('click', $.proxy(function (e) {
+        if (e.target !== e.currentTarget) {
+          return;
+        }
+        this.options.backdrop == 'static'
+          ? this.$element[0].focus.call(this.$element[0])
+          : this.hide.call(this)
+      }, this));
+  
+      if (doAnimate) {
+        this.$backdrop[0].offsetWidth;
+      } // force reflow
+  
+      this.$backdrop.addClass('in');
+  
+      if (!callback) return;
+  
+      doAnimate ?
+        this.$backdrop
+          .one($.support.transition.end, callback)
+          .emulateTransitionEnd(150) :
+        callback()
+  
+    } else if (!this.isShown && this.$backdrop) {
+      this.$backdrop.removeClass('in');
+  
+      $.support.transition && this.$element.hasClass('fade') ?
+        this.$backdrop
+          .one($.support.transition.end, callback)
+          .emulateTransitionEnd(150) :
+        callback()
+  
+    } else if (callback) {
+      callback()
+    }
+  };
+  /* jshint ignore:end */
+  
+  'use strict';
+  
+  angular.module('mwNav', [])
+  
+      .directive('mwSubNav', function () {
+        return {
+          restrict: 'A',
+          scope: {
+            justified: '='
+          },
+          replace: true,
+          transclude: true,
+          template: '<div class="mw-nav"><ul class="nav nav-pills" ng-class="{\'nav-justified\':justified}" ng-transclude></ul></div>'
+        };
+      })
+  
+      .directive('mwSubNavPill', ['$location', function ($location) {
+        return {
+          restrict: 'A',
+          scope: {
+            url: '@mwSubNavPill',
+            mwDisabled: '='
+          },
+          transclude: true,
+          replace: true,
+          template:
+            '<li ng-class="{mwDisabled: mwDisabled}">' +
+              '<div class="btn btn-link" ' +
+                    'ng-click="navigate(url)" ' +
+                    'ng-class="{disabled: mwDisabled}" ' +
+                    'ng-transclude>' +
+              '</div>' +
+            '</li>',
+          link: function (scope, elm) {
+            var setActiveClassOnUrlMatch = function (url) {
+              if (scope.url && url === scope.url.slice(1)) {
+                elm.addClass('active');
+              } else {
+                elm.removeClass('active');
+              }
+            };
+  
+            scope.$watch('url', function (newUrlAttr) {
+              if (newUrlAttr) {
+                setActiveClassOnUrlMatch($location.$$path);
               }
             });
-            scope.isActive = active;
-          };
-          isActive();
-          $rootScope.$on('$routeChangeSuccess', isActive);
-        },
-        controller: ['$scope', function ($scope) {
-          var dropdownItems = $scope.dropdownItems = [];
-          this.register = function (path) {
-            dropdownItems.push(path);
-          };
-        }]
-      };
-    }])
-
-    .directive('mwNavbarDropdownTitle', function () {
-      return {
-        replace: true,
-        transclude: true,
-        template: '<a class="dropdown-toggle" data-toggle="dropdown"><span ng-transclude></span> <b class="caret"></b></a>'
-      };
-    })
-
-    .directive('mwNavbarDropdownItems', function () {
-      return {
-        transclude: true,
-        replace: true,
-        template: '<ul class="dropdown-menu" ng-transclude></ul>'
-      };
-    })
-
-
-    .directive('mwNavbarDropdownItem', ['$rootScope', function ($rootScope) {
-      return {
-        transclude: true,
-        replace: true,
-        scope: true,
-        require: ['^mwNavbarDropdown', '^mwNavbar'],
-        template: '<li ng-class="{active: isActive}" ng-transclude></li>',
-        link: function (scope, elm, attr, ctrls) {
-          var link = elm.find('a').attr('href'),
-              mwNavbarDropdownItemsCtrl = ctrls[0],
-              mwNavbarCtrl = ctrls[1];
-
-          if(mwNavbarDropdownItemsCtrl){
-            mwNavbarDropdownItemsCtrl.register(link);
+  
+            scope.navigate = function(url){
+              if(!scope.mwDisabled){
+                url = url.replace(/#\//,'');
+                $location.path(url);
+                $location.replace();
+              }
+            };
+  
+            setActiveClassOnUrlMatch($location.$$path);
+  
           }
-
-          var isActive = function () {
-            scope.isActive = mwNavbarCtrl ? mwNavbarCtrl.isActive(link, true) : false;
-          };
-          isActive();
-
-          $rootScope.$on('$routeChangeSuccess', isActive);
-
-          elm.find('a').on('click', function() {
-            scope.uncollapse();
-          });
-        }
-      };
-    }])
-
-
-;
-'use strict';
-
-angular.module('mwPopover', [])
-
-/**
- * Helper service for internal use to communicate between popover directives
- */
-  .service('Popover', function () {
-    this.contents = [];
-  })
-
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:mwPopoverContent
- * @element ANY
- *
- * @description
- * Provides content for a popup under the given key
- *
- * @param {String} mwPopoverContent ID where this content should be available
- *
- * @example
- <div mw-popover-content="anID">Content of the popover</div>
- */
-  .directive('mwPopoverContent', ['$compile', 'Popover', function ($compile, Popover) {
-
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        elm.css('display', 'none');
-        Popover.contents[attr.mwPopoverContent] = $compile(elm.html())(scope);
-      }
-    };
-  }])
-
-
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:mwPopover
- * @element ANY
- *
- * @description
- * Adds a popover for the current element (see Bootstrap 3 component)
- *
- * @param {String} mwPopover ID of mw-popover-content
- * @param {String} popoverTrigger how tooltip is triggered - click | hover | focus | manual. You may pass multiple triggers; separate them with a space.
- * @param {String} popoverPosition how to position the tooltip - top | bottom | left | right | auto. When "auto" is specified, it will dynamically reorient the tooltip. For example, if placement is "auto left", the tooltip will display to the left when possible, otherwise it will display right.
- *
- * @example
- <div mw-popover-button="Click me to open the popover">Content of the popover</div>
- */
-  .directive('mwPopover', ['$rootScope', '$templateRequest', '$compile', function ($rootScope, $templateRequest, $compile) {
-    return {
-      restrict: 'A',
-      link: function (scope, el, attr) {
-
-        var visible = false,
-          content = '';
-
-        var buildPopover = function () {
-          el.popover('destroy');
-          el.popover({
-            trigger: attr.popoverTrigger || 'hover',
-            title: attr.popoverTitle,
-            html: true,
-            placement: attr.popoverPosition,
-            content: $compile(content.trim())(scope)
-          });
-
-          el.on('show.bs.popover', function () {
-            visible = true;
-          });
         };
-
-        el.on('blur', function () {
-          el.popover('hide');
-        });
-
-        //we need to set a default value here, see
-        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
-        attr.popoverTitle = attr.popoverTitle || 'popoverTitle';
-        attr.$observe('popoverTitle', buildPopover);
-
-        if (attr.popoverUrl) {
-          content = '<span rln-spinner></span>';
-          $templateRequest(attr.popoverUrl).then(function (template) {
-            content = template;
-            buildPopover();
-          });
-          buildPopover();
-        }
-
-        attr.$observe('content', function (val) {
-          if (val) {
-            content = val;
-            buildPopover();
+      }])
+  
+      .directive('mwNavbar', ['$location', function ($location) {
+        return {
+          transclude: true,
+          replace: true,
+          templateUrl: 'uikit/templates/mwNav/mwNavbar.html',
+          controller: function () {
+            this.isActive = function (path, exact) {
+              if(!path) {
+                return false;
+              }
+              var newPath = path.substring(1);
+              if(exact){
+                return $location.path() === newPath;
+              }
+              return $location.path().indexOf(newPath) > -1;
+            };
           }
-        });
-
-        scope.$on('$destroy', function () {
-          var popover = el.data('bs.popover');
-          if(popover && popover.tip()){
-            popover.tip().detach().remove();
+        };
+      }])
+  
+      .directive('mwNavbarContent', function () {
+        return {
+          transclude: true,
+          replace: true,
+          template: '<div class="navbar-collapse collapse" ng-transclude></div>',
+          link: function(scope, elm) {
+            scope.uncollapse = function() {
+              if(elm.hasClass('in')) {
+                elm.collapse('hide');
+              }
+            };
           }
-        });
-      }
-    };
-  }])
-
-;
-/**
- * Created by zarges on 23/06/15.
- */
-'use strict';
-angular.module('mwResponseHandler', [])
-
-  .provider('ResponseHandler', function () {
-
-    var _routeHandlersPerMethodContainer = {
-        POST: [],
-        PUT: [],
-        GET: [],
-        DELETE: [],
-        PATCH: []
-      };
-
-    var _methodIsInValidError = function(method){
-      return new Error('Method '+method+' is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
-    };
-
-    var RouteHandler = function (route) {
-
-      var _codes = {
-          ERROR: [],
-          SUCCESS: []
-        },
-        _route = route,
-        _routeRegex = null,
-        _optionalParam = /\((.*?)\)/g,
-        _namedParam = /(\(\?)?:\w+/g,
-        _splatParam = /\*\w?/g,
-        _escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-
-
-      var _routeToRegExp = function (route) {
-        route = route.replace(_escapeRegExp, '\\$&')
-          .replace(_optionalParam, '(?:$1)?')
-          .replace(_namedParam, function (match, optional) {
-            return optional ? match : '([^/?]+)';
-          })
-          .replace(_splatParam, '([^?]*?)');
-        return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-      };
-
-      var _registerCallbackForCode = function (code, callback) {
-
-        var existingCallbacks = _codes[code],
-          callbacks = existingCallbacks || [];
-
-        callbacks.push(callback);
-
-        _codes[code] = callbacks;
-      };
-
-      var _getCallbackForCode = function (code) {
-        return _codes[code];
-      };
-
-      this.matchesUrl = function (url) {
-        return url.match(_routeRegex);
-      };
-
-      this.registerCallbackForStatusCodes = function (statusCodes, callback) {
-        statusCodes.forEach(function (statusCode) {
-          _registerCallbackForCode(statusCode, callback);
-        }, this);
-      };
-
-      this.registerCallbackForSuccess = function (callback) {
-        _registerCallbackForCode('SUCCESS', callback);
-      };
-
-      this.registerCallbackForError = function (callback) {
-        _registerCallbackForCode('ERROR', callback);
-      };
-
-      this.getCallbacksForStatusCode = function (statusCode) {
-        return _getCallbackForCode(statusCode);
-      };
-
-      this.getCallbacksForSuccess = function () {
-        return _getCallbackForCode('SUCCESS');
-      };
-
-      this.getCallbacksForError = function () {
-        return _getCallbackForCode('ERROR');
-      };
-
-      var main = function () {
-        _routeRegex = _routeToRegExp(_route);
-      };
-
-      main.call(this);
-    };
-
-    this.registerAction = function (route, callback, options) {
-      options = options || {};
-
-      if(!options.onError && !options.onSuccess && !options.statusCodes){
-        throw new Error('You have to specify either some statusCodes or set onSuccess or onError to true in the options parameter object');
-      }
-
-      if (( options.onError && options.onSuccess ) || ( (options.onError || options.onSuccess) && options.statusCodes )) {
-        throw new Error('Definition is too imprecise');
-      }
-      if (!options.method && !options.methods) {
-        throw new Error('Method has to be defined in options e.g method: "POST" or methods:["POST"]');
-      }
-
-      options.methods = options.methods || [options.method];
-
-      options.methods.forEach(function(method){
-
-        if (!_routeHandlersPerMethodContainer[method]) {
-          throw _methodIsInValidError(method);
-        }
-
-        var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[method], {id: route}),
-          routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
-          routeHandler = routeHandlerContainer.handler;
-
-        if (options.statusCodes) {
-          routeHandler.registerCallbackForStatusCodes(options.statusCodes, callback);
-        } else if (options.onSuccess) {
-          routeHandler.registerCallbackForSuccess(callback);
-        } else if (options.onError) {
-          routeHandler.registerCallbackForError(callback);
-        }
-
-        if (!existingRouteHandlerContainer) {
-          _routeHandlersPerMethodContainer[method].push(routeHandlerContainer);
-        }
-
-      });
-    };
-
-    this.registerSuccessAction = function (route, callback, method) {
-      return this.registerAction(route, callback, {
-        method: method,
-        onSuccess: true
-      });
-    };
-
-    this.registerErrorAction = function (route, callback, method) {
-      return this.registerAction(route, callback, {
-        method: method,
-        onError: true
-      });
-    };
-
-    this.registerDefaultAction = function(callback, options){
-      options = options || {};
-      return this.registerAction('*', callback, options);
-    };
-
-    this.registerDefaultSuccessAction = function (callback, method) {
-      return this.registerAction('*', callback, {
-        method: method,
-        onSuccess: true
-      });
-    };
-
-    this.registerDefaultErrorAction = function (callback, method) {
-      return this.registerAction('*', callback, {
-        method: method,
-        onError: true
-      });
-    };
-
-    this.$get = ['$injector', '$q', function ($injector, $q) {
-
-      /*
-       *  Execute promises sequentially
-       *  When funtion does not return a promise it converts the response into a promise
-       *  The last function defines if the chain should be resolved or rejected by rejecting or resolving value
-       *  When the first function rejectes value but the last function resolves it the whole chain will be resolved
-       */
-      var _executePromiseQueue = function(fns, resp, isError, dfd){
-        var fn = fns.shift();
-
-        if(!dfd){
-          dfd = $q.defer();
-        }
-
-        if(fn){
-          var returnVal = fn(resp, isError),
-              promise;
-          if(returnVal && returnVal.then){
-            promise = returnVal;
-          } else {
-            if(isError){
-              promise = $q.reject(returnVal || resp);
-            } else {
-              promise = $q.when(returnVal || resp);
+        };
+      })
+  
+      .directive('mwNavbarBrand', function () {
+        return {
+          transclude: true,
+          replace: true,
+          templateUrl: 'uikit/templates/mwNav/mwNavbarBrand.html'
+        };
+      })
+  
+      .directive('mwNavbarItems', function () {
+        return {
+          transclude: true,
+          replace: true,
+          template: '<ul class="nav navbar-nav" ng-transclude></ul>',
+          link: function (scope, elm, attr) {
+  
+            if(attr.mwNavbarItems) {
+              elm.addClass('navbar-' + attr.mwNavbarItems);
             }
+  
+            elm.on('click', function () {
+              if (elm.hasClass('in')) {
+                elm.collapse('hide');
+              }
+            });
           }
-
-          promise.then(function(rsp){
-            _executePromiseQueue(fns, rsp, false, dfd);
-          },function(rsp){
-            _executePromiseQueue(fns, rsp, true, dfd);
-          });
-        } else {
-          if(isError){
-            dfd.reject(resp);
-          } else {
-            dfd.resolve(resp);
+        };
+      })
+  
+      .directive('mwNavbarItem', ['$rootScope', function ($rootScope) {
+        return {
+          transclude: true,
+          replace: true,
+          scope: true,
+          require: '^mwNavbar',
+          template: '<li ng-class="{active: isActive}" ng-transclude></li>',
+          link: function (scope, elm, attr, mwNavbarCtrl) {
+            var isActive = function () {
+              scope.isActive = mwNavbarCtrl.isActive(elm.find('a').attr('href'));
+            };
+            isActive();
+            $rootScope.$on('$routeChangeSuccess', isActive);
+  
+            elm.find('a').on('click', function() {
+              scope.uncollapse();
+            });
           }
-        }
-        return dfd.promise;
-      };
-
-      var _executeCallbacks = function (callbacks, response, isError) {
-        var fns = [];
-        callbacks.forEach(function (callback) {
-          callback = angular.isString(callback) ? $injector.get(callback) : callback;
-          fns.push(callback);
-        }, this);
-        return _executePromiseQueue(fns, response, isError);
-      };
-
-      var _getCallbacks = function(handler, statusCode, isError){
-        var statusCallbacks = handler.getCallbacksForStatusCode(statusCode),
-            successCallbacks = handler.getCallbacksForSuccess(),
-            errorCallbacks = handler.getCallbacksForError();
-
-        if(statusCallbacks){
-          return statusCallbacks;
-        } else if(isError){
-          return errorCallbacks;
-        } else {
-          return successCallbacks;
-        }
-      };
-
+        };
+      }])
+  
+      .directive('mwNavbarDropdown', ['$rootScope', function ($rootScope) {
+        return {
+          replace: true,
+          require: '^mwNavbar',
+          transclude: true,
+          template: '<li ng-class="{active: isActive}" class="dropdown" ng-transclude></li>',
+          link: function (scope, elm, attr, mwNavbarCtrl) {
+            var isActive = function () {
+              var active = false;
+              angular.forEach(scope.dropdownItems, function (path) {
+                if (!active) {
+                  active = mwNavbarCtrl.isActive(path);
+                }
+              });
+              scope.isActive = active;
+            };
+            isActive();
+            $rootScope.$on('$routeChangeSuccess', isActive);
+          },
+          controller: ['$scope', function ($scope) {
+            var dropdownItems = $scope.dropdownItems = [];
+            this.register = function (path) {
+              dropdownItems.push(path);
+            };
+          }]
+        };
+      }])
+  
+      .directive('mwNavbarDropdownTitle', function () {
+        return {
+          replace: true,
+          transclude: true,
+          template: '<a class="dropdown-toggle" data-toggle="dropdown"><span ng-transclude></span> <b class="caret"></b></a>'
+        };
+      })
+  
+      .directive('mwNavbarDropdownItems', function () {
+        return {
+          transclude: true,
+          replace: true,
+          template: '<ul class="dropdown-menu" ng-transclude></ul>'
+        };
+      })
+  
+  
+      .directive('mwNavbarDropdownItem', ['$rootScope', function ($rootScope) {
+        return {
+          transclude: true,
+          replace: true,
+          scope: true,
+          require: ['^mwNavbarDropdown', '^mwNavbar'],
+          template: '<li ng-class="{active: isActive}" ng-transclude></li>',
+          link: function (scope, elm, attr, ctrls) {
+            var link = elm.find('a').attr('href'),
+                mwNavbarDropdownItemsCtrl = ctrls[0],
+                mwNavbarCtrl = ctrls[1];
+  
+            if(mwNavbarDropdownItemsCtrl){
+              mwNavbarDropdownItemsCtrl.register(link);
+            }
+  
+            var isActive = function () {
+              scope.isActive = mwNavbarCtrl ? mwNavbarCtrl.isActive(link, true) : false;
+            };
+            isActive();
+  
+            $rootScope.$on('$routeChangeSuccess', isActive);
+  
+            elm.find('a').on('click', function() {
+              scope.uncollapse();
+            });
+          }
+        };
+      }])
+  
+  
+  ;
+  'use strict';
+  
+  angular.module('mwPopover', [])
+  
+  /**
+   * Helper service for internal use to communicate between popover directives
+   */
+    .service('Popover', function () {
+      this.contents = [];
+    })
+  
+  /**
+   * @ngdoc directive
+   * @name Relution.Common.directive:mwPopoverContent
+   * @element ANY
+   *
+   * @description
+   * Provides content for a popup under the given key
+   *
+   * @param {String} mwPopoverContent ID where this content should be available
+   *
+   * @example
+   <div mw-popover-content="anID">Content of the popover</div>
+   */
+    .directive('mwPopoverContent', ['$compile', 'Popover', function ($compile, Popover) {
+  
       return {
-        getHandlerForUrlAndCode: function (method, url, statusCode, isError) {
-          var _returnHandler;
-
+        restrict: 'A',
+        link: function (scope, elm, attr) {
+          elm.css('display', 'none');
+          Popover.contents[attr.mwPopoverContent] = $compile(elm.html())(scope);
+        }
+      };
+    }])
+  
+  
+  /**
+   * @ngdoc directive
+   * @name Relution.Common.directive:mwPopover
+   * @element ANY
+   *
+   * @description
+   * Adds a popover for the current element (see Bootstrap 3 component)
+   *
+   * @param {String} mwPopover ID of mw-popover-content
+   * @param {String} popoverTrigger how tooltip is triggered - click | hover | focus | manual. You may pass multiple triggers; separate them with a space.
+   * @param {String} popoverPosition how to position the tooltip - top | bottom | left | right | auto. When "auto" is specified, it will dynamically reorient the tooltip. For example, if placement is "auto left", the tooltip will display to the left when possible, otherwise it will display right.
+   *
+   * @example
+   <div mw-popover-button="Click me to open the popover">Content of the popover</div>
+   */
+    .directive('mwPopover', ['$rootScope', '$templateRequest', '$compile', function ($rootScope, $templateRequest, $compile) {
+      return {
+        restrict: 'A',
+        link: function (scope, el, attr) {
+  
+          var visible = false,
+            content = '';
+  
+          var buildPopover = function () {
+            el.popover('destroy');
+            el.popover({
+              trigger: attr.popoverTrigger || 'hover',
+              title: attr.popoverTitle,
+              html: true,
+              placement: attr.popoverPosition,
+              content: $compile(content.trim())(scope)
+            });
+  
+            el.on('show.bs.popover', function () {
+              visible = true;
+            });
+          };
+  
+          el.on('blur', function () {
+            el.popover('hide');
+          });
+  
+          //we need to set a default value here, see
+          //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+          attr.popoverTitle = attr.popoverTitle || 'popoverTitle';
+          attr.$observe('popoverTitle', buildPopover);
+  
+          if (attr.popoverUrl) {
+            content = '<span rln-spinner></span>';
+            $templateRequest(attr.popoverUrl).then(function (template) {
+              content = template;
+              buildPopover();
+            });
+            buildPopover();
+          }
+  
+          attr.$observe('content', function (val) {
+            if (val) {
+              content = val;
+              buildPopover();
+            }
+          });
+  
+          scope.$on('$destroy', function () {
+            var popover = el.data('bs.popover');
+            if(popover && popover.tip()){
+              popover.tip().detach().remove();
+            }
+          });
+        }
+      };
+    }])
+  
+  ;
+  /**
+   * Created by zarges on 23/06/15.
+   */
+  'use strict';
+  angular.module('mwResponseHandler', [])
+  
+    .provider('ResponseHandler', function () {
+  
+      var _routeHandlersPerMethodContainer = {
+          POST: [],
+          PUT: [],
+          GET: [],
+          DELETE: [],
+          PATCH: []
+        };
+  
+      var _methodIsInValidError = function(method){
+        return new Error('Method '+method+' is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
+      };
+  
+      var RouteHandler = function (route) {
+  
+        var _codes = {
+            ERROR: [],
+            SUCCESS: []
+          },
+          _route = route,
+          _routeRegex = null,
+          _optionalParam = /\((.*?)\)/g,
+          _namedParam = /(\(\?)?:\w+/g,
+          _splatParam = /\*\w?/g,
+          _escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+  
+  
+        var _routeToRegExp = function (route) {
+          route = route.replace(_escapeRegExp, '\\$&')
+            .replace(_optionalParam, '(?:$1)?')
+            .replace(_namedParam, function (match, optional) {
+              return optional ? match : '([^/?]+)';
+            })
+            .replace(_splatParam, '([^?]*?)');
+          return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+        };
+  
+        var _registerCallbackForCode = function (code, callback) {
+  
+          var existingCallbacks = _codes[code],
+            callbacks = existingCallbacks || [];
+  
+          callbacks.push(callback);
+  
+          _codes[code] = callbacks;
+        };
+  
+        var _getCallbackForCode = function (code) {
+          return _codes[code];
+        };
+  
+        this.matchesUrl = function (url) {
+          return url.match(_routeRegex);
+        };
+  
+        this.registerCallbackForStatusCodes = function (statusCodes, callback) {
+          statusCodes.forEach(function (statusCode) {
+            _registerCallbackForCode(statusCode, callback);
+          }, this);
+        };
+  
+        this.registerCallbackForSuccess = function (callback) {
+          _registerCallbackForCode('SUCCESS', callback);
+        };
+  
+        this.registerCallbackForError = function (callback) {
+          _registerCallbackForCode('ERROR', callback);
+        };
+  
+        this.getCallbacksForStatusCode = function (statusCode) {
+          return _getCallbackForCode(statusCode);
+        };
+  
+        this.getCallbacksForSuccess = function () {
+          return _getCallbackForCode('SUCCESS');
+        };
+  
+        this.getCallbacksForError = function () {
+          return _getCallbackForCode('ERROR');
+        };
+  
+        var main = function () {
+          _routeRegex = _routeToRegExp(_route);
+        };
+  
+        main.call(this);
+      };
+  
+      this.registerAction = function (route, callback, options) {
+        options = options || {};
+  
+        if(!options.onError && !options.onSuccess && !options.statusCodes){
+          throw new Error('You have to specify either some statusCodes or set onSuccess or onError to true in the options parameter object');
+        }
+  
+        if (( options.onError && options.onSuccess ) || ( (options.onError || options.onSuccess) && options.statusCodes )) {
+          throw new Error('Definition is too imprecise');
+        }
+        if (!options.method && !options.methods) {
+          throw new Error('Method has to be defined in options e.g method: "POST" or methods:["POST"]');
+        }
+  
+        options.methods = options.methods || [options.method];
+  
+        options.methods.forEach(function(method){
+  
           if (!_routeHandlersPerMethodContainer[method]) {
             throw _methodIsInValidError(method);
           }
-
-          _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
-            var handler = routeHandlerContainer.handler,
-                callbacks = _getCallbacks(handler, statusCode, isError);
-            if (!_returnHandler && handler.matchesUrl(url) && callbacks && callbacks.length>0) {
-              _returnHandler = handler;
-            }
-          });
-
-          return _returnHandler;
-        },
-        handle: function (response, isError) {
-          var url = response.config.url,
-            method = response.config.method,
-            statusCode = response.status,
-            handler = this.getHandlerForUrlAndCode(method, url, statusCode, isError);
-
-          if (handler) {
-            var callbacks = _getCallbacks(handler, statusCode, isError);
-            if(callbacks){
-              return _executeCallbacks(callbacks, response, isError);
-            }
+  
+          var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[method], {id: route}),
+            routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
+            routeHandler = routeHandlerContainer.handler;
+  
+          if (options.statusCodes) {
+            routeHandler.registerCallbackForStatusCodes(options.statusCodes, callback);
+          } else if (options.onSuccess) {
+            routeHandler.registerCallbackForSuccess(callback);
+          } else if (options.onError) {
+            routeHandler.registerCallbackForError(callback);
           }
-        }
-      };
-    }];
-  })
-
-  .config(['$provide', '$httpProvider', function ($provide, $httpProvider) {
-
-    $provide.factory('requestInterceptorForHandling', ['$q', 'ResponseHandler', function ($q, ResponseHandler) {
-
-      var handle = function(response, isError){
-        var handler = ResponseHandler.handle(response, isError);
-        if(handler){
-          return handler;
-        } else if(isError){
-          return $q.reject(response);
-        } else {
-          return $q.when(response);
-        }
-      };
-
-      return {
-        response: function (response) {
-          return handle(response, false);
-        },
-        responseError: function (response) {
-          return handle(response, true);
-        }
-      };
-    }]);
-
-    $httpProvider.interceptors.push('requestInterceptorForHandling');
-
-  }]);
-
-/**
- * Created by zarges on 23/06/15.
- */
-'use strict';
-angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToast'])
-
-  .provider('ResponseToastHandler', ['$provide', 'ResponseHandlerProvider', function ($provide, ResponseHandlerProvider) {
-    var _registeredIds = [],
-      _registeredToastOptions = {
-        DEFAULT: {
-          type: 'default',
-          autoHide: false
-        }
-      };
-
-    var _getNotificationCallback = function (messages, id, options) {
-      options = options || {};
-      var factoryName = _.uniqueId('notification_factory');
-      $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
-        return function ($httpResponse) {
-          if(!messages){
-            return;
+  
+          if (!existingRouteHandlerContainer) {
+            _routeHandlersPerMethodContainer[method].push(routeHandlerContainer);
           }
-
-          var prevToast = Toast.findToast(id),
-            data = {},
-            messageStr = prevToast ? messages.plural : messages.singular,
-            message,
-            toastOptions = {
-              id: id
-            };
-
-          if (!!prevToast && messages.plural) {
-            messageStr = messages.plural;
-          } else if (messages.singular) {
-            messageStr = messages.singular;
-          }
-
-          data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
-          data.$count++;
-
-          if (options.preProcess && typeof options.preProcess === 'function') {
-            _.extend(data, $httpResponse.data);
-            message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
-            if(!message){
-              return;
-            }
-          } else {
-            var resp = $httpResponse.data || {};
-
-            if (resp.results && !_.isObject(resp.results)) {
-              data = {message: resp.results};
-            } else if (resp.results && resp.results.length > 0) {
-              _.extend(data, resp.results[0]);
-            }
-
-            if ($httpResponse.config.instance && typeof $httpResponse.config.instance.toJSON === 'function') {
-              var json = $httpResponse.config.instance.toJSON();
-              _.extend(json, data);
-              data = json;
-            }
-
-            message = i18n.get(messageStr, data);
-          }
-
-          if (options.toastType) {
-            var opts = _registeredToastOptions[options.toastType];
-            if (opts) {
-              _.extend(toastOptions, opts);
-            } else {
-              throw new Error('Type ' + options.toastType + ' is not available. Make sure you have configured it first');
-            }
-          } else {
-            _.extend(toastOptions, _registeredToastOptions.DEFAULT);
-          }
-
-          Toast.addToast(message, toastOptions);
-        };
-      }]);
-      return factoryName;
-    };
-
-    this.registerToastType = function (typeId, toastOptions) {
-      if (_registeredToastOptions[typeId]) {
-        throw new Error('The toast type ' + typeId + ' is already defined. You can configure a toast type only once');
-      } else {
-        _registeredToastOptions[typeId] = toastOptions;
-      }
-    };
-
-    this.registerToast = function (route, messages, options) {
-      options = options || {};
-      var codes = options.statusCodes || [options.onSuccess ? 'SUCCESS' : 'ERROR'];
-
-      if (_.isUndefined(messages) || _.isObject(messages) && !messages.singular) {
-        throw new Error('You have to pass a messages object and define at least the singular message {singular:"Mandatory", plural:"Optional"}');
-      }
-
-      codes.forEach(function (code) {
-        var msgId = options.id || route + '_' + options.method + '_' + code,
-          callbackFactory = _getNotificationCallback(messages, msgId, options);
-
-        if (_registeredIds.indexOf(msgId) > -1) {
-          throw new Error('You can not define a second message for the route ' + route + ' and method ' + options.method + ' because you have already registered one!');
-        } else {
-          if(code==='SUCCESS' || code ==='ERROR'){
-            delete options.statusCodes;
-          } else {
-            options.statusCodes = [code];
-          }
-          ResponseHandlerProvider.registerAction(route, callbackFactory, options);
-          _registeredIds.push(msgId);
-        }
-      });
-
-    };
-
-    this.registerSuccessToast = function (route, messages, method, toastType, preProcessFn) {
-      this.registerToast(route, messages, {
-        method: method,
-        toastType: toastType,
-        onSuccess: true,
-        preProcess: preProcessFn
-      });
-    };
-
-    this.registerErrorToast = function (route, messages, method, toastType, preProcessFn) {
-      this.registerToast(route, messages, {
-        method: method,
-        toastType: toastType,
-        onError: true,
-        preProcess: preProcessFn
-      });
-    };
-
-    this.registerDefaultSuccessToast = function (messages, method, toastType, preProcessFn) {
-      return this.registerToast('*', messages, {
-        method: method,
-        toastType: toastType,
-        onSuccess: true,
-        preProcess: preProcessFn
-      });
-    };
-
-    this.registerDefaultErrorToast = function (messages, method, toastType, preProcessFn) {
-      return this.registerToast('*', messages, {
-        method: method,
-        toastType: toastType,
-        onError: true,
-        preProcess: preProcessFn
-      });
-    };
-
-    this.$get = function () {
-    };
-
-  }]);
-'use strict';
-
-angular.module('mwSidebar', [])
-
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarSelect
-   * @element div
-   * @description
-   *
-   * Creates a select input which provides possible values for a filtering.
-   *
-   * @param {filterable} filterable Filterable instance.
-   * @param {expression} disabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   */
-  .directive('mwSidebarSelect', function () {
-    return {
-      transclude: true,
-      scope: {
-        filterable: '=',
-        mwDisabled: '=',
-        property: '@',
-        persist: '='
-      },
-      templateUrl: 'uikit/templates/mwSidebar/mwSidebarSelect.html',
-      link: function (scope) {
-        scope.$watch('filterable', function () {
-          if (scope.filterable) {
-            scope.model = scope.filterable.properties[scope.property];
-            if (scope.persist) {
-              scope.filterable.properties[scope.property].persist = scope.persist;
-            }
-          }
+  
         });
-      }
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarPanel
-   * @element div
-   * @description
-   *
-   * Directive for the filter panel.
-   *
-   * @param {boolean} affix Make the filterbar affix by listening on window scroll event and changing top position so that the filterbar can be postion relative instead of fixed
-   * @param {number} offset If needed an offset to the top for example when a nav bar is over the sidebar that is not fixed.
-   *
-   */
-  .directive('mwSidebarPanel', ['$document', '$window', function ($document, $window) {
-    return {
-      replace: true,
-      transclude: true,
-      templateUrl: 'uikit/templates/mwSidebar/mwSidebarPanel.html',
-      link: function (scope, el) {
-
-        var windowEl = angular.element($window),
-          throttledRepositionFn, throttledSetMaxHeight;
-
-        var reposition = function () {
-          var offsetTop = angular.element(el).offset().top,
-            offsetHeaderTop = angular.element('*[mw-header]').offset().top + angular.element('*[mw-header]').height(),
-            spacer = 15, //Offset so the sidebar has some whitespce to the header
-            newOffset = offsetTop - offsetHeaderTop - spacer,
-            scrollTop = $document.scrollTop();
-
-          if (newOffset <= 10) {
-            //There is no element between sidebar and header so we can kill the scroll listener
-            windowEl.off('scroll', throttledRepositionFn);
-          } else if (scrollTop > newOffset) {
-            angular.element(el).find('.content-container').css('top', offsetHeaderTop + spacer);
-          } else if (scrollTop > 1) {
-            angular.element(el).find('.content-container').css('top', offsetTop - scrollTop);
-          } else {
-            angular.element(el).find('.content-container').css('top', 'initial');
-          }
-        };
-
-        var setMaxHeight = function () {
-          var containerEl = el.find('.content-container'),
-            windowHeight = windowEl.height(),
-            containerElOffsetTop = el.offset().top,
-            footerHeight = angular.element('body > footer').height(),
-            padding = 20,
-            maxHeight = windowHeight - containerElOffsetTop - footerHeight - padding;
-
-          if (maxHeight > 0) {
-            containerEl.css('max-height', maxHeight);
-          } else {
-            containerEl.css('max-height', 'initial');
-          }
-        };
-
-        throttledRepositionFn = _.throttle(reposition, 10);
-        throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
-
-        window.requestAnimFrame(setMaxHeight);
-        setTimeout(setMaxHeight, 500);
-
-        windowEl.on('resize', throttledSetMaxHeight);
-        windowEl.on('scroll', throttledRepositionFn);
-
-        scope.$on('$destroy', function () {
-          windowEl.off('resize', throttledSetMaxHeight);
-          windowEl.off('scroll', throttledRepositionFn);
+      };
+  
+      this.registerSuccessAction = function (route, callback, method) {
+        return this.registerAction(route, callback, {
+          method: method,
+          onSuccess: true
         });
-      }
-    };
-  }])
-
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarActions
-   * @element div
-   * @description
-   *
-   * Container for actions
-   *
-   */
-  .directive('mwSidebarActions', function () {
-    return {
-      transclude: true,
-      template: '<div ng-transclude></div><hr>'
-    };
-  })
-
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarFilters
-   * @element div
-   * @description
-   *
-   * Container for filters
-   *
-   */
-  .directive('mwSidebarFilters', function () {
-    return {
-      transclude: true,
-      templateUrl: 'uikit/templates/mwSidebar/mwSidebarFilters.html',
-      link: function (scope) {
-        scope.resetFiltersOnClose = function () {
-          if (!scope.toggleFilters) {
-            scope.filterable.resetFilters();
-            scope.filterable.applyFilters();
+      };
+  
+      this.registerErrorAction = function (route, callback, method) {
+        return this.registerAction(route, callback, {
+          method: method,
+          onError: true
+        });
+      };
+  
+      this.registerDefaultAction = function(callback, options){
+        options = options || {};
+        return this.registerAction('*', callback, options);
+      };
+  
+      this.registerDefaultSuccessAction = function (callback, method) {
+        return this.registerAction('*', callback, {
+          method: method,
+          onSuccess: true
+        });
+      };
+  
+      this.registerDefaultErrorAction = function (callback, method) {
+        return this.registerAction('*', callback, {
+          method: method,
+          onError: true
+        });
+      };
+  
+      this.$get = ['$injector', '$q', function ($injector, $q) {
+  
+        /*
+         *  Execute promises sequentially
+         *  When funtion does not return a promise it converts the response into a promise
+         *  The last function defines if the chain should be resolved or rejected by rejecting or resolving value
+         *  When the first function rejectes value but the last function resolves it the whole chain will be resolved
+         */
+        var _executePromiseQueue = function(fns, resp, isError, dfd){
+          var fn = fns.shift();
+  
+          if(!dfd){
+            dfd = $q.defer();
           }
-        };
-
-        if (scope.filterable && scope.filterable.hasPersistedFilters()) {
-          scope.toggleFilters = true;
-        }
-      }
-    };
-  });
-
-
-
-'use strict';
-
-angular.module('mwSidebarBb', [])
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarFilters
-   * @element div
-   * @description
-   *
-   * Container for filters
-   *
-   */
-  .directive('mwSidebarFiltersBb', ['$timeout', 'MCAPFilterHolder', function ($timeout, MCAPFilterHolder) {
-    return {
-      transclude: true,
-      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
-      controller: ['$scope', function ($scope) {
-        this.getCollection = function () {
-          return $scope.collection;
-        };
-
-        this.getFilterHolders = function () {
-          return $scope.filterHolders;
-        };
-
-        this.changeFilter = function (property, value, isUrlParam) {
-          if (isUrlParam) {
-            $scope.collection.filterable.customUrlParams[property] = value;
-            $scope.viewModel.tmpFilter.get('customUrlParams')[property] = value;
-          } else {
-            var filterVal = {};
-            filterVal[property] = value;
-            $scope.collection.filterable.setFilters(filterVal);
-            $scope.viewModel.tmpFilter.set({filter: $scope.collection.filterable.getFilters()});
-            $scope.viewModel.tmpFilter.get('filterValues')[property] = value;
-          }
-
-          $scope.collection.fetch();
-
-        };
-      }],
-      link: function (scope, el, attr) {
-
-        scope.mwListCollection = scope.$eval(attr.mwListCollection);
-        scope.collection = scope.$eval(attr.collection);
-
-        if (scope.mwListCollection) {
-
-          var _filterAnimationDuration = 400;
-
-          scope.collection = scope.mwListCollection.getCollection();
-          scope.mwListCollectionFilter = scope.mwListCollection.getMwListCollectionFilter();
-          scope.filters = scope.mwListCollectionFilter.getFilters();
-          scope.appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
-
-          scope.viewModel = {
-            tmpFilter: new MCAPFilterHolder(),
-            showFilterForm: false,
-            canShowForm: false
-          };
-
-          var setTotalAmount = function (filterModel) {
-            var filterModelInCollection = scope.filters.get(filterModel),
-              totalAmount = scope.collection.filterable.getTotalAmount();
-
-            filterModel.set('totalAmount', totalAmount);
-            if (filterModelInCollection) {
-              filterModelInCollection.set('totalAmount', totalAmount);
-            }
-          };
-
-          var filterCollection = function (filterModel) {
-            scope.collection.filterable.resetFilters();
-            scope.collection.filterable.setFilters(filterModel.get('filterValues'));
-            return scope.collection.fetch().then(function () {
-              setTotalAmount(filterModel);
-            });
-          };
-
-          scope.saveFilter = function () {
-            var filter;
-            if (scope.viewModel.tmpFilter.isNew()) {
-              filter = new MCAPFilterHolder(scope.viewModel.tmpFilter.toJSON());
+  
+          if(fn){
+            var returnVal = fn(resp, isError),
+                promise;
+            if(returnVal && returnVal.then){
+              promise = returnVal;
             } else {
-              filter = scope.viewModel.tmpFilter;
+              if(isError){
+                promise = $q.reject(returnVal || resp);
+              } else {
+                promise = $q.when(returnVal || resp);
+              }
             }
-            scope.mwListCollectionFilter.saveFilter(filter).then(function (filterModel) {
-              scope.viewModel.showFilterForm = false;
-              scope.applyFilter(filterModel);
+  
+            promise.then(function(rsp){
+              _executePromiseQueue(fns, rsp, false, dfd);
+            },function(rsp){
+              _executePromiseQueue(fns, rsp, true, dfd);
             });
-
-          };
-
-          scope.deleteFilter = function (filterModel) {
-            var removeId = filterModel.id,
-              appliedId = scope.appliedFilter.id;
-
-            return scope.mwListCollectionFilter.deleteFilter(filterModel).then(function () {
-
-              if (removeId === appliedId) {
-                scope.revokeFilter();
+          } else {
+            if(isError){
+              dfd.reject(resp);
+            } else {
+              dfd.resolve(resp);
+            }
+          }
+          return dfd.promise;
+        };
+  
+        var _executeCallbacks = function (callbacks, response, isError) {
+          var fns = [];
+          callbacks.forEach(function (callback) {
+            callback = angular.isString(callback) ? $injector.get(callback) : callback;
+            fns.push(callback);
+          }, this);
+          return _executePromiseQueue(fns, response, isError);
+        };
+  
+        var _getCallbacks = function(handler, statusCode, isError){
+          var statusCallbacks = handler.getCallbacksForStatusCode(statusCode),
+              successCallbacks = handler.getCallbacksForSuccess(),
+              errorCallbacks = handler.getCallbacksForError();
+  
+          if(statusCallbacks){
+            return statusCallbacks;
+          } else if(isError){
+            return errorCallbacks;
+          } else {
+            return successCallbacks;
+          }
+        };
+  
+        return {
+          getHandlerForUrlAndCode: function (method, url, statusCode, isError) {
+            var _returnHandler;
+  
+            if (!_routeHandlersPerMethodContainer[method]) {
+              throw _methodIsInValidError(method);
+            }
+  
+            _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
+              var handler = routeHandlerContainer.handler,
+                  callbacks = _getCallbacks(handler, statusCode, isError);
+              if (!_returnHandler && handler.matchesUrl(url) && callbacks && callbacks.length>0) {
+                _returnHandler = handler;
               }
             });
-          };
-
-          scope.applyFilter = function (filterModel) {
-            filterCollection(filterModel).then(function () {
-              scope.mwListCollectionFilter.applyFilter(filterModel);
-            });
-          };
-
-          scope.revokeFilter = function () {
-            scope.mwListCollectionFilter.revokeFilter().then(function () {
-              scope.collection.filterable.resetFilters();
-              scope.collection.fetch();
-              scope.appliedFilter.clear();
-            });
-          };
-
-          scope.addFilter = function () {
-            var emptyFilter = new MCAPFilterHolder();
-
-            scope.viewModel.canShowForm = true;
-            scope.viewModel.tmpFilter.clear();
-            scope.viewModel.tmpFilter.set(emptyFilter.toJSON());
-            scope.viewModel.showFilterForm = true;
-            $timeout(function () {
-              filterCollection(scope.viewModel.tmpFilter);
-            }, _filterAnimationDuration);
-          };
-
-          scope.editFilter = function (filterModel) {
-            scope.viewModel.canShowForm = true;
-            scope.viewModel.tmpFilter.clear();
-            scope.viewModel.tmpFilter.set(filterModel.toJSON());
-            scope.viewModel.showFilterForm = true;
-            $timeout(function () {
-              filterCollection(filterModel);
-            }, _filterAnimationDuration);
-          };
-
-          scope.cancelFilterEdit = function () {
-            scope.viewModel.showFilterForm = false;
-            if (!scope.appliedFilter.id || scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
-              $timeout(function () {
-                scope.applyFilter(scope.appliedFilter);
-              }, _filterAnimationDuration);
+  
+            return _returnHandler;
+          },
+          handle: function (response, isError) {
+            var url = response.config.url,
+              method = response.config.method,
+              statusCode = response.status,
+              handler = this.getHandlerForUrlAndCode(method, url, statusCode, isError);
+  
+            if (handler) {
+              var callbacks = _getCallbacks(handler, statusCode, isError);
+              if(callbacks){
+                return _executeCallbacks(callbacks, response, isError);
+              }
             }
-          };
-
-          scope.filtersAreApplied = function () {
-            return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
-          };
-
-          scope.mwListCollectionFilter.fetchFilters();
-          scope.mwListCollectionFilter.fetchAppliedFilter().then(function (filterModel) {
-            setTotalAmount(filterModel);
-          });
-
-        } else if (scope.collection) {
-          // TODO ADD OLD IMPLEMENTATION
-          console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
-          scope.viewModel = {
-            showFilterForm: true,
-            canShowForm: true,
-            tmpFilter: new MCAPFilterHolder()
-          };
-        } else {
-          throw new Error('please pass a collection or mwCollection as scope attribute');
-        }
-      }
-    };
-  }])
-
+          }
+        };
+      }];
+    })
+  
+    .config(['$provide', '$httpProvider', function ($provide, $httpProvider) {
+  
+      $provide.factory('requestInterceptorForHandling', ['$q', 'ResponseHandler', function ($q, ResponseHandler) {
+  
+        var handle = function(response, isError){
+          var handler = ResponseHandler.handle(response, isError);
+          if(handler){
+            return handler;
+          } else if(isError){
+            return $q.reject(response);
+          } else {
+            return $q.when(response);
+          }
+        };
+  
+        return {
+          response: function (response) {
+            return handle(response, false);
+          },
+          responseError: function (response) {
+            return handle(response, true);
+          }
+        };
+      }]);
+  
+      $httpProvider.interceptors.push('requestInterceptorForHandling');
+  
+    }]);
+  
   /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarSelect
-   * @element div
-   * @description
-   *
-   * Creates a select input which provides possible values for a filtering.
-   *
-   * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
-   * - labelTransformFn
-   * - labelProperty
-   * - translationPrefix
-   *
-   * @param {collection} collection with option models. by default model.attributes.key will be called as key label
-   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   * @param {string} placeholder The name of the default selected label with an empty value.
-   * @param {expression} persist If true, filter will be saved in runtime variable
-   * @param {string} keyProperty property of model to use instead of models.attribute.key property
-   * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
-   * @param {function} labelTransformFn function to use. Will be called with model as parameter.
-   * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
+   * Created by zarges on 23/06/15.
    */
-  .directive('mwSidebarSelectBb', ['i18n', function (i18n) {
-    return {
-      require: '^mwSidebarFiltersBb',
-      scope: {
-        property: '@',
-        options: '=',
-        placeholder: '@',
-        mwDisabled: '=',
-        keyProperty: '@',
-        labelProperty: '@',
-        labelTransformFn: '=',
-        translationPrefix: '@',
-        translationSuffix: '@',
-        customUrlParameter: '@'
-      },
-      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarSelect.html',
-      link: function (scope, elm, attr, mwSidebarFiltersBbCtrl) {
-
-        scope.viewModel = {};
-
-        //set key function for select key
-        scope.key = function (model) {
-          if (angular.isDefined(scope.keyProperty)) {
-            return model.attributes[scope.keyProperty];
-          } else {
-            return model.attributes.key;
+  'use strict';
+  angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToast'])
+  
+    .provider('ResponseToastHandler', ['$provide', 'ResponseHandlerProvider', function ($provide, ResponseHandlerProvider) {
+      var _registeredIds = [],
+        _registeredToastOptions = {
+          DEFAULT: {
+            type: 'default',
+            autoHide: false
           }
         };
-
-        scope.collection = mwSidebarFiltersBbCtrl.getCollection();
-
-        //set label function fo select label
-        scope.label = function (model) {
-          //translate with i18n service if translationPrefix is defined
-          var label = scope.key(model);
-          if (scope.translationPrefix && scope.translationSuffix) {
-            label = i18n.get(scope.translationPrefix + '.' + scope.key(model) + '.' + scope.translationSuffix);
-          } else if (scope.translationSuffix) {
-            label = i18n.get(scope.key(model) + '.' + scope.translationSuffix);
-          } else if (scope.translationPrefix) {
-            label = i18n.get(scope.translationPrefix + '.' + scope.key(model));
-          }
-          return label;
-        };
-
-        scope.changed = function () {
-          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          mwSidebarFiltersBbCtrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
-        };
-
-        if (angular.isDefined(scope.labelProperty)) {
-          scope.label = function (model) {
-            //translate if value is a translation object
-            if (angular.isObject(model.attributes[scope.labelProperty])) {
-              return i18n.localize(model.attributes[scope.labelProperty]);
+  
+      var _getNotificationCallback = function (messages, id, options) {
+        options = options || {};
+        var factoryName = _.uniqueId('notification_factory');
+        $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
+          return function ($httpResponse) {
+            if(!messages){
+              return;
             }
-            return model.attributes[scope.labelProperty];
+  
+            var prevToast = Toast.findToast(id),
+              data = {},
+              messageStr = prevToast ? messages.plural : messages.singular,
+              message,
+              toastOptions = {
+                id: id
+              };
+  
+            if (!!prevToast && messages.plural) {
+              messageStr = messages.plural;
+            } else if (messages.singular) {
+              messageStr = messages.singular;
+            }
+  
+            data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
+            data.$count++;
+  
+            if (options.preProcess && typeof options.preProcess === 'function') {
+              _.extend(data, $httpResponse.data);
+              message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
+              if(!message){
+                return;
+              }
+            } else {
+              var resp = $httpResponse.data || {};
+  
+              if (resp.results && !_.isObject(resp.results)) {
+                data = {message: resp.results};
+              } else if (resp.results && resp.results.length > 0) {
+                _.extend(data, resp.results[0]);
+              }
+  
+              if ($httpResponse.config.instance && typeof $httpResponse.config.instance.toJSON === 'function') {
+                var json = $httpResponse.config.instance.toJSON();
+                _.extend(json, data);
+                data = json;
+              }
+  
+              message = i18n.get(messageStr, data);
+            }
+  
+            if (options.toastType) {
+              var opts = _registeredToastOptions[options.toastType];
+              if (opts) {
+                _.extend(toastOptions, opts);
+              } else {
+                throw new Error('Type ' + options.toastType + ' is not available. Make sure you have configured it first');
+              }
+            } else {
+              _.extend(toastOptions, _registeredToastOptions.DEFAULT);
+            }
+  
+            Toast.addToast(message, toastOptions);
           };
+        }]);
+        return factoryName;
+      };
+  
+      this.registerToastType = function (typeId, toastOptions) {
+        if (_registeredToastOptions[typeId]) {
+          throw new Error('The toast type ' + typeId + ' is already defined. You can configure a toast type only once');
+        } else {
+          _registeredToastOptions[typeId] = toastOptions;
         }
-
-        if (angular.isDefined(scope.labelTransformFn)) {
-          scope.label = scope.labelTransformFn;
+      };
+  
+      this.registerToast = function (route, messages, options) {
+        options = options || {};
+        var codes = options.statusCodes || [options.onSuccess ? 'SUCCESS' : 'ERROR'];
+  
+        if (_.isUndefined(messages) || _.isObject(messages) && !messages.singular) {
+          throw new Error('You have to pass a messages object and define at least the singular message {singular:"Mandatory", plural:"Optional"}');
         }
-
-        scope.$watch('collection.filterable.filterValues.' + scope.property, function (val) {
-          if (val && val.length > 0) {
-            scope.viewModel.val = val;
+  
+        codes.forEach(function (code) {
+          var msgId = options.id || route + '_' + options.method + '_' + code,
+            callbackFactory = _getNotificationCallback(messages, msgId, options);
+  
+          if (_registeredIds.indexOf(msgId) > -1) {
+            throw new Error('You can not define a second message for the route ' + route + ' and method ' + options.method + ' because you have already registered one!');
           } else {
-            scope.viewModel.val = null;
+            if(code==='SUCCESS' || code ==='ERROR'){
+              delete options.statusCodes;
+            } else {
+              options.statusCodes = [code];
+            }
+            ResponseHandlerProvider.registerAction(route, callbackFactory, options);
+            _registeredIds.push(msgId);
           }
         });
-      }
-    };
-  }])
-
+  
+      };
+  
+      this.registerSuccessToast = function (route, messages, method, toastType, preProcessFn) {
+        this.registerToast(route, messages, {
+          method: method,
+          toastType: toastType,
+          onSuccess: true,
+          preProcess: preProcessFn
+        });
+      };
+  
+      this.registerErrorToast = function (route, messages, method, toastType, preProcessFn) {
+        this.registerToast(route, messages, {
+          method: method,
+          toastType: toastType,
+          onError: true,
+          preProcess: preProcessFn
+        });
+      };
+  
+      this.registerDefaultSuccessToast = function (messages, method, toastType, preProcessFn) {
+        return this.registerToast('*', messages, {
+          method: method,
+          toastType: toastType,
+          onSuccess: true,
+          preProcess: preProcessFn
+        });
+      };
+  
+      this.registerDefaultErrorToast = function (messages, method, toastType, preProcessFn) {
+        return this.registerToast('*', messages, {
+          method: method,
+          toastType: toastType,
+          onError: true,
+          preProcess: preProcessFn
+        });
+      };
+  
+      this.$get = function () {
+      };
+  
+    }]);
+  'use strict';
+  
+  angular.module('mwSidebar', [])
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarSelect
+     * @element div
+     * @description
+     *
+     * Creates a select input which provides possible values for a filtering.
+     *
+     * @param {filterable} filterable Filterable instance.
+     * @param {expression} disabled If expression evaluates to true, input is disabled.
+     * @param {string} property The name of the property on which the filtering should happen.
+     */
+    .directive('mwSidebarSelect', function () {
+      return {
+        transclude: true,
+        scope: {
+          filterable: '=',
+          mwDisabled: '=',
+          property: '@',
+          persist: '='
+        },
+        templateUrl: 'uikit/templates/mwSidebar/mwSidebarSelect.html',
+        link: function (scope) {
+          scope.$watch('filterable', function () {
+            if (scope.filterable) {
+              scope.model = scope.filterable.properties[scope.property];
+              if (scope.persist) {
+                scope.filterable.properties[scope.property].persist = scope.persist;
+              }
+            }
+          });
+        }
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarPanel
+     * @element div
+     * @description
+     *
+     * Directive for the filter panel.
+     *
+     * @param {boolean} affix Make the filterbar affix by listening on window scroll event and changing top position so that the filterbar can be postion relative instead of fixed
+     * @param {number} offset If needed an offset to the top for example when a nav bar is over the sidebar that is not fixed.
+     *
+     */
+    .directive('mwSidebarPanel', ['$document', '$window', function ($document, $window) {
+      return {
+        replace: true,
+        transclude: true,
+        templateUrl: 'uikit/templates/mwSidebar/mwSidebarPanel.html',
+        link: function (scope, el) {
+  
+          var windowEl = angular.element($window),
+            throttledRepositionFn, throttledSetMaxHeight;
+  
+          var reposition = function () {
+            var offsetTop = angular.element(el).offset().top,
+              offsetHeaderTop = angular.element('*[mw-header]').offset().top + angular.element('*[mw-header]').height(),
+              spacer = 15, //Offset so the sidebar has some whitespce to the header
+              newOffset = offsetTop - offsetHeaderTop - spacer,
+              scrollTop = $document.scrollTop();
+  
+            if (newOffset <= 10) {
+              //There is no element between sidebar and header so we can kill the scroll listener
+              windowEl.off('scroll', throttledRepositionFn);
+            } else if (scrollTop > newOffset) {
+              angular.element(el).find('.content-container').css('top', offsetHeaderTop + spacer);
+            } else if (scrollTop > 1) {
+              angular.element(el).find('.content-container').css('top', offsetTop - scrollTop);
+            } else {
+              angular.element(el).find('.content-container').css('top', 'initial');
+            }
+          };
+  
+          var setMaxHeight = function () {
+            var containerEl = el.find('.content-container'),
+              windowHeight = windowEl.height(),
+              containerElOffsetTop = el.offset().top,
+              footerHeight = angular.element('body > footer').height(),
+              padding = 20,
+              maxHeight = windowHeight - containerElOffsetTop - footerHeight - padding;
+  
+            if (maxHeight > 0) {
+              containerEl.css('max-height', maxHeight);
+            } else {
+              containerEl.css('max-height', 'initial');
+            }
+          };
+  
+          throttledRepositionFn = _.throttle(reposition, 10);
+          throttledSetMaxHeight = _.throttle(setMaxHeight, 500);
+  
+          window.requestAnimFrame(setMaxHeight);
+          setTimeout(setMaxHeight, 500);
+  
+          windowEl.on('resize', throttledSetMaxHeight);
+          windowEl.on('scroll', throttledRepositionFn);
+  
+          scope.$on('$destroy', function () {
+            windowEl.off('resize', throttledSetMaxHeight);
+            windowEl.off('scroll', throttledRepositionFn);
+          });
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarActions
+     * @element div
+     * @description
+     *
+     * Container for actions
+     *
+     */
+    .directive('mwSidebarActions', function () {
+      return {
+        transclude: true,
+        template: '<div ng-transclude></div><hr>'
+      };
+    })
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarFilters
+     * @element div
+     * @description
+     *
+     * Container for filters
+     *
+     */
+    .directive('mwSidebarFilters', function () {
+      return {
+        transclude: true,
+        templateUrl: 'uikit/templates/mwSidebar/mwSidebarFilters.html',
+        link: function (scope) {
+          scope.resetFiltersOnClose = function () {
+            if (!scope.toggleFilters) {
+              scope.filterable.resetFilters();
+              scope.filterable.applyFilters();
+            }
+          };
+  
+          if (scope.filterable && scope.filterable.hasPersistedFilters()) {
+            scope.toggleFilters = true;
+          }
+        }
+      };
+    });
+  
+  
+  
+  'use strict';
+  
+  angular.module('mwSidebarBb', [])
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarFilters
+     * @element div
+     * @description
+     *
+     * Container for filters
+     *
+     */
+    .directive('mwSidebarFiltersBb', ['$timeout', 'MCAPFilterHolder', function ($timeout, MCAPFilterHolder) {
+      return {
+        transclude: true,
+        templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
+        controller: ['$scope', function ($scope) {
+          this.getCollection = function () {
+            return $scope.collection;
+          };
+  
+          this.getFilterHolders = function () {
+            return $scope.filterHolders;
+          };
+  
+          this.changeFilter = function (property, value, isUrlParam) {
+            if (isUrlParam) {
+              $scope.collection.filterable.customUrlParams[property] = value;
+              $scope.viewModel.tmpFilter.get('customUrlParams')[property] = value;
+            } else {
+              var filterVal = {};
+              filterVal[property] = value;
+              $scope.collection.filterable.setFilters(filterVal);
+              $scope.viewModel.tmpFilter.set({filter: $scope.collection.filterable.getFilters()});
+              $scope.viewModel.tmpFilter.get('filterValues')[property] = value;
+            }
+  
+            $scope.collection.fetch();
+  
+          };
+        }],
+        link: function (scope, el, attr) {
+  
+          scope.mwListCollection = scope.$eval(attr.mwListCollection);
+          scope.collection = scope.$eval(attr.collection);
+  
+          if (scope.mwListCollection) {
+  
+            var _filterAnimationDuration = 400;
+  
+            scope.collection = scope.mwListCollection.getCollection();
+            scope.mwListCollectionFilter = scope.mwListCollection.getMwListCollectionFilter();
+            scope.filters = scope.mwListCollectionFilter.getFilters();
+            scope.appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
+  
+            scope.viewModel = {
+              tmpFilter: new MCAPFilterHolder(),
+              showFilterForm: false,
+              canShowForm: false
+            };
+  
+            var setTotalAmount = function (filterModel) {
+              var filterModelInCollection = scope.filters.get(filterModel),
+                totalAmount = scope.collection.filterable.getTotalAmount();
+  
+              filterModel.set('totalAmount', totalAmount);
+              if (filterModelInCollection) {
+                filterModelInCollection.set('totalAmount', totalAmount);
+              }
+            };
+  
+            var filterCollection = function (filterModel) {
+              scope.collection.filterable.resetFilters();
+              scope.collection.filterable.setFilters(filterModel.get('filterValues'));
+              return scope.collection.fetch().then(function () {
+                setTotalAmount(filterModel);
+              });
+            };
+  
+            scope.saveFilter = function () {
+              var filter;
+              if (scope.viewModel.tmpFilter.isNew()) {
+                filter = new MCAPFilterHolder(scope.viewModel.tmpFilter.toJSON());
+              } else {
+                filter = scope.viewModel.tmpFilter;
+              }
+              scope.mwListCollectionFilter.saveFilter(filter).then(function (filterModel) {
+                scope.viewModel.showFilterForm = false;
+                scope.applyFilter(filterModel);
+              });
+  
+            };
+  
+            scope.deleteFilter = function (filterModel) {
+              var removeId = filterModel.id,
+                appliedId = scope.appliedFilter.id;
+  
+              return scope.mwListCollectionFilter.deleteFilter(filterModel).then(function () {
+  
+                if (removeId === appliedId) {
+                  scope.revokeFilter();
+                }
+              });
+            };
+  
+            scope.applyFilter = function (filterModel) {
+              filterCollection(filterModel).then(function () {
+                scope.mwListCollectionFilter.applyFilter(filterModel);
+              });
+            };
+  
+            scope.revokeFilter = function () {
+              scope.mwListCollectionFilter.revokeFilter().then(function () {
+                scope.collection.filterable.resetFilters();
+                scope.collection.fetch();
+                scope.appliedFilter.clear();
+              });
+            };
+  
+            scope.addFilter = function () {
+              var emptyFilter = new MCAPFilterHolder();
+  
+              scope.viewModel.canShowForm = true;
+              scope.viewModel.tmpFilter.clear();
+              scope.viewModel.tmpFilter.set(emptyFilter.toJSON());
+              scope.viewModel.showFilterForm = true;
+              $timeout(function () {
+                filterCollection(scope.viewModel.tmpFilter);
+              }, _filterAnimationDuration);
+            };
+  
+            scope.editFilter = function (filterModel) {
+              scope.viewModel.canShowForm = true;
+              scope.viewModel.tmpFilter.clear();
+              scope.viewModel.tmpFilter.set(filterModel.toJSON());
+              scope.viewModel.showFilterForm = true;
+              $timeout(function () {
+                filterCollection(filterModel);
+              }, _filterAnimationDuration);
+            };
+  
+            scope.cancelFilterEdit = function () {
+              scope.viewModel.showFilterForm = false;
+              if (!scope.appliedFilter.id || scope.appliedFilter.id !== scope.viewModel.tmpFilter.id) {
+                $timeout(function () {
+                  scope.applyFilter(scope.appliedFilter);
+                }, _filterAnimationDuration);
+              }
+            };
+  
+            scope.filtersAreApplied = function () {
+              return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
+            };
+  
+            scope.mwListCollectionFilter.fetchFilters();
+            scope.mwListCollectionFilter.fetchAppliedFilter().then(function (filterModel) {
+              setTotalAmount(filterModel);
+            });
+  
+          } else if (scope.collection) {
+            // TODO ADD OLD IMPLEMENTATION
+            console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
+            scope.viewModel = {
+              showFilterForm: true,
+              canShowForm: true,
+              tmpFilter: new MCAPFilterHolder()
+            };
+          } else {
+            throw new Error('please pass a collection or mwCollection as scope attribute');
+          }
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarSelect
+     * @element div
+     * @description
+     *
+     * Creates a select input which provides possible values for a filtering.
+     *
+     * label: as default model.attributes.key will be used. If one of the following is specified it will be used. If two or more are specified the one which stands higher will be used:
+     * - labelTransformFn
+     * - labelProperty
+     * - translationPrefix
+     *
+     * @param {collection} collection with option models. by default model.attributes.key will be called as key label
+     * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+     * @param {string} property The name of the property on which the filtering should happen.
+     * @param {string} placeholder The name of the default selected label with an empty value.
+     * @param {expression} persist If true, filter will be saved in runtime variable
+     * @param {string} keyProperty property of model to use instead of models.attribute.key property
+     * @param {string | object} labelProperty property of model to use instead of model.attributes.key poperty. If it is an object it will be translated with i18n service.
+     * @param {function} labelTransformFn function to use. Will be called with model as parameter.
+     * @param {string} translationPrefix prefix to translate the label with i18n service (prefix + '.' + model.attributes.key).
+     */
+    .directive('mwSidebarSelectBb', ['i18n', function (i18n) {
+      return {
+        require: '^mwSidebarFiltersBb',
+        scope: {
+          property: '@',
+          options: '=',
+          placeholder: '@',
+          mwDisabled: '=',
+          keyProperty: '@',
+          labelProperty: '@',
+          labelTransformFn: '=',
+          translationPrefix: '@',
+          translationSuffix: '@',
+          customUrlParameter: '@'
+        },
+        templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarSelect.html',
+        link: function (scope, elm, attr, mwSidebarFiltersBbCtrl) {
+  
+          scope.viewModel = {};
+  
+          //set key function for select key
+          scope.key = function (model) {
+            if (angular.isDefined(scope.keyProperty)) {
+              return model.attributes[scope.keyProperty];
+            } else {
+              return model.attributes.key;
+            }
+          };
+  
+          scope.collection = mwSidebarFiltersBbCtrl.getCollection();
+  
+          //set label function fo select label
+          scope.label = function (model) {
+            //translate with i18n service if translationPrefix is defined
+            var label = scope.key(model);
+            if (scope.translationPrefix && scope.translationSuffix) {
+              label = i18n.get(scope.translationPrefix + '.' + scope.key(model) + '.' + scope.translationSuffix);
+            } else if (scope.translationSuffix) {
+              label = i18n.get(scope.key(model) + '.' + scope.translationSuffix);
+            } else if (scope.translationPrefix) {
+              label = i18n.get(scope.translationPrefix + '.' + scope.key(model));
+            }
+            return label;
+          };
+  
+          scope.changed = function () {
+            var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+            mwSidebarFiltersBbCtrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+          };
+  
+          if (angular.isDefined(scope.labelProperty)) {
+            scope.label = function (model) {
+              //translate if value is a translation object
+              if (angular.isObject(model.attributes[scope.labelProperty])) {
+                return i18n.localize(model.attributes[scope.labelProperty]);
+              }
+              return model.attributes[scope.labelProperty];
+            };
+          }
+  
+          if (angular.isDefined(scope.labelTransformFn)) {
+            scope.label = scope.labelTransformFn;
+          }
+  
+          scope.$watch('collection.filterable.filterValues.' + scope.property, function (val) {
+            if (val && val.length > 0) {
+              scope.viewModel.val = val;
+            } else {
+              scope.viewModel.val = null;
+            }
+          });
+        }
+      };
+    }])
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarNumberInputBb
+     * @element div
+     * @description
+     *
+     * Creates a number input to filter for integer values.
+     *
+     * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+     * @param {string} property The name of the property on which the filtering should happen.
+     * @param {string} placeholder The name of the default selected label with an empty value.
+     * @param {expression} persist If true, filter will be saved in runtime variable
+     * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+     */
+  
+    .directive('mwSidebarInputBb', function () {
+      return {
+        require: '^mwSidebarFiltersBb',
+        scope: {
+          type: '@',
+          property: '@',
+          placeholder: '@',
+          mwDisabled: '=',
+          customUrlParameter: '@'
+        },
+        templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarInput.html',
+        link: function (scope, elm, attr, ctrl) {
+  
+          scope.viewModel = {};
+  
+          scope._type = scope.type || 'text';
+  
+          scope.isValid = function () {
+            return elm.find('input').first().hasClass('ng-valid');
+          };
+  
+          scope.changed = function () {
+            var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+            ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+          };
+        }
+      };
+    })
+  
+  
+    /**
+     * @ngdoc directive
+     * @name mwSidebar.directive:mwSidebarNumberInputBb
+     * @element div
+     * @description
+     *
+     * Creates a number input to filter for integer values.
+     *
+     * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
+     * @param {string} property The name of the property on which the filtering should happen.
+     * @param {string} placeholder The name of the default selected label with an empty value.
+     * @param {expression} persist If true, filter will be saved in runtime variable
+     * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+     */
+  
+    .directive('mwSidebarNumberInputBb', function () {
+      return {
+        require: '^mwSidebarFiltersBb',
+        scope: {
+          property: '@',
+          placeholder: '@',
+          mwDisabled: '=',
+          customUrlParameter: '@',
+          min: '@',
+          max: '@'
+        },
+        templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarNumberInput.html',
+        link: function (scope, elm, attr, ctrl) {
+  
+          scope.viewModel = {};
+  
+          scope.isValid = function () {
+            return elm.find('input').first().hasClass('ng-valid');
+          };
+  
+          scope.changed = function () {
+            var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
+            console.log(property, scope.viewModel.val);
+            ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+          };
+        }
+      };
+    });
+  
+  
+  
+  'use strict';
+  
+  angular.module('mwTabs', [])
+  
+      .directive('mwTabs', function () {
+        return {
+          restrict: 'A',
+          replace: true,
+          scope: {
+            justified: '=',
+            activePaneNumber: '='
+          },
+          transclude: true,
+          templateUrl: 'uikit/templates/mwTabs.html',
+          controller: ['$scope', function ($scope) {
+            var panes = $scope.panes = [];
+  
+            $scope.select = function (pane) {
+              angular.forEach(panes, function (p) {
+                p.selected = false;
+              });
+  
+              if($scope.activePaneNumber){
+                $scope.activePaneNumber = _.indexOf($scope.panes,pane)+1;
+              }
+  
+              pane.selected = true;
+            };
+  
+            this.registerPane = function (pane) {
+              if ( ( $scope.activePaneNumber && $scope.activePaneNumber-1 === panes.length) || (!panes.length && !$scope.activePaneNumber) ) {
+                var bak = $scope.activePaneNumber;
+                $scope.select(pane);
+                $scope.activePaneNumber = bak;
+              }
+              panes.push(pane);
+            };
+          }]
+        };
+      })
+  
+      .directive('mwTabsPane', function () {
+        return {
+          restrict: 'A',
+          scope: {
+            title: '@mwTabsPane',
+            isInvalid: '='
+          },
+          replace: true,
+          transclude: true,
+          require: '^mwTabs',
+          template: '<div class="tab-pane" ng-class="{active: selected}" ng-transclude></div>',
+          link: function (scope, elm, attr, mwTabsCtrl) {
+            mwTabsCtrl.registerPane(scope);
+          }
+  
+        };
+      });
+  'use strict';
+  
+  angular.module('mwToast', [])
+  
+    .directive('mwToasts', ['Toast', function (Toast) {
+      return {
+        templateUrl: 'uikit/templates/mwToast/mwToasts.html',
+        link: function (scope) {
+          scope.toasts = Toast.getToasts();
+  
+          scope.$watch(function () {
+            return Toast.getToasts().length;
+          }, function () {
+            scope.toasts = Toast.getToasts();
+          });
+  
+          scope.hideToast = function (toastId) {
+            Toast.removeToast(toastId);
+          };
+  
+        }
+      };
+    }])
+  
+    .provider('Toast', function () {
+  
+      var _autoHideTime = 5000,
+        _toasts = [],
+        _defaultIcons = {
+          primary: 'fa-flag-o',
+          info: 'fa-info',
+          success: 'fa-check',
+          warning: 'fa-warning',
+          danger: 'fa-exclamation'
+        };
+  
+      var Toast = function (message, options) {
+        options = options || {};
+        options.button = options.button || {};
+  
+        var toast = {
+            id: options.id || _.uniqueId('toast'),
+            type: options.type || 'default',
+            visible: true,
+            message: message,
+            title: options.title,
+            autoHide: options.autoHide || false,
+            autoHideTime: options.autoHideTime || 5000,
+            autoHideCallback: options.autoHideCallback,
+            isHtmlMessage: options.isHtmlMessage,
+            icon: options.icon || _defaultIcons[options.type] || 'fa-info',
+            button: {
+              title: options.button.title,
+              link: options.button.link,
+              target: options.button.target,
+              isLink: options.button.isLink || !!options.button.link,
+              action: options.button.action
+            },
+            replaceCount: 0,
+            initDate: +new Date()
+          },
+          _autoRemoveTimeout;
+  
+        var startAutoHideTimer = function () {
+          if (toast.autoHide) {
+            _autoRemoveTimeout = window.setTimeout(function () {
+              if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
+                toast.visible = false;
+                toast.autoHideCallback.apply(this, arguments);
+              }
+            }.bind(this), toast.autoHideTime);
+          }
+        };
+  
+        var resetAutoHideTimer = function () {
+          if (_autoRemoveTimeout) {
+            window.clearTimeout(_autoRemoveTimeout);
+          }
+          startAutoHideTimer();
+        };
+  
+        var setAutoHideCallback = function (fn) {
+          toast.autoHideCallback = fn;
+          resetAutoHideTimer();
+        };
+  
+        var replaceMessage = function (newMessage) {
+          toast.message = newMessage;
+          toast.replaceCount++;
+          resetAutoHideTimer();
+        };
+  
+        toast.replaceMessage = replaceMessage;
+        toast.setAutoHideCallback = setAutoHideCallback;
+  
+  
+        startAutoHideTimer();
+  
+        return toast;
+      };
+  
+      this.setAutoHideTime = function (timeInMs) {
+        _autoHideTime = timeInMs;
+      };
+  
+      this.setDefaultIcons = function(obj){
+        _.extend(_defaultIcons,obj);
+      };
+  
+      this.$get = ['$timeout', function ($timeout) {
+  
+        return {
+          findToast: function (id) {
+            var toastContainer = _.findWhere(_toasts, {id: id});
+            if (toastContainer) {
+              return toastContainer.toast;
+            } else {
+              return false;
+            }
+          },
+          clear: function () {
+            _toasts = [];
+          },
+          getToasts: function () {
+            return _.pluck(_toasts, 'toast');
+          },
+          replaceToastMessage: function (id, message) {
+  
+            var toast = this.findToast(id);
+  
+            if (toast) {
+              toast.replaceMessage(message);
+            }
+  
+            return toast;
+          },
+          removeToast: function (id) {
+            var match = _.findWhere(_toasts, {id: id}),
+              index = _.indexOf(_toasts, match);
+  
+            if (match) {
+              _toasts.splice(index, 1);
+            }
+  
+            return match;
+          },
+          addToast: function (message, options) {
+            options = options || {};
+  
+            options.autoHideTime = options.autoHideTime || _autoHideTime;
+  
+            var existingToast = this.findToast(options.id);
+  
+            if (existingToast) {
+              this.replaceToastMessage(existingToast.id, message);
+            } else {
+              var toast = new Toast(message, options);
+  
+              var removeFn = function () {
+                $timeout(function () {
+                  if (options.autoHideCallback && typeof options.autoHideCallback === 'function') {
+                    options.autoHideCallback.apply(this, arguments);
+                  }
+                  this.removeToast(toast.id);
+                }.bind(this));
+              }.bind(this);
+  
+              toast.setAutoHideCallback(removeFn);
+  
+              _toasts.push({id: toast.id, toast: toast});
+  
+              return toast;
+            }
+          }
+        };
+      }];
+    });
+  
+  'use strict';
+  
+  angular.module('mwWizard', [])
+  
+  /**
+   *
+   * @ngdoc object
+   * @name mwWizard.Wizard
+   * @description
+   *
+   * The wizard service handles the wizzard. The wizzard can be accessed from controlelr to navigate from step
+   * to step. This service is depandant of the mwWizard and mwWizardStep directive. By transluding multiple
+   * mwWizardStep directives into the mwWizard directive the Wizard service is populated with steps. BY calling the
+   * functions back(), next(), goTo(num) the wizard service hides the currently active steps and displays the next step
+   *
+   * The wizard has to be initialized with the function createWizard(id). The function returns a a wizard object
+   *
+   *
+   */
+    .service('Wizard', function () {
+  
+      var wizards = [];
+  
+      var Wizard = function (id) {
+  
+        var _steps = [],
+          _currentlyActive = 0,
+          _id = id;
+  
+        /*
+         * name _registerStep()
+         * @description
+         * This method should not be called manually but rather automatically by using the mwWizardStep directive
+         */
+        this._registerStep = function (step, id) {
+          if (_steps.length < 1) {
+            step._isActive = true;
+          }
+          step.slideId = id || _.uniqueId(_id + '_');
+          _steps.push(step);
+        };
+  
+        /*
+         * name _registerStep()
+         * @description
+         * This method should not be called manually but rather automatically by using the mwWizardStep directive
+         */
+        this._unRegisterStep = function (scope) {
+          var scopeInArray = _.findWhere(_steps, {$id: scope.$id}),
+            indexOfScope = _.indexOf(_steps, scopeInArray);
+  
+          if (indexOfScope > -1) {
+            _steps.splice(indexOfScope, 1);
+          }
+        };
+  
+        this.destroy = function () {
+          var self = this;
+          _steps.forEach(function (step) {
+            self._unRegisterStep(step);
+          });
+        };
+  
+        this.getId = function () {
+          return _id;
+        };
+  
+        this.getAllSteps = function () {
+          return _steps;
+        };
+  
+        this.getCurrentStep = function () {
+          return _steps[_currentlyActive];
+        };
+  
+        this.getCurrentStepNumber = function () {
+          return _currentlyActive;
+        };
+  
+        this.getCurrentStepId = function () {
+          return _steps[_currentlyActive].slideId;
+        };
+  
+        this.getTotalStepAmount = function () {
+          return _steps.length;
+        };
+  
+        this.hasNextStep = function () {
+          return this.getCurrentStepNumber() < this.getTotalStepAmount() - 1;
+        };
+  
+        this.hasPreviousStep = function () {
+          return this.getCurrentStepNumber() > 0;
+        };
+  
+        /*
+         * name next()
+         * @description
+         * Navigates to the next step of the currently active step
+         */
+        this.next = function () {
+          this.goTo(_currentlyActive + 1);
+        };
+  
+        /*
+         * name back()
+         * @description
+         * Navigates to the previous step of the currently active step
+         */
+        this.back = function () {
+          this.goTo(_currentlyActive - 1);
+        };
+  
+        this.gotoStep = function (step) {
+  
+          if (typeof step === 'string') {
+            step = _.findWhere(_steps, {slideId: step});
+          }
+  
+          this.goTo(_.indexOf(_steps, step));
+        };
+  
+        /*
+         * name goTo()
+         * @description
+         * Goto a specific step number
+         *
+         * @params {integer} number of the step where you want to navigate to
+         */
+        this.goTo = function (num) {
+          _steps[_currentlyActive]._isActive = false;
+          if (num >= _steps.length) {
+            throw new Error('Step ' + (num + 1) + ' is not available');
+          } else {
+            _steps[num]._isActive = true;
+            _currentlyActive = num;
+          }
+        };
+  
+      };
+  
+      /*
+       * name findWizard()
+       * @description
+       * Finds an existing instance of a wizzard with a certain id but throws NO error
+       * when the wizard with the id could not be found
+       *
+       * @params {string} id Unique identifier of the Wizard you want to find
+       * @returns {object} wizard returns wizard object
+       */
+      var findWizard = function (id) {
+        var _wizard = null;
+        wizards.forEach(function (wizard) {
+          if (wizard.getId === id) {
+            _wizard = wizard;
+          }
+        });
+        return _wizard;
+      };
+  
+      /*
+       * name getWizard()
+       * @description
+       * Finds an existing instance of a wizzard with a certain id and throws an error
+       * when the wizard with the id could not be found
+       *
+       * @params {string} id Unique identifier of the Wizard you want to find
+       * @returns {object} wizard returns wizard object
+       */
+      var getWizard = function (id) {
+        var _wizard = findWizard(id);
+        if (!_wizard) {
+          throw new Error('The wizard with the id ' + id + ' does not exist');
+        } else {
+          return _wizard;
+        }
+  
+      };
+  
+      /*
+       * name createWizard
+       * @description
+       * Creates an instance of Wizard. Throws an error when wizzard with the id
+       * could not be found or is not initialized yet
+       *
+       * @param {string} id Unique identifier of the Wizard
+       * @returns {object} wizard returns wizard object
+       */
+      var createWizard = function (id) {
+        if (findWizard(id)) {
+          throw new Error('The wizard with the id ' + id + ' is already existing');
+        } else {
+          var wizard = new Wizard(id);
+          wizards.push(wizard);
+          return wizard;
+        }
+      };
+  
+      //Public interface of the service
+      return {
+        createWizard: createWizard,
+        getWizard: getWizard
+      };
+  
+    })
+  
   /**
    * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarNumberInputBb
+   * @name mwWizard.directive:mwWizard
    * @element div
    * @description
    *
-   * Creates a number input to filter for integer values.
+   * Multiple wizard steps can be transcluded into this directive. This Directive handles the
+   * registration of every single wizard step
    *
-   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   * @param {string} placeholder The name of the default selected label with an empty value.
-   * @param {expression} persist If true, filter will be saved in runtime variable
-   * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
+   * @param {wizard} mw-wizard Wizard instance created by the Wizard service.
    */
-
-  .directive('mwSidebarInputBb', function () {
-    return {
-      require: '^mwSidebarFiltersBb',
-      scope: {
-        type: '@',
-        property: '@',
-        placeholder: '@',
-        mwDisabled: '=',
-        customUrlParameter: '@'
-      },
-      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarInput.html',
-      link: function (scope, elm, attr, ctrl) {
-
-        scope.viewModel = {};
-
-        scope._type = scope.type || 'text';
-
-        scope.isValid = function () {
-          return elm.find('input').first().hasClass('ng-valid');
-        };
-
-        scope.changed = function () {
-          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
-        };
-      }
-    };
-  })
-
-
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarNumberInputBb
-   * @element div
-   * @description
-   *
-   * Creates a number input to filter for integer values.
-   *
-   * @param {expression} mwDisabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   * @param {string} placeholder The name of the default selected label with an empty value.
-   * @param {expression} persist If true, filter will be saved in runtime variable
-   * @param {string} customUrlParameter If set, the filter will be set as a custom url parameter in the collection's filterable
-   */
-
-  .directive('mwSidebarNumberInputBb', function () {
-    return {
-      require: '^mwSidebarFiltersBb',
-      scope: {
-        property: '@',
-        placeholder: '@',
-        mwDisabled: '=',
-        customUrlParameter: '@',
-        min: '@',
-        max: '@'
-      },
-      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarNumberInput.html',
-      link: function (scope, elm, attr, ctrl) {
-
-        scope.viewModel = {};
-
-        scope.isValid = function () {
-          return elm.find('input').first().hasClass('ng-valid');
-        };
-
-        scope.changed = function () {
-          var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          console.log(property, scope.viewModel.val);
-          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
-        };
-      }
-    };
-  });
-
-
-
-'use strict';
-
-angular.module('mwTabs', [])
-
-    .directive('mwTabs', function () {
+    .directive('mwWizard', function () {
       return {
         restrict: 'A',
-        replace: true,
         scope: {
-          justified: '=',
-          activePaneNumber: '='
+          wizard: '=mwWizard'
         },
         transclude: true,
-        templateUrl: 'uikit/templates/mwTabs.html',
+        template: '<div ng-transclude class="mw-wizard"></div>',
         controller: ['$scope', function ($scope) {
-          var panes = $scope.panes = [];
-
-          $scope.select = function (pane) {
-            angular.forEach(panes, function (p) {
-              p.selected = false;
-            });
-
-            if($scope.activePaneNumber){
-              $scope.activePaneNumber = _.indexOf($scope.panes,pane)+1;
-            }
-
-            pane.selected = true;
+  
+          var wizard = $scope.wizard;
+  
+          this.registerStep = function (scope, id) {
+            wizard._registerStep(scope, id);
           };
-
-          this.registerPane = function (pane) {
-            if ( ( $scope.activePaneNumber && $scope.activePaneNumber-1 === panes.length) || (!panes.length && !$scope.activePaneNumber) ) {
-              var bak = $scope.activePaneNumber;
-              $scope.select(pane);
-              $scope.activePaneNumber = bak;
-            }
-            panes.push(pane);
+  
+          this.unRegisterStep = function (scope) {
+            wizard._unRegisterStep(scope);
           };
+  
+          $scope.$on('$destroy', function () {
+            wizard.destroy();
+          });
+  
         }]
       };
     })
-
-    .directive('mwTabsPane', function () {
+  
+  /**
+   * @ngdoc directive
+   * @name mwWizard.directive:mwWizardStep
+   * @element div
+   * @description
+   *
+   * Registers itself as a step in the mwWizard directive. The Wizard services handles the show and hide of
+   * this directive
+   *
+   */
+    .directive('mwWizardStep', function () {
       return {
         restrict: 'A',
-        scope: {
-          title: '@mwTabsPane',
-          isInvalid: '='
-        },
-        replace: true,
+        scope: true,
         transclude: true,
-        require: '^mwTabs',
-        template: '<div class="tab-pane" ng-class="{active: selected}" ng-transclude></div>',
-        link: function (scope, elm, attr, mwTabsCtrl) {
-          mwTabsCtrl.registerPane(scope);
+        replace: true,
+        require: '^mwWizard',
+        template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div class="mw-wizard-step-inner" ng-transclude ng-if="_isActive"></div></div>',
+        link: function (scope, el, attr, mwWizardCtrl) {
+          scope._isActive = false;
+          //we need to set a default value here, see
+          //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+          attr.title = attr.title || 'noname';
+          attr.$observe('title', function (title) {
+            if (title && title.length > 0) {
+              scope.title = title;
+            }
+            mwWizardCtrl.registerStep(scope, attr.id);
+          });
+  
+          scope.$on('$destroy', function () {
+            mwWizardCtrl.unRegisterStep(scope);
+          });
         }
-
       };
     });
-'use strict';
+  
+  
 
-angular.module('mwToast', [])
-
-  .directive('mwToasts', ['Toast', function (Toast) {
-    return {
-      templateUrl: 'uikit/templates/mwToast/mwToasts.html',
-      link: function (scope) {
-        scope.toasts = Toast.getToasts();
-
-        scope.$watch(function () {
-          return Toast.getToasts().length;
-        }, function () {
-          scope.toasts = Toast.getToasts();
-        });
-
-        scope.hideToast = function (toastId) {
-          Toast.removeToast(toastId);
-        };
-
-      }
-    };
-  }])
-
-  .provider('Toast', function () {
-
-    var _autoHideTime = 5000,
-      _toasts = [],
-      _defaultIcons = {
-        primary: 'fa-flag-o',
-        info: 'fa-info',
-        success: 'fa-check',
-        warning: 'fa-warning',
-        danger: 'fa-exclamation'
-      };
-
-    var Toast = function (message, options) {
-      options = options || {};
-      options.button = options.button || {};
-
-      var toast = {
-          id: options.id || _.uniqueId('toast'),
-          type: options.type || 'default',
-          visible: true,
-          message: message,
-          title: options.title,
-          autoHide: options.autoHide || false,
-          autoHideTime: options.autoHideTime || 5000,
-          autoHideCallback: options.autoHideCallback,
-          isHtmlMessage: options.isHtmlMessage,
-          icon: options.icon || _defaultIcons[options.type] || 'fa-info',
-          button: {
-            title: options.button.title,
-            link: options.button.link,
-            target: options.button.target,
-            isLink: options.button.isLink || !!options.button.link,
-            action: options.button.action
-          },
-          replaceCount: 0,
-          initDate: +new Date()
-        },
-        _autoRemoveTimeout;
-
-      var startAutoHideTimer = function () {
-        if (toast.autoHide) {
-          _autoRemoveTimeout = window.setTimeout(function () {
-            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
-              toast.visible = false;
-              toast.autoHideCallback.apply(this, arguments);
-            }
-          }.bind(this), toast.autoHideTime);
-        }
-      };
-
-      var resetAutoHideTimer = function () {
-        if (_autoRemoveTimeout) {
-          window.clearTimeout(_autoRemoveTimeout);
-        }
-        startAutoHideTimer();
-      };
-
-      var setAutoHideCallback = function (fn) {
-        toast.autoHideCallback = fn;
-        resetAutoHideTimer();
-      };
-
-      var replaceMessage = function (newMessage) {
-        toast.message = newMessage;
-        toast.replaceCount++;
-        resetAutoHideTimer();
-      };
-
-      toast.replaceMessage = replaceMessage;
-      toast.setAutoHideCallback = setAutoHideCallback;
-
-
-      startAutoHideTimer();
-
-      return toast;
-    };
-
-    this.setAutoHideTime = function (timeInMs) {
-      _autoHideTime = timeInMs;
-    };
-
-    this.setDefaultIcons = function(obj){
-      _.extend(_defaultIcons,obj);
-    };
-
-    this.$get = ['$timeout', function ($timeout) {
-
-      return {
-        findToast: function (id) {
-          var toastContainer = _.findWhere(_toasts, {id: id});
-          if (toastContainer) {
-            return toastContainer.toast;
-          } else {
-            return false;
-          }
-        },
-        clear: function () {
-          _toasts = [];
-        },
-        getToasts: function () {
-          return _.pluck(_toasts, 'toast');
-        },
-        replaceToastMessage: function (id, message) {
-
-          var toast = this.findToast(id);
-
-          if (toast) {
-            toast.replaceMessage(message);
-          }
-
-          return toast;
-        },
-        removeToast: function (id) {
-          var match = _.findWhere(_toasts, {id: id}),
-            index = _.indexOf(_toasts, match);
-
-          if (match) {
-            _toasts.splice(index, 1);
-          }
-
-          return match;
-        },
-        addToast: function (message, options) {
-          options = options || {};
-
-          options.autoHideTime = options.autoHideTime || _autoHideTime;
-
-          var existingToast = this.findToast(options.id);
-
-          if (existingToast) {
-            this.replaceToastMessage(existingToast.id, message);
-          } else {
-            var toast = new Toast(message, options);
-
-            var removeFn = function () {
-              $timeout(function () {
-                if (options.autoHideCallback && typeof options.autoHideCallback === 'function') {
-                  options.autoHideCallback.apply(this, arguments);
-                }
-                this.removeToast(toast.id);
-              }.bind(this));
-            }.bind(this);
-
-            toast.setAutoHideCallback(removeFn);
-
-            _toasts.push({id: toast.id, toast: toast});
-
-            return toast;
-          }
-        }
-      };
-    }];
-  });
-
-'use strict';
-
-angular.module('mwWizard', [])
-
-/**
- *
- * @ngdoc object
- * @name mwWizard.Wizard
- * @description
- *
- * The wizard service handles the wizzard. The wizzard can be accessed from controlelr to navigate from step
- * to step. This service is depandant of the mwWizard and mwWizardStep directive. By transluding multiple
- * mwWizardStep directives into the mwWizard directive the Wizard service is populated with steps. BY calling the
- * functions back(), next(), goTo(num) the wizard service hides the currently active steps and displays the next step
- *
- * The wizard has to be initialized with the function createWizard(id). The function returns a a wizard object
- *
- *
- */
-  .service('Wizard', function () {
-
-    var wizards = [];
-
-    var Wizard = function (id) {
-
-      var _steps = [],
-        _currentlyActive = 0,
-        _id = id;
-
-      /*
-       * name _registerStep()
-       * @description
-       * This method should not be called manually but rather automatically by using the mwWizardStep directive
-       */
-      this._registerStep = function (step, id) {
-        if (_steps.length < 1) {
-          step._isActive = true;
-        }
-        step.slideId = id || _.uniqueId(_id + '_');
-        _steps.push(step);
-      };
-
-      /*
-       * name _registerStep()
-       * @description
-       * This method should not be called manually but rather automatically by using the mwWizardStep directive
-       */
-      this._unRegisterStep = function (scope) {
-        var scopeInArray = _.findWhere(_steps, {$id: scope.$id}),
-          indexOfScope = _.indexOf(_steps, scopeInArray);
-
-        if (indexOfScope > -1) {
-          _steps.splice(indexOfScope, 1);
-        }
-      };
-
-      this.destroy = function () {
-        var self = this;
-        _steps.forEach(function (step) {
-          self._unRegisterStep(step);
-        });
-      };
-
-      this.getId = function () {
-        return _id;
-      };
-
-      this.getAllSteps = function () {
-        return _steps;
-      };
-
-      this.getCurrentStep = function () {
-        return _steps[_currentlyActive];
-      };
-
-      this.getCurrentStepNumber = function () {
-        return _currentlyActive;
-      };
-
-      this.getCurrentStepId = function () {
-        return _steps[_currentlyActive].slideId;
-      };
-
-      this.getTotalStepAmount = function () {
-        return _steps.length;
-      };
-
-      this.hasNextStep = function () {
-        return this.getCurrentStepNumber() < this.getTotalStepAmount() - 1;
-      };
-
-      this.hasPreviousStep = function () {
-        return this.getCurrentStepNumber() > 0;
-      };
-
-      /*
-       * name next()
-       * @description
-       * Navigates to the next step of the currently active step
-       */
-      this.next = function () {
-        this.goTo(_currentlyActive + 1);
-      };
-
-      /*
-       * name back()
-       * @description
-       * Navigates to the previous step of the currently active step
-       */
-      this.back = function () {
-        this.goTo(_currentlyActive - 1);
-      };
-
-      this.gotoStep = function (step) {
-
-        if (typeof step === 'string') {
-          step = _.findWhere(_steps, {slideId: step});
-        }
-
-        this.goTo(_.indexOf(_steps, step));
-      };
-
-      /*
-       * name goTo()
-       * @description
-       * Goto a specific step number
-       *
-       * @params {integer} number of the step where you want to navigate to
-       */
-      this.goTo = function (num) {
-        _steps[_currentlyActive]._isActive = false;
-        if (num >= _steps.length) {
-          throw new Error('Step ' + (num + 1) + ' is not available');
-        } else {
-          _steps[num]._isActive = true;
-          _currentlyActive = num;
-        }
-      };
-
-    };
-
-    /*
-     * name findWizard()
-     * @description
-     * Finds an existing instance of a wizzard with a certain id but throws NO error
-     * when the wizard with the id could not be found
-     *
-     * @params {string} id Unique identifier of the Wizard you want to find
-     * @returns {object} wizard returns wizard object
-     */
-    var findWizard = function (id) {
-      var _wizard = null;
-      wizards.forEach(function (wizard) {
-        if (wizard.getId === id) {
-          _wizard = wizard;
-        }
-      });
-      return _wizard;
-    };
-
-    /*
-     * name getWizard()
-     * @description
-     * Finds an existing instance of a wizzard with a certain id and throws an error
-     * when the wizard with the id could not be found
-     *
-     * @params {string} id Unique identifier of the Wizard you want to find
-     * @returns {object} wizard returns wizard object
-     */
-    var getWizard = function (id) {
-      var _wizard = findWizard(id);
-      if (!_wizard) {
-        throw new Error('The wizard with the id ' + id + ' does not exist');
-      } else {
-        return _wizard;
-      }
-
-    };
-
-    /*
-     * name createWizard
-     * @description
-     * Creates an instance of Wizard. Throws an error when wizzard with the id
-     * could not be found or is not initialized yet
-     *
-     * @param {string} id Unique identifier of the Wizard
-     * @returns {object} wizard returns wizard object
-     */
-    var createWizard = function (id) {
-      if (findWizard(id)) {
-        throw new Error('The wizard with the id ' + id + ' is already existing');
-      } else {
-        var wizard = new Wizard(id);
-        wizards.push(wizard);
-        return wizard;
-      }
-    };
-
-    //Public interface of the service
-    return {
-      createWizard: createWizard,
-      getWizard: getWizard
-    };
-
-  })
-
-/**
- * @ngdoc directive
- * @name mwWizard.directive:mwWizard
- * @element div
- * @description
- *
- * Multiple wizard steps can be transcluded into this directive. This Directive handles the
- * registration of every single wizard step
- *
- * @param {wizard} mw-wizard Wizard instance created by the Wizard service.
- */
-  .directive('mwWizard', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        wizard: '=mwWizard'
-      },
-      transclude: true,
-      template: '<div ng-transclude class="mw-wizard"></div>',
-      controller: ['$scope', function ($scope) {
-
-        var wizard = $scope.wizard;
-
-        this.registerStep = function (scope, id) {
-          wizard._registerStep(scope, id);
-        };
-
-        this.unRegisterStep = function (scope) {
-          wizard._unRegisterStep(scope);
-        };
-
-        $scope.$on('$destroy', function () {
-          wizard.destroy();
-        });
-
-      }]
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwWizard.directive:mwWizardStep
- * @element div
- * @description
- *
- * Registers itself as a step in the mwWizard directive. The Wizard services handles the show and hide of
- * this directive
- *
- */
-  .directive('mwWizardStep', function () {
-    return {
-      restrict: 'A',
-      scope: true,
-      transclude: true,
-      replace: true,
-      require: '^mwWizard',
-      template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div class="mw-wizard-step-inner" ng-transclude ng-if="_isActive"></div></div>',
-      link: function (scope, el, attr, mwWizardCtrl) {
-        scope._isActive = false;
-        //we need to set a default value here, see
-        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
-        attr.title = attr.title || 'noname';
-        attr.$observe('title', function (title) {
-          if (title && title.length > 0) {
-            scope.title = title;
-          }
-          mwWizardCtrl.registerStep(scope, attr.id);
-        });
-
-        scope.$on('$destroy', function () {
-          mwWizardCtrl.unRegisterStep(scope);
-        });
-      }
-    };
-  });
-
-
+})(window, angular);
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
   $templateCache.put('uikit/templates/mwComponents/_mwMarkdownPreviewPopoper.html',

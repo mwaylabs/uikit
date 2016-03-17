@@ -16,11 +16,10 @@ module.exports = function(config){
       'node_modules/bootstrap/js/tooltip.js',
       'node_modules/bootstrap/js/popover.js',
       'node_modules/backbone/backbone-min.js',
-      'node_modules/mcapjs-client/dist/mcap.min.js',
       'node_modules/angular/angular.min.js',
       'node_modules/angular-route/angular-route.min.js',
       'node_modules/angular-mocks/angular-mocks.js',
-      'node_modules/mcapjs-client/dist/mcap.angular.js',
+      'node_modules/sinon/pkg/sinon-server-1.17.3.js',
 
       'libs/angular-sanitize/angular-sanitize.min.js',
       'libs/angular-markdown-directive/markdown.js',
@@ -30,8 +29,7 @@ module.exports = function(config){
       'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
       'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
 
-      'src/mwUI.js',
-      'src/**/*.js',
+      'dist/uikit.js',
       'test/**/*.js',
       'src/templates/**/*.html'
     ],
@@ -63,7 +61,7 @@ module.exports = function(config){
 
     // enable / disable watching file and executing tests whenever any file changes
     // CLI --auto-watch --no-auto-watch
-    autoWatch: false,
+    autoWatch: true,
 
     // Start these browsers, currently available:
     // - Chrome
