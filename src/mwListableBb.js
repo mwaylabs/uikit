@@ -704,7 +704,7 @@ angular.module('mwListableBb', [])
         });
 
         scope.$watch('collection', function (collection) {
-          if (collection && collection instanceof MCAPCollection) {
+          if (collection && (collection instanceof MCAPCollection || collection instanceof mwUI.Backbone.Collection )) {
             init();
           }
         });
