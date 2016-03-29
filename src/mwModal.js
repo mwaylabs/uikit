@@ -397,7 +397,7 @@ angular.module('mwModal', [])
   .service('validateEnterKeyUp', function() {
     return {
       clickIfValid: function(element, event, controller) {
-        if (event.keyCode === 13 && event.target.nodeName !== 'SELECT') {
+        if (event.keyCode === 13 && event.target.nodeName !== 'SELECT' && !event.isDefaultPrevented()) {
           if ((controller && controller.$valid) || !controller) {
             element.click();
           }

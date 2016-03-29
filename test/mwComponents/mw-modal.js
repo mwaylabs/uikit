@@ -6,10 +6,13 @@ describe('mwModal', function() {
     var validateEnterKeyUp;
     var elementSpy = { click: function() {} };
 
-    function EventStub(keyCode, targetNodeName) {
+    function EventStub(keyCode, targetNodeName, defaultPrevented) {
       this.keyCode = keyCode;
       this.target = {};
       this.target.nodeName = targetNodeName;
+      this.isDefaultPrevented = function() {
+        return defaultPrevented;
+      };
     };
 
     beforeEach(inject(function(_validateEnterKeyUp_) {
@@ -45,5 +48,21 @@ describe('mwModal', function() {
 
       expect(elementSpy.click).not.toHaveBeenCalled();
     });
+
+    it('does not click the element if default action was prevented', function() {
+      var DEFAULT_PREVENTED = true;
+
+      validateEnterKeyUp.clickIfValid(elementSpy, new EventStub(13, 'NOT_SELECT', DEFAULT_PREVENTED), undefined);
+
+      expect(elementSpy.click).not.toHaveBeenCalled();
+    });
+
+    it('clicks the element if default not prevented', function() {
+      var DEFAULT_PREVENTED = false;
+
+      validateEnterKeyUp.clickIfValid(elementSpy, new EventStub(13, 'NOT_SELECT', DEFAULT_PREVENTED), undefined);
+
+      expect(elementSpy.click).toHaveBeenCalled();
+    })
   });
 });
