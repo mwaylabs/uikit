@@ -124,6 +124,17 @@ angular.module('mwComponentsBb', [])
         };
       }
     };
+  })
+
+  .service('ignoreKeyPress', function() {
+    var ENTER_KEY = 13;
+    return {
+      ignoreEnterKey: function(event) {
+        if (event.which === ENTER_KEY) {
+          event.preventDefault();
+        }
+      }
+    };
   });
 
 
