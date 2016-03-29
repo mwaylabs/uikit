@@ -14,7 +14,7 @@ angular.module('mwComponentsBb', [])
    * @param {expression} disabled If expression evaluates to true, input is disabled.
    * @param {string} property The name of the property on which the filtering should happen.
    */
-  .directive('mwFilterableSearchBb', function ($timeout) {
+  .directive('mwFilterableSearchBb', function ($timeout, ignoreKeyPress) {
     return {
       scope: {
         collection: '=',
@@ -62,6 +62,7 @@ angular.module('mwComponentsBb', [])
         };
 
         scope.keyUp = function () {
+          ignoreKeyPress.ignoreEnterKey(event);
           scope.searching = true;
         };
 

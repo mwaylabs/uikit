@@ -12,7 +12,7 @@
     </span>
     <input type="text"
            placeholder="{{placeholder || ('common.search' | i18n)}}"
-           ng-keyup="keyUp()"
+           ng-keyup="keyUp($event)"
            ng-model="viewModel.searchVal"
            ng-change="search($event)"
            ng-model-options="{ debounce: 500 }"
