@@ -2559,7 +2559,7 @@
      * @element div
      * @description
      *
-     * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+     * Creates a search field to filter by in the sidebar. Search is triggered while typing.
      *
      * @param {filterable} filterable Filterable instance.
      * @param {expression} disabled If expression evaluates to true, input is disabled.
