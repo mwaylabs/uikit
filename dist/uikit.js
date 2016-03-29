@@ -2565,7 +2565,7 @@
      * @param {expression} disabled If expression evaluates to true, input is disabled.
      * @param {string} property The name of the property on which the filtering should happen.
      */
-    .directive('mwFilterableSearchBb', ['$timeout', function ($timeout) {
+    .directive('mwFilterableSearchBb', ['$timeout', 'ignoreKeyPress', function ($timeout, ignoreKeyPress) {
       return {
         scope: {
           collection: '=',
@@ -2613,6 +2613,7 @@
           };
   
           scope.keyUp = function () {
+            ignoreKeyPress.ignoreEnterKey(event);
             scope.searching = true;
           };
   
@@ -2673,6 +2674,17 @@
           scope.getUrl = function (uuid) {
             return scope.url.replace('VERSION_UUID', uuid);
           };
+        }
+      };
+    })
+  
+    .service('ignoreKeyPress', function() {
+      var ENTER_KEY = 13;
+      return {
+        ignoreEnterKey: function(event) {
+          if (event.which === ENTER_KEY) {
+            event.preventDefault();
+          }
         }
       };
     });
@@ -6989,22 +7001,29 @@
    * @description
    * Adds ability to trigger button with enter key. Checks validation if button is part of a form.
    */
-    .directive('mwModalOnEnter', function () {
+    .directive('mwModalOnEnter', ['validateEnterKeyUp', function (validateEnterKeyUp) {
       return {
         restrict: 'A',
         require: '?^form',
         link: function (scope, elm, attr, ctrl) {
           elm.parents('.modal').first().on('keyup', function (event) {
-            if (event.keyCode === 13 && event.target.nodeName !== 'SELECT') {
-              if ((ctrl && ctrl.$valid) || !ctrl) {
-                elm.click();
-              }
-            }
+            validateEnterKeyUp.clickIfValid(elm, event, ctrl);
           });
         }
       };
-    })
+    }])
   
+    .service('validateEnterKeyUp', function() {
+      return {
+        clickIfValid: function(element, event, controller) {
+          if (event.keyCode === 13 && event.target.nodeName !== 'SELECT' && !event.isDefaultPrevented()) {
+            if ((controller && controller.$valid) || !controller) {
+              element.click();
+            }
+          }
+        }
+      };
+    })
   /**
    * @ngdoc directive
    * @name mwModal.directive:mwModalConfirm
@@ -8989,7 +9008,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-    "<div class=\"row mw-filterable-search\" ng-class=\"{'has-value':hasValue()}\"><div class=\"input-holder input-group\"><span class=\"input-group-addon clickable\" ng-click=\"focus()\"><span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-stop-propagation=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></span> <input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp()\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\"></div></div>"
+    "<div class=\"row mw-filterable-search\" ng-class=\"{'has-value':hasValue()}\"><div class=\"input-holder input-group\"><span class=\"input-group-addon clickable\" ng-click=\"focus()\"><span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-stop-propagation=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></span> <input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp($event)\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\"></div></div>"
   );
 
 
