@@ -61,7 +61,7 @@ angular.module('mwComponentsBb', [])
           return inputEl.val().length > 0;
         };
 
-        scope.keyUp = function () {
+        scope.keyUp = function (event) {
           ignoreKeyPress.ignoreEnterKey(event);
           scope.searching = true;
         };
