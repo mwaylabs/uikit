@@ -8,13 +8,13 @@ angular.module('mwComponentsBb', [])
    * @element div
    * @description
    *
-   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   * Creates a search field to filter by in the sidebar. Search is triggered while typing.
    *
    * @param {filterable} filterable Filterable instance.
    * @param {expression} disabled If expression evaluates to true, input is disabled.
    * @param {string} property The name of the property on which the filtering should happen.
    */
-  .directive('mwFilterableSearchBb', function ($timeout) {
+  .directive('mwFilterableSearchBb', function ($timeout, ignoreKeyPress) {
     return {
       scope: {
         collection: '=',
@@ -61,7 +61,8 @@ angular.module('mwComponentsBb', [])
           return inputEl.val().length > 0;
         };
 
-        scope.keyUp = function () {
+        scope.keyUp = function (event) {
+          ignoreKeyPress.ignoreEnterKey(event);
           scope.searching = true;
         };
 
@@ -122,6 +123,17 @@ angular.module('mwComponentsBb', [])
         scope.getUrl = function (uuid) {
           return scope.url.replace('VERSION_UUID', uuid);
         };
+      }
+    };
+  })
+
+  .service('ignoreKeyPress', function() {
+    var ENTER_KEY = 13;
+    return {
+      ignoreEnterKey: function(event) {
+        if (event.which === ENTER_KEY) {
+          event.preventDefault();
+        }
       }
     };
   });
