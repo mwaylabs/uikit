@@ -10,7 +10,7 @@ describe('MwListCollectionFilter', function() {
       getItem: function(identifier) {
         return {
           then: function() {
-            return 'theAppliedFilter';
+            return null;
           }
         };
       }
@@ -32,7 +32,12 @@ describe('MwListCollectionFilter', function() {
     MwListCollectionFilter = _MwListCollectionFilter_;
   }));
 
-  it('is creatable', function() {
-    new MwListCollectionFilter('foo').fetchAppliedFilter();
+  describe('fetching applied filters', function() {
+    it('returns null if no applied filter is in localstorage', function() {
+      var appliedFilter = new MwListCollectionFilter('foo').fetchAppliedFilter();
+
+      expect(appliedFilter).toBe(null);
+    });
   });
+
 });
