@@ -1,11 +1,8 @@
-/**
- * Created by zarges on 27/05/15.
- */
 'use strict';
 
 angular.module('mwCollection')
 
-  .service('MwListCollectionFilter', function ($q, $timeout, LocalForage, MCAPFilterHolders, MCAPFilterHolder) {
+  .service('MwListCollectionFilter', function ($q, $timeout, LocalForage, MCAPFilterHolders, MCAPFilterHolder, MCAPauthenticatedUser) {
 
     var Filter = function (type) {
 
