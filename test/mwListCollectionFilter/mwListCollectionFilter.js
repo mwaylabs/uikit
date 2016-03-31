@@ -2,7 +2,8 @@
 
 describe('MwListCollectionFilter', function() {
   var MwListCollectionFilter,
-    filterInLocalStorage;
+    filterInLocalStorage,
+    currentUserUuid;
 
   beforeEach(module('mwCollection'));
 
@@ -19,7 +20,7 @@ describe('MwListCollectionFilter', function() {
     $provide.value('LocalForage', LocalForage);
 
     function MCAPFilterHolder() {};
-    MCAPFilterHolder.prototype.get = function fn() {
+    MCAPFilterHolder.prototype.get = function() {
     };
     $provide.value('MCAPFilterHolder', MCAPFilterHolder);
 
@@ -27,6 +28,12 @@ describe('MwListCollectionFilter', function() {
       this.type = type;
     };
     $provide.value('MCAPFilterHolders', MCAPFilterHolders);
+
+    function MCAPauthenticatedUser() {};
+    MCAPauthenticatedUser.prototype.get = function() {
+      return currentUserUuid;
+    };
+    $provide.value('MCAPauthenticatedUser', MCAPauthenticatedUser);
   }));
 
   beforeEach(inject(function(_MwListCollectionFilter_) {
@@ -48,6 +55,15 @@ describe('MwListCollectionFilter', function() {
       var appliedFilter = new MwListCollectionFilter('IRRELEVANT').fetchAppliedFilter();
 
       expect(appliedFilter).not.toBeNull();
+    });
+
+    xit('returns null if filter in localstorage does not match current users id', function() {
+      currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
+      filterInLocalStorage = '{"content":"IRRELEVANT", "172FB965-64B2-4B6A-BF8C-679B02460B7B"}';
+
+      var appliedFilter = new MwListCollectionFilter('IRRELEVANT').fetchAppliedFilter();
+
+      expect(appliedFilter).toBeNull();
     });
   });
 
