@@ -7,8 +7,14 @@ describe('MwListCollectionFilter', function() {
 
   beforeEach(module(function($provide) {
     $provide.value('LocalForage', {});
-    $provide.value('MCAPFilterHolder', {});
-    $provide.value('MCAPFilterHolders', {});
+
+    function MCAPFilterHolder() {};
+    $provide.value('MCAPFilterHolder', MCAPFilterHolder);
+
+    function MCAPFilterHolders(irrelevant, type) {
+      this.type = type;
+    };
+    $provide.value('MCAPFilterHolders', MCAPFilterHolders);
   }));
 
   beforeEach(inject(function(_MwListCollectionFilter_) {
@@ -16,6 +22,6 @@ describe('MwListCollectionFilter', function() {
   }));
 
   it('is creatable', function() {
-
+    new MwListCollectionFilter('foo');
   });
 });
