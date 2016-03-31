@@ -1,7 +1,8 @@
 'use strict';
 
 describe('MwListCollectionFilter', function() {
-  var MwListCollectionFilter;
+  var MwListCollectionFilter,
+    filterInLocalStorage;
 
   beforeEach(module('mwCollection'));
 
@@ -10,7 +11,7 @@ describe('MwListCollectionFilter', function() {
       getItem: function(identifier) {
         return {
           then: function() {
-            return null;
+            return filterInLocalStorage;
           }
         };
       }
@@ -34,9 +35,19 @@ describe('MwListCollectionFilter', function() {
 
   describe('fetching applied filters', function() {
     it('returns null if no applied filter is in localstorage', function() {
-      var appliedFilter = new MwListCollectionFilter('foo').fetchAppliedFilter();
+      filterInLocalStorage = null;
 
-      expect(appliedFilter).toBe(null);
+      var appliedFilter = new MwListCollectionFilter('IRRELEVANT').fetchAppliedFilter();
+
+      expect(appliedFilter).toBeNull();
+    });
+
+    it('returns filter in localstorage if present', function() {
+      filterInLocalStorage = '{"content":"IRRELEVANT"}';
+
+      var appliedFilter = new MwListCollectionFilter('IRRELEVANT').fetchAppliedFilter();
+
+      expect(appliedFilter).not.toBeNull();
     });
   });
 
