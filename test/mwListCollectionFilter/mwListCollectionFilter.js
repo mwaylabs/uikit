@@ -5,7 +5,7 @@ describe('MwListCollectionFilter', function() {
     filterInLocalStorage,
     currentUserUuid,
     MCAPFilterHolderProviderSpy,
-    MCAPFilterHolderStub;
+    MCAPFilterHolderSpy;
 
   beforeEach(module('mwCollection'));
 
@@ -22,11 +22,13 @@ describe('MwListCollectionFilter', function() {
     $provide.value('LocalForage', LocalForage);
 
     MCAPFilterHolderProviderSpy = { createFilterHolder: function() {}};
-    MCAPFilterHolderStub = {
-      get: function() {
-      }
+    MCAPFilterHolderSpy = {
+      get: function() {},
+      set: function(value) {}
     };
-    spyOn(MCAPFilterHolderProviderSpy, 'createFilterHolder').and.returnValue(MCAPFilterHolderStub);
+    spyOn(MCAPFilterHolderProviderSpy, 'createFilterHolder').and.returnValue(MCAPFilterHolderSpy);
+    spyOn(MCAPFilterHolderSpy, 'set');
+
     $provide.value('MCAPFilterHolderProvider', MCAPFilterHolderProviderSpy);
 
     function MCAPFilterHolders(irrelevant, type) {
@@ -62,13 +64,14 @@ describe('MwListCollectionFilter', function() {
       expect(appliedFilter).not.toBeNull();
     });
 
-    xit('returns null if filter in localstorage does not match current users id', function() {
+    xit('returns null if filter in localstorage does not contain current users id', function() {
+      var filterInLocalStorage = '{"content":"IRRELEVANT", "172FB965-64B2-4B6A-BF8C-679B02460B7B"}';
       currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
-      filterInLocalStorage = '{"content":"IRRELEVANT", "172FB965-64B2-4B6A-BF8C-679B02460B7B"}';
 
-      var appliedFilter = new MwListCollectionFilter('IRRELEVANT').fetchAppliedFilter();
+      var appliedFilter = new MwListCollectionFilter('IRRELEVANT')
+        ._setAppliedFilter(filterInLocalStorage);
 
-      expect(appliedFilter).toBeNull();
+      expect(MCAPFilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
     });
   });
 
