@@ -3,9 +3,10 @@
 describe('MwListCollectionFilter', function() {
   var MwListCollectionFilter,
     filterInLocalStorage,
-    currentUserUuid,
+    currentUserUuid = 'userUuid',
     MCAPFilterHolderProviderSpy,
-    MCAPFilterHolderSpy;
+    MCAPFilterHolderSpy,
+    MCAPAuthenticatedUserSpy;
 
   beforeEach(module('mwCollection'));
 
@@ -36,11 +37,9 @@ describe('MwListCollectionFilter', function() {
     };
     $provide.value('MCAPFilterHolders', MCAPFilterHolders);
 
-    function MCAPauthenticatedUser() {};
-    MCAPauthenticatedUser.prototype.get = function() {
-      return currentUserUuid;
-    };
-    $provide.value('MCAPauthenticatedUser', MCAPauthenticatedUser);
+    MCAPAuthenticatedUserSpy = { get: function() {} };
+    spyOn(MCAPAuthenticatedUserSpy, 'get').and.returnValue(currentUserUuid);
+    $provide.value('MCAPauthenticatedUser', MCAPAuthenticatedUserSpy);
   }));
 
   beforeEach(inject(function(_MwListCollectionFilter_) {
@@ -64,7 +63,7 @@ describe('MwListCollectionFilter', function() {
       expect(appliedFilter).not.toBeNull();
     });
 
-    xit('returns null if filter in localstorage does not contain current users id', function() {
+    it('does not set filter if the one in localstorage does not contain current users id', function() {
       var filterInLocalStorage = '{"content":"IRRELEVANT", "172FB965-64B2-4B6A-BF8C-679B02460B7B"}';
       currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
 
@@ -72,6 +71,16 @@ describe('MwListCollectionFilter', function() {
         ._setAppliedFilter(filterInLocalStorage);
 
       expect(MCAPFilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
+    });
+
+    it('sets appliedfilter if current user uuid matches with the filter owner', function() {
+      currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
+      var filterInLocalStorage = '{"content":"IRRELEVANT", ' + currentUserUuid + '"}';
+
+      var appliedFilter = new MwListCollectionFilter('IRRELEVANT')
+        ._setAppliedFilter(filterInLocalStorage);
+
+      expect(MCAPFilterHolderSpy.set).toHaveBeenCalledWith(filterInLocalStorage);
     });
   });
 
