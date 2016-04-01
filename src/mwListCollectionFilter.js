@@ -12,7 +12,7 @@ angular.module('mwCollection')
 
       var _type = type,
         _localFilterIdentifier = 'applied_filter_' + _type,
-        _localSordOrderIdentifier = 'applied_sort_order_' + _type,
+        _localSortOrderIdentifier = 'applied_sort_order_' + _type,
         _filterHolders = new MCAPFilterHolders(null, type),
         _appliedFilter = MCAPFilterHolderProvider.createFilterHolder(),
         _appliedSortOrder = {
@@ -96,7 +96,7 @@ angular.module('mwCollection')
         if (_appliedSortOrder.order && _appliedSortOrder.property) {
           return $q.when(_appliedSortOrder);
         } else {
-          return LocalForage.getItem(_localSordOrderIdentifier).then(function (appliedSortOrder) {
+          return LocalForage.getItem(_localSortOrderIdentifier).then(function (appliedSortOrder) {
             _appliedSortOrder = appliedSortOrder || {order: null, property: null};
             return _appliedSortOrder;
           });
@@ -106,11 +106,11 @@ angular.module('mwCollection')
       this.applySortOrder = function (sortOrderObj) {
 
         _appliedFilter.set(sortOrderObj);
-        return LocalForage.setItem(_localSordOrderIdentifier, sortOrderObj);
+        return LocalForage.setItem(_localSortOrderIdentifier, sortOrderObj);
       };
 
       this.revokeSortOrder = function () {
-        return LocalForage.removeItem(_localSordOrderIdentifier);
+        return LocalForage.removeItem(_localSortOrderIdentifier);
       };
 
     };
