@@ -54,7 +54,7 @@ angular.module('mwCollection')
       };
 
       this._setAppliedFilter = function(appliedFilter) {
-        if (appliedFilter.indexOf(MCAPauthenticatedUser.get('uuid')) !== -1) {
+        if (JSON.stringify(appliedFilter).indexOf(MCAPauthenticatedUser.get('uuid')) !== -1) {
           _appliedFilter.set(appliedFilter);
         }
         return _appliedFilter;
