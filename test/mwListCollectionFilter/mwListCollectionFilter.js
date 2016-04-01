@@ -64,7 +64,10 @@ describe('MwListCollectionFilter', function() {
     });
 
     it('does not set filter if the one in localstorage does not contain current users id', function() {
-      var filterInLocalStorage = '{"content":"IRRELEVANT", "172FB965-64B2-4B6A-BF8C-679B02460B7B"}';
+      var filterInLocalStorage = {
+        content:"IRRELEVANT",
+        acl: "172FB965-64B2-4B6A-BF8C-679B02460B7B:rw"
+      };
       currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
 
       var appliedFilter = new MwListCollectionFilter('IRRELEVANT')
@@ -75,7 +78,10 @@ describe('MwListCollectionFilter', function() {
 
     it('sets appliedfilter if current user uuid matches with the filter owner', function() {
       currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
-      var filterInLocalStorage = '{"content":"IRRELEVANT", ' + currentUserUuid + '"}';
+      var filterInLocalStorage = {
+        content:"IRRELEVANT",
+        acl: currentUserUuid + ":rw"
+      };
 
       var appliedFilter = new MwListCollectionFilter('IRRELEVANT')
         ._setAppliedFilter(filterInLocalStorage);
