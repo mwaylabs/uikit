@@ -53,15 +53,19 @@ angular.module('mwCollection')
         return _appliedFilter;
       };
 
+      this._setAppliedFilter = function(appliedFilter) {
+        _appliedFilter.set(appliedFilter);
+        return _appliedFilter;
+      };
+
       // Filter that was applied and saved in local storage
       this.fetchAppliedFilter = function () {
         if (_appliedFilter.get('uuid')) {
           return $q.when(_appliedFilter);
         } else {
           return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
-            _appliedFilter.set(appliedFilter);
-            return _appliedFilter;
-          });
+            return this._setAppliedFilter(appliedFilter);
+          }.bind(this));
         }
       };
 
