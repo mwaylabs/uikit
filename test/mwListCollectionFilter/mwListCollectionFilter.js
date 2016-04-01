@@ -3,7 +3,9 @@
 describe('MwListCollectionFilter', function() {
   var MwListCollectionFilter,
     filterInLocalStorage,
-    currentUserUuid;
+    currentUserUuid,
+    MCAPFilterHolderProviderSpy,
+    MCAPFilterHolderStub;
 
   beforeEach(module('mwCollection'));
 
@@ -19,10 +21,13 @@ describe('MwListCollectionFilter', function() {
     };
     $provide.value('LocalForage', LocalForage);
 
-    function MCAPFilterHolder() {};
-    MCAPFilterHolder.prototype.get = function() {
+    MCAPFilterHolderProviderSpy = { createFilterHolder: function() {}};
+    MCAPFilterHolderStub = {
+      get: function() {
+      }
     };
-    $provide.value('MCAPFilterHolder', MCAPFilterHolder);
+    spyOn(MCAPFilterHolderProviderSpy, 'createFilterHolder').and.returnValue(MCAPFilterHolderStub);
+    $provide.value('MCAPFilterHolderProvider', MCAPFilterHolderProviderSpy);
 
     function MCAPFilterHolders(irrelevant, type) {
       this.type = type;
