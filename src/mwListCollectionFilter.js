@@ -2,7 +2,7 @@
 
 angular.module('mwCollection')
 
-  .service('MwListCollectionFilter', function ($q, $timeout, LocalForage, MCAPFilterHolders, MCAPFilterHolderProvider, MCAPauthenticatedUser) {
+  .service('MwListCollectionFilter', function ($q, LocalForage, MCAPFilterHolders, MCAPFilterHolderProvider, MCAPauthenticatedUser) {
 
     var Filter = function (type) {
 
