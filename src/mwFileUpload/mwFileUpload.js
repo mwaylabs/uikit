@@ -1,7 +1,4 @@
 /**
- * Created by zarges on 30/11/15.
- */
-/**
  * @ngdoc directive
  * @name Relution.Common.directive:rlnSimpleUpload
  * @element div
@@ -48,7 +45,7 @@ angular.module('mwFileUpload', [])
       scope: {
         url: '@',
         name: '@',
-        model: '=',
+        model: '=?',
         attribute: '@',
         labelAttribute: '@',
         showFileName: '=',
