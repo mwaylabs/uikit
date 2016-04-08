@@ -1,23 +1,3 @@
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:rlnSimpleUpload
- * @element div
- * @description
- *
- * Simple upload button with progressbar
- * Uploads a file to the mCap Asset pipeline and show a progressbar during this progress. You can pass a mimeType
- * in the validator attribute to disable a files in the file dialog which not match the mimetype
- * When upload has finished the Response File object will be checked if the response mimetype matches with the
- * required one. When the file passed the validation it will be passed into the passed model. Otherwise an error
- * will be thrown
- *
- * @scope
- *
- * @param {string} name The name of the inputfield. Required for input validation purposes
- * @param {boolean} required Specifies if a file has to be uploaded. Upload has to be finished and reponse passed validation
- * @param {object} model Model where the response should be saved
- * @validator {string} validator Mimetype of accepted file e.g image/jpg or image/*
- */
 'use strict';
 
 angular.module('mwFileUpload', [])
