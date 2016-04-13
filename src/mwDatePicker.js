@@ -26,7 +26,7 @@ angular.module('mwUI')
         mwModel: '=',
         mwRequired: '=',
         showTimePicker: '=',
-        allowSoftKeyboard:'=',
+        disableDateInput:'=',
         options: '='
       },
       link: function (scope, el) {
@@ -43,20 +43,20 @@ angular.module('mwUI')
           minutes: null,
           datepickerIsOpened: false,
           showTimePicker: angular.isDefined(scope.showTimePicker) ? scope.showTimePicker : true,
-          allowSoftKeyboard: angular.isDefined(scope.allowSoftKeyboard) ? scope.allowSoftKeyboard : true
+          disableDateInput: angular.isDefined(scope.disableDateInput) ? scope.disableDateInput : false
         };
 
 
         scope.$watch('showTimePicker', function (newVal) {
           scope.viewModel.showTimePicker = newVal;
         });
-        scope.$watch('allowSoftKeyboard', function (newVal) {
-          scope.viewModel.allowSoftKeyboard = newVal;
+        scope.$watch('disableDateInput', function (newVal) {
+          scope.viewModel.disableDateInput = newVal;
 
         });
 
         scope.onFocus = function (event) {
-          if (!scope.viewModel.allowSoftKeyboard) {
+          if (scope.viewModel.disableDateInput) {
             if (event && event.target) {
               event.target.blur();
             }
