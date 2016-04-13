@@ -1,7 +1,5 @@
-/**
- * Created by zarges on 23/06/15.
- */
 'use strict';
+
 angular.module('mwResponseHandler', [])
 
   .provider('ResponseHandler', function () {

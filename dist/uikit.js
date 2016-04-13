@@ -1012,29 +1012,6 @@
       _$q = $q;
     }]);
 
-  /**
-   * Created by zarges on 30/11/15.
-   */
-  /**
-   * @ngdoc directive
-   * @name Relution.Common.directive:rlnSimpleUpload
-   * @element div
-   * @description
-   *
-   * Simple upload button with progressbar
-   * Uploads a file to the mCap Asset pipeline and show a progressbar during this progress. You can pass a mimeType
-   * in the validator attribute to disable a files in the file dialog which not match the mimetype
-   * When upload has finished the Response File object will be checked if the response mimetype matches with the
-   * required one. When the file passed the validation it will be passed into the passed model. Otherwise an error
-   * will be thrown
-   *
-   * @scope
-   *
-   * @param {string} name The name of the inputfield. Required for input validation purposes
-   * @param {boolean} required Specifies if a file has to be uploaded. Upload has to be finished and reponse passed validation
-   * @param {object} model Model where the response should be saved
-   * @validator {string} validator Mimetype of accepted file e.g image/jpg or image/*
-   */
   'use strict';
   
   angular.module('mwFileUpload', [])
@@ -1062,7 +1039,7 @@
         scope: {
           url: '@',
           name: '@',
-          model: '=',
+          model: '=?',
           attribute: '@',
           labelAttribute: '@',
           showFileName: '=',
@@ -2559,13 +2536,13 @@
      * @element div
      * @description
      *
-     * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+     * Creates a search field to filter by in the sidebar. Search is triggered while typing.
      *
      * @param {filterable} filterable Filterable instance.
      * @param {expression} disabled If expression evaluates to true, input is disabled.
      * @param {string} property The name of the property on which the filtering should happen.
      */
-    .directive('mwFilterableSearchBb', ['$timeout', function ($timeout) {
+    .directive('mwFilterableSearchBb', ['$timeout', 'ignoreKeyPress', function ($timeout, ignoreKeyPress) {
       return {
         scope: {
           collection: '=',
@@ -2612,7 +2589,8 @@
             return inputEl.val().length > 0;
           };
   
-          scope.keyUp = function () {
+          scope.keyUp = function (event) {
+            ignoreKeyPress.ignoreEnterKey(event);
             scope.searching = true;
           };
   
@@ -2675,6 +2653,17 @@
           };
         }
       };
+    })
+  
+    .service('ignoreKeyPress', function() {
+      var ENTER_KEY = 13;
+      return {
+        ignoreEnterKey: function(event) {
+          if (event.which === ENTER_KEY) {
+            event.preventDefault();
+          }
+        }
+      };
     });
   
   
@@ -2709,7 +2698,7 @@
           mwModel: '=',
           mwRequired: '=',
           showTimePicker: '=',
-          allowSoftKeyboard:'=',
+          disableDateInput:'=',
           options: '='
         },
         link: function (scope, el) {
@@ -2726,20 +2715,20 @@
             minutes: null,
             datepickerIsOpened: false,
             showTimePicker: angular.isDefined(scope.showTimePicker) ? scope.showTimePicker : true,
-            allowSoftKeyboard: angular.isDefined(scope.allowSoftKeyboard) ? scope.allowSoftKeyboard : true
+            disableDateInput: angular.isDefined(scope.disableDateInput) ? scope.disableDateInput : false
           };
   
   
-          scope.$watch('viewModel.showTimePicker', function (newVal) {
+          scope.$watch('showTimePicker', function (newVal) {
             scope.viewModel.showTimePicker = newVal;
           });
-          scope.$watch('allowSoftKeyboard', function (newVal) {
-            scope.viewModel.allowSoftKeyboard = newVal;
+          scope.$watch('disableDateInput', function (newVal) {
+            scope.viewModel.disableDateInput = newVal;
   
           });
   
           scope.onFocus = function (event) {
-            if (!scope.viewModel.allowSoftKeyboard) {
+            if (scope.viewModel.disableDateInput) {
               if (event && event.target) {
                 event.target.blur();
               }
@@ -6301,22 +6290,23 @@
       return MwListCollection;
   
     }]);
-  /**
-   * Created by zarges on 27/05/15.
-   */
   'use strict';
   
   angular.module('mwCollection')
   
-    .service('MwListCollectionFilter', ['$q', '$timeout', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolder', function ($q, $timeout, LocalForage, MCAPFilterHolders, MCAPFilterHolder) {
+    .service('MwListCollectionFilter', ['$q', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolderProvider', 'MCAPauthenticatedUser', function ($q,
+                                                 LocalForage,
+                                                 MCAPFilterHolders,
+                                                 MCAPFilterHolderProvider,
+                                                 MCAPauthenticatedUser) {
   
       var Filter = function (type) {
   
         var _type = type,
           _localFilterIdentifier = 'applied_filter_' + _type,
-          _localSordOrderIdentifier = 'applied_sort_order_' + _type,
+          _localSortOrderIdentifier = 'applied_sort_order_' + _type,
           _filterHolders = new MCAPFilterHolders(null, type),
-          _appliedFilter = new MCAPFilterHolder(),
+          _appliedFilter = MCAPFilterHolderProvider.createFilterHolder(),
           _appliedSortOrder = {
             order: null,
             property: null
@@ -6359,15 +6349,21 @@
           return _appliedFilter;
         };
   
+        this._setAppliedFilter = function(appliedFilter) {
+          if (JSON.stringify(appliedFilter).indexOf(MCAPauthenticatedUser.get('uuid')) !== -1) {
+            _appliedFilter.set(appliedFilter);
+          }
+          return _appliedFilter;
+        };
+  
         // Filter that was applied and saved in local storage
         this.fetchAppliedFilter = function () {
           if (_appliedFilter.get('uuid')) {
             return $q.when(_appliedFilter);
           } else {
             return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
-              _appliedFilter.set(appliedFilter);
-              return _appliedFilter;
-            });
+              return this._setAppliedFilter(appliedFilter);
+            }.bind(this));
           }
         };
   
@@ -6392,7 +6388,7 @@
           if (_appliedSortOrder.order && _appliedSortOrder.property) {
             return $q.when(_appliedSortOrder);
           } else {
-            return LocalForage.getItem(_localSordOrderIdentifier).then(function (appliedSortOrder) {
+            return LocalForage.getItem(_localSortOrderIdentifier).then(function (appliedSortOrder) {
               _appliedSortOrder = appliedSortOrder || {order: null, property: null};
               return _appliedSortOrder;
             });
@@ -6402,16 +6398,23 @@
         this.applySortOrder = function (sortOrderObj) {
   
           _appliedFilter.set(sortOrderObj);
-          return LocalForage.setItem(_localSordOrderIdentifier, sortOrderObj);
+          return LocalForage.setItem(_localSortOrderIdentifier, sortOrderObj);
         };
   
         this.revokeSortOrder = function () {
-          return LocalForage.removeItem(_localSordOrderIdentifier);
+          return LocalForage.removeItem(_localSortOrderIdentifier);
         };
   
       };
   
       return Filter;
+    }])
+    .service('MCAPFilterHolderProvider', ['MCAPFilterHolder', function(MCAPFilterHolder) {
+      return {
+        createFilterHolder: function() {
+          return new MCAPFilterHolder(); // using new in MwListCollectionFilter above destroys testability
+        }
+      };
     }]);
   'use strict';
   
@@ -7003,22 +7006,29 @@
    * @description
    * Adds ability to trigger button with enter key. Checks validation if button is part of a form.
    */
-    .directive('mwModalOnEnter', function () {
+    .directive('mwModalOnEnter', ['validateEnterKeyUp', function (validateEnterKeyUp) {
       return {
         restrict: 'A',
         require: '?^form',
         link: function (scope, elm, attr, ctrl) {
           elm.parents('.modal').first().on('keyup', function (event) {
-            if (event.keyCode === 13 && event.target.nodeName !== 'SELECT') {
-              if ((ctrl && ctrl.$valid) || !ctrl) {
-                elm.click();
-              }
-            }
+            validateEnterKeyUp.clickIfValid(elm, event, ctrl);
           });
         }
       };
-    })
+    }])
   
+    .service('validateEnterKeyUp', function() {
+      return {
+        clickIfValid: function(element, event, controller) {
+          if (event.keyCode === 13 && event.target.nodeName !== 'SELECT' && !event.isDefaultPrevented()) {
+            if ((controller && controller.$valid) || !controller) {
+              element.click();
+            }
+          }
+        }
+      };
+    })
   /**
    * @ngdoc directive
    * @name mwModal.directive:mwModalConfirm
@@ -7432,10 +7442,8 @@
     }])
   
   ;
-  /**
-   * Created by zarges on 23/06/15.
-   */
   'use strict';
+  
   angular.module('mwResponseHandler', [])
   
     .provider('ResponseHandler', function () {
@@ -9003,7 +9011,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwComponentsBb/mwFilterableSearch.html',
-    "<div class=\"row mw-filterable-search\" ng-class=\"{'has-value':hasValue()}\"><div class=\"input-holder input-group\"><span class=\"input-group-addon clickable\" ng-click=\"focus()\"><span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-stop-propagation=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></span> <input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp()\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\"></div></div>"
+    "<div class=\"row mw-filterable-search\" ng-class=\"{'has-value':hasValue()}\"><div class=\"input-holder input-group\"><span class=\"input-group-addon clickable\" ng-click=\"focus()\"><span mw-icon=\"fa-search\" ng-class=\"{searching:searching}\" class=\"search-icon\"></span> <span ng-click=\"reset()\" mw-prevent-default=\"click\" mw-stop-propagation=\"click\" mw-icon=\"rln-icon close_cross\" class=\"reset-icon red clickable\"></span></span> <input type=\"text\" placeholder=\"{{placeholder || ('common.search' | i18n)}}\" ng-keyup=\"keyUp($event)\" ng-model=\"viewModel.searchVal\" ng-change=\"search($event)\" ng-model-options=\"{ debounce: 500 }\" ng-disabled=\"mwDisabled\"></div></div>"
   );
 
 
