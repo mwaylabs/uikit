@@ -1,0 +1,9 @@
+<div class="mw-panel panel panel-{{type || 'default'}}">
+  <div class="panel-heading" ng-if="title">
+    <h3 class="panel-title">{{title}}</h3>
+    <span ng-if="closeable" ng-click="closePanel()" mw-icon="fa-times"></span>
+  </div>
+  <div class="panel-body" ng-transclude>
+
+  </div>
+</div>

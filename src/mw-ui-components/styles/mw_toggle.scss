@@ -1,16 +1,16 @@
 .mw-toggle {
   background: #ccc;
   position: relative;
-  padding: 3px;
+  padding: 2px;
   border-radius: $border-radius-base;
   white-space: nowrap;
+  display: inline-block;
 
   button.toggle {
     border-radius: 0;
     padding: 0 15px;
     vertical-align: middle;
     position: relative;
-    margin-bottom: 3px;
     color: white;
     z-index: 2;
     background: transparent;

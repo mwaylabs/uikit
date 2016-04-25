@@ -2,64 +2,6 @@
 
 angular.module('mwNav', [])
 
-    .directive('mwSubNav', function () {
-      return {
-        restrict: 'A',
-        scope: {
-          justified: '='
-        },
-        replace: true,
-        transclude: true,
-        template: '<div class="mw-nav"><ul class="nav nav-pills" ng-class="{\'nav-justified\':justified}" ng-transclude></ul></div>'
-      };
-    })
-
-    .directive('mwSubNavPill', function ($location) {
-      return {
-        restrict: 'A',
-        scope: {
-          url: '@mwSubNavPill',
-          mwDisabled: '='
-        },
-        transclude: true,
-        replace: true,
-        template:
-          '<li ng-class="{mwDisabled: mwDisabled}">' +
-            '<div class="btn btn-link" ' +
-                  'ng-click="navigate(url)" ' +
-                  'ng-class="{disabled: mwDisabled}" ' +
-                  'ng-transclude>' +
-            '</div>' +
-          '</li>',
-        link: function (scope, elm) {
-          var setActiveClassOnUrlMatch = function (url) {
-            if (scope.url && url === scope.url.slice(1)) {
-              elm.addClass('active');
-            } else {
-              elm.removeClass('active');
-            }
-          };
-
-          scope.$watch('url', function (newUrlAttr) {
-            if (newUrlAttr) {
-              setActiveClassOnUrlMatch($location.$$path);
-            }
-          });
-
-          scope.navigate = function(url){
-            if(!scope.mwDisabled){
-              url = url.replace(/#\//,'');
-              $location.path(url);
-              $location.replace();
-            }
-          };
-
-          setActiveClassOnUrlMatch($location.$$path);
-
-        }
-      };
-    })
-
     .directive('mwNavbar', function ($location) {
       return {
         transclude: true,
@@ -217,7 +159,4 @@ angular.module('mwNav', [])
           });
         }
       };
-    })
-
-
-;
+    });

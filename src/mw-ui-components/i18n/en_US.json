@@ -1,0 +1,12 @@
+{
+  "UiComponents": {
+    "mwToggle": {
+      "on": "On",
+      "off": "Off"
+    },
+    "mwTimelineFieldset": {
+      "entriesHiddenSingular": "One entry is hidden",
+      "entriesHiddenPlural": "{{count}} entries are hidden"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-.mwButtonHelp {
+.mw-button-help {
   position: relative;
 
   .help-icon {
@@ -16,12 +16,12 @@
   }
 }
 
-.mwButtonHelp:first-child{
+.mw-button-help:first-child{
   margin-top: 0;
 }
 
 
-.mwButtonPopover {
+.mw-button-help-popover {
   display: block;
   position: fixed;
   color: $text-color;
