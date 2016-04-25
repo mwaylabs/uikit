@@ -9,15 +9,15 @@
           <span class="indicator" ng-if="selectable.allSelected()"></span>
         </span>
         <a href="#" mw-prevent-default="click">
-          {{'common.selectAll' | i18n:{name: collectionName ||i18n.get('common.items')} }}
+          {{'List.mwListHead.selectAll' | i18n }}
         </a>
       </span>
 
       <span ng-if="selectedAmount > 0"
             class="clickable clear"
             ng-click="selectable.unSelectAll()">
-        <span mw-icon="rln-icon close_cross"></span>
-       <a href="#" mw-prevent-default="click">{{'common.clearSelection' | i18n}}</a>
+        <span mw-icon="fa-times"></span>
+       <a href="#" mw-prevent-default="click">{{'List.mwListHead.clearSelection' | i18n}}</a>
       </span>
 
     </div>
@@ -27,7 +27,7 @@
     <div ng-if="searchAttribute"
          mw-filterable-search-bb
          collection="collection"
-         placeholder="{{'common.searchFor' | i18n:{name: collectionName} }}"
+         placeholder="{{'mwUI.List.listHead.searchFor' | i18n:{name: collectionName} }}"
          property="{{searchAttribute}}">
     </div>
   </div>
@@ -36,10 +36,10 @@
     <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
       <a href="#" mw-prevent-default="click">
       <span ng-if="selectedAmount === 1">
-        {{'common.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
+        {{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
       </span>
       <span ng-if="selectedAmount > 1">
-        {{'common.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}
+        {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}
       </span>
         <span mw-icon="fa-angle-up" ng-show="canShowSelected()"></span>
         <span mw-icon="fa-angle-down" ng-show="!canShowSelected()"></span>
@@ -48,7 +48,7 @@
 
     <div ng-if="!selectable || selectedAmount<1" ng-transclude class="extra-content"></div>
     <span ng-if="!selectable || selectedAmount<1">
-      {{'common.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
+      {{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
     </span>
   </div>
 
@@ -61,11 +61,11 @@
              ng-class="{'label-danger':item.selectable.isDeletedItem}"
              class="label label-default clickable">
           <span ng-if="item.selectable.isDeletedItem"
-                mw-tooltip="{{'common.notAvailableTooltip' | i18n}}">
-            <span mw-icon="fa-warning"></span>{{'common.notAvailable' | i18n}}
+                mw-tooltip="{{'List.mwListHead.notAvailableTooltip' | i18n}}">
+            <span mw-icon="fa-warning"></span>{{'List.mwListHead.notAvailable' | i18n}}
           </span>
           <span ng-if="!item.selectable.isDeletedItem">{{getModelAttribute(item)}}</span>
-          <span mw-icon="rln-icon close_cross"></span>
+          <span mw-icon="fa-times"></span>
         </div>
 
         <div ng-if="isLoadingModelsNotInCollection">
