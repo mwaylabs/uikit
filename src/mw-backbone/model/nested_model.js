@@ -11,10 +11,14 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
     var nestedAttributes = this.nested(),
       instanceObject = {};
     for (var key in nestedAttributes) {
-      var instance = new nestedAttributes[key]();
+      if (typeof nestedAttributes[key] === 'function') {
+        var instance = new nestedAttributes[key]();
 
-      instance.parent = this;
-      instanceObject[key] = instance;
+        instance.parent = this;
+        instanceObject[key] = instance;
+      } else {
+        throw new Error('Nested attribute ' + key + ' is not a valid constructor. Do not set an instance as nested attribute.');
+      }
     }
 
     return instanceObject;
@@ -103,6 +107,11 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
   },
 
   constructor: function (attributes, options) {
+    options = options || {};
+    if (options.parse) {
+      attributes = this.parse(attributes);
+      options.parse = false;
+    }
     this.attributes = this._prepare();
     this.set(attributes);
     attributes = this.attributes;
@@ -127,14 +136,14 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
     return attrs;
   },
 
-  toJSON: function(options){
+  toJSON: function (options) {
     // When options are set toJSON is called from the sync method so it is called before the object is send to the server
     // We use this to transform our data before we are sending it to the server
     // It is the counterpart of parse for the server
-    if(options){
+    if (options) {
       return this._prepareDataForServer();
     } else {
-      return Backbone.Model.prototype.toJSON.apply(this,arguments);
+      return Backbone.Model.prototype.toJSON.apply(this, arguments);
     }
   },
 
