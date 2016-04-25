@@ -1,0 +1,18 @@
+<div mw-modal title="Test">
+  <div mw-modal-body>
+    <h1>AH na das läuft doch eins A!</h1>
+  </div>
+  <div mw-modal-footer>
+    <button type="button"
+            class="btn btn-default"
+            data-dismiss="modal">Cancel
+    </button>
+    <button type="button"
+            mw-modal-on-enter
+            class="btn btn-primary"
+            data-dismiss="modal"
+            ng-disabled="changePasswordForm.$invalid"
+            ng-click="changePassword(model.password)">Ok
+    </button>
+  </div>
+</div>

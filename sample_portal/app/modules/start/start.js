@@ -13,8 +13,17 @@ angular.module('SampleApp.Start', [])
       .when('/start', {
         templateUrl: 'modules/start/templates/index.html',
         controller: 'StartIndexController',
+        controllerAs: 'SICtrl',
         resolve: $injector.get('StartIndexControllerResolver'),
-        cssClasses: 'apps index'
+        cssClasses: 'start index'
+      })
+
+      .when('/start/details', {
+        templateUrl: 'modules/start/templates/show.html',
+        controller: 'StartDetailsController',
+        controllerAs: 'SDCtrl',
+        resolve: $injector.get('StartDetailsControllerResolver'),
+        cssClasses: 'start details'
       });
 
   });

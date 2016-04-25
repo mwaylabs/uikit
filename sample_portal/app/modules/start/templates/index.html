@@ -3,25 +3,82 @@
 <div mw-body style="padding: 0 20px">
 
   <div class="row">
-    <div class="col-md-3">
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-    </div>
+    <div class="col-md-12">
 
-    <div class="col-md-9">
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
+      <div mw-sub-nav justified="true">
+      <span mw-sub-nav-pill="#/start">
+       A
+      </span>
+
+      <span mw-sub-nav-pill="#/apps/{{app.attributes.uuid}}/information">
+        B
+      </span>
+      </div>
+
     </div>
   </div>
 
-  <input type="checkbox" mw-checkbox>
-  <input type="radio" mw-radio name="jo">
-  <input type="radio" mw-radio name="jo">
+  <div class="row">
+    <div class="col-md-3">
+      <button class="btn btn-primary btn-block"
+              ng-click="SICtrl.openTestModal()">
+        Open Modal
+      </button>
+
+      <button class="btn btn-default btn-block"
+              ng-click="SICtrl.showToast()">
+        Show Toast
+      </button>
+
+      <div mw-button-help>
+        <button class="btn btn-default btn-block" ng-disabled="SICtrl.collection.selectable.getSelected().length<1">
+          Execute action on selection
+        </button>
+       <span mw-button-help-condition="SICtrl.collection.selectable.getSelected().length < 1"
+             mw-button-help-text="No item is selected"></span>
+      </div>
+
+    </div>
+
+    <div class="col-md-9">
+
+      <div mw-listable-head-2
+           collection="SICtrl.collection"
+           collection-name="Tests"
+           name-attribute="name"
+           search-attribute="name"></div>
+
+      <table mw-listable-bb
+             collection="SICtrl.collection"
+             mw-infinite-scroll>
+        <thead>
+        <tr mw-listable-header-row-bb>
+          <th mw-listable-header-bb
+              width="30%"
+              sort="name">
+            Name
+          </th>
+          <th mw-listable-header-bb
+              class="hidden-xs"
+              width="70%"
+              sort="description">
+            Description
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr mw-listable-body-row-bb
+            ng-repeat="item in SICtrl.collection.models">
+          <td class="primary-column">
+            <a href="#/start/details">{{ item.attributes.name }}</a>
+          </td>
+          <td class="truncated hidden-xs">{{ item.attributes.description }}</td>
+          <td mw-listable-link-show-bb="#/start/details"></td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
 
 </div>
