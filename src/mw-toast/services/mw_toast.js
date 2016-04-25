@@ -1,26 +1,6 @@
 'use strict';
 
-angular.module('mwToast', [])
-
-  .directive('mwToasts', function (Toast) {
-    return {
-      templateUrl: 'uikit/templates/mwToast/mwToasts.html',
-      link: function (scope) {
-        scope.toasts = Toast.getToasts();
-
-        scope.$watch(function () {
-          return Toast.getToasts().length;
-        }, function () {
-          scope.toasts = Toast.getToasts();
-        });
-
-        scope.hideToast = function (toastId) {
-          Toast.removeToast(toastId);
-        };
-
-      }
-    };
-  })
+angular.module('mwUI.Toast')
 
   .provider('Toast', function () {
 
