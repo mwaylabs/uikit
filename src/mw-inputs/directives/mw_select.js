@@ -1,6 +1,7 @@
 angular.module('mwUI.Inputs')
 
-  .directive('mwSelect', function () {
+  //TODO rename to mwSelect
+  .directive('mwCustomSelect', function () {
     return {
       require: '^?ngModel',
       link: function (scope, el) {
