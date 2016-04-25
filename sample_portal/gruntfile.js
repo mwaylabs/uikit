@@ -300,6 +300,12 @@
             files: [
               {
                 expand: true,
+                cwd: '<%= yeoman.app %>/components/font-awesome',
+                src: 'fonts/**/*',
+                dest: '<%= yeoman.app %>'
+              },
+              {
+                expand: true,
                 cwd: '<%= yeoman.app %>/fonts',
                 src: '**/*',
                 dest: '<%= yeoman.dist %>/fonts'
