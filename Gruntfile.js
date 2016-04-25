@@ -17,6 +17,7 @@ module.exports = function (grunt) {
       all: {
         files: [
           'src/**/*.js',
+          'src/**/*.json',
           'src/**/*.html'
         ],
         tasks: ['process']
@@ -106,7 +107,8 @@ module.exports = function (grunt) {
       },
       new: {
         src: [
-          'src/**/templates/**/*.html'
+          'src/**/templates/**/*.html',
+          'src/**/i18n/**/*.json'
         ],
         dest: '.tmp/templates.js',
         options: {
