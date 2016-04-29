@@ -1,22 +1,5 @@
-'use strict';
+angular.module('mwUI.UiComponents')
 
-angular.module('mwWizard', [])
-
-/**
- *
- * @ngdoc object
- * @name mwWizard.Wizard
- * @description
- *
- * The wizard service handles the wizzard. The wizzard can be accessed from controlelr to navigate from step
- * to step. This service is depandant of the mwWizard and mwWizardStep directive. By transluding multiple
- * mwWizardStep directives into the mwWizard directive the Wizard service is populated with steps. BY calling the
- * functions back(), next(), goTo(num) the wizard service hides the currently active steps and displays the next step
- *
- * The wizard has to be initialized with the function createWizard(id). The function returns a a wizard object
- *
- *
- */
   .service('Wizard', function () {
 
     var wizards = [];
@@ -202,81 +185,4 @@ angular.module('mwWizard', [])
       getWizard: getWizard
     };
 
-  })
-
-/**
- * @ngdoc directive
- * @name mwWizard.directive:mwWizard
- * @element div
- * @description
- *
- * Multiple wizard steps can be transcluded into this directive. This Directive handles the
- * registration of every single wizard step
- *
- * @param {wizard} mw-wizard Wizard instance created by the Wizard service.
- */
-  .directive('mwWizard', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        wizard: '=mwWizard'
-      },
-      transclude: true,
-      template: '<div ng-transclude class="mw-wizard"></div>',
-      controller: function ($scope) {
-
-        var wizard = $scope.wizard;
-
-        this.registerStep = function (scope, id) {
-          wizard._registerStep(scope, id);
-        };
-
-        this.unRegisterStep = function (scope) {
-          wizard._unRegisterStep(scope);
-        };
-
-        $scope.$on('$destroy', function () {
-          wizard.destroy();
-        });
-
-      }
-    };
-  })
-
-/**
- * @ngdoc directive
- * @name mwWizard.directive:mwWizardStep
- * @element div
- * @description
- *
- * Registers itself as a step in the mwWizard directive. The Wizard services handles the show and hide of
- * this directive
- *
- */
-  .directive('mwWizardStep', function () {
-    return {
-      restrict: 'A',
-      scope: true,
-      transclude: true,
-      replace: true,
-      require: '^mwWizard',
-      template: '<div class="mw-wizard-step" ng-class="{active:_isActive}" ng-show="_isActive"><div class="mw-wizard-step-inner" ng-transclude ng-if="_isActive"></div></div>',
-      link: function (scope, el, attr, mwWizardCtrl) {
-        scope._isActive = false;
-        //we need to set a default value here, see
-        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
-        attr.title = attr.title || 'noname';
-        attr.$observe('title', function (title) {
-          if (title && title.length > 0) {
-            scope.title = title;
-          }
-          mwWizardCtrl.registerStep(scope, attr.id);
-        });
-
-        scope.$on('$destroy', function () {
-          mwWizardCtrl.unRegisterStep(scope);
-        });
-      }
-    };
   });
-

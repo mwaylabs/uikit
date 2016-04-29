@@ -19,6 +19,10 @@ angular.module('mwUI.UiComponents', []);
 // @include ./directives/mw_toggle.js
 // @include ./directives/mw_tooltip.js
 // @include ./directives/mw_view_change_loader.js
+// @include ./directives/mw_wizard.js
+// @include ./directives/mw_wizard_step.js
+
+// @include ./services/mw_wizard.js
 
 angular.module('mwUI.UiComponents')
 
