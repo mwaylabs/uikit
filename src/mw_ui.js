@@ -8,6 +8,7 @@
       'mwUI.List',
       'mwUI.Menu',
       'mwUI.Modal',
+      'mwUI.ResponseHandler',
       'mwUI.Toast',
       'mwUI.UiComponents',
       'mwUI.Utils'
@@ -38,6 +39,7 @@
 // @include ./mw-list/mw_list.js
 // @include ./mw-menu/mw_menu.js
 // @include ./mw-modal/mw_modal.js
+// @include ./mw-response-handler/mw_response_handler.js
 // @include ./mw-toast/mw_toast.js
 // @include ./mw-ui-components/mw_ui_components.js
 

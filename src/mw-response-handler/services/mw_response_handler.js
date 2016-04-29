@@ -1,18 +1,14 @@
-/**
- * Created by zarges on 23/06/15.
- */
-'use strict';
-angular.module('mwResponseHandler', [])
+angular.module('mwUI.ResponseHandler')
 
   .provider('ResponseHandler', function () {
 
     var _routeHandlersPerMethodContainer = {
-        POST: [],
-        PUT: [],
-        GET: [],
-        DELETE: [],
-        PATCH: []
-      };
+      POST: [],
+      PUT: [],
+      GET: [],
+      DELETE: [],
+      PATCH: []
+    };
 
     var _methodIsInValidError = function(method){
       return new Error('Method '+method+' is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
@@ -184,7 +180,7 @@ angular.module('mwResponseHandler', [])
 
         if(fn){
           var returnVal = fn(resp, isError),
-              promise;
+            promise;
           if(returnVal && returnVal.then){
             promise = returnVal;
           } else {
@@ -221,8 +217,8 @@ angular.module('mwResponseHandler', [])
 
       var _getCallbacks = function(handler, statusCode, isError){
         var statusCallbacks = handler.getCallbacksForStatusCode(statusCode),
-            successCallbacks = handler.getCallbacksForSuccess(),
-            errorCallbacks = handler.getCallbacksForError();
+          successCallbacks = handler.getCallbacksForSuccess(),
+          errorCallbacks = handler.getCallbacksForError();
 
         if(statusCallbacks){
           return statusCallbacks;
@@ -243,7 +239,7 @@ angular.module('mwResponseHandler', [])
 
           _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
             var handler = routeHandlerContainer.handler,
-                callbacks = _getCallbacks(handler, statusCode, isError);
+              callbacks = _getCallbacks(handler, statusCode, isError);
             if (!_returnHandler && handler.matchesUrl(url) && callbacks && callbacks.length>0) {
               _returnHandler = handler;
             }
@@ -266,33 +262,6 @@ angular.module('mwResponseHandler', [])
         }
       };
     };
-  })
-
-  .config(function ($provide, $httpProvider) {
-
-    $provide.factory('requestInterceptorForHandling', function ($q, ResponseHandler) {
-
-      var handle = function(response, isError){
-        var handler = ResponseHandler.handle(response, isError);
-        if(handler){
-          return handler;
-        } else if(isError){
-          return $q.reject(response);
-        } else {
-          return $q.when(response);
-        }
-      };
-
-      return {
-        response: function (response) {
-          return handle(response, false);
-        },
-        responseError: function (response) {
-          return handle(response, true);
-        }
-      };
-    });
-
-    $httpProvider.interceptors.push('requestInterceptorForHandling');
-
   });
+
+  
