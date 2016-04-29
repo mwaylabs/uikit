@@ -5,7 +5,7 @@
 
 angular.module('SampleApp.Start', [])
 
-  .config(function($routeProvider, $injector, i18nProvider){
+  .config(function($routeProvider, $injector, i18nProvider, ResponseHandlerProvider){
 
     i18nProvider.addResource('modules/start/i18n');
 
@@ -25,5 +25,12 @@ angular.module('SampleApp.Start', [])
         resolve: $injector.get('StartDetailsControllerResolver'),
         cssClasses: 'start details'
       });
+
+    ResponseHandlerProvider.registerAction('*/start/i18n/*',function(rsp){
+      console.log('i18n file retrieved!', rsp.data)
+    },{
+      methods: ['GET'],
+      onSuccess: true
+    })
 
   });
