@@ -12,6 +12,8 @@ angular.module('mwUI.UiComponents', []);
 // @include ./directives/mw_option_group.js
 // @include ./directives/mw_panel.js
 // @include ./directives/mw_star_rating.js
+// @include ./directives/mw_tab_bar.js
+// @include ./directives/mw_tab_pane.js
 // @include ./directives/mw_text_collapsable.js
 // @include ./directives/mw_timeline.js
 // @include ./directives/mw_timeline_entry.js

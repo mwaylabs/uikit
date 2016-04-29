@@ -1,4 +1,4 @@
-.mw-tabs {
+.mw-tab-bar {
   border: 1px solid #ddd;
   border-top: none;
   margin-bottom: 30px;
@@ -21,10 +21,15 @@
         border-bottom: none;
       }
     }
+
+    > .tab-content{
+      border: 1px solid #ddd;
+      border-top: none;
+    }
   }
 
-  .mw-tabs {
-    margin-bottom: -15px;
+  .mw-tab-bar {
+    margin-bottom: 0;
   }
 
   @media (max-width: $screen-sm) {
