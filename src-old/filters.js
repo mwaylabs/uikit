@@ -69,13 +69,4 @@ angular.module('mwFilters', [])
 
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + ' ' + byteUnits[i];
   };
-})
-
-.filter('reduceStringTo', function () {
-  return function (input, count) {
-    if(count && input && input.length > count) {
-      return input.substr(0, count) + '...';
-    }
-    return input;
-  };
 });

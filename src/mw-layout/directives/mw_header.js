@@ -9,7 +9,7 @@ angular.module('mwUI.Layout')
         mwTitleIcon: '@',
         mwBreadCrumbs: '='
       },
-      templateUrl: 'uikit/mw-layout/templates/mw_header.html',
+      templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
         $rootScope.siteTitleDetails = scope.title;
 

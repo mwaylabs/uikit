@@ -1,0 +1,19 @@
+{
+  "UiComponents": {
+    "mwToggle": {
+      "on": "An",
+      "off": "Aus"
+    },
+    "mwTimelineFieldset": {
+      "entriesHiddenSingular": "1 Eintrag ist ausgeblendet",
+      "entriesHiddenPlural": "{{count}} Einträge sind ausgeblendet"
+    },
+    "mwTextCollapsable": {
+      "showMore": "mehr anzeigen",
+      "showLess": "weniger anzeigen"
+    },
+    "mwButtonHelp": {
+      "isDisabledBecause": "Dieser Button ist deaktiviert weil:"
+    }
+  }
+}

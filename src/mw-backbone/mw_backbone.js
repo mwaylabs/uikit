@@ -8,7 +8,6 @@ window.mwUI.Backbone = {
 
 angular.module('mwUI.Backbone', []);
 
-
 // @include ./model/nested_model.js
 // @include ./model/selectable.js
 // @include ./model/selectable_model.js

@@ -13,15 +13,28 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
       throw new Error('An endpoint has to be specified');
     }
   },
+  constructor: function () {
+    var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this, arguments);
+    mwUI.Backbone.SelectableModel.prototype.selectableModelConstructor.apply(this, arguments);
+    return superConstructor;
+  },
   getEndpoint: function () {
     return this.urlRoot();
   },
-  setEndpoint: function(endpoint){
+  setEndpoint: function (endpoint) {
     this.endpoint = endpoint;
   },
-  constructor: function () {
-    var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this,arguments);
-    mwUI.Backbone.SelectableModel.prototype.selectableModelConstructor.apply(this,arguments);
-    return superConstructor;
+  sync: function (method, model, options) {
+    options.instance = this;
+    return mwUI.Backbone.NestedModel.prototype.sync.call(this, method, model, options);
+  },
+  request: function (url, method, options) {
+    options = options || {};
+    var requestOptions = {
+      url: url,
+      type: method,
+      instance: this
+    };
+    return Backbone.ajax(_.extend(requestOptions, options));
   }
 });

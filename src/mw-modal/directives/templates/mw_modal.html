@@ -1,0 +1,16 @@
+<div class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header clearfix" ng-if="title">
+        <img ng-if="mwModalTmpl.getLogoPath()"
+             ng-src="{{mwModalTmpl.getLogoPath()}}"
+             class="pull-left logo"/>
+        <h4 class="modal-title pull-left">{{ title }}</h4>
+      </div>
+      <div class="body-holder">
+        <div mw-toasts class="notifications"></div>
+        <div ng-transclude class="modal-content-wrapper"></div>
+      </div>
+    </div>
+  </div>
+</div>

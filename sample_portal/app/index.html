@@ -46,28 +46,29 @@
 
 <div ng-controller="MainController as ctrl">
 
-  <div class="app">
+  <div class="app" mw-row-layout>
 
-    <header>
+    <header mw-row>
       <div mw-toasts class="notifications"></div>
     </header>
 
-    <nav>
+    <div mw-row>
+      <div mw-column-layout>
 
-    </nav>
+        <div mw-sidebar-menu mw-column></div>
 
-    <div mw-sidebar-menu>
+        <div rln-append-class-according-to-route mw-column class="module-page">
+          <div ng-view class="height-inherit" autoscroll="true"></div>
+          <div mw-view-change-loader></div>
+        </div>
 
+      </div>
     </div>
 
-    <div rln-append-class-according-to-route class="module-page">
-      <div ng-view class="height-inherit" autoscroll="true"></div>
-      <div mw-view-change-loader></div>
-    </div>
+    <footer mw-row></footer>
 
   </div>
 
-  <footer></footer>
 </div>
 
 
@@ -80,6 +81,8 @@
 
 <script src="components/sass-bootstrap/js/tooltip.js"></script>
 <script src="components/sass-bootstrap/js/popover.js"></script>
+<script src="components/sass-bootstrap/js/modal.js"></script>
+<script src="components/sass-bootstrap/js/transition.js"></script>
 
 <script src="components/underscore/underscore-min.js"></script>
 <script src="components/backbone/backbone.js"></script>
@@ -98,6 +101,9 @@
 <!-- Start module -->
 <script src="modules/start/start.js"></script>
 <script src="modules/start/controllers/start_index_controller.js"></script>
+<script src="modules/start/controllers/start_details_controller.js"></script>
+
+<script src="modules/start/modals/test_modal.js"></script>
 <!-- endbuild -->
 
 <!-- build:js modules/zero-day.ui.min.js -->

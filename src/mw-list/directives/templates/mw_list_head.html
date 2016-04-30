@@ -1,0 +1,79 @@
+<div class="mw-listable-header clearfix"
+     ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}">
+
+  <div class="selection-controller">
+    <div ng-if="selectable" class="holder">
+
+      <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
+        <span class="selected-icon">
+          <span class="indicator" ng-if="selectable.allSelected()"></span>
+        </span>
+        <a href="#" mw-prevent-default="click">
+          {{'List.mwListHead.selectAll' | i18n }}
+        </a>
+      </span>
+
+      <span ng-if="selectedAmount > 0"
+            class="clickable clear"
+            ng-click="selectable.unSelectAll()">
+        <span mw-icon="fa-times"></span>
+       <a href="#" mw-prevent-default="click">{{'List.mwListHead.clearSelection' | i18n}}</a>
+      </span>
+
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <div ng-if="searchAttribute"
+         mw-filterable-search-bb
+         collection="collection"
+         placeholder="{{'mwUI.List.listHead.searchFor' | i18n:{name: collectionName} }}"
+         property="{{searchAttribute}}">
+    </div>
+  </div>
+
+  <div class="selected-counter">
+    <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
+      <a href="#" mw-prevent-default="click">
+      <span ng-if="selectedAmount === 1">
+        {{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
+      </span>
+      <span ng-if="selectedAmount > 1">
+        {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}
+      </span>
+        <span mw-icon="fa-angle-up" ng-show="canShowSelected()"></span>
+        <span mw-icon="fa-angle-down" ng-show="!canShowSelected()"></span>
+      </a>
+    </span>
+
+    <div ng-if="!selectable || selectedAmount<1" ng-transclude class="extra-content"></div>
+    <span ng-if="!selectable || selectedAmount<1">
+      {{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
+    </span>
+  </div>
+
+  <div class="selected-items" ng-if="canShowSelected()">
+    <div class="items clearfix">
+      <div class="box-shadow-container">
+        <div ng-if="!isLoadingModelsNotInCollection"
+             ng-repeat="item in selectable.getSelected().models"
+             ng-click="unSelect(item)"
+             ng-class="{'label-danger':item.selectable.isDeletedItem}"
+             class="label label-default clickable">
+          <span ng-if="item.selectable.isDeletedItem"
+                mw-tooltip="{{'List.mwListHead.notAvailableTooltip' | i18n}}">
+            <span mw-icon="fa-warning"></span>{{'List.mwListHead.notAvailable' | i18n}}
+          </span>
+          <span ng-if="!item.selectable.isDeletedItem">{{getModelAttribute(item)}}</span>
+          <span mw-icon="fa-times"></span>
+        </div>
+
+        <div ng-if="isLoadingModelsNotInCollection">
+          <div rln-spinner></div>
+        </div>
+      </div>
+    </div>
+    <div class="close-pane" ng-click="hideSelected()"></div>
+  </div>
+
+</div>

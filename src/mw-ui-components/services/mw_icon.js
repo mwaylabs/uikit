@@ -1,7 +1,7 @@
 /**
  * Created by zarges on 25/02/16.
  */
-angular.module('mwUI.UiComponents', [])
+angular.module('mwUI.UiComponents')
 
   .provider('mwIcon', function () {
 

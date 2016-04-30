@@ -1,6 +1,7 @@
 angular.module('mwUI.Inputs')
 
-  .directive('mwRadio', function () {
+  //TODO rename to mwRadio
+  .directive('mwCustomRadio', function () {
     return {
       restrict: 'A',
       link: function (scope, el) {

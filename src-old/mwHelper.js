@@ -2,44 +2,6 @@
 
 angular.module('mwHelper', [])
 
-/**
- * @ngdoc directive
- * @name mwHelper.directive:mwStopPropagation
- * @element ANY
- * @param {string} mwStopPropagation the name of the event type
- *
- * @description
- * Stops Propagation of specified event for this element
- */
-  .directive('mwStopPropagation', function () {
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        if (!attr.mwStopPropagation) {
-          throw new Error('Directive mwStopPropagation: This directive must have an event name as attribute e.g. mw-stop-propagation="keyup"');
-        }
-        elm.on(attr.mwStopPropagation, function (event) {
-          event.stopPropagation();
-        });
-      }
-    };
-  })
-
-  .directive('mwPreventDefault', function () {
-    return {
-      restrict: 'A',
-      link: function (scope, elm, attr) {
-        if (!attr.mwPreventDefault) {
-          throw new Error('Directive mwPreventDefault: This directive must have an event name as attribute e.g. mw-prevent-default="click"');
-        }
-        elm.on(attr.mwPreventDefault, function (event) {
-          event.preventDefault();
-        });
-      }
-    };
-  })
-
-
   .directive('mwSetDirtyOn', function(){
     return {
       restrict: 'A',

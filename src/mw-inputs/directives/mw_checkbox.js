@@ -1,6 +1,7 @@
 angular.module('mwUI.Inputs')
 
-  .directive('mwCheckbox', function () {
+  //TODO rename to mwCheckbox
+  .directive('mwCustomCheckbox', function () {
     return {
       restrict: 'A',
       link: function (scope, el) {

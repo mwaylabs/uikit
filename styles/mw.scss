@@ -11,36 +11,15 @@ $list-active-color: #eaeaea !default;
 //Star Rating
 $star-rating-color: #ffa602 !default;
 
-//mwBadge colors
-$badge-android: #a4c639;
-$badge-ios: #111111;
-$badge-knox: #5bc0de;
-$badge-multi: #aaaaaa;
-
 @import "src/animations";
-@import "src/mw-badge";
-@import "src/mw-breadcrumbs";
-@import "src/mw-button-help";
-@import "src/mw-collapsable";
-@import "src/mw-content-header";
 @import "src/mw-empty-state";
 @import "src/mw-form";
 @import "src/mw-full-screen-height";
-@import "src/mw-header";
-@import "src/mw-listable";
 @import "src/mw-markdown-preview";
-@import "src/mw-modal";
-@import "src/mw-nav";
-@import "src/mw-option-group";
 @import "src/mw-select";
 @import "src/mw-sidebar";
 @import "src/mw-tabs";
-@import "src/mw-timeline";
-@import "src/mw-toggle";
-@import "src/mw-tutorial";
 @import "src/mw-version-selector";
-@import "src/mw-view-change-loader";
-@import "src/mw-toasts";
 @import "src/mw-file-upload";
 @import "src/mw-date-picker";
 

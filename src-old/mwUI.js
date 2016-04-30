@@ -1,10 +1,8 @@
 angular.module('mwUI', [
   'ngSanitize',
-  'mwModal',
   'mwWizard',
   'mwCollection',
   'mwListable',
-  'mwListableBb',
   'mwForm',
   'mwFormBb',
   'mwComponents',
@@ -17,7 +15,6 @@ angular.module('mwUI', [
   'mwPopover',
   'mwHelper',
   'mwMap',
-  'mwI18n',
   'mwResponseHandler',
   'mwResponseToastHandler',
   'mwFilters',

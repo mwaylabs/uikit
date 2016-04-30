@@ -1,0 +1,18 @@
+<div class="mw-toggle">
+
+  <button class="no toggle btn btn-link"
+          ng-click="toggle(true)"
+          ng-disabled="mwDisabled">
+    <span>{{ 'UiComponents.mwToggle.on' | i18n }}</span>
+  </button>
+
+  <button class="yes toggle btn btn-link"
+          ng-click="toggle(false)"
+          ng-disabled="mwDisabled">
+    <span>{{ 'UiComponents.mwToggle.off' | i18n }}</span>
+  </button>
+
+  <span class="label indicator"
+        ng-class="{ true: 'label-success enabled', false: 'label-danger' }[mwModel]"></span>
+
+</div>
