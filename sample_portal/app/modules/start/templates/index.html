@@ -1,27 +1,49 @@
-<div mw-header title="{{'start.index.title' | i18n }}" mw-title-icon="rln-icon apps"></div>
+<div class="container" style="width: 100%">
 
-<div mw-body style="padding: 0 20px">
-
-  <div class="row">
-    <div class="col-md-3">
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-    </div>
-
-    <div class="col-md-9">
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-      dsafdsafdsa fasf sda fsda f sadf sad f dsa fsadf asdfasdffdsa
-    </div>
+  <div mw-header title="{{'start.index.title' | i18n }}" mw-title-icon="rln-icon apps">
+    <button class="btn btn-default">Jo</button>
   </div>
 
-  <input type="checkbox" mw-checkbox>
-  <input type="radio" mw-radio name="jo">
-  <input type="radio" mw-radio name="jo">
+  <div mw-body>
+
+    <div class="row">
+
+      <div mw-sidebar class="col-md-3">
+
+        <div>
+          dasfsadfsadf
+        </div>
+
+      </div>
+
+      <div mw-list-view class="col-md-9">
+
+        <table mw-list-table
+               mw-list-table-collection="mwListCollection"
+               mw-infinite-scroll>
+          <thead>
+          <tr mw-list-table-head>
+            <th mw-list-table-head-column
+                sort="defaultName">
+              {{'apps.name' | i18n }}
+            </th>
+          </tr>
+          </thead>
+          <tbody mw-list-table-body>
+          <tr mw-list-table-body-row
+              ng-repeat="item in apps.models">
+          </tr>
+          <tr>
+            <td>Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc Abc</td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+
+
+  </div>
 
 </div>
