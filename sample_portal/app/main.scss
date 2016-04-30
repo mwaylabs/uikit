@@ -6,18 +6,12 @@
 .app {
   display: flex;
 
-  nav {
-    min-width: 60px;
-    height: 100vh;
-    background: red;
-  }
-
-  div[mw-header] {
+  .mw-header {
     height: 60px;
     position: relative;
     margin-bottom: 25px;
 
-    .mw-header {
+    .fixed-content {
       width: calc(100% - 60px);
       height: 60px;
       left: initial;
