@@ -8,7 +8,8 @@ module.exports = function (grunt) {
   // configurable paths
   var uikitConfig = {
     dist: 'dist',
-    fileName: 'uikit'
+    fileName: 'uikit',
+    fileNameRelution: 'uikit.relution'
   };
 
   grunt.initConfig({
@@ -41,9 +42,10 @@ module.exports = function (grunt) {
     concat: {
       dist: {
         src: [
-          'src-old/mwUI.js',
-          'src-old/**/*.js',
+          'src-relution/mwUI.js',
+          'src-relution/**/*.js',
           '.tmp/templates.js',
+          '.tmp/templates-relution.js',
           'libs/angular-sanitize/angular-sanitize.js',
           'libs/showdown/dist/showdown.js',
           'libs/jquery-ui/ui/jquery.ui.widget.js',
@@ -52,7 +54,7 @@ module.exports = function (grunt) {
           'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
           'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
         ],
-        dest: '<%= uikit.dist %>/<%= uikit.fileName %>-old.js'
+        dest: '<%= uikit.dist %>/<%= uikit.fileNameRelution %>.js'
       }
     },
     copy: {
@@ -73,7 +75,8 @@ module.exports = function (grunt) {
     uglify: {
       js: {
         files: {
-          '<%= uikit.dist %>/<%= uikit.fileName %>.min.js': ['<%= uikit.dist %>/<%= uikit.fileName %>.js']
+          '<%= uikit.dist %>/<%= uikit.fileName %>.min.js': ['<%= uikit.dist %>/<%= uikit.fileName %>.js'],
+          '<%= uikit.dist %>/<%= uikit.fileNameRelution %>.min.js': ['<%= uikit.dist %>/<%= uikit.fileNameRelution %>.js']
         }
       }
     },
@@ -84,7 +87,8 @@ module.exports = function (grunt) {
       dist: {
         files: [
           {
-            '<%= uikit.dist %>/<%= uikit.fileName %>.js': ['<%= uikit.dist %>/<%= uikit.fileName %>.js']
+            '<%= uikit.dist %>/<%= uikit.fileName %>.js': ['<%= uikit.dist %>/<%= uikit.fileName %>.js'],
+            '<%= uikit.dist %>/<%= uikit.fileNameRelution %>.js': ['<%= uikit.dist %>/<%= uikit.fileNameRelution %>.js']
           }
         ]
       }
@@ -92,12 +96,12 @@ module.exports = function (grunt) {
     ngtemplates: {
       old: {
         src: [
-          'src-old/templates/**/*.html'
+          'src-relution/templates/**/*.html'
         ],
-        dest: '.tmp/templates.js',
+        dest: '.tmp/templates-relution.js',
         options: {
           url: function (url) {
-            return 'uikit/' + url.replace('src-old/', '');
+            return 'uikit/' + url.replace('src-relution/', '');
           },
           bootstrap: function (module, script) {
             return 'angular.module("mwUI").run(["$templateCache", function($templateCache) {' + script + '}]);';
@@ -130,9 +134,10 @@ module.exports = function (grunt) {
     clean: ['.tmp']
   });
 
+  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('test:codequality',['jshint','test']);
   grunt.registerTask('watch', ['process', 'regarde']);
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist','copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist','copy:distToSamplePortal']);
-  grunt.registerTask('build', ['jshint', 'process', 'process-old', 'test', 'uglify', 'clean']);
-  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('build', ['process', 'process-old', 'uglify', 'clean']);
 };
