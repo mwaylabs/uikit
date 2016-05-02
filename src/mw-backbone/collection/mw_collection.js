@@ -11,7 +11,7 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
       endpoint = _.result(this, 'endpoint');
 
     if (endpoint) {
-      return window.mwUI.Backbone.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
+      return mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
     } else {
       throw new Error('An endpoint has to be specified');
     }
