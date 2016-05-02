@@ -1,4 +1,4 @@
-angular.module('mwUI', [
+angular.module('mwUI.Relution', [
   'ngSanitize',
   'mwWizard',
   'mwCollection',
@@ -15,7 +15,6 @@ angular.module('mwUI', [
   'mwPopover',
   'mwHelper',
   'mwMap',
-  'mwResponseHandler',
   'mwResponseToastHandler',
   'mwFilters',
   'mwFileUpload'

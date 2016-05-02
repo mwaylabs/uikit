@@ -2,7 +2,7 @@
  * Created by zarges on 09/12/15.
  */
 'use strict';
-angular.module('mwUI')
+angular.module('mwUI.Relution')
 
   .directive('mwLeadingZero', function () {
     return {

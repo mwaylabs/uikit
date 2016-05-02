@@ -2,7 +2,7 @@
  * Created by zarges on 23/06/15.
  */
 'use strict';
-angular.module('mwResponseToastHandler', ['mwResponseHandler', 'mwI18n', 'mwToast'])
+angular.module('mwResponseToastHandler', [])
 
   .provider('ResponseToastHandler', function ($provide, ResponseHandlerProvider) {
     var _registeredIds = [],
