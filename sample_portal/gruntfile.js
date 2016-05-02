@@ -33,7 +33,10 @@
             livereload: true
           },
           compass: {
-            files: ['<%= yeoman.app %>/main.scss', '<%= yeoman.app %>/modules/**/styles/{,*/}*.scss'],
+            files: [
+              '<%= yeoman.app %>/main.scss',
+              '<%= yeoman.app %>/modules/**/styles/{,*/}*.scss',
+              '../src/**/styles/{,*/}*.scss'],
             tasks: ['compass:server']
           },
           livereload: {
