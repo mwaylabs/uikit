@@ -1,13 +1,11 @@
 angular.module('mwUI.Relution', [
   'ngSanitize',
-  'mwWizard',
   'mwCollection',
   'mwListable',
   'mwForm',
   'mwFormBb',
   'mwComponents',
   'mwComponentsBb',
-  'mwTabs',
   'mwSidebar',
   'mwSidebarBb',
   'mwFormValidators',
