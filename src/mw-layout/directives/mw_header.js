@@ -7,6 +7,7 @@ angular.module('mwUI.Layout')
         title: '@',
         url: '@',
         mwTitleIcon: '@',
+        showBackButton: '=',
         mwBreadCrumbs: '='
       },
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
