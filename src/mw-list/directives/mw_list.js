@@ -43,7 +43,6 @@ angular.module('mwUI.List')
         };
 
         this.getCollection = function () {
-          console.log(_collection)
           return _collection;
         };
 
