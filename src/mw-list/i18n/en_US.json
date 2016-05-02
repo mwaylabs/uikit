@@ -1,3 +1,18 @@
 {
-
+  "List": {
+    "mwListHead": {
+      "items": "Items",
+      "selectAll": "Select all",
+      "clearSelection": "Clear selection",
+      "itemSelected": "{{name}} is selected",
+      "itemsSelected": "{{count}} {{name}} are selected",
+      "itemAmount": "{{count}} {{name}}",
+      "searchFor": "Search for {{name}}",
+      "notAvailable": "N/V",
+      "notAvailableTooltip": "The entry is not available anymore. Maybe is has been deleted."
+    },
+    "mwListFooter": {
+      "noneFound": "No entries have been found."
+    }
+  }
 }

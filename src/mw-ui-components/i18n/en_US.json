@@ -7,6 +7,16 @@
     "mwTimelineFieldset": {
       "entriesHiddenSingular": "One entry is hidden",
       "entriesHiddenPlural": "{{count}} entries are hidden"
+    },
+    "mwTextCollapsable": {
+      "showMore": "show more",
+      "showLess": "show less"
+    },
+    "mwButtonHelp": {
+      "isDisabledBecause": "This button is currently disabled because:"
+    },
+    "mwIndefiniteLoading": {
+      "loading": "Loading data..."
     }
   }
 }

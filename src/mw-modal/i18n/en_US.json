@@ -1,3 +1,9 @@
 {
-
+  "Modal": {
+    "mwModalConfirm": {
+      "areYouSure": "Are you sure?",
+      "ok": "Ok",
+      "cancel": "Cancel"
+    }
+  }
 }
