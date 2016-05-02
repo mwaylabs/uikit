@@ -8,9 +8,11 @@ angular.module('mwUI.UiComponents', []);
 // @include ./directives/mw_button_help.js
 // @include ./directives/mw_button_help_condition.js
 // @include ./directives/mw_collapsable.js
+// @include ./directives/mw_indefinite_loading.js
 // @include ./directives/mw_icon.js
 // @include ./directives/mw_option_group.js
 // @include ./directives/mw_panel.js
+// @include ./directives/mw_spinner.js
 // @include ./directives/mw_star_rating.js
 // @include ./directives/mw_tab_bar.js
 // @include ./directives/mw_tab_pane.js
