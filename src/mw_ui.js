@@ -35,6 +35,7 @@
 // @include ./mw-utils/mw_utils.js
 
 // @include ./mw-backbone/mw_backbone.js
+// @include ./mw-form/mw_form.js
 // @include ./mw-i18n/mw_i18n.js
 // @include ./mw-inputs/mw_inputs.js
 // @include ./mw-layout/mw_layout.js
