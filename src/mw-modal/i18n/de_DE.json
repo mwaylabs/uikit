@@ -1,9 +1,7 @@
 {
   "Modal": {
     "mwModalConfirm": {
-      "areYouSure": "Sind Sie sich sicher?",
-      "ok": "Ok",
-      "cancel": "Abbrechen"
+      "areYouSure": "Sind Sie sich sicher?"
     }
   }
 }
