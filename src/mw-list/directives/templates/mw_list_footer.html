@@ -1,8 +1,8 @@
 <tr>
   <td colspan="{{ columns.length + 4 }}">
 
-    <div ng-if="Loading.isLoading() && collection.filterable.hasNextPage()">
-      <div rln-spinner></div>
+    <div ng-if="showSpinner()">
+      <div mw-spinner></div>
     </div>
 
     <div ng-if="collection.models.length < 1"
