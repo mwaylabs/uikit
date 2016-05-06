@@ -1,8 +1,4 @@
-/**
- * Created by zarges on 23/06/15.
- */
-'use strict';
-angular.module('mwResponseToastHandler', [])
+angular.module('mwUI.ResponseToastHandler')
 
   .provider('ResponseToastHandler', function ($provide, ResponseHandlerProvider) {
     var _registeredIds = [],
@@ -151,7 +147,6 @@ angular.module('mwResponseToastHandler', [])
       });
     };
 
-    this.$get = function () {
-    };
+    this.$get = function () {};
 
   });
