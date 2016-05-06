@@ -14,6 +14,8 @@ angular.module('mwUI.ResponseHandler')
       return new Error('Method '+method+' is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
     };
 
+    var _routeToRegex = mwUI.Utils.shims.routeToRegExp;
+
     var RouteHandler = function (route) {
 
       var _codes = {
@@ -21,22 +23,7 @@ angular.module('mwUI.ResponseHandler')
           SUCCESS: []
         },
         _route = route,
-        _routeRegex = null,
-        _optionalParam = /\((.*?)\)/g,
-        _namedParam = /(\(\?)?:\w+/g,
-        _splatParam = /\*\w?/g,
-        _escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-
-
-      var _routeToRegExp = function (route) {
-        route = route.replace(_escapeRegExp, '\\$&')
-          .replace(_optionalParam, '(?:$1)?')
-          .replace(_namedParam, function (match, optional) {
-            return optional ? match : '([^/?]+)';
-          })
-          .replace(_splatParam, '([^?]*?)');
-        return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-      };
+        _routeRegex = null;
 
       var _registerCallbackForCode = function (code, callback) {
 
@@ -83,7 +70,7 @@ angular.module('mwUI.ResponseHandler')
       };
 
       var main = function () {
-        _routeRegex = _routeToRegExp(_route);
+        _routeRegex = _routeToRegex(_route);
       };
 
       main.call(this);
@@ -264,4 +251,3 @@ angular.module('mwUI.ResponseHandler')
     };
   });
 
-  
