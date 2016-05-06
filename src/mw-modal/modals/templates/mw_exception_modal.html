@@ -1,0 +1,59 @@
+<div mw-modal title="{{'Modal.mwExceptionModal.title' | i18n}}">
+
+  <div mw-modal-body>
+
+    <div mw-wizard="wizard">
+
+      <div mw-wizard-step>
+        <p>
+          {{'Modal.mwExceptionModal.unknownError' | i18n}}
+        </p>
+
+        <div ng-if="exception && (displayException || !successCallback)" mw-alert="danger">
+          <p>{{exception}}</p>
+        </div>
+
+        <div ng-if="userCanEnterMessage && successCallback">
+
+          <p class="text-muted">{{'Modal.mwExceptionModal.userMessage' | i18n}}</p>
+          <textarea name="description"
+                    ng-attr-placeholder="{{'Modal.mwExceptionModal.userMessagePlaceholder' | i18n}}"
+                    ng-model="model.bugDescription">
+
+          </textarea>
+        </div>
+      </div>
+
+      <div mw-wizard-step>
+        <div mw-alert="success">
+          {{'Modal.mwExceptionModal.thanks' | i18n}}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div mw-modal-footer>
+    <button ng-if="wizard.getCurrentStepNumber()!==1"
+            type="button"
+            class="btn btn-default"
+            ng-click="cancel()">
+      {{'Utils.cancel' | i18n }}
+    </button>
+
+    <button ng-if="wizard.getCurrentStepNumber()===1 || !successCallback"
+            type="button"
+            ng-click="close()"
+            class="btn btn-primary">
+      {{'Utils.ok' | i18n }}
+    </button>
+
+    <button ng-if="wizard.getCurrentStepNumber()===0 && successCallback"
+            type="button"
+            ng-click="report()"
+            class="btn btn-primary">
+      {{'Modal.mwExceptionModal.report' | i18n}}
+    </button>
+  </div>
+
+</div>
