@@ -150,7 +150,7 @@ angular.module('mwUI.ResponseHandler')
       });
     };
 
-    this.$get = function ($injector, $q) {
+    this.$get = function ($injector, $q, callbackHandler) {
 
       /*
        *  Execute promises sequentially
@@ -196,7 +196,7 @@ angular.module('mwUI.ResponseHandler')
       var _executeCallbacks = function (callbacks, response, isError) {
         var fns = [];
         callbacks.forEach(function (callback) {
-          callback = angular.isString(callback) ? $injector.get(callback) : callback;
+          callback = callbackHandler.getFn(callback);
           fns.push(callback);
         }, this);
         return _executePromiseQueue(fns, response, isError);
