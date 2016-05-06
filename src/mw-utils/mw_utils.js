@@ -1,7 +1,7 @@
 /**
  * Created by zarges on 17/02/16.
  */
-angular.module('mwUI.Utils', []);
+angular.module('mwUI.Utils', ['mwUI.Modal', 'mwUI.i18n']);
 
 window.mwUI.Utils = {};
 window.mwUI.Utils.shims = {};
@@ -14,5 +14,16 @@ window.mwUI.Utils.shims = {};
 
 // @include ./filters/mw_reduce_string_to.js
 
+// @include ./services/mw_callback_handler.js
+// @include ./services/mw_exception_handler.js
+// @include ./services/mw_exception_handler_modal.js
+
 // @include ./shims/concat_urls.js
+// @include ./shims/dom_observer.js
 // @include ./shims/route_to_regex.js
+
+angular.module('mwUI.Utils').config(function($exceptionHandlerProvider, i18nProvider){
+  $exceptionHandlerProvider.registerHandler('exceptionHandlerModal');
+
+  i18nProvider.addResource('uikit/mw-utils/i18n');
+});
