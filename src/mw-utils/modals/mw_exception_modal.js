@@ -1,8 +1,8 @@
-angular.module('mwUI.Modal')
+angular.module('mwUI.Utils')
 
   .factory('ExceptionModal', function (Modal) {
     return Modal.prepare({
-      templateUrl: 'uikit/mw-modal/modals/templates/mw_exception_modal.html',
+      templateUrl: 'uikit/mw-utils/modals/templates/mw_exception_modal.html',
       controller: 'ExceptionModalController'
     });
   })

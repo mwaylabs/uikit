@@ -9,10 +9,14 @@ window.mwUI.Utils.shims = {};
 // @include ./directives/mw_draggable.js
 // @include ./directives/mw_droppable.js
 // @include ./directives/mw_infinite_scroll.js
+// @include ./directives/mw_leave_confirmation.js
 // @include ./directives/mw_prevent_default.js
 // @include ./directives/mw_stop_propagation.js
 
 // @include ./filters/mw_reduce_string_to.js
+
+// @include ./modals/mw_exception_modal.js
+// @include ./modals/mw_leave_confirmation_modal.js
 
 // @include ./services/mw_callback_handler.js
 // @include ./services/mw_exception_handler.js

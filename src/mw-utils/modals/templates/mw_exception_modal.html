@@ -1,4 +1,4 @@
-<div mw-modal title="{{'Modal.mwExceptionModal.title' | i18n}}">
+<div mw-modal title="{{'Utils.mwExceptionModal.title' | i18n}}">
 
   <div mw-modal-body>
 
@@ -6,7 +6,7 @@
 
       <div mw-wizard-step>
         <p>
-          {{'Modal.mwExceptionModal.unknownError' | i18n}}
+          {{'Utils.mwExceptionModal.unknownError' | i18n}}
         </p>
 
         <div ng-if="exception && (displayException || !successCallback)" mw-alert="danger">
@@ -15,9 +15,9 @@
 
         <div ng-if="userCanEnterMessage && successCallback">
 
-          <p class="text-muted">{{'Modal.mwExceptionModal.userMessage' | i18n}}</p>
+          <p class="text-muted">{{'Utils.mwExceptionModal.userMessage' | i18n}}</p>
           <textarea name="description"
-                    ng-attr-placeholder="{{'Modal.mwExceptionModal.userMessagePlaceholder' | i18n}}"
+                    ng-attr-placeholder="{{'Utils.mwExceptionModal.userMessagePlaceholder' | i18n}}"
                     ng-model="model.bugDescription">
 
           </textarea>
@@ -26,7 +26,7 @@
 
       <div mw-wizard-step>
         <div mw-alert="success">
-          {{'Modal.mwExceptionModal.thanks' | i18n}}
+          {{'Utils.mwExceptionModal.thanks' | i18n}}
         </div>
       </div>
     </div>
@@ -52,7 +52,7 @@
             type="button"
             ng-click="report()"
             class="btn btn-primary">
-      {{'Modal.mwExceptionModal.report' | i18n}}
+      {{'Utils.mwExceptionModal.report' | i18n}}
     </button>
   </div>
 
