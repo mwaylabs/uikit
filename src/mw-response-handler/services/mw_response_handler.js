@@ -196,8 +196,10 @@ angular.module('mwUI.ResponseHandler')
       var _executeCallbacks = function (callbacks, response, isError) {
         var fns = [];
         callbacks.forEach(function (callback) {
-          callback = callbackHandler.getFn(callback);
-          fns.push(callback);
+          if(callback){
+            callback = callbackHandler.getFn(callback);
+            fns.push(callback);
+          }
         }, this);
         return _executePromiseQueue(fns, response, isError);
       };
