@@ -1,4 +1,4 @@
-angular.module('mwUI.Utils')
+angular.module('mwUI.ExceptionHandler')
 
   .provider('$exceptionHandler', function () {
 
@@ -12,6 +12,8 @@ angular.module('mwUI.Utils')
 
       $get: function (callbackHandler, $log) {
         return function (exception,cause) {
+          exception = exception || '';
+          cause = cause || '';
           _handlers.forEach(function(callback){
             callbackHandler.exec(callback, [exception.toString(), cause.toString()]);
           });

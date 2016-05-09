@@ -2,14 +2,6 @@
   "Utils": {
     "ok": "Ok",
     "cancel": "Abbrechen",
-    "mwExceptionModal": {
-      "title": "Es ist etwas schiefgelaufen",
-      "unknownError": "Leider ist ein unvorhergesehener Fehler aufgetreten. Sie können uns einen Fehlerbericht senden, sodass wir diesen schnellst möglich beseitigen können. Vielen Dank.",
-      "userMessage": "Sie können uns zusätzlich ihre letzten Schritte beschreiben, sodass wir den Fehler schneller nachstellen können.",
-      "userMessagePlaceholder": "(Optional)",
-      "report": "Fehler melden",
-      "thanks": "Vielen Dank für Ihre Rückmeldung. Wir werden uns umgehend um diesen Fehler kümmern."
-    },
     "mwLeaveConfirmationModal": {
       "title": "Möchten Sie wirklich die aktuelle Seite verlassen?",
       "continue": "Fortfahren",

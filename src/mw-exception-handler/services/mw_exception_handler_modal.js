@@ -1,4 +1,4 @@
-angular.module('mwUI.Utils')
+angular.module('mwUI.ExceptionHandler')
 
   .provider('exceptionHandlerModal', function () {
 

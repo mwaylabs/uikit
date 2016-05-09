@@ -1,4 +1,4 @@
-angular.module('mwUI.Utils')
+angular.module('mwUI.ExceptionHandler')
 
   .factory('ExceptionModal', function (Modal) {
     return Modal.prepare({
