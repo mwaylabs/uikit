@@ -4,21 +4,5 @@
 @import "../../src/mw_ui";
 
 .app {
-  display: flex;
 
-  .mw-header {
-    height: 60px;
-    position: relative;
-    margin-bottom: 25px;
-
-    .fixed-content {
-      width: calc(100% - 60px);
-      height: 60px;
-      left: initial;
-    }
-  }
-
-  .module-page{
-    flex-grow: 1;
-  }
 }

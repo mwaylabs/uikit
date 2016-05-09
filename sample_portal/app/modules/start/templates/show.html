@@ -1,9 +1,16 @@
-<div mw-header
-     title="{{'start.index.title' | i18n }}"
-     mw-title-icon="rln-icon apps"
-     mw-bread-crumbs="[{title:'Start',url:'#/start'}]"></div>
+<div mw-row-layout
+     class="container" style="width: 100%">
 
-<div mw-sub-nav justified="true" style="padding: 0 20px">
+  <div mw-header
+       title="{{'start.index.title' | i18n }}"
+       mw-title-icon="rln-icon apps"
+       mw-bread-crumbs="[{title:'Start',url:'#/start'}]"
+       mw-row></div>
+
+  <div mw-sub-nav
+       justified="true"
+       style="padding: 0 20px"
+       mw-row>
   <span mw-sub-nav-pill="#/start/details">
    A
   </span>
@@ -11,171 +18,182 @@
   <span mw-sub-nav-pill="#/apps/{{app.attributes.uuid}}/information">
     B
   </span>
-</div>
-
-<div mw-body style="padding: 0 20px">
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="col-md-2"
-           style="padding: 5px; background: #eee; display: flex"
-           ng-repeat="model in SDCtrl.collection.models">
-        <div mw-draggable="model"
-             mw-drag-data="model.attributes"
-             style="width: 98%; height: 100px; background: red; color: white; display: flex; justify-content: center;flex-direction: column;align-items: center;">
-          <span mw-icon="fa-bars"></span>
-          {{model.get('name')}}
-        </div>
-        <div mw-droppable
-             mw-drop="SDCtrl.drop(event, dragData, dropData)"
-             mw-drop-data="$index"
-             style="width: 2%; height: 100px; background: grey; color: white;"></div>
-      </div>
-    </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-6">
-      <div mw-toggle
-           mw-model="SDCtrl.viewModel.enabled"></div>
-    </div>
+  <div mw-body
+       style="padding: 0 20px"
+       mw-row mw-extend>
 
-    <div class="col-md-6">
-      <div mw-rating="SDCtrl.viewModel.rating" max="10"></div>
-    </div>
-
-  </div>
-
-  <div class="row">
-
-    <div class="col-md-12">
-
-      <div mw-timeline>
-
-        <div mw-timeline-fieldset
-             mw-title="Hello"
-             collapsable="true">
-          <div mw-timeline-entry>
-            <p>Lorem ipsum dolorem</p>
-            <p>Lorem ipsum dolorem</p>
-            <p>Lorem ipsum dolorem</p>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-md-2"
+             style="padding: 5px; background: #eee; display: flex"
+             ng-repeat="model in SDCtrl.collection.models">
+          <div mw-draggable="model"
+               mw-drag-data="model.attributes"
+               style="width: 98%; height: 100px; background: red; color: white; display: flex; justify-content: center;flex-direction: column;align-items: center;">
+            <span mw-icon="fa-bars"></span>
+            {{model.get('name')}}
           </div>
-
-          <div mw-timeline-entry>
-            <p>Lorem ipsum dolorem</p>
-            <p>Lorem ipsum dolorem</p>
-            <p>Lorem ipsum dolorem</p>
-          </div>
-
-          <div mw-timeline-entry>
-            <p>Lorem ipsum dolorem</p>
-            <p>Lorem ipsum dolorem</p>
-            <p>Lorem ipsum dolorem</p>
-          </div>
+          <div mw-droppable
+               mw-drop="SDCtrl.drop(event, dragData, dropData)"
+               mw-drop-data="$index"
+               style="width: 2%; height: 100px; background: grey; color: white;"></div>
         </div>
+      </div>
+    </div>
 
+    <div class="row">
+      <div class="col-md-6">
+        <div mw-toggle
+             mw-model="SDCtrl.viewModel.enabled"></div>
+      </div>
+
+      <div class="col-md-6">
+        <div mw-rating="SDCtrl.viewModel.rating" max="10"></div>
       </div>
 
     </div>
 
-  </div>
+    <div class="row">
 
-  <div class="row">
+      <div class="col-md-12">
 
-    <div class="col-md-12">
+        <div mw-timeline>
 
-      <div mw-collapsable="true" mw-title="Jo">
-        <p>Lorem Ipsum Dolorem</p>
-        <p>Lorem Ipsum Dolorem</p>
-        <p>Lorem Ipsum Dolorem</p>
-        <p>Lorem Ipsum Dolorem</p>
-        <p>Lorem Ipsum Dolorem</p>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="row">
-
-    <div class="col-md-12">
-      <div mw-text-collapse="Lorem Ipsum Dolorem bla bla asdfsdaf asfs daf dsa fas f asf as f asf as f asdf asd f sadf sad f sadf sad f asd fas df asd f as "
-           length="50"></div>
-    </div>
-
-  </div>
-
-  <div class="row">
-
-    <div class="col-md-12">
-      <div mw-option-group title="Title" description="Description" icon="fa-beer">
-        <input type="radio" mw-custom-radio name="opt">
-      </div>
-
-      <div mw-option-group title="Title" description="Description" icon="fa-cab">
-        <input type="radio" mw-custom-radio name="opt">
-      </div>
-    </div>
-
-  </div>
-
-  <div class="row">
-
-    <div class="col-md-12">
-      <div mw-badge="info">
-        Jo
-      </div>
-      <div mw-alert="info">
-        Noi
-      </div>
-      <div mw-panel="info" title="ABC" closeable="true">
-        Panel
-      </div>
-    </div>
-
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div mw-wizard>
-        <div mw-wizard-step>
-          <h5>This is the first step</h5>
-          <p>You can put some text here</p>
-        </div>
-
-        <div mw-wizard-step>
-          <h5>This is the second step</h5>
-          <p>You can put some text here</p>
-          <p>Or even more</p>
-        </div>
-
-        <div mw-wizard-progress></div>
-
-        <div mw-wizard-navigation></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div mw-tabs justified="true">
-        <div mw-tabs-pane="Tab 1">
-          <p>This is the content of pane 1</p>
-        </div>
-        <div mw-tabs-pane="Tab 2">
-          <p>This is the content of pane 2</p>
-        </div>
-        <div mw-tabs-pane="Nested Tab 3">
-          <div mw-tabs>
-            <div mw-tabs-pane="Tab 1">
-              <p>This is the content of nested pane 1</p>
+          <div mw-timeline-fieldset
+               mw-title="Hello"
+               collapsable="true">
+            <div mw-timeline-entry>
+              <p>Lorem ipsum dolorem</p>
+              <p>Lorem ipsum dolorem</p>
+              <p>Lorem ipsum dolorem</p>
             </div>
-            <div mw-tabs-pane="Tab 2">
-              <p>This is the content of nested pane 2</p>
+
+            <div mw-timeline-entry>
+              <p>Lorem ipsum dolorem</p>
+              <p>Lorem ipsum dolorem</p>
+              <p>Lorem ipsum dolorem</p>
+            </div>
+
+            <div mw-timeline-entry>
+              <p>Lorem ipsum dolorem</p>
+              <p>Lorem ipsum dolorem</p>
+              <p>Lorem ipsum dolorem</p>
             </div>
           </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-12">
+
+        <div mw-collapsable="true" mw-title="Jo">
+          <p>Lorem Ipsum Dolorem</p>
+          <p>Lorem Ipsum Dolorem</p>
+          <p>Lorem Ipsum Dolorem</p>
+          <p>Lorem Ipsum Dolorem</p>
+          <p>Lorem Ipsum Dolorem</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-12">
+        <div
+          mw-text-collapse="Lorem Ipsum Dolorem bla bla asdfsdaf asfs daf dsa fas f asf as f asf as f asdf asd f sadf sad f sadf sad f asd fas df asd f as "
+          length="50"></div>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-12">
+        <div mw-option-group title="Title" description="Description" icon="fa-beer">
+          <input type="radio" mw-custom-radio name="opt">
+        </div>
+
+        <div mw-option-group title="Title" description="Description" icon="fa-cab">
+          <input type="radio" mw-custom-radio name="opt">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-md-12">
+        <div mw-badge="info">
+          Jo
+        </div>
+        <div mw-alert="info">
+          Noi
+        </div>
+        <div mw-panel="info" title="ABC" closeable="true">
+          Panel
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div mw-wizard>
+          <div mw-wizard-step>
+            <h5>This is the first step</h5>
+            <p>You can put some text here</p>
+          </div>
+
+          <div mw-wizard-step>
+            <h5>This is the second step</h5>
+            <p>You can put some text here</p>
+            <p>Or even more</p>
+          </div>
+
+          <div mw-wizard-progress></div>
+
+          <div mw-wizard-navigation></div>
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div mw-tabs justified="true">
+          <div mw-tabs-pane="Tab 1">
+            <p>This is the content of pane 1</p>
+          </div>
+          <div mw-tabs-pane="Tab 2">
+            <p>This is the content of pane 2</p>
+          </div>
+          <div mw-tabs-pane="Nested Tab 3">
+            <div mw-tabs>
+              <div mw-tabs-pane="Tab 1">
+                <p>This is the content of nested pane 1</p>
+              </div>
+              <div mw-tabs-pane="Tab 2">
+                <p>This is the content of nested pane 2</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div mw-indefinite-loading></div>
+      </div>
+    </div>
+
   </div>
 
 </div>

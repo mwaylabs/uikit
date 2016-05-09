@@ -5,7 +5,7 @@
 
 angular.module('SampleApp.Start', [])
 
-  .config(function($routeProvider, $injector, i18nProvider, mwSidebarMenuProvider, ResponseHandlerProvider){
+  .config(function($routeProvider, $injector, i18nProvider, mwSidebarMenuProvider, ResponseHandlerProvider, ResponseToastHandlerProvider){
 
     i18nProvider.addResource('modules/start/i18n');
 
@@ -27,8 +27,13 @@ angular.module('SampleApp.Start', [])
       });
 
     ResponseHandlerProvider.registerAction('*/start/i18n/*',function(rsp){
-      console.log('i18n file retrieved!', rsp.data)
+      console.log('i18n file retrieved!', rsp.data);
     },{
+      methods: ['GET'],
+      onSuccess: true
+    });
+
+    ResponseToastHandlerProvider.registerToast('*/start/i18n/*',{singular:'start.index.title', plural:'start.index.plur'},{
       methods: ['GET'],
       onSuccess: true
     });

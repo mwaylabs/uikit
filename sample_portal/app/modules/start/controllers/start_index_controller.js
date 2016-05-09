@@ -15,23 +15,19 @@ angular.module('SampleApp.Start')
 
     this.showToast = function(){
       Toast.addToast('Hello')
-    }
-
+    };
   })
 
   .constant('StartIndexControllerResolver', {
     collection: function () {
       var c = new mwUI.Backbone.Collection();
-      c.add([
-        {
-          name: 'a',
-          description: 'A wie Adam'
-        },
-        {
-          name: 'b',
-          description: 'B wie Berthold'
-        }
-      ]);
+      for(var i= 0;i<100;i++){
+        c.add({
+          id: i,
+          name: 'Johans',
+          description: 'This is populated data'
+        });
+      }
       return c;
     }
   });

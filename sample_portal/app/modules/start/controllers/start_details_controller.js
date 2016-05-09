@@ -22,8 +22,10 @@ angular.module('SampleApp.Start')
   })
 
   .constant('StartDetailsControllerResolver', {
-    collection: function(){
-      var collection = new mwUI.Backbone.Collection();
+    collection: function($q, $timeout){
+      var collection = new mwUI.Backbone.Collection(),
+          dfd = $q.defer();
+
       collection.add([
         {id: 1, name: 'Peter'},
         {id: 2, name: 'Klaus'},
@@ -32,6 +34,11 @@ angular.module('SampleApp.Start')
         {id: 5, name: 'Sandro'},
         {id: 6, name: 'Sandra'}
       ]);
-      return collection;
+
+      $timeout(function(){
+        dfd.resolve(collection);
+      },1000);
+
+      return dfd.promise;
     }
   });
