@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 15/02/16.
- */
 mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
 
   nested: function () {

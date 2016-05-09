@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 04/03/16.
- */
 mwUI.Backbone.SelectableModel = Backbone.SelectableModel = Backbone.Model.extend({
   selectable: true,
   selectableOptions: function(){

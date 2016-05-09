@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 04/03/16.
- */
 mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   var _collection = collectionInstance,
     _options = options || {},

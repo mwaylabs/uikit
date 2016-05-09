@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 04/03/16.
- */
 /*jshint unused:false */
 mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
@@ -156,7 +153,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   (function _main() {
-    if ( !(_collection instanceof Backbone.Collection) ) {
+    if (!(_collection instanceof Backbone.Collection)) {
       throw new Error('First parameter has to be the instance of a collection');
     }
 

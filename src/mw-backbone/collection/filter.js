@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 04/03/16.
- */
 mwUI.Backbone.Filter = function () {
   // If it is an invalid value return null otherwise the provided object
   var returnNullOrObjectFor = function (value, object) {

@@ -129,4 +129,35 @@ angular.module('mwComponents', [])
         }
       }
     };
-  }]);
+  }])
+
+  /**
+   * @ngdoc directive
+   * @name mwModal.directive:mwModalOnEnter
+   * @element button
+   * @description
+   * Adds ability to trigger button with enter key. Checks validation if button is part of a form.
+   */
+  .directive('mwModalOnEnter', function (validateEnterKeyUp) {
+    return {
+      restrict: 'A',
+      require: '?^form',
+      link: function (scope, elm, attr, ctrl) {
+        elm.parents('.modal').first().on('keyup', function (event) {
+          validateEnterKeyUp.clickIfValid(elm, event, ctrl);
+        });
+      }
+    };
+  })
+
+  .service('validateEnterKeyUp', function () {
+    return {
+      clickIfValid: function (element, event, controller) {
+        if (event.keyCode === 13 && event.target.nodeName !== 'SELECT' && !event.isDefaultPrevented()) {
+          if ((controller && controller.$valid) || !controller) {
+            element.click();
+          }
+        }
+      }
+    };
+  });

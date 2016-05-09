@@ -1,26 +1,3 @@
-/**
- * Created by zarges on 30/11/15.
- */
-/**
- * @ngdoc directive
- * @name Relution.Common.directive:rlnSimpleUpload
- * @element div
- * @description
- *
- * Simple upload button with progressbar
- * Uploads a file to the mCap Asset pipeline and show a progressbar during this progress. You can pass a mimeType
- * in the validator attribute to disable a files in the file dialog which not match the mimetype
- * When upload has finished the Response File object will be checked if the response mimetype matches with the
- * required one. When the file passed the validation it will be passed into the passed model. Otherwise an error
- * will be thrown
- *
- * @scope
- *
- * @param {string} name The name of the inputfield. Required for input validation purposes
- * @param {boolean} required Specifies if a file has to be uploaded. Upload has to be finished and reponse passed validation
- * @param {object} model Model where the response should be saved
- * @validator {string} validator Mimetype of accepted file e.g image/jpg or image/*
- */
 'use strict';
 
 angular.module('mwFileUpload', [])
@@ -48,7 +25,7 @@ angular.module('mwFileUpload', [])
       scope: {
         url: '@',
         name: '@',
-        model: '=',
+        model: '=?',
         attribute: '@',
         labelAttribute: '@',
         showFileName: '=',
@@ -70,11 +47,9 @@ angular.module('mwFileUpload', [])
           fileUploaderEl = elm.find('.mw-file-upload'),
           hiddenfileEl = elm.find('input[type=file]');
 
+        scope._showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
+
         scope.uploadState = 'none';
-
-        scope.showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
-
-        scope.labelAttribute = scope.labelAttribute || 'name';
 
         scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
 
@@ -103,6 +78,12 @@ angular.module('mwFileUpload', [])
           } else {
             return $q.when(ngResponse);
           }
+        };
+
+        var error = function(data, result){
+          handle(data, true).catch(function () {
+            $timeout(scope.successCallback.bind(this,{result:result}));
+          });
         };
 
         var getResult = function(msg){
@@ -138,12 +119,6 @@ angular.module('mwFileUpload', [])
           }
         };
 
-        var error = function(data, result){
-          handle(data, true).catch(function () {
-            $timeout(scope.successCallback.bind(this,{result:result}));
-          });
-        };
-
         var stateChange = function(data){
           scope.dataLoaded = data.loaded;
           scope.dataTotal = data.total;
@@ -165,10 +140,11 @@ angular.module('mwFileUpload', [])
 
         scope.getFileName = function () {
           if (scope.fileIsSet) {
+            var labelAttr = scope.labelAttribute || 'name';
             if (scope.model instanceof window.mCAP.Model) {
-              return scope.model.get(scope.labelAttribute);
+              return scope.model.get(labelAttr);
             } else {
-              return scope.model[scope.labelAttribute];
+              return scope.model[labelAttr];
             }
           }
         };
