@@ -10,7 +10,7 @@ angular.module('mwUI.List')
 
         scope.showSpinner = function(){
           return /*Loading.isLoading() &&*/ scope.collection.filterable.hasNextPage();
-        }
+        };
       }
     };
   });

@@ -14,7 +14,7 @@ angular.module('SampleApp.Start')
     };
 
     this.showToast = function(){
-      Toast.addToast('Hello')
+      Toast.addToast('Hello');
     };
   })
 

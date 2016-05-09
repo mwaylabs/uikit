@@ -84,4 +84,4 @@ angular.module('mwUI.Utils')
         });
       }
     };
-  })
+  });

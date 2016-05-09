@@ -32,6 +32,7 @@
     "browser" : false,
     "by" : false,
     "describe" : false,
-    "afterEach" : false
+    "afterEach" : false,
+    "mwUI": false
   }
 }

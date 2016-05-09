@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 22/01/16.
- */
 'use strict';
 
 angular.module('SampleApp.Start')
@@ -11,7 +8,7 @@ angular.module('SampleApp.Start')
     this.drop = function(e, dragData, dropData){
       var model = this.collection.get(dragData.id);
       this.collection.remove(model);
-      this.collection.add(model, {at:dropData})
+      this.collection.add(model, {at:dropData});
     };
 
     this.viewModel = {

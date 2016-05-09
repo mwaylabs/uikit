@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('SampleApp.Start')
 
   .factory('TestModal', function (Modal) {
@@ -8,5 +10,5 @@ angular.module('SampleApp.Start')
   })
 
   .controller('TestModalController', function () {
-    
+
   });

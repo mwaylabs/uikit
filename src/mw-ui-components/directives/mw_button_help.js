@@ -10,6 +10,13 @@ angular.module('mwUI.UiComponents')
         var helpIcon = angular.element('<div>').addClass('help-icon fa fa-question hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
+        var buildPopup = function () {
+          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mw-button-help-popover popover');
+          angular.forEach(scope.hintsToShow, function (hint) {
+            popup.find('ul').append('<li>' + hint.text + '</li>');
+          });
+        };
+
         helpIcon.hover(function () {
           buildPopup();
           var targetOffset = angular.element(this).offset();
@@ -20,15 +27,8 @@ angular.module('mwUI.UiComponents')
           angular.element('body > .mw-button-help-popover').remove();
         });
 
-        var buildPopup = function () {
-          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mw-button-help-popover popover');
-          angular.forEach(scope.hintsToShow, function (hint) {
-            popup.find('ul').append('<li>' + hint.text + '</li>');
-          });
-        };
-
         scope.$watch('hintsToShow', function (newVal) {
-          if (newVal.length) {
+          if (newVal && newVal.length) {
             helpIcon.removeClass('hidden');
           } else {
             helpIcon.addClass('hidden');

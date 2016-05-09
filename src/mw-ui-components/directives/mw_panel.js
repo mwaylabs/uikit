@@ -13,7 +13,7 @@ angular.module('mwUI.UiComponents')
       link: function(scope, el){
         scope.closePanel = function(){
           el.remove();
-        }
+        };
       }
     };
   });

@@ -6,9 +6,10 @@
 angular.module('SampleApp.Main', [])
 
   .service('excpHandler', function($q, $timeout){
-    return function(exception, cause){
+    return function(exception){
       var dfd = $q.defer();
       $timeout(function(){
+        console.log(exception);
         dfd.resolve();
       },1000);
       return dfd.promise;

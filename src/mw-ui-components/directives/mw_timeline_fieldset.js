@@ -46,4 +46,4 @@ angular.module('mwUI.UiComponents')
         };
       }
     };
-  })
+  });

@@ -8,7 +8,7 @@ angular.module('mwUI.UiComponents')
         var wizard = mwWizardCtrl.getWizard();
         scope.getProgress = function(){
           return ((wizard.getCurrentStepNumber()+1) / wizard.getAllSteps().length ) *100;
-        }
+        };
       }
     };
   });

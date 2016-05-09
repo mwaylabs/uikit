@@ -6,7 +6,7 @@ angular.module('mwUI.UiComponents')
       scope: true,
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_star_rating.html',
       link: function (scope, elm, attr) {
-        
+
         scope.stars = [];
 
         var buildStars = function () {
@@ -45,4 +45,4 @@ angular.module('mwUI.UiComponents')
         });
       }
     };
-  })
+  });
