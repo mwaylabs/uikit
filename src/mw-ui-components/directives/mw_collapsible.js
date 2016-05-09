@@ -9,20 +9,17 @@ angular.module('mwUI.UiComponents')
         title: '@mwTitle'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsible.html',
-      link: function (scope, elm) {
+      link: function (scope) {
         scope.viewModel = {};
         scope.viewModel.collapsed = false;
-        if (scope.mwCollapsable === false) {
-          scope.viewModel.collapsed = true;
-        }
-        var level = elm.parents('.mw-collapsable').length;
-        if (level) {
-          elm.css('margin-left', level * 20 + 'px');
-        }
 
         scope.toggle = function () {
           scope.viewModel.collapsed = !scope.viewModel.collapsed;
         };
+
+        if (scope.mwCollapsable === false) {
+          scope.viewModel.collapsed = true;
+        }
       }
     };
   });
