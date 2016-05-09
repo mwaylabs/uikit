@@ -34,6 +34,7 @@ angular.module('mwUI.ExceptionHandler')
 
         return function (exception, cause) {
           if (showExceptionModal) {
+            debugger;
 
             if (options.successCallback) {
               var succCb = options.successCallback;
