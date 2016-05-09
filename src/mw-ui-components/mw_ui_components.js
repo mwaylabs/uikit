@@ -1,4 +1,4 @@
-angular.module('mwUI.UiComponents', ['mwUI.i18n']);
+angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils']);
 
 // @include ./directives/mw_alert.js
 // @include ./directives/mw_arrow_link.js
