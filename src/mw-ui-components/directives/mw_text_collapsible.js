@@ -1,14 +1,12 @@
 angular.module('mwUI.UiComponents')
-  //Todo rename
-  .directive('mwTextCollapse', function ($filter) {
+  .directive('mwTextCollapsible', function ($filter) {
     return {
       restrict: 'A',
       scope: {
         mwTextCollapse: '@',
-        length: '=',
-        markdown: '='
+        length: '='
       },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_text_collapsable.html',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_text_collapsible.html',
       link: function (scope) {
 
         // set default length

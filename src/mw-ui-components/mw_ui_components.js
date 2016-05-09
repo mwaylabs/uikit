@@ -7,7 +7,7 @@ angular.module('mwUI.UiComponents', ['mwUI.i18n']);
 // @include ./directives/mw_bread_crumbs_holder.js
 // @include ./directives/mw_button_help.js
 // @include ./directives/mw_button_help_condition.js
-// @include ./directives/mw_collapsable.js
+// @include ./directives/mw_collapsible.js
 // @include ./directives/mw_indefinite_loading.js
 // @include ./directives/mw_icon.js
 // @include ./directives/mw_option_group.js
@@ -16,7 +16,7 @@ angular.module('mwUI.UiComponents', ['mwUI.i18n']);
 // @include ./directives/mw_star_rating.js
 // @include ./directives/mw_tab_bar.js
 // @include ./directives/mw_tab_pane.js
-// @include ./directives/mw_text_collapsable.js
+// @include ./directives/mw_text_collapsible.js
 // @include ./directives/mw_timeline.js
 // @include ./directives/mw_timeline_entry.js
 // @include ./directives/mw_timeline_fieldset.js

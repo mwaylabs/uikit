@@ -1,5 +1,5 @@
-.mw-collapsable {
-  .mw-collapsable-heading {
+.mw-collapsible {
+  .mw-collapsible-heading {
     margin-top: 20px;
     border-bottom: 1px solid $brand-primary;
     color: #555;
@@ -9,7 +9,7 @@
     padding-left: 2px;
     cursor: pointer;
 
-    .mw-collapsable-heading-text {
+    .mw-collapsible-heading-text {
       padding-left: 2px;
     }
 
@@ -20,7 +20,7 @@
     }
   }
 
-  .mw-collapsable-animate {
+  .mw-collapsible-animate {
     max-height: 0px;
     overflow: hidden;
     opacity: 0;
@@ -28,7 +28,7 @@
     transition: all ease-in-out 0.5s;
   }
 
-  .mw-collapsable-animate.collapsed {
+  .mw-collapsible-animate.collapsed {
     opacity: 1;
     max-height: 2999px;
   }

@@ -1,5 +1,6 @@
 angular.module('mwUI.UiComponents')
 
+  //TODO rename to mwCollapsible
   .directive('mwCollapsable', function () {
     return {
       transclude: true,
@@ -7,7 +8,7 @@ angular.module('mwUI.UiComponents')
         mwCollapsable: '=',
         title: '@mwTitle'
       },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsable.html',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsible.html',
       link: function (scope, elm) {
         scope.viewModel = {};
         scope.viewModel.collapsed = false;
