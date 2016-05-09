@@ -42,6 +42,10 @@ $star-rating-color: #ffa602 !default;
   }
 }
 
+.navigation + .notifications .messages-list ul {
+  margin-top: $navbar-height + 7px;
+}
+
 body{
   overflow: inherit !important;
   height: inherit !important;
