@@ -3,7 +3,7 @@ angular.module('mwUI.UiComponents')
     return {
       restrict: 'A',
       scope: {
-        mwTextCollapse: '@',
+        collapsibleText: '@mwTextCollapsible',
         length: '='
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_text_collapsible.html',
@@ -22,22 +22,22 @@ angular.module('mwUI.UiComponents')
         // apply filter length to text
         scope.text = function () {
           return $filter('reduceStringTo')(
-            scope.mwTextCollapse, scope.filterLength
+            scope.collapsibleText, scope.filterLength
           );
         };
 
         // show Button if text is longer than desired
         scope.showButton = false;
-        if (scope.mwTextCollapse.length > scope.defaultLength) {
+        if (scope.collapsibleText && scope.collapsibleText.length > scope.defaultLength) {
           scope.showButton = true;
         }
 
         // set button to "show more" or "show less"
         scope.showLessOrMore = function () {
           if (scope.filterLength === scope.defaultLength) {
-            return 'UiComponents.mwTextCollapsable.showMore';
+            return 'UiComponents.mwTextCollapsible.showMore';
           } else {
-            return 'UiComponents.mwTextCollapsable.showLess';
+            return 'UiComponents.mwTextCollapsible.showLess';
           }
         };
 

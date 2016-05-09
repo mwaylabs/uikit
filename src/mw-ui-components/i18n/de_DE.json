@@ -8,7 +8,7 @@
       "entriesHiddenSingular": "1 Eintrag ist ausgeblendet",
       "entriesHiddenPlural": "{{count}} Einträge sind ausgeblendet"
     },
-    "mwTextCollapsable": {
+    "mwTextCollapsible": {
       "showMore": "mehr anzeigen",
       "showLess": "weniger anzeigen"
     },
