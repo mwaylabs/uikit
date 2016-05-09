@@ -13,7 +13,6 @@ angular.module('mwUI.Relution', [
   'mwPopover',
   'mwHelper',
   'mwMap',
-  'mwResponseToastHandler',
   'mwFilters',
   'mwFileUpload'
 ]).config(function(){
