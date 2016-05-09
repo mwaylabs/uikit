@@ -4,6 +4,8 @@
     "cancel": "Cancel"
   },
   "mwLeaveConfirmationModal": {
-    "title": ""
+    "title": "Do you really want to leave the current page?",
+    "continue": "Continue",
+    "stay": "Stay on this page"
   }
 }
