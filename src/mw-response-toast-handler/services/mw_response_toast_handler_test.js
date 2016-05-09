@@ -20,7 +20,7 @@ describe('mwUi Response Handler', function () {
     });
   };
 
-  beforeEach(module('mwUI'));
+  beforeEach(module('mwUI.ResponseToastHandler'));
 
   beforeEach(module(function ($provide) {
     $provide.service('i18n', function(){
@@ -33,7 +33,7 @@ describe('mwUi Response Handler', function () {
   }));
 
   beforeEach(function () {
-    module('mwUI', function (_ResponseToastHandlerProvider_) {
+    module('mwUI.ResponseToastHandler', function (_ResponseToastHandlerProvider_) {
       ResponseToastHandlerProvider = _ResponseToastHandlerProvider_;
     });
   });

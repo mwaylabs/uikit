@@ -5,8 +5,9 @@ describe('mwToggle', function () {
   var el;
   var $timeout;
 
-  beforeEach(module('mwUI'));
   beforeEach(module('karmaDirectiveTemplates'));
+
+  beforeEach(module('mwUI.UiComponents'));
 
   //mock i18n filter
   beforeEach(function(){

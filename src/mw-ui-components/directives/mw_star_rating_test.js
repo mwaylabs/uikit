@@ -1,10 +1,12 @@
-describe('mwRating', function () {
+describe('mwStarRating', function () {
   var $compile;
   var $rootScope;
   var el;
   var scope;
 
-  beforeEach(module('mwUI'));
+  beforeEach(module('karmaDirectiveTemplates'));
+
+  beforeEach(module('mwUI.UiComponents'));
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;

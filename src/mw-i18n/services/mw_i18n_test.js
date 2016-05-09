@@ -7,10 +7,10 @@ describe('mwUi i18n Service', function () {
     i18nProvider,
     i18n;
 
-  beforeEach(module('mwUI'));
+  beforeEach(module('mwUI.i18n'));
 
   beforeEach(function () {
-    module('mwUI', function (_i18nProvider_) {
+    module('mwUI.i18n', function (_i18nProvider_) {
       i18nProvider = _i18nProvider_;
     });
   });

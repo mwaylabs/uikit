@@ -238,7 +238,7 @@ describe('mwBackbone nested models', function () {
         modelWithNestedModel = new ModelWithNestedModel();
       });
 
-      it('parses the model correctly transforms object into nested model', function () {
+      it('parses the model and transforms object into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedModelAttr: {
@@ -255,7 +255,32 @@ describe('mwBackbone nested models', function () {
         expect(modelWithNestedModel.get('name')).toEqual('abc');
       });
 
-      it('parses the model correctly transforms string into nested model', function () {
+      it('parses the model and transforms string into nested model', function () {
+        this.responseObj = {
+          name: 'abc',
+          nestedModelAttrId: 1
+        };
+        var ModelWithCustomParse = ModelWithNestedModel.extend({
+            parse: function (rsp) {
+              if (rsp.nestedModelAttrId) {
+                rsp.nestedModelAttr = {id: rsp.nestedModelAttrId};
+                delete rsp.nestedModelAttrId;
+              }
+              return rsp;
+            }
+          }),
+          modelWithCustomParse = new ModelWithCustomParse();
+
+        modelWithCustomParse.fetch();
+        this.server.respond();
+
+        expect(modelWithCustomParse.get('nestedModelAttr') instanceof NestedModelAttr).toBeTruthy();
+        expect(modelWithCustomParse.get('nestedModelAttr').get('id')).toBe(1);
+        expect(modelWithCustomParse.get('name')).toEqual('abc');
+
+      });
+
+      it('parses the model and transforms string into nested model when custom parse method is provided', function () {
         this.responseObj = {
           name: 'abc',
           nestedModelAttr: 1
@@ -288,7 +313,7 @@ describe('mwBackbone nested models', function () {
         spyOn(modelWithNestedCollection, 'fetch').and.callThrough();
       });
 
-      it('parses the model correctly transforms str into nested model', function () {
+      it('parses the model and transforms string into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedCollectionAttr: 1
@@ -302,7 +327,7 @@ describe('mwBackbone nested models', function () {
         expect(modelWithNestedCollection.get('nestedCollectionAttr').first().get('id')).toBe(1);
       });
 
-      it('parses the model correctly transforms object into nested model', function () {
+      it('parses the model and transforms object into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedCollectionAttr: [
@@ -325,7 +350,7 @@ describe('mwBackbone nested models', function () {
         expect(modelWithNestedCollection.get('nestedCollectionAttr').first().get('id')).toBe(1);
       });
 
-      it('parses the model correctly transforms string into nested model', function () {
+      it('parses the model and transforms string into nested model', function () {
         this.responseObj = {
           name: 'abc',
           nestedCollectionAttr: [1, 2]
@@ -364,7 +389,7 @@ describe('mwBackbone nested models', function () {
         collectionWithNestedModels = new CollectionWithNestedModels();
       });
 
-      it('parses nested models of each model correctly', function () {
+      it('parses nested models of each model', function () {
         this.responseObj = {
           data: [
             {
@@ -412,6 +437,57 @@ describe('mwBackbone nested models', function () {
         expect(collectionWithNestedModels.length).toBe(2);
         expect(collectionWithNestedModels.first().get('description') instanceof Description).toBeTruthy();
         expect(collectionWithNestedModels.first().get('members') instanceof Members).toBeTruthy();
+      });
+
+      it('parses nested models of each model when custom parse method of model is provided', function () {
+        this.responseObj = {
+          data: [
+            {
+              name: 'abc',
+              id: 1,
+              descriptionId: 1,
+              members: [1, 2]
+            },
+            {
+              name: 'cde',
+              id: 2,
+              description: 2,
+              members: [1, 2]
+            }
+          ]
+        };
+        var ModelWithCustomParse = ModelWithNestedAttrs.extend({
+            parse: function (attrs) {
+              if (attrs.members) {
+                var memberObjs = [];
+                attrs.members.forEach(function (member) {
+                  memberObjs.push({
+                    id: member,
+                    description: attrs.descriptionId
+                  });
+                });
+                attrs.members = memberObjs;
+              }
+              if (attrs.descriptionId) {
+                attrs.description = {id: attrs.descriptionId};
+                delete attrs.descriptionId;
+              }
+              return attrs;
+            }
+          }),
+          CollectionWithCustomParse = CollectionWithNestedModels.extend({
+            model: ModelWithCustomParse
+          }),
+          collectionWithCustomParse = new CollectionWithCustomParse();
+
+        collectionWithCustomParse.fetch();
+        this.server.respond();
+
+        expect(collectionWithCustomParse.length).toBe(2);
+        expect(collectionWithCustomParse.first().get('description') instanceof Description).toBeTruthy();
+        expect(collectionWithCustomParse.first().get('members') instanceof Members).toBeTruthy();
+        expect(collectionWithCustomParse.first().get('members').first().get('id')).toBe(1);
+        expect(collectionWithCustomParse.first().get('members').first().get('description')).toBe(1);
       });
     });
 
@@ -695,27 +771,27 @@ describe('mwBackbone nested models', function () {
 
   });
 
-  describe('real world example', function(){
+  describe('real world example', function () {
     beforeEach(function () {
       var Organization = this.Organization = window.Backbone.Model.extend({
         urlRoot: '/organizations',
-        defaults: function(){
+        defaults: function () {
           return {
             name: '',
-            uniqueName:''
+            uniqueName: ''
           };
         }
       });
       var User = this.User = window.Backbone.Model.extend({
         urlRoot: '/users',
-        defaults: function(){
+        defaults: function () {
           return {
             uniqueName: '',
             firstName: '',
             lastName: ''
           };
         },
-        getFullName: function(){
+        getFullName: function () {
           return this.get('firstName') + ' ' + this.get('lastName');
         }
       });
@@ -725,7 +801,7 @@ describe('mwBackbone nested models', function () {
       });
       var Group = this.Group = NestedModel.extend({
         urlRoot: '/groups',
-        defaults: function(){
+        defaults: function () {
           return {
             uniqueName: '',
             name: ''
@@ -741,7 +817,7 @@ describe('mwBackbone nested models', function () {
       this.Groups = window.Backbone.Collection.extend({
         url: '/groups',
         model: Group,
-        parse: function(resp){
+        parse: function (resp) {
           return resp.data;
         }
       });
@@ -750,13 +826,13 @@ describe('mwBackbone nested models', function () {
       this.processReqBody = jasmine.createSpy('serverReqSpy');
     });
 
-    it('fetches groups and sets nested users correctly when backend return groups with referenced users objects', function(){
+    it('fetches groups and sets nested users when backend return groups with referenced users objects', function () {
       var groups = new this.Groups();
       this.server.respondWith(
         'GET',
         '/groups',
         function (xhr) {
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             data: [
               {
                 id: 1,
@@ -776,7 +852,7 @@ describe('mwBackbone nested models', function () {
                 ],
                 organization: {
                   id: 1,
-                  uniqueName:'TComp',
+                  uniqueName: 'TComp',
                   name: 'Test Company'
                 }
               },
@@ -793,7 +869,7 @@ describe('mwBackbone nested models', function () {
                 ],
                 organization: {
                   id: 1,
-                  uniqueName:'TComp',
+                  uniqueName: 'TComp',
                   name: 'Test Company'
                 }
               }
@@ -818,19 +894,19 @@ describe('mwBackbone nested models', function () {
 
     });
 
-    it('fetches groups and sets nested users correctly when backend return groups with referenced user ids', function(){
+    it('fetches groups and sets nested users when backend return groups with referenced user ids', function () {
       var groups = new this.Groups();
       this.server.respondWith(
         'GET',
         '/groups',
         function (xhr) {
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             data: [
               {
                 id: 1,
                 name: 'International Group',
                 uniqueName: 'IntGroup',
-                users: [1,2]
+                users: [1, 2]
               }
             ]
           }));
@@ -849,20 +925,20 @@ describe('mwBackbone nested models', function () {
 
     });
 
-    it('fetches groups and sets nested users correctly when backend return groups with referenced user ids ' +
-      'and it should be possible to fetch meta infos of the referenced users', function(){
+    it('fetches groups and sets nested users when backend return groups with referenced user ids ' +
+      'and meta infos of the referenced users can be fetched', function () {
       var groups = new this.Groups();
       this.server.respondWith(
         'GET',
         '/groups',
         function (xhr) {
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             data: [
               {
                 id: 1,
                 name: 'International Group',
                 uniqueName: 'IntGroup',
-                users: [1,2],
+                users: [1, 2],
                 organization: 1
               }
             ]
@@ -873,9 +949,9 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/users/1',
         function (xhr) {
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
-            uniqueName:'m.mustermann',
+            uniqueName: 'm.mustermann',
             firstName: 'Max',
             lastName: 'Mustermann'
           }));
@@ -885,9 +961,9 @@ describe('mwBackbone nested models', function () {
         'GET',
         '/organizations/1',
         function (xhr) {
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
-            uniqueName:'TComp',
+            uniqueName: 'TComp',
             name: 'Test Company'
           }));
         }
@@ -903,17 +979,17 @@ describe('mwBackbone nested models', function () {
       expect(groups.at(0).get('organization').get('name')).toMatch('Test Company');
     });
 
-    it('composes nested users to object when saving the group model', function(){
+    it('composes nested users to object when saving the group model', function () {
       var group = new this.Group({id: 1});
       this.server.respondWith(
         'GET',
         '/groups/1',
         function (xhr) {
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             name: 'International Group',
             uniqueName: 'IntGroup',
-            users: [1,2],
+            users: [1, 2],
             organization: 1
           }));
         }
@@ -923,11 +999,11 @@ describe('mwBackbone nested models', function () {
         '/groups/1',
         function (xhr) {
           this.processReqBody(JSON.parse(xhr.requestBody));
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             name: 'International Group',
             uniqueName: 'IntGroup',
-            users: [3,4],
+            users: [3, 4],
             organization: 5
           }));
         }.bind(this)
@@ -935,8 +1011,8 @@ describe('mwBackbone nested models', function () {
 
       group.fetch();
       this.server.respond();
-      group.get('users').reset([{id:3, uniqueName:'Ulf'},{id:4, uniqueName: 'Erika'}]);
-      group.get('organization').set('id',5);
+      group.get('users').reset([{id: 3, uniqueName: 'Ulf'}, {id: 4, uniqueName: 'Erika'}]);
+      group.get('organization').set('id', 5);
       group.save();
       this.server.respond();
       var processReqBodyCallArgs = this.processReqBody.calls.mostRecent().args[0];
@@ -950,15 +1026,15 @@ describe('mwBackbone nested models', function () {
       expect(group.get('users').at(1).get('uniqueName')).toMatch('Erika');
     });
 
-    it('composes nested users to ids when saving the group model', function(){
+    it('composes nested users to ids when saving the group model', function () {
       var Group = this.Group.extend({
-        parse: function(attrs){
+        parse: function (attrs) {
           attrs.organization = attrs.organizationId;
           delete attrs.organizationId;
           return attrs;
         },
-        compose: function(attrs){
-          attrs.users = _.pluck(attrs.users,'id');
+        compose: function (attrs) {
+          attrs.users = _.pluck(attrs.users, 'id');
           return attrs;
         }
       });
@@ -971,11 +1047,11 @@ describe('mwBackbone nested models', function () {
         '/groups',
         function (xhr) {
           this.processReqBody(JSON.parse(xhr.requestBody));
-          xhr.respond(200,{'Content-Type': 'application/json'}, JSON.stringify({
+          xhr.respond(200, {'Content-Type': 'application/json'}, JSON.stringify({
             id: 1,
             name: 'International Group',
             uniqueName: 'IntGroup',
-            users: [3,4],
+            users: [3, 4],
             organizationId: 5
           }));
         }.bind(this)
@@ -983,8 +1059,8 @@ describe('mwBackbone nested models', function () {
 
       group.fetch();
       this.server.respond();
-      group.get('users').add([{id:3, uniqueName:'Ulf'},{id:4, uniqueName: 'Erika'}]);
-      group.get('organization').set('id',5);
+      group.get('users').add([{id: 3, uniqueName: 'Ulf'}, {id: 4, uniqueName: 'Erika'}]);
+      group.get('organization').set('id', 5);
       group.save();
       this.server.respond();
       var processReqBodyCallArgs = this.processReqBody.calls.mostRecent().args[0];

@@ -1,39 +1,41 @@
 'use strict';
 
-describe('mwUi mwMultiSelectBoxes', function(){
+describe('mwUi mwMultiSelectBoxes', function () {
   var inputCollection,
-      selectedCollection,
-      scope,
-      element,
-      $rootScope,
-      $compile;
+    selectedCollection,
+    scope,
+    element,
+    $rootScope,
+    $compile;
 
-  beforeEach(module('mCAP'));
   beforeEach(module('karmaDirectiveTemplates'));
-  beforeEach(module('mwUI'));
 
-  beforeEach(function(){
-    inputCollection = new mCAP.Collection();
-    for(var i=0;i<10;i++){
-      inputCollection.add(new mCAP.Model({uuid: i}));
+  beforeEach(module('mwUI'));
+  beforeEach(module('mwUI.Relution'));
+
+  beforeEach(function () {
+    inputCollection = new mwUI.Backbone.Collection();
+    for (var i = 0; i < 10; i++) {
+      inputCollection.add(new mwUI.Backbone.Model({id: i}));
     }
-    selectedCollection = new mCAP.Collection();
+    selectedCollection = new mwUI.Backbone.Collection();
   });
 
-  beforeEach(module(function($provide){
-    $provide.value('i18n', function(){
-      var i18n = jasmine.createSpyObj('i18n', ['get']);
-      i18n.get.and.returnValue('not_translated');
-      return i18n;
-    });
-    $provide.value('i18nFilter', function(){
-      return function(input){
+  beforeEach(module(function ($provide) {
+    //$provide.value('i18n', function () {
+    //  var i18n = jasmine.createSpyObj('i18n', ['get', 'setLocale']);
+    //  debugger;
+    //  i18n.get.and.returnValue('not_translated');
+    //  return i18n;
+    //});
+    $provide.value('i18nFilter', function () {
+      return function (input) {
         return input;
       };
     });
   }));
 
-  beforeEach(inject(function(_$compile_, _$rootScope_){
+  beforeEach(inject(function (_$compile_, _$rootScope_) {
     $rootScope = _$rootScope_;
     $compile = _$compile_;
     scope = _$rootScope_.$new();
@@ -45,29 +47,29 @@ describe('mwUi mwMultiSelectBoxes', function(){
   }));
 
 
-  it('should display one selectbox in initial state', function(){
+  it('should display one selectbox in initial state', function () {
     expect(element.find('select').length).toBe(1);
   });
 
-  it('should not select anything in initial state', function(){
+  it('should not select anything in initial state', function () {
     expect(scope.selectedCollection.length).toBe(0);
   });
 
-  it('should enable the add button when a selectbox has an active option', function(){
+  it('should enable the add button when a selectbox has an active option', function () {
     var scope = $rootScope.$new(),
-        isolateScope;
+      isolateScope;
     scope.inputCollection = inputCollection;
     scope.selectedCollection = selectedCollection;
     element = $compile('<div mw-multi-select-boxes mw-options-collection="inputCollection" mw-collection="selectedCollection"></div>')(scope);
     scope.$digest();
     isolateScope = element.isolateScope();
     expect(element.find('button.add[disabled]').length).toBe(1);
-    isolateScope.viewModel.tmpModel.set('uuid',1);
+    isolateScope.viewModel.tmpModel.set('id', 1);
     scope.$digest();
     expect(element.find('button.add[disabled]').length).toBe(0);
   });
 
-  it('should remove model from option list on add', function(){
+  it('should remove model from option list on add', function () {
     var scope = $rootScope.$new(),
       isolateScope;
     scope.inputCollection = inputCollection;
@@ -84,7 +86,7 @@ describe('mwUi mwMultiSelectBoxes', function(){
     expect(selectedCollection.first().id).toBe(0);
   });
 
-  it('should add model to option list when it is removed from the selected list', function(){
+  it('should add model to option list when it is removed from the selected list', function () {
     var scope = $rootScope.$new(),
       isolateScope;
     scope.inputCollection = inputCollection;
@@ -102,7 +104,7 @@ describe('mwUi mwMultiSelectBoxes', function(){
   });
 
 
-  it('should not show already selected items in the options', function(){
+  it('should not show already selected items in the options', function () {
     var scope = $rootScope.$new();
     scope.inputCollection = inputCollection;
     scope.selectedCollection = selectedCollection;

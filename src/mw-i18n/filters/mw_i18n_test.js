@@ -8,10 +8,10 @@ describe('mwUi i18n Service', function () {
     i18nProvider,
     i18n;
 
-  beforeEach(module('mwUI'));
+  beforeEach(module('mwUI.i18n'));
 
   beforeEach(function () {
-    module('mwUI', function (_i18nProvider_) {
+    module('mwUI.i18n', function (_i18nProvider_) {
       i18nProvider = _i18nProvider_;
     });
   });
@@ -83,7 +83,9 @@ describe('mwUi i18n Service', function () {
     it('should return a translation for a i18nObject', function (done) {
 
       i18n.setLocale('de_DE').then(function () {
+        //jshint -W106
         var translation = $filter('i18n')({de_DE: 'DE', en_US: 'DE'});
+        //jshint +W106
         expect(translation).toEqual('DE');
         done();
       });

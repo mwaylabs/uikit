@@ -6,8 +6,9 @@ describe('mwCollapsable', function () {
   var collapsable;
   var isolateScope;
 
-  beforeEach(module('mwUI'));
   beforeEach(module('karmaDirectiveTemplates'));
+
+  beforeEach(module('mwUI.UiComponents'));
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;
@@ -26,7 +27,7 @@ describe('mwCollapsable', function () {
 
       expect(el.find('i').hasClass('fa fa-angle-right')).toBe(true);
       expect(el.find('i').hasClass('fa-rotate-90')).toBe(false);
-      expect(el.find('.mw-collapsable-body').hasClass('collapsed')).toBe(false);
+      expect(el.find('.mw-collapsible-body').hasClass('collapsed')).toBe(false);
     });
 
   it('should have an arrow down and visible text when expanded',
@@ -35,7 +36,7 @@ describe('mwCollapsable', function () {
       expect(isolateScope.viewModel.collapsed).toBe(true);
 
       expect(el.find('i').hasClass('fa fa-angle-right fa-rotate-90')).toBe(true);
-      expect(el.find('.mw-collapsable-body').hasClass('collapsed')).toBe(true);
+      expect(el.find('.mw-collapsible-body').hasClass('collapsed')).toBe(true);
     });
 
   it('should toggle collapsed between true and false',
@@ -43,41 +44,6 @@ describe('mwCollapsable', function () {
       expect(isolateScope.viewModel.collapsed).toBe(false);
       isolateScope.toggle();
       expect(isolateScope.viewModel.collapsed).toBe(true);
-    });
-
-  it('should have a margin when collapsed over more than one level',
-    function () {
-      collapsable =
-        '<div mw-collapsable>' +
-          '<div mw-collapsable>' +
-            '<div mw-collapsable mw-title="TITLE">' +
-              'TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT' +
-            '</div>' +
-          '<div>' +
-        '<div>';
-      el = $compile(collapsable)(scope);
-      scope.$digest();
-      isolateScope = el.isolateScope();
-
-      expect(el.find('.mw-collapsable').length).toBe(3);
-      expect(el.find('.mw-collapsable-heading').length).toBe(3);
-      expect(el.find('.mw-collapsable-body').length).toBe(3);
-
-      // level 1
-      expect(
-        el.find('.mw-collapsable-body')
-          .eq(0)
-          .find('div')
-          .attr('style'))
-        .toBe('margin-left: 20px; ');
-
-      // level 2
-      expect(
-        el.find('.mw-collapsable-body')
-          .eq(1)
-          .find('div')
-          .attr('style'))
-        .toBe('margin-left: 40px; ');
     });
 
 });

@@ -5,7 +5,7 @@ describe('mwTooltip', function () {
   var el;
   var isolateScope;
 
-  beforeEach(module('mwComponents'));
+  beforeEach(module('mwUI.UiComponents'));
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;

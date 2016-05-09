@@ -1,10 +1,12 @@
-describe('mwTextCollapse', function () {
+fdescribe('mwTextCollapse', function () {
   var $compile;
   var $rootScope;
   var scope;
 
-  beforeEach(module('mwUI'));
   beforeEach(module('karmaDirectiveTemplates'));
+
+  beforeEach(module('mwUI.Relution'));
+  beforeEach(module('mwComponents'));
 
   beforeEach(module('ngSanitize'));
   beforeEach(module('btford.markdown'));
@@ -19,7 +21,7 @@ describe('mwTextCollapse', function () {
       });
     });
   });
-  
+
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;

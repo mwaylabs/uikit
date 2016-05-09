@@ -1,12 +1,13 @@
-describe('mwButton', function () {
+describe('mwButtonHelp', function () {
   var i18n;
   var $compile;
   var $rootScope;
   var scope;
   var el;
 
-  beforeEach(module('mwUI'));
   beforeEach(module('karmaDirectiveTemplates'));
+
+  beforeEach(module('mwUI.UiComponents'));
 
   beforeEach(module(function ($provide) {
     $provide.service('i18n', function () {
@@ -72,8 +73,9 @@ describe('mwButton', function () {
         .toBe(false);
 
       el.find('.help-icon').trigger('mouseover');
-      expect(angular.element('.mwButtonPopover').html()).toBe(
-        'common.buttonHelp' +
+
+      expect(angular.element('.mw-button-help-popover').html()).toBe(
+        'UiComponents.mwButtonHelp.isDisabledBecause' +
         '<ul>' +
           '<li>HELP TEXT</li>' +
         '</ul>'
@@ -103,8 +105,8 @@ describe('mwButton', function () {
         .toBe(false);
 
       el.find('.help-icon').trigger('mouseover');
-      expect(angular.element('.mwButtonPopover').html()).toBe(
-        'common.buttonHelp' +
+      expect(angular.element('.mw-button-help-popover').html()).toBe(
+        'UiComponents.mwButtonHelp.isDisabledBecause' +
         '<ul>' +
           '<li>HELP TEXT3</li>' +
           '<li>HELP TEXT1</li>' +
@@ -148,8 +150,8 @@ describe('mwButton', function () {
         .toBe(false);
 
       el.find('.help-icon').trigger('mouseover');
-      expect(angular.element('.mwButtonPopover').html()).toBe(
-        'common.buttonHelp' +
+      expect(angular.element('.mw-button-help-popover').html()).toBe(
+        'UiComponents.mwButtonHelp.isDisabledBecause' +
         '<ul>' +
           '<li>HELP TEXT2</li>' +
         '</ul>'
@@ -179,8 +181,8 @@ describe('mwButton', function () {
       .toBe(false);
 
     el.find('.help-icon').trigger('mouseover');
-    expect(angular.element('.mwButtonPopover').html()).toBe(
-      'common.buttonHelp' +
+    expect(angular.element('.mw-button-help-popover').html()).toBe(
+      'UiComponents.mwButtonHelp.isDisabledBecause' +
       '<ul>' +
       '<li>Yo</li>' +
       '</ul>'
@@ -189,7 +191,7 @@ describe('mwButton', function () {
     scope.$destroy();
     scope.$digest();
 
-    expect(angular.element('.mwButtonPopover').html()).toBeFalsy;
+    expect(angular.element('.mw-button-help-popover').html()).toBeFalsy;
   });
 
   it('should change locale', function () {

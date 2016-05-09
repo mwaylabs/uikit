@@ -11,10 +11,11 @@ describe('mwUi Response Handler', function () {
     $rootScope,
     ResponseHandler;
 
-  beforeEach(module('mwUI'));
+  beforeEach(module('mwUI.Utils'));
+  beforeEach(module('mwUI.ResponseHandler'));
 
   beforeEach(function () {
-    module('mwUI', function (_ResponseHandlerProvider_, _$provide_) {
+    module('mwUI.ResponseHandler', function (_ResponseHandlerProvider_, _$provide_) {
       ResponseHandlerProvider = _ResponseHandlerProvider_;
       $provide = _$provide_;
     });

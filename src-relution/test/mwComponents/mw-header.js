@@ -8,10 +8,10 @@ describe('mwHeader', function () {
   var i18n;
   var i18nProvider;
 
+  beforeEach(module('mwUI'));
   beforeEach(module('mwComponents'));
   beforeEach(module('ngRoute'));
   beforeEach(module('karmaDirectiveTemplates'));
-  beforeEach(module('mwUI'));
 
   beforeEach(function () {
     module('mwUI', function (_i18nProvider_) {

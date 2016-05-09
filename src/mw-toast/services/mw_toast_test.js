@@ -9,17 +9,17 @@ describe('mwUi Response Handler', function () {
     Toast;
 
 
-  beforeEach(module('mwUI'));
+  beforeEach(module('mwUI.Toast'));
 
   beforeEach(function () {
-    module('mwUI', function (_ToastProvider_) {
+    module('mwUI.Toast', function (_ToastProvider_) {
       ToastProvider = _ToastProvider_;
     });
   });
 
   beforeEach(inject(function (_$rootScope_, _$timeout_, _Toast_) {
     $rootScope = _$rootScope_;
-    $timeout = _$timeout_,
+    $timeout = _$timeout_;
     Toast = _Toast_;
   }));
 

@@ -3,11 +3,11 @@ describe('mwTimeline', function () {
   var $rootScope;
   var scope;
   var el;
-  var isolateScopeFieldset
+  var isolateScopeFieldset;
 
-  beforeEach(module('mwUI'));
   beforeEach(module('karmaDirectiveTemplates'));
-  beforeEach(module('mwComponents'));
+
+  beforeEach(module('mwUI.UiComponents'));
 
   //mock i18n filter
   beforeEach(function(){
@@ -107,7 +107,7 @@ describe('mwTimeline', function () {
       expect(isolateScopeFieldset.entries.length).toBe(1);
       expect(
         isolateScopeFieldset.hiddenEntriesText())
-        .toBe('common.entriesHiddenSingular');
+        .toBe('UiComponents.mwTimelineFieldset.entriesHiddenSingular');
 
       // multiple fieldsets
       el = angular.element(
@@ -132,7 +132,7 @@ describe('mwTimeline', function () {
       expect(isolateScopeFieldset.entries.length).toBe(3);
       expect(
         isolateScopeFieldset.hiddenEntriesText())
-        .toBe('common.entriesHiddenPlural');
+        .toBe('UiComponents.mwTimelineFieldset.entriesHiddenPlural');
 
     });
 
