@@ -11,7 +11,7 @@ $mw-font-path: "../fonts" !default;
   font-style: normal;
 }
 
-body .rln-icon{
+body .rln-icon {
   position: relative;
 }
 
@@ -32,368 +32,346 @@ body .rln-icon{
     text-decoration: none !important;
   }
 
-  @font-face {
-    font-family: 'icomoon';
-    src: url('fonts/icomoon.eot?wzr8pt');
-    src: url('fonts/icomoon.eot?wzr8pt#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?wzr8pt') format('truetype'),
-    url('fonts/icomoon.woff?wzr8pt') format('woff'),
-    url('fonts/icomoon.svg?wzr8pt#icomoon') format('svg');
-    font-weight: normal;
-    font-style: normal;
-  }
-
-  [class^="icon-"], [class*=" icon-"] {
-    font-family: 'icomoon';
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
   &.action:before {
-    content: "\e800";
+    content: "\e900";
   }
   &.add:before {
-    content: "\e801";
+    content: "\e901";
   }
   &.android:before {
-    content: "\e802";
+    content: "\e902";
   }
   &.apple:before {
-    content: "\e803";
+    content: "\e903";
   }
   &.apps:before {
-    content: "\e804";
+    content: "\e904";
   }
   &.archive:before {
-    content: "\e805";
+    content: "\e905";
   }
   &.bluetooth:before {
-    content: "\e806";
+    content: "\e906";
   }
   &.categories:before {
-    content: "\e807";
+    content: "\e907";
   }
   &.certificate:before {
-    content: "\e808";
+    content: "\e908";
   }
   &.check:before {
-    content: "\e809";
+    content: "\e909";
   }
   &.close_cross:before {
-    content: "\e80a";
+    content: "\e90a";
   }
   &.company:before {
-    content: "\e80b";
+    content: "\e90b";
   }
   &.compliance_error:before {
-    content: "\e80c";
+    content: "\e90c";
   }
   &.compliance_no:before {
-    content: "\e80d";
+    content: "\e90d";
   }
   &.compliance_pending:before {
-    content: "\e80e";
+    content: "\e90e";
   }
   &.compliance_yes:before {
-    content: "\e80f";
+    content: "\e90f";
   }
   &.compliance:before {
-    content: "\e810";
+    content: "\e910";
   }
   &.credit_add:before {
-    content: "\e811";
+    content: "\e911";
   }
   &.credit_inquire:before {
-    content: "\e812";
+    content: "\e912";
   }
   &.credit_receive:before {
-    content: "\e813";
+    content: "\e913";
   }
   &.dashboard:before {
-    content: "\e814";
+    content: "\e914";
   }
   &.delete:before {
-    content: "\e815";
+    content: "\e915";
+  }
+  &.dep:before {
+    content: "\e916";
   }
   &.development:before {
-    content: "\e816";
+    content: "\e917";
   }
   &.device:before {
-    content: "\e817";
+    content: "\e918";
   }
   &.devicemanagement:before {
-    content: "\e818";
+    content: "\e919";
   }
   &.download:before {
-    content: "\e819";
+    content: "\e91a";
   }
   &.edit:before {
-    content: "\e81a";
+    content: "\e91b";
   }
   &.enroll:before {
-    content: "\e81b";
+    content: "\e91c";
   }
   &.exchange:before {
-    content: "\e81c";
+    content: "\e91d";
   }
   &.filter_add:before {
-    content: "\e81d";
+    content: "\e91e";
   }
   &.folder:before {
-    content: "\e81e";
+    content: "\e91f";
   }
   &.group_enrollment:before {
-    content: "\e81f";
+    content: "\e920";
   }
   &.history:before {
-    content: "\e820";
+    content: "\e921";
   }
   &.ic_action_add_shortcut:before {
-    content: "\e821";
+    content: "\e922";
   }
   &.ic_action_alert:before {
-    content: "\e822";
+    content: "\e923";
   }
   &.ic_action_change_policy:before {
-    content: "\e823";
+    content: "\e924";
   }
   &.ic_action_deploy_app:before {
-    content: "\e824";
+    content: "\e925";
   }
   &.ic_action_deploy_store_app:before {
-    content: "\e825";
+    content: "\e926";
   }
   &.ic_action_locate:before {
-    content: "\e826";
+    content: "\e927";
   }
   &.ic_action_lock:before {
-    content: "\e827";
+    content: "\e928";
   }
   &.ic_action_message:before {
-    content: "\e828";
+    content: "\e929";
   }
   &.ic_action_open_file:before {
-    content: "\e829";
+    content: "\e92a";
   }
   &.ic_action_ping:before {
-    content: "\e82a";
+    content: "\e92b";
   }
   &.ic_action_refresh_device:before {
-    content: "\e82b";
+    content: "\e92c";
   }
   &.ic_action_remove_app:before {
-    content: "\e82c";
+    content: "\e92d";
   }
   &.ic_action_remove_shortcut:before {
-    content: "\e82d";
+    content: "\e92e";
   }
   &.ic_action_reset_passcode:before {
-    content: "\e82e";
+    content: "\e92f";
   }
   &.ic_action_update:before {
-    content: "\e82f";
+    content: "\e930";
   }
   &.ic_action_wipe:before {
-    content: "\e830";
+    content: "\e931";
   }
   &.ic_action_withdraw:before {
-    content: "\e831";
+    content: "\e932";
   }
   &.ic_conf_managed_app:before {
-    content: "\e832";
+    content: "\e933";
   }
   &.ic_conf_airplay:before {
-    content: "\e833";
+    content: "\e934";
   }
   &.ic_conf_airprint:before {
-    content: "\e834";
+    content: "\e935";
   }
   &.ic_conf_apn:before {
-    content: "\e835";
+    content: "\e936";
   }
   &.ic_conf_app-control:before {
-    content: "\e836";
+    content: "\e937";
   }
   &.ic_conf_calendar-subscription:before {
-    content: "\e837";
+    content: "\e938";
   }
   &.ic_conf_calendar:before {
-    content: "\e838";
+    content: "\e939";
   }
   &.ic_conf_certificate:before {
-    content: "\e839";
+    content: "\e93a";
   }
   &.ic_conf_contacts:before {
-    content: "\e83a";
+    content: "\e93b";
   }
   &.ic_conf_domain:before {
-    content: "\e83b";
+    content: "\e93c";
   }
   &.ic_conf_email:before {
-    content: "\e83c";
+    content: "\e93d";
   }
   &.ic_conf_exchange:before {
-    content: "\e83d";
+    content: "\e93e";
   }
   &.ic_conf_kiosk:before {
-    content: "\e83e";
+    content: "\e93f";
   }
   &.ic_conf_passcode:before {
-    content: "\e83f";
+    content: "\e940";
   }
   &.ic_conf_restrictions:before {
-    content: "\e840";
+    content: "\e941";
   }
   &.ic_conf_scep:before {
-    content: "\e841";
+    content: "\e942";
   }
   &.ic_conf_vpn:before {
-    content: "\e842";
+    content: "\e943";
   }
   &.ic_conf_webclip:before {
-    content: "\e843";
+    content: "\e944";
   }
   &.ic_conf_wifi:before {
-    content: "\e844";
+    content: "\e945";
   }
   &.ic_iot_advertisement:before {
-    content: "\e845";
+    content: "\e946";
   }
   &.ic_iot_end_programming:before {
-    content: "\e846";
+    content: "\e947";
   }
   &.ic_iot_led_multi_off:before {
-    content: "\e847";
+    content: "\e948";
   }
   &.ic_iot_led_off:before {
-    content: "\e848";
+    content: "\e949";
   }
   &.ic_iot_led_on_multi:before {
-    content: "\e849";
+    content: "\e94a";
   }
   &.ic_iot_led_on:before {
-    content: "\e84a";
+    content: "\e94b";
   }
   &.ic_iot_start_programming:before {
-    content: "\e84b";
+    content: "\e94c";
   }
   &.language:before {
-    content: "\e84c";
+    content: "\e94d";
   }
   &.logout:before {
-    content: "\e84d";
+    content: "\e94e";
   }
   &.map_location_filled:before {
-    content: "\e84e";
+    content: "\e94f";
   }
   &.map_location:before {
-    content: "\e84f";
+    content: "\e950";
   }
   &.mtrust:before {
-    content: "\e850";
+    content: "\e951";
   }
   &.new_app_appstore:before {
-    content: "\e851";
+    content: "\e952";
     color: #808080;
   }
   &.new_app_appstore:after {
-    content: "\e852";
+    content: "\e953";
     margin-left: -1.4794921875em;
     color: rgb(255, 255, 255);
   }
   &.new_app_native:before {
-    content: "\e853";
+    content: "\e954";
   }
   &.new_app_playstore:before {
-    content: "\e854";
+    content: "\e955";
   }
   &.new_app_webapp:before {
-    content: "\e855";
+    content: "\e956";
   }
   &.new_app_weblink:before {
-    content: "\e856";
+    content: "\e957";
   }
   &.new_app_windowsstore:before {
-    content: "\e857";
+    content: "\e958";
   }
   &.notification:before {
-    content: "\e858";
+    content: "\e959";
   }
   &.password_change:before {
-    content: "\e859";
+    content: "\e95a";
   }
   &.policies:before {
-    content: "\e85a";
+    content: "\e95b";
   }
   &.policy_add:before {
-    content: "\e85b";
+    content: "\e95c";
   }
   &.policy_remove:before {
-    content: "\e85c";
+    content: "\e95d";
   }
   &.pricetag:before {
-    content: "\e85d";
+    content: "\e95e";
   }
   &.publish:before {
-    content: "\e85e";
+    content: "\e95f";
   }
   &.published:before {
-    content: "\e85f";
+    content: "\e960";
   }
   &.request:before {
-    content: "\e860";
+    content: "\e961";
   }
   &.review:before {
-    content: "\e861";
+    content: "\e962";
   }
   &.rule_add:before {
-    content: "\e862";
+    content: "\e963";
   }
   &.rule_remove:before {
-    content: "\e863";
+    content: "\e964";
   }
   &.ruleset:before {
-    content: "\e864";
+    content: "\e965";
   }
   &.secure_browser:before {
-    content: "\e865";
+    content: "\e966";
   }
   &.support:before {
-    content: "\e866";
+    content: "\e967";
   }
   &.upload:before {
-    content: "\e867";
+    content: "\e968";
   }
   &.user_group:before {
-    content: "\e868";
+    content: "\e969";
   }
   &.user:before {
-    content: "\e869";
+    content: "\e96a";
   }
   &.version_add:before {
-    content: "\e86a";
+    content: "\e96b";
   }
   &.version:before {
-    content: "\e86b";
+    content: "\e96c";
   }
   &.vpp:before {
-    content: "\e86c";
+    content: "\e96d";
   }
   &.webapp:before {
-    content: "\e86d";
+    content: "\e96e";
   }
   &.windows:before {
-    content: "\e86e";
+    content: "\e96f";
   }
   &.workflow:before {
-    content: "\e86f";
+    content: "\e970";
   }
 }
