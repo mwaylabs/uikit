@@ -15,6 +15,7 @@ module.exports = function(config){
       'node_modules/underscore/underscore.js',
       'node_modules/bootstrap/js/tooltip.js',
       'node_modules/bootstrap/js/popover.js',
+      'node_modules/bootstrap/js/modal.js',
       'node_modules/backbone/backbone.js',
       'node_modules/angular/angular.min.js',
       'node_modules/angular-route/angular-route.min.js',
@@ -29,8 +30,12 @@ module.exports = function(config){
       'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
       'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
 
+      'src/**/*.html',
+      'src-relution/**/*.html',
       'dist/uikit.js',
-      'src/**/tests/**/*.js'
+      'dist/uikit.relution.js',
+      'src/**/*_test.js',
+      'src-relution/test/**/*.js'
     ],
 
     // list of files to exclude
@@ -60,7 +65,7 @@ module.exports = function(config){
 
     // enable / disable watching file and executing tests whenever any file changes
     // CLI --auto-watch --no-auto-watch
-    autoWatch: false,
+    autoWatch: true,
 
     // Start these browsers, currently available:
     // - Chrome
@@ -87,18 +92,22 @@ module.exports = function(config){
 
     // compile coffee scripts
     preprocessors: {
-      'src/templates/**/*.html': ['ng-html2js']
+      'src/**/*.html': ['ng-html2js'],
+      'src-relution/**/*.html': ['ng-html2js']
     },
 
     //karma html preprocessor for directive templates
     ngHtml2JsPreprocessor: {
       // strip this from the file path
-      stripPrefix: 'src/',
-      prependPrefix: 'uikit/',
+      cacheIdFromPath: function(filepath) {
+        // example strips 'public/' from anywhere in the path
+        // module(app/templates/template.html) => app/public/templates/template.html
+        return filepath.replace(/src(-relution)?/, 'uikit');
+      },
 
       // setting this option will create only a single module that contains templates
       // from all the files, so you can load them all with module('foo')
-      moduleName: 'karmaDirectiveTemplates',
+      moduleName: 'karmaDirectiveTemplates'
     }
   });
 };
