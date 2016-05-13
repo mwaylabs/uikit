@@ -68,9 +68,11 @@ describe('mwUi Toast directive', function () {
     });
 
     it('updates the toastlist when a toast was removed', function(){
-      var toast = Toast.addToast('My Message');
-      var toast2 = Toast.addToast('My Message 2');
-      var toast3 = Toast.addToast('My Message 3');
+      var toast2;
+
+      Toast.addToast('My Message');
+      toast2 = Toast.addToast('My Message 2');
+      Toast.addToast('My Message 3');
       Toast.removeToast(toast2.id);
 
       $scope.$digest();

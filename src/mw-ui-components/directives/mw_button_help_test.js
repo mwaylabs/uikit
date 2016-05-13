@@ -191,7 +191,7 @@ describe('mwButtonHelp', function () {
     scope.$destroy();
     scope.$digest();
 
-    expect(angular.element('.mw-button-help-popover').html()).toBeFalsy;
+    expect(angular.element('.mw-button-help-popover').html()).toBeFalsy();
   });
 
   it('should change locale', function () {

@@ -13,7 +13,7 @@ describe('mwViewChangeLoader', function () {
     scope = _$rootScope_.$new();
 
     var changeLoader = '<div mw-view-change-loader></div>';
-    var el = $compile(changeLoader)(scope);
+    $compile(changeLoader)(scope);
     scope.$digest();
   }));
 

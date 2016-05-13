@@ -452,12 +452,12 @@ describe('mwUi Response Handler', function () {
       var resolveFnSpy = jasmine.createSpy('resolveFn'),
         errorResolveFnSpy = jasmine.createSpy('errorResolveFn');
 
-      ResponseHandlerProvider.registerAction('/test', function(){return 'HANDLERDATA'}, {
+      ResponseHandlerProvider.registerAction('/test', function(){return 'HANDLERDATA';}, {
         method: 'POST',
         onSuccess: true
       });
 
-      ResponseHandlerProvider.registerAction('/test2', function(){return 'ERRORHANDLERDATA'}, {
+      ResponseHandlerProvider.registerAction('/test2', function(){return 'ERRORHANDLERDATA';}, {
         method: 'POST',
         onError: true
       });
@@ -475,7 +475,7 @@ describe('mwUi Response Handler', function () {
     it('should correctly pass return values through all registered functions on success', function(){
       var resolveFnSpy = jasmine.createSpy('resolveFn');
 
-      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp}, {
+      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp;}, {
         method: 'POST',
         onSuccess: true
       });
@@ -485,7 +485,7 @@ describe('mwUi Response Handler', function () {
         onSuccess: true
       });
 
-      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp}, {
+      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp;}, {
         method: 'POST',
         onSuccess: true
       });
@@ -500,7 +500,7 @@ describe('mwUi Response Handler', function () {
     it('should correctly pass return values through all registered functions on error', function(){
       var errorResolveFnSpy = jasmine.createSpy('errorResolveFn');
 
-      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp}, {
+      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp;}, {
         method: 'POST',
         onError: true
       });
@@ -510,7 +510,7 @@ describe('mwUi Response Handler', function () {
         onError: true
       });
 
-      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp}, {
+      ResponseHandlerProvider.registerAction('/test', function(rsp){rsp.data.a = ++rsp.data.a; return rsp;}, {
         method: 'POST',
         onError: true
       });
@@ -536,7 +536,7 @@ describe('mwUi Response Handler', function () {
       it('should block chain when a function was registered that returns a promise and continue when promise is resolved', function () {
         var resolveFnSpy = jasmine.createSpy('resolveFn'),
           handlerResolveFnSpy = jasmine.createSpy('handlerResolveFnSpy'),
-          handlerResolveFn;
+          handlerResolveFn = function(){};
 
         $provide.factory('promiseFn', function ($q) {
           return function () {
@@ -546,7 +546,7 @@ describe('mwUi Response Handler', function () {
               dfd.resolve();
             };
             return dfd.promise;
-          }
+          };
         });
         ResponseHandlerProvider.registerAction('/test', 'promiseFn', {
           method: 'POST',
@@ -568,7 +568,7 @@ describe('mwUi Response Handler', function () {
         var resolveFnSpy = jasmine.createSpy('resolveFn'),
           rejectFnSpy = jasmine.createSpy('resolveFn'),
           handlerResolveFnSpy = jasmine.createSpy('handlerResolveFnSpy'),
-          handlerResolveFn;
+          handlerResolveFn = function(){};
 
         $provide.factory('promiseFn', function ($q) {
           return function () {
@@ -578,7 +578,7 @@ describe('mwUi Response Handler', function () {
               dfd.reject({a: 1});
             };
             return dfd.promise;
-          }
+          };
         });
         ResponseHandlerProvider.registerAction('/test', 'promiseFn', {
           method: 'POST',
@@ -620,7 +620,7 @@ describe('mwUi Response Handler', function () {
 
       it('should use the value returned by the handler promise', function(){
         var resolveFnSpy = jasmine.createSpy('resolveFn'),
-            handlerResolveFn;
+            handlerResolveFn = function(){};
 
         $provide.factory('promiseFn', function ($q) {
           return function () {
@@ -629,7 +629,7 @@ describe('mwUi Response Handler', function () {
               dfd.resolve('HANDLERDATA');
             };
             return dfd.promise;
-          }
+          };
         });
 
         $provide.factory('promiseFn2', function ($q) {
@@ -639,7 +639,7 @@ describe('mwUi Response Handler', function () {
               dfd.resolve('HANDLERDATA');
             };
             return dfd.promise;
-          }
+          };
         });
 
         ResponseHandlerProvider.registerAction('/test', 'promiseFn', {
@@ -649,7 +649,7 @@ describe('mwUi Response Handler', function () {
         $http.post('/test').then(resolveFnSpy);
         $httpBackend.when('POST', '/test').respond(200, 'ABC');
         $httpBackend.flush();
-        handlerResolveFn()
+        handlerResolveFn();
         $rootScope.$digest();
         expect(resolveFnSpy.calls.first().args[0]).toEqual('HANDLERDATA');
       });
@@ -660,7 +660,7 @@ describe('mwUi Response Handler', function () {
         var resolveFnSpy = jasmine.createSpy('resolveFn'),
           rejectFnSpy = jasmine.createSpy('rejectFn'),
           handlerResolveFnSpy = jasmine.createSpy('handlerResolveFnSpy'),
-          handlerResolveFn;
+          handlerResolveFn = function(){};
 
         $provide.factory('promiseFn', function ($q) {
           return function () {
@@ -670,7 +670,7 @@ describe('mwUi Response Handler', function () {
               dfd.reject({a: 1});
             };
             return dfd.promise;
-          }
+          };
         });
         ResponseHandlerProvider.registerAction('/test', 'promiseFn', {
           method: 'POST',
@@ -696,7 +696,7 @@ describe('mwUi Response Handler', function () {
         var resolveFnSpy = jasmine.createSpy('resolveFn'),
           rejectFnSpy = jasmine.createSpy('resolveFn'),
           handlerResolveFnSpy = jasmine.createSpy('handlerResolveFnSpy'),
-          handlerResolveFn;
+          handlerResolveFn = function(){};
 
         $provide.factory('promiseFn', function ($q) {
           return function () {
@@ -706,7 +706,7 @@ describe('mwUi Response Handler', function () {
               dfd.resolve({a: 1});
             };
             return dfd.promise;
-          }
+          };
         });
         ResponseHandlerProvider.registerAction('/test', 'promiseFn', {
           method: 'POST',
@@ -751,7 +751,7 @@ describe('mwUi Response Handler', function () {
 
       it('should use the value returned by the handler promise', function(){
         var rejectFnSpy = jasmine.createSpy('rejectFn'),
-          handlerResolveFn;
+          handlerResolveFn = function(){};
 
         $provide.factory('promiseFn', function ($q) {
           return function () {
@@ -760,7 +760,7 @@ describe('mwUi Response Handler', function () {
               dfd.reject('HANDLERDATA');
             };
             return dfd.promise;
-          }
+          };
         });
 
         ResponseHandlerProvider.registerAction('/test', 'promiseFn', {
@@ -777,9 +777,9 @@ describe('mwUi Response Handler', function () {
 
       it('promise should be resolved when the last registered handler resolves it even when it was rejected in a handler before', function(){
         var resolveFnSpy = jasmine.createSpy('rejectFn'),
-          handlerResolveFn1,
-          handlerResolveFn2,
-          handlerResolveFn3;
+          handlerResolveFn1 = function(){},
+          handlerResolveFn2 = function(){},
+          handlerResolveFn3 = function(){};
 
         $provide.factory('promiseFn1', function ($q) {
           return function () {
@@ -788,7 +788,7 @@ describe('mwUi Response Handler', function () {
               dfd.resolve('HANDLERDATA');
             };
             return dfd.promise;
-          }
+          };
         });
 
         $provide.factory('promiseFn2', function ($q) {
@@ -798,7 +798,7 @@ describe('mwUi Response Handler', function () {
               dfd.reject('HANDLERDATA');
             };
             return dfd.promise;
-          }
+          };
         });
 
         $provide.factory('promiseFn3', function ($q) {
@@ -808,7 +808,7 @@ describe('mwUi Response Handler', function () {
               dfd.resolve('HANDLERDATA');
             };
             return dfd.promise;
-          }
+          };
         });
 
         ResponseHandlerProvider.registerAction('/test', 'promiseFn1', {
@@ -838,8 +838,8 @@ describe('mwUi Response Handler', function () {
 
       it('promise should be rejected when the last handler rejects it', function(){
         var rejectFnSpy = jasmine.createSpy('rejectFn'),
-          handlerResolveFn1,
-          handlerResolveFn2;
+          handlerResolveFn1 = function(){},
+          handlerResolveFn2 = function(){};
 
         $provide.factory('promiseFn1', function ($q) {
           return function (rsp) {
@@ -848,7 +848,7 @@ describe('mwUi Response Handler', function () {
               dfd.reject(rsp);
             };
             return dfd.promise;
-          }
+          };
         });
 
         $provide.factory('promiseFn2', function ($q) {
@@ -858,7 +858,7 @@ describe('mwUi Response Handler', function () {
               dfd.reject(rsp);
             };
             return dfd.promise;
-          }
+          };
         });
 
         ResponseHandlerProvider.registerAction('/test', 'promiseFn1', {

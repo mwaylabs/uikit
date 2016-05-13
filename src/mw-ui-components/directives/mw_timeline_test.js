@@ -37,7 +37,7 @@ describe('mwTimeline', function () {
     $compile(el)(scope);
     scope.$digest();
 
-    $.fx.off = true;
+    window.$.fx.off = true;
 
     isolateScopeFieldset = el.find('.mw-timeline-fieldset').isolateScope();
   }));
