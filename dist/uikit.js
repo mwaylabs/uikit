@@ -2,15 +2,19 @@
   'use strict';
 
   angular.module('mwUI', [
+      'mwUI.Backbone',
+      'mwUI.ExceptionHandler',
       'mwUI.Inputs',
       'mwUI.i18n',
       'mwUI.Layout',
       'mwUI.List',
       'mwUI.Menu',
       'mwUI.Modal',
+      'mwUI.ResponseHandler',
       'mwUI.Toast',
-      'mwUI.UiComponents',
-      'mwUI.Utils'
+      'mwUI.ResponseToastHandler',
+      'mwUI.Utils',
+      'mwUI.UiComponents'
     ])
 
     .config(['i18nProvider', function (i18nProvider) {
@@ -28,6 +32,13 @@
   root.mwUI = {};
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
+
+  $templateCache.put('uikit/mw-exception-handler/modals/templates/mw_exception_modal.html',
+    "<div mw-modal title=\"{{'ExceptionHandler.mwExceptionModal.title' | i18n}}\"><div mw-modal-body><div mw-wizard=\"wizard\"><div mw-wizard-step><p>{{'ExceptionHandler.mwExceptionModal.unknownError' | i18n}}</p><div ng-if=\"exception && (displayException || !successCallback)\" mw-alert=\"danger\"><p>{{exception}}</p></div><div ng-if=\"userCanEnterMessage && successCallback\"><p class=\"text-muted\">{{'ExceptionHandler.mwExceptionModal.userMessage' | i18n}}</p><textarea name=\"description\" ng-attr-placeholder=\"{{'ExceptionHandler.mwExceptionModal.userMessagePlaceholder' | i18n}}\" ng-model=\"model.bugDescription\">\n" +
+    "\n" +
+    "          </textarea></div></div><div mw-wizard-step><div mw-alert=\"success\">{{'ExceptionHandler.mwExceptionModal.thanks' | i18n}}</div></div></div></div><div mw-modal-footer><button ng-if=\"wizard.getCurrentStepNumber()!==1\" type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">{{'Utils.cancel' | i18n }}</button> <button ng-if=\"wizard.getCurrentStepNumber()===1 || !successCallback\" type=\"button\" ng-click=\"close()\" class=\"btn btn-primary\">{{'Utils.ok' | i18n }}</button> <button ng-if=\"wizard.getCurrentStepNumber()===0 && successCallback\" type=\"button\" ng-click=\"report()\" class=\"btn btn-primary\">{{'ExceptionHandler.mwExceptionModal.report' | i18n}}</button></div></div>"
+  );
+
 
   $templateCache.put('uikit/mw-layout/directives/templates/mw_app.html',
     "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Title</title></head><body></body></html>"
@@ -55,12 +66,12 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_footer.html',
-    "<tr><td colspan=\"{{ columns.length + 4 }}\"><div ng-if=\"Loading.isLoading() && collection.filterable.hasNextPage()\"><div rln-spinner></div></div><div ng-if=\"collection.models.length < 1\" class=\"text-center\"><p class=\"lead\">{{ 'List.mwListFooter.noneFound' | i18n }}</p></div></td></tr>"
+    "<tr><td colspan=\"{{ columns.length + 4 }}\"><div ng-if=\"showSpinner()\"><div mw-spinner></div></div><div ng-if=\"collection.models.length < 1\" class=\"text-center\"><p class=\"lead\">{{ 'List.mwListFooter.noneFound' | i18n }}</p></div></td></tr>"
   );
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_head.html',
-    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}\"><div class=\"selection-controller\"><div ng-if=\"selectable\" class=\"holder\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.selectAll' | i18n }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"fa-times\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.clearSelection' | i18n}}</a></span></div></div><div class=\"search-bar\"><div ng-if=\"searchAttribute\" mw-filterable-search-bb collection=\"collection\" placeholder=\"{{'mwUI.List.listHead.searchFor' | i18n:{name: collectionName} }}\" property=\"{{searchAttribute}}\"></div></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'List.mwListHead.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'List.mwListHead.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"fa-times\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
+    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}\"><div class=\"selection-controller\"><div ng-if=\"selectable\" class=\"holder\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.selectAll' | i18n }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"fa-times\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.clearSelection' | i18n}}</a></span></div></div><div class=\"search-bar\"><div ng-if=\"searchAttribute\" mw-filterable-search-bb collection=\"collection\" placeholder=\"{{'List.mwListHead.searchFor' | i18n:{name: collectionName} }}\" property=\"{{searchAttribute}}\"></div></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'List.mwListHead.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'List.mwListHead.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"fa-times\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
   );
 
 
@@ -70,12 +81,22 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-menu/directives/templates/mw_menu.html',
-    "<div class=\"mw-menu\"><div ng-repeat=\"entry in menu.models\">{{entry.get('label')}}</div></div>"
+    "<div class=\"mw-menu\"><div ng-repeat=\"entry in menu.models\" mw-menu-entry=\"entry\"></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-menu/directives/templates/mw_menu_entry.html',
+    "<div class=\"mw-menu-entry\" ng-class=\"{active:menuEntryCtrl.isActive}\"><div class=\"mw-icon\"><span class=\"fa fa-user\"></span></div><div class=\"extended-content\"><span class=\"entry-label\">{{menuEntryCtrl.entry.get('label')}}</span><div class=\"sub-entries\" ng-repeat=\"subEntry in menuEntryCtrl.entry.get('subEntries').models\" mw-menu-sub-entry=\"subEntry\"></div></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-menu/directives/templates/mw_menu_sub_entry.html',
+    "<div class=\"mw-menu-sub-entry\" ng-class=\"{active: menuSubEntryCtrl.isActive}\"><div class=\"entry-label\"><span>{{menuSubEntryCtrl.entry.get('label')}}</span></div></div>"
   );
 
 
   $templateCache.put('uikit/mw-menu/directives/templates/mw_sidebar_menu.html',
-    "<div class=\"mw-sidebar-menu\"><div class=\"logo\"></div><div mw-menu=\"ctrl.mwMenu\"></div><div class=\"additonal-content\" ng-transclude></div></div>"
+    "<div class=\"mw-sidebar-menu\" ng-class=\"{opened:ctrl.isOpened()}\"><div ng-if=\"ctrl.mwMenuLogo\" class=\"logo\"><img ng-src=\"{{ctrl.mwMenuLogo}}\"></div><div mw-menu=\"ctrl.mwMenu\"></div><div class=\"additional-content\" ng-transclude></div><div class=\"opener clickable\" ng-click=\"ctrl.toggleState()\"><span class=\"mw-icon\"><span ng-if=\"ctrl.isOpened()\" class=\"fa fa-angle-left\"></span> <span ng-if=\"!ctrl.isOpened()\" class=\"fa fa-angle-right\"></span></span></div></div>"
   );
 
 
@@ -90,7 +111,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-modal/directives/templates/mw_modal_confirm.html',
-    "<div mw-modal title=\"{{ 'Modal.mwModalConfirm.areYouSure' | i18n }}\"><div mw-modal-body><div ng-transclude></div></div><div mw-modal-footer><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\" ng-click=\"cancel()\">{{'Modal.mwModalConfirm.cancel' | i18n }}</button> <button type=\"button\" mw-modal-on-enter class=\"btn btn-primary\" data-dismiss=\"modal\" ng-click=\"ok()\">{{'Modal.mwModalConfirm.ok' | i18n }}</button></div></div>"
+    "<div mw-modal title=\"{{ 'Modal.mwModalConfirm.areYouSure' | i18n }}\"><div mw-modal-body><div ng-transclude></div></div><div mw-modal-footer><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\" ng-click=\"cancel()\">{{'Utils.cancel' | i18n }}</button> <button type=\"button\" mw-modal-on-enter class=\"btn btn-primary\" data-dismiss=\"modal\" ng-click=\"ok()\">{{'Utils.ok' | i18n }}</button></div></div>"
   );
 
 
@@ -129,13 +150,18 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
-  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_collapsable.html',
-    "<div class=\"mw-collapsable\"><div class=\"mw-collapsable-heading\" ng-click=\"toggle()\"><i class=\"fa fa-angle-right\" ng-class=\"{'fa-rotate-90': viewModel.collapsed}\"></i> <span class=\"mw-collapsable-heading-text\">{{title}}</span></div><div ng-class=\"{'collapsed': viewModel.collapsed}\" class=\"mw-collapsable-body mw-collapsable-animate margin-top-5\" ng-transclude></div></div>"
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_collapsible.html',
+    "<div class=\"mw-collapsible\"><div class=\"mw-collapsible-heading\" ng-click=\"toggle()\"><i class=\"fa fa-angle-right\" ng-class=\"{'fa-rotate-90': viewModel.collapsed}\"></i> <span class=\"mw-collapsible-heading-text\">{{title}}</span></div><div class=\"mw-collapsible-body mw-collapsible-animate margin-top-5\" ng-class=\"{'collapsed': viewModel.collapsed}\" ng-transclude></div></div>"
   );
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_icon.html',
     "<i ng-class=\"iconClasses\" style=\"{{style}}\" mw-tooltip=\"{{tooltip}}\" placement=\"{{placement}}\"></i>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_indefinite_loading.html',
+    "<div class=\"mw-infinite-loading\"><div class=\"col-md-12 text-center\"><div mw-spinner></div><div class=\"lead\">{{'UiComponents.mwIndefiniteLoading.loading' | i18n | uppercase}}</div></div></div>"
   );
 
 
@@ -149,13 +175,28 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_spinner.html',
+    "<div class=\"mw-spinner\"></div>"
+  );
+
+
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_star_rating.html',
     "<span class=\"mw-star-rating\"><i ng-repeat=\"star in stars\" ng-class=\"star.state\" class=\"fa\"></i></span>"
   );
 
 
-  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_text_collapsable.html',
-    "<div class=\"mw-text-collapsable\"><div ng-if=\"markdown\"><div mw-markdown=\"text()\"></div><a ng-if=\"showButton\" ng-click=\"toggleLength()\">{{ showLessOrMore() | i18n }}</a></div><div ng-if=\"!markdown\"><span class=\"line-break\">{{ text() }}</span> <a ng-if=\"showButton\" ng-click=\"toggleLength()\">{{ showLessOrMore() | i18n }}</a></div></div>"
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
+    "<div class=\"clearfix mw-tab-bar\" ng-class=\"{justified: justified}\"><ul class=\"nav nav-tabs\" ng-class=\"{ 'nav-justified': justified }\"><li ng-repeat=\"pane in panes\" ng-class=\"{ active: pane.selected }\"><a ng-class=\"{ 'has-error': pane.isInvalid }\" ng-click=\"select(pane)\">{{ pane.title }}</a></li></ul><div class=\"tab-content\" ng-transclude></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_tab_pane.html',
+    "<div class=\"tab-pane mw-tab-pane\" role=\"tabpanel\" ng-class=\"{active: selected}\" ng-transclude></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_text_collapsible.html',
+    "<div class=\"mw-text-collapsible\"><span class=\"line-break content\">{{ text() }}</span> <a ng-if=\"showButton\" ng-click=\"toggleLength()\" class=\"toggle-btn\">{{ showLessOrMore() | i18n }}</a></div>"
   );
 
 
@@ -180,12 +221,47 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_view_change_loader.html',
-    "<div class=\"mw-view-change-loader\" ng-if=\"viewModel.loading\"><div class=\"spinner\"></div></div>"
+    "<div class=\"mw-view-change-loader\" ng-if=\"viewModel.loading\"><div mw-spinner></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_wizard.html',
+    "<div class=\"mw-wizard\" ng-transclude></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_wizard_navigation.html',
+    "<div class=\"mw-wizard-navigation\"><button class=\"btn btn-default\" ng-disabled=\"!wizard.hasPreviousStep()\" ng-click=\"wizard.back()\">Previous</button> <button class=\"btn btn-primary\" ng-if=\"wizard.hasNextStep() || (!wizard.hasNextStep() && !finishedAction)\" ng-disabled=\"!wizard.hasNextStep()\" ng-click=\"wizard.next()\">Next</button> <button class=\"btn btn-primary\" ng-if=\"!wizard.hasNextStep() && finishedAction\" ng-click=\"finish()\">OK</button><div class=\"extra-content\" ng-transclude></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_wizard_progress.html',
+    "<div class=\"mw-wizard-progress\"><div class=\"bar\"><div class=\"current-progress\" ng-style=\"{width:getProgress()+'%'}\"></div></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_wizard_step.html',
+    "<div class=\"mw-wizard-step\" ng-class=\"{active:_isActive}\" ng-show=\"_isActive\"><div ng-if=\"_isActive\" class=\"mw-wizard-step-inner\" ng-transclude></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-utils/modals/templates/mw_leave_confirmation_modal.html',
+    "<div mw-modal title=\"{{'Utils.mwLeaveConfirmationModal.title' | i18n}}\"><div mw-modal-body><p>{{ text }}</p></div><div mw-modal-footer><button type=\"button\" class=\"btn btn-default\" ng-click=\"stay()\">{{'Utils.mwLeaveConfirmationModal.stay' | i18n }}</button> <button type=\"button\" class=\"btn btn-primary\" ng-click=\"continue()\">{{'Utils.mwLeaveConfirmationModal.continue' | i18n }}</button></div></div>"
   );
 
 
   $templateCache.put('uikit/templates/mwSidebarBb/mwSidebarInput.html',
     "<div class=\"row\"><div class=\"col-md-12 form-group\" ng-class=\"{'has-error': !isValid()}\" style=\"margin-bottom: 0\"><input type=\"{{_type}}\" ng-if=\"!customUrlParameter\" class=\"form-control\" ng-model=\"viewModel.val\" ng-change=\"changed()\" ng-disabled=\"mwDisabled\" placeholder=\"{{placeholder}}\" ng-model-options=\"{ debounce: 500 }\"><input type=\"{{_type}}\" ng-if=\"customUrlParameter\" class=\"form-control\" ng-model=\"viewModel.val\" ng-change=\"changed()\" ng-disabled=\"mwDisabled\" placeholder=\"{{placeholder}}\" ng-model-options=\"{ debounce: 500 }\"></div></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-exception-handler/i18n/de_DE.json',
+    "{ \"ExceptionHandler\": { \"mwExceptionModal\": { \"title\": \"Es ist etwas schiefgelaufen\", \"unknownError\": \"Leider ist ein unvorhergesehener Fehler aufgetreten. Sie können uns einen Fehlerbericht senden, sodass wir diesen schnellst möglich beseitigen können. Vielen Dank.\", \"userMessage\": \"Sie können uns zusätzlich ihre letzten Schritte beschreiben, sodass wir den Fehler schneller nachstellen können.\", \"userMessagePlaceholder\": \"(Optional)\", \"report\": \"Fehler melden\", \"thanks\": \"Vielen Dank für Ihre Rückmeldung. Wir werden uns umgehend um diesen Fehler kümmern.\" } } }"
+  );
+
+
+  $templateCache.put('uikit/mw-exception-handler/i18n/en_US.json',
+    "{ \"ExceptionHandler\": { \"mwExceptionModal\": { \"title\": \"Something went wrong\", \"unknownError\": \"Unfortunatly something went wrong. You can report this error so we can fix it. Thank you.\", \"userMessage\": \"You can leave some additional information to make it easier for us to reproduce the error\", \"userMessagePlaceholder\": \"(Optional)\", \"report\": \"Report error\", \"thanks\": \"Thanks for your feedback. We will have a look at this error as soon as possible.\" } } }"
   );
 
 
@@ -195,34 +271,44 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/i18n/en_US.json',
-    "{ }"
+    "{ \"List\": { \"mwListHead\": { \"items\": \"Items\", \"selectAll\": \"Select all\", \"clearSelection\": \"Clear selection\", \"itemSelected\": \"{{name}} is selected\", \"itemsSelected\": \"{{count}} {{name}} are selected\", \"itemAmount\": \"{{count}} {{name}}\", \"searchFor\": \"Search for {{name}}\", \"notAvailable\": \"N/V\", \"notAvailableTooltip\": \"The entry is not available anymore. Maybe is has been deleted.\" }, \"mwListFooter\": { \"noneFound\": \"No entries have been found.\" } } }"
   );
 
 
   $templateCache.put('uikit/mw-modal/i18n/de_DE.json',
-    "{ \"Modal\": { \"mwModalConfirm\": { \"areYouSure\": \"Sind Sie sich sicher?\", \"ok\": \"Ok\", \"cancel\": \"Abbrechen\" } } }"
+    "{ \"Modal\": { \"mwModalConfirm\": { \"areYouSure\": \"Sind Sie sich sicher?\" } } }"
   );
 
 
   $templateCache.put('uikit/mw-modal/i18n/en_US.json',
-    "{ }"
+    "{ \"Modal\": { \"mwModalConfirm\": { \"areYouSure\": \"Are you sure?\" } } }"
   );
 
 
   $templateCache.put('uikit/mw-ui-components/i18n/de_DE.json',
-    "{ \"UiComponents\": { \"mwToggle\": { \"on\": \"An\", \"off\": \"Aus\" }, \"mwTimelineFieldset\": { \"entriesHiddenSingular\": \"1 Eintrag ist ausgeblendet\", \"entriesHiddenPlural\": \"{{count}} Einträge sind ausgeblendet\" }, \"mwTextCollapsable\": { \"showMore\": \"mehr anzeigen\", \"showLess\": \"weniger anzeigen\" }, \"mwButtonHelp\": { \"isDisabledBecause\": \"Dieser Button ist deaktiviert weil:\" } } }"
+    "{ \"UiComponents\": { \"mwToggle\": { \"on\": \"An\", \"off\": \"Aus\" }, \"mwTimelineFieldset\": { \"entriesHiddenSingular\": \"1 Eintrag ist ausgeblendet\", \"entriesHiddenPlural\": \"{{count}} Einträge sind ausgeblendet\" }, \"mwTextCollapsible\": { \"showMore\": \"mehr anzeigen\", \"showLess\": \"weniger anzeigen\" }, \"mwButtonHelp\": { \"isDisabledBecause\": \"Dieser Button ist deaktiviert weil:\" }, \"mwIndefiniteLoading\": { \"loading\": \"Lade Daten...\" } } }"
   );
 
 
   $templateCache.put('uikit/mw-ui-components/i18n/en_US.json',
-    "{ \"UiComponents\": { \"mwToggle\": { \"on\": \"On\", \"off\": \"Off\" }, \"mwTimelineFieldset\": { \"entriesHiddenSingular\": \"One entry is hidden\", \"entriesHiddenPlural\": \"{{count}} entries are hidden\" } } }"
+    "{ \"UiComponents\": { \"mwToggle\": { \"on\": \"On\", \"off\": \"Off\" }, \"mwTimelineFieldset\": { \"entriesHiddenSingular\": \"One entry is hidden\", \"entriesHiddenPlural\": \"{{count}} entries are hidden\" }, \"mwTextCollapsable\": { \"showMore\": \"show more\", \"showLess\": \"show less\" }, \"mwButtonHelp\": { \"isDisabledBecause\": \"This button is currently disabled because:\" }, \"mwIndefiniteLoading\": { \"loading\": \"Loading data...\" } } }"
+  );
+
+
+  $templateCache.put('uikit/mw-utils/i18n/de_DE.json',
+    "{ \"Utils\": { \"ok\": \"Ok\", \"cancel\": \"Abbrechen\", \"mwLeaveConfirmationModal\": { \"title\": \"Möchten Sie wirklich die aktuelle Seite verlassen?\", \"continue\": \"Fortfahren\", \"stay\": \"Auf Seite bleiben\" } } }"
+  );
+
+
+  $templateCache.put('uikit/mw-utils/i18n/en_US.json',
+    "{ \"Utils\": { \"ok\": \"Ok\", \"cancel\": \"Cancel\" }, \"mwLeaveConfirmationModal\": { \"title\": \"Do you really want to leave the current page?\", \"continue\": \"Continue\", \"stay\": \"Stay on this page\" } }"
   );
 }]);
 
 /**
  * Created by zarges on 17/02/16.
  */
-angular.module('mwUI.Utils', []);
+angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
 
 window.mwUI.Utils = {};
 window.mwUI.Utils.shims = {};
@@ -351,7 +437,7 @@ angular.module('mwUI.Utils')
         });
       }
     };
-  }])
+  }]);
 angular.module('mwUI.Utils')
 
   .directive('mwInfiniteScroll', ['$window', '$document', function ($window, $document) {
@@ -425,6 +511,58 @@ angular.module('mwUI.Utils')
   }]);
 angular.module('mwUI.Utils')
 
+  .directive('mwLeaveConfirmation', ['$window', '$rootScope', 'LeaveConfirmationModal', function ($window, $rootScope, LeaveConfirmationModal) {
+    return {
+      scope: {
+        alertBeforeLeave: '=mwLeaveConfirmation',
+        text: '@'
+      },
+      link: function (scope) {
+
+        var confirmationModal = new LeaveConfirmationModal();
+
+        // Prevent the original event so the routing will not be completed
+        // Save the url where it should be navigated to in a temp variable
+        var showConfirmModal = function (nextUrl) {
+          confirmationModal.setScopeAttributes({
+            nextUrl: nextUrl,
+            text: scope.text,
+            leaveCallback: function () {
+              scope.changeLocationOff();
+            },
+            stayCallback: function () {
+
+            }
+          });
+          confirmationModal.show();
+        };
+
+        //In case that just a hashchange event was triggered
+        scope.changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, nextUrl) {
+          if (scope.alertBeforeLeave) {
+            ev.preventDefault();
+            showConfirmModal(nextUrl);
+          }
+        });
+
+        //In case that the user clicks the refresh/back button or makes a hard url change
+        $window.onbeforeunload = function () {
+          if (scope.alertBeforeLeave) {
+            return scope.text;
+          }
+        };
+
+        if (!angular.isDefined(scope.text)) {
+          throw new Error('Please specify a text in the text attribute');
+        }
+
+        scope.$on('$destroy', scope.changeLocationOff);
+      }
+    };
+  }]);
+
+angular.module('mwUI.Utils')
+
   .directive('mwPreventDefault', function () {
     return {
       restrict: 'A',
@@ -465,6 +603,90 @@ angular.module('mwUI.Utils')
     };
   });
 
+angular.module('mwUI.Utils')
+
+  .factory('LeaveConfirmationModal', ['Modal', function (Modal) {
+    return Modal.prepare({
+      templateUrl: 'uikit/mw-utils/modals/templates/mw_leave_confirmation_modal.html',
+      controller: 'LeaveConfirmationModalController'
+    });
+  }])
+
+  .controller('LeaveConfirmationModalController', ['$scope', function ($scope) {
+    $scope.stay = function () {
+      $scope.stayCallback();
+      $scope.hideModal();
+    };
+
+    // User really wants to navigate to that page which was saved before in a temp variable
+    $scope.continue = function () {
+      if ($scope.nextUrl) {
+        //hide the modal and navigate to the page
+        $scope.leaveCallback();
+        $scope.hideModal().then(function () {
+          document.location.href=$scope.nextUrl;
+        });
+      } else {
+        throw new Error('NextUrl has to be set!');
+      }
+    };
+  }]);
+
+angular.module('mwUI.Utils')
+
+  .service('callbackHandler', ['$injector', function($injector){
+    return {
+      execFn: function(cb, params, scope){
+        if(params && angular.isArray(params)){
+          return cb.apply(scope, params);
+        } else {
+          return cb.call(scope, params);
+        }
+      },
+      getFn: function(cb){
+        if(angular.isString(cb)){
+          return $injector.get(cb);
+        } else if(angular.isFunction(cb)){
+          return cb;
+        } else {
+          throw new Error('First argument has to be either a valid service or function');
+        }
+      },
+      exec: function(cb, params, scope){
+        this.execFn(this.getFn(cb), params, scope);
+      }
+    };
+  }]);
+
+/**
+ * Created by zarges on 17/02/16.
+ */
+window.mwUI.Utils.shims.concatUrlParts = function(){
+  var concatUrl = '';
+  _.forEach(arguments,function(url){
+    url = url.replace(/^\//,'');
+    url = url.replace(/\/$/,'');
+    concatUrl += ( url +('/') );
+  });
+  return concatUrl;
+};
+'use strict';
+window.mwUI.Utils.shims.domObserver = function (el, callback, config) {
+
+  var observer = new MutationObserver(function (mutations) {
+      callback.call(this, mutations);
+    }),
+    node = (el instanceof angular.element) ? el[0] : el;
+
+  config = config || {
+      attributes: true,
+      childList: true, characterData: true
+    };
+
+  observer.observe(node, config);
+
+  return observer;
+};
 /**
  * Created by zarges on 17/02/16.
  */
@@ -473,6 +695,10 @@ window.mwUI.Utils.shims.routeToRegExp = function(route){
     namedParam = /(\(\?)?:\w+/g,
     splatParam = /\*\w?/g,
     escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+
+  if(!_.isString(route)){
+    throw new Error('The route ' + JSON.stringify(route) + 'has to be a URL');
+  }
 
   route = route.replace(escapeRegExp, '\\$&')
     .replace(optionalParam, '(?:$1)?')
@@ -483,29 +709,20 @@ window.mwUI.Utils.shims.routeToRegExp = function(route){
   return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
 };
 
+angular.module('mwUI.Utils').config(['i18nProvider', function(i18nProvider){
+  i18nProvider.addResource('uikit/mw-utils/i18n');
+}]);
+
 /**
  * Created by zarges on 15/02/16.
  */
 window.mwUI.Backbone = {
   baseUrl: '',
-  Selectable: {},
-  concatUrlParts: function () {
-    var concatUrl = '';
-    _.forEach(arguments, function (url) {
-      url = url.replace(/^\//, '');
-      url = url.replace(/\/$/, '');
-      concatUrl += ( url + ('/') );
-    });
-    return concatUrl;
-  }
+  Selectable: {}
 };
 
 angular.module('mwUI.Backbone', []);
 
-
-/**
- * Created by zarges on 15/02/16.
- */
 mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
 
   nested: function () {
@@ -719,9 +936,6 @@ mwUI.Backbone.Selectable.Model = function (modelInstance, options) {
 };
 
 _.extend(mwUI.Backbone.Selectable.Model.prototype, Backbone.Events);
-/**
- * Created by zarges on 04/03/16.
- */
 mwUI.Backbone.SelectableModel = Backbone.SelectableModel = Backbone.Model.extend({
   selectable: true,
   selectableOptions: function(){
@@ -758,7 +972,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
       endpoint = _.result(this, 'endpoint');
 
     if (endpoint) {
-      return window.mwUI.Backbone.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
+      return window.mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
     } else {
       throw new Error('An endpoint has to be specified');
     }
@@ -790,9 +1004,6 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
 });
 
 
-/**
- * Created by zarges on 04/03/16.
- */
 mwUI.Backbone.Filter = function () {
   // If it is an invalid value return null otherwise the provided object
   var returnNullOrObjectFor = function (value, object) {
@@ -901,9 +1112,6 @@ mwUI.Backbone.Filter = function () {
 
 };
 
-/**
- * Created by zarges on 04/03/16.
- */
 /*jshint unused:false */
 mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
@@ -1075,8 +1283,7 @@ mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Co
       perPage: 30,
       filterValues: {},
       customUrlParams: {},
-      filterDefinition: function () {
-      },
+      filterDefinition: function () {},
       fields: [],
       sortOrder: ''
     };
@@ -1103,9 +1310,6 @@ mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Co
     return Backbone.Collection.prototype.fetch.call(this, options);
   }
 });
-/**
- * Created by zarges on 04/03/16.
- */
 mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   var _collection = collectionInstance,
     _options = options || {},
@@ -1386,7 +1590,7 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
       endpoint = _.result(this, 'endpoint');
 
     if (endpoint) {
-      return window.mwUI.Backbone.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
+      return mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
     } else {
       throw new Error('An endpoint has to be specified');
     }
@@ -1412,10 +1616,6 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   }
 });
 
-/**
- * Created by zarges on 15/02/16.
- */
-
 var _$http,
   _$q,
   _sync = Backbone.sync,
@@ -1423,28 +1623,184 @@ var _$http,
 
 angular.module('mwUI.Backbone')
 
-  .config(function () {
-    Backbone.sync = function (method, model, options) {
-      // Instead of the response object we are returning the backbone model in the promise
-      return _sync.call(Backbone, method, model, options).then(function () {
-        return model;
-      });
-    };
-    Backbone.ajax = function (options) {
-      if (_$http) {
-        // Set HTTP Verb as 'method'
-        options.method = options.type;
-        // Use angulars $http implementation for requests
-        return _$http.apply(angular, arguments);
-      } else {
-        return _ajax.apply(this, arguments);
-      }
-    };
-  })
-
   .run(['$http', '$q', function ($http, $q) {
     _$http = $http;
     _$q = $q;
+  }]);
+
+Backbone.sync = function (method, model, options) {
+  // Instead of the response object we are returning the backbone model in the promise
+  return _sync.call(Backbone, method, model, options).then(function () {
+    return model;
+  });
+};
+Backbone.ajax = function (options) {
+  if (_$http) {
+    // Set HTTP Verb as 'method'
+    options.method = options.type;
+    // Use angulars $http implementation for requests
+    return _$http.apply(angular, arguments);
+  } else {
+    return _ajax.apply(this, arguments);
+  }
+};
+angular.module('mwUI.ExceptionHandler', ['mwUI.Modal', 'mwUI.i18n', 'mwUI.UiComponents', 'mwUI.Utils']);
+
+angular.module('mwUI.ExceptionHandler')
+
+  .factory('ExceptionModal', ['Modal', function (Modal) {
+    return Modal.prepare({
+      templateUrl: 'uikit/mw-exception-handler/modals/templates/mw_exception_modal.html',
+      controller: 'ExceptionModalController'
+    });
+  }])
+
+  .controller('ExceptionModalController', ['$scope', '$q', 'Wizard', function ($scope, $q, Wizard) {
+    $scope.exception = null;
+
+    $scope.wizard =  Wizard.createWizard('exception');
+
+    $scope.report = function(){
+      $q.when($scope.successCallback()).then(function(){
+        $scope.wizard.next();
+      });
+    };
+
+    $scope.cancel = function(){
+      if($scope.errorCallback){
+        $q.when($scope.errorCallback()).then(function(){
+          $scope.hideModal();
+        });
+      } else {
+        $scope.hideModal();
+      }
+    };
+
+    $scope.close = function(){
+      $scope.hideModal();
+    };
+  }]);
+
+angular.module('mwUI.ExceptionHandler')
+
+  .provider('$exceptionHandler', function () {
+
+    var _handlers = [];
+
+    return {
+
+      registerHandler: function(callback){
+        _handlers.push(callback);
+      },
+
+      $get: ['callbackHandler', '$log', function (callbackHandler, $log) {
+        return function (exception,cause) {
+          exception = exception || '';
+          cause = cause || '';
+          _handlers.forEach(function(callback){
+            callbackHandler.exec(callback, [exception.toString(), cause.toString()]);
+          });
+          $log.error(exception);
+        };
+      }]
+    };
+
+  });
+angular.module('mwUI.ExceptionHandler')
+
+  .provider('exceptionHandlerModal', function () {
+
+    var showExceptionModal = true,
+      options = {
+        displayException: false,
+        userCanEnterMessage: false,
+        successCallback: null,
+        errorCallback: null
+      };
+
+    return {
+
+      disableExceptionModal: function () {
+        showExceptionModal = false;
+      },
+
+      setModalOptions: function (opts) {
+        _.extend(options, opts);
+      },
+
+      $get: ['callbackHandler', 'ExceptionModal', function (callbackHandler, ExceptionModal) {
+
+        var exceptionModal = new ExceptionModal();
+
+        var hideNgView = function () {
+          var ngView = angular.element.find('div[ng-view]');
+
+          if (ngView) {
+            angular.element(ngView).hide();
+          }
+        };
+
+        return function (exception, cause) {
+          if (showExceptionModal) {
+
+            if (options.successCallback) {
+              var succCb = options.successCallback;
+              options.successCallback = function () {
+                return callbackHandler.exec(succCb, [exception.toString(), cause.toString()]);
+              };
+            }
+
+            if (options.errorCallback) {
+              var errCb = options.errorCallback;
+              options.errorCallback = function () {
+                callbackHandler.exec(errCb, [exception.toString(), cause.toString()]);
+              };
+            }
+
+            exceptionModal.setScopeAttributes(_.extend({}, options, {
+              exception: exception.toString(),
+              cause: cause
+            }));
+
+            hideNgView();
+            exceptionModal.show();
+          }
+        };
+      }]
+    };
+
+  });
+
+angular.module('mwUI.ExceptionHandler').config(['$exceptionHandlerProvider', 'i18nProvider', function($exceptionHandlerProvider, i18nProvider){
+  $exceptionHandlerProvider.registerHandler('exceptionHandlerModal');
+  i18nProvider.addResource('uikit/mw-exception-handler/i18n');
+}]);
+angular.module('mwUI.Form', ['mwUI.i18n','mwUI.Modal','mwUI.Utils']);
+
+angular.module('mwUI.Form')
+
+  .directive('mwFormLeaveConfirmation', ['$window', '$document', '$location', 'i18n', 'Modal', '$compile', function ($window, $document, $location, i18n, Modal, $compile) {
+    return {
+      require: '^form',
+      link: function (scope, elm, attr, formCtrl) {
+
+        var confirmation = $compile('' +
+            '<div mw-leave-confirmation="form.$dirty" ' +
+            'text="{{\'Form.mwFormLeaveConfirmation.isDirty\' | i18n}}">' +
+            '</div>')(scope),
+          isActive = true;
+
+        scope.showConfirmation = function () {
+          return formCtrl.$dirty && isActive;
+        };
+
+        elm.append(confirmation);
+
+        scope.$on('$destroy', function () {
+          isActive = false;
+        });
+      }
+    };
   }]);
 angular.module('mwUI.i18n', [
 
@@ -1810,6 +2166,15 @@ angular.module('mwUI.Layout', []);
 
 angular.module('mwUI.Layout')
 
+  .directive('mwColumnLayout', function () {
+    return {
+      link: function(scope, el){
+        el.addClass('mw-column-layout');
+      }
+    };
+  });
+angular.module('mwUI.Layout')
+
   .directive('mwHeader', ['$rootScope', '$route', '$location', function ($rootScope, $route, $location) {
     return {
       transclude: true,
@@ -1817,6 +2182,7 @@ angular.module('mwUI.Layout')
         title: '@',
         url: '@',
         mwTitleIcon: '@',
+        showBackButton: '=',
         mwBreadCrumbs: '='
       },
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
@@ -1847,6 +2213,65 @@ angular.module('mwUI.Layout')
       }
     };
   }]);
+angular.module('mwUI.Layout')
+
+  .directive('mwRow', function () {
+    return {
+      require: '^mwRowLayout',
+      link: function(scope, el, attrs, mwRowLayoutCtrl){
+        var parObserver,
+            elObserver,
+            parentEl = el.parent();
+
+        var calculateHeight = function(){
+          var rows = mwRowLayoutCtrl.getRegistered(),
+              heightOfOtherEls = 0;
+
+          rows.forEach(function(row){
+            if(row.el !== el){
+              heightOfOtherEls += row.el.height();
+            }
+          });
+          console.log('CALCULATED HEIGHT', heightOfOtherEls);
+          el.css('height','calc(100vh - '+heightOfOtherEls+'px)');
+        };
+
+        el.addClass('mw-row');
+        mwRowLayoutCtrl.register({scope: scope, el:el});
+
+        if(angular.isDefined(attrs.mwExtend)){
+          parObserver = mwUI.Utils.shims.domObserver(parentEl, calculateHeight);
+          elObserver = mwUI.Utils.shims.domObserver(el, calculateHeight);
+          scope.$on('$destroy', function(){
+            parObserver.disconnect();
+            elObserver.disconnect();
+          });
+        }
+
+      }
+    };
+  });
+angular.module('mwUI.Layout')
+
+  .directive('mwRowLayout', function () {
+    return {
+      require: '?^^mwRowLayout',
+      controller: function(){
+        var rows = [];
+        this.register = function(row){
+          rows.push(row);
+        };
+
+        this.getRegistered = function(){
+          return rows;
+        };
+      },
+      link: function(scope, el, attrs, mwRowLayoutCtrl){
+        el.addClass('mw-row-layout');
+        console.log(mwRowLayoutCtrl);
+      }
+    };
+  });
 angular.module('mwUI.Layout')
 
   .directive('mwSubNav', function () {
@@ -1947,7 +2372,6 @@ angular.module('mwUI.List')
         };
 
         this.getCollection = function () {
-          console.log(_collection)
           return _collection;
         };
 
@@ -2051,18 +2475,21 @@ angular.module('mwUI.List')
     };
   });
 angular.module('mwUI.List')
-
-  .directive('mwListFooterRow', ['Loading', function (Loading) {
+  //TODO rename
+  .directive('mwListableFooterBb', function () {
     return {
       require: '^mwListableBb',
-      templateUrl: 'uikit/templates/mwList/mw-list-footer.html',
+      templateUrl: 'uikit/mw-list/directives/templates/mw_list_footer.html',
       link: function (scope, elm, attr, mwListCtrl) {
-        scope.Loading = Loading;
         scope.collection = mwListCtrl.getCollection();
         scope.columns = mwListCtrl.getColumns();
+
+        scope.showSpinner = function(){
+          return /*Loading.isLoading() &&*/ scope.collection.filterable.hasNextPage();
+        };
       }
     };
-  }]);
+  });
 angular.module('mwUI.List')
 
   // TODO:  rename to something else
@@ -2510,7 +2937,11 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
     }
   },
   ownUrlIsActiveForUrl: function(url){
-    return this.get('url').match(routeToRegex(url));
+    if(this.get('url')){
+      return url.match(routeToRegex(this.get('url')));
+    } else {
+      return false;
+    }
   },
   activeUrlIsActiveForUrl: function(url){
     var isActive = false;
@@ -2640,14 +3071,23 @@ angular.module('mwUI.Menu', [])
 
   .provider('mwSidebarMenu', function () {
 
-    var mwMenu = new mwUI.Menu.MwMenu();
+    var mwMenu = new mwUI.Menu.MwMenu(),
+        logoUrl;
 
     this.getMenu = function () {
       return mwMenu;
     };
 
+    this.setLogoUrl = function(url){
+      logoUrl = url;
+    };
+
+    this.getLogoUrl = function(){
+      return logoUrl;
+    };
+
     this.$get = function () {
-      return mwMenu;
+      return this;
     };
 
   });
@@ -2670,17 +3110,71 @@ angular.module('mwUI.Menu')
  */
 angular.module('mwUI.Menu')
 
+  .directive('mwMenuEntry', function () {
+    return {
+      scope: {},
+      bindToController: {
+        entry: '=mwMenuEntry'
+      },
+      templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
+      controllerAs: 'menuEntryCtrl',
+      controller: ['$rootScope', '$location', function($rootScope, $location){
+        this.isActive = this.entry.isActiveForUrl($location.url());
+
+        $rootScope.$on('$locationChangeSuccess', function () {
+          this.isActive = this.entry.hasActiveSubEntryOrIsActiveForUrl($location.url());
+        }.bind(this));
+      }]
+    };
+  });
+/**
+ * Created by zarges on 23/02/16.
+ */
+angular.module('mwUI.Menu')
+
+  .directive('mwMenuSubEntry', function () {
+    return {
+      scope: {},
+      bindToController: {
+        entry: '=mwMenuSubEntry'
+      },
+      templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_sub_entry.html',
+      controllerAs: 'menuSubEntryCtrl',
+      controller: ['$rootScope', '$location', function($rootScope, $location){
+        this.isActive = this.entry.isActiveForUrl($location.url());
+
+        $rootScope.$on('$locationChangeSuccess', function () {
+          this.isActive = this.entry.hasActiveSubEntryOrIsActiveForUrl($location.url());
+        }.bind(this));
+      }]
+    };
+  });
+/**
+ * Created by zarges on 23/02/16.
+ */
+angular.module('mwUI.Menu')
+
   .directive('mwSidebarMenu', ['mwSidebarMenu', function (mwSidebarMenu) {
     return {
       templateUrl: 'uikit/mw-menu/directives/templates/mw_sidebar_menu.html',
       transclude: true,
       controllerAs: 'ctrl',
       controller: function(){
-        this.mwMenu = mwSidebarMenu;
+        var isOpened = false;
+        this.mwMenu = mwSidebarMenu.getMenu();
+        this.mwMenuLogo = mwSidebarMenu.getLogoUrl();
+
+        this.isOpened = function(){
+          return isOpened;
+        };
+
+        this.toggleState = function(){
+          isOpened = !isOpened;
+        };
       }
     };
   }]);
-angular.module('mwUI.Modal', []);
+angular.module('mwUI.Modal', ['mwUI.i18n']);
 
 angular.module('mwUI.Modal')
 
@@ -2731,56 +3225,6 @@ angular.module('mwUI.Modal')
       templateUrl: 'uikit/mw-modal/directives/templates/mw_modal_footer.html'
     };
   });
-
-/* jshint ignore:start */
-// This is the orginal bootstrap backdrop implementation with the only
-// modification that the element can be defined as parameter where the backdrop should be placed
-$.fn.modal.Constructor.prototype.backdrop = function (callback, holderEl) {
-  var animate = this.$element.hasClass('fade') ? 'fade' : '';
-
-  if (this.isShown && this.options.backdrop) {
-    var doAnimate = $.support.transition && animate;
-
-    this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
-      .appendTo(holderEl);
-
-    this.$backdrop.on('click', $.proxy(function (e) {
-      if (e.target !== e.currentTarget) {
-        return;
-      }
-      this.options.backdrop == 'static'
-        ? this.$element[0].focus.call(this.$element[0])
-        : this.hide.call(this)
-    }, this));
-
-    if (doAnimate) {
-      this.$backdrop[0].offsetWidth;
-    } // force reflow
-
-    this.$backdrop.addClass('in');
-
-    if (!callback) return;
-
-    doAnimate ?
-      this.$backdrop
-        .one($.support.transition.end, callback)
-        .emulateTransitionEnd(150) :
-      callback()
-
-  } else if (!this.isShown && this.$backdrop) {
-    this.$backdrop.removeClass('in');
-
-    $.support.transition && this.$element.hasClass('fade') ?
-      this.$backdrop
-        .one($.support.transition.end, callback)
-        .emulateTransitionEnd(150) :
-      callback()
-
-  } else if (callback) {
-    callback()
-  }
-};
-/* jshint ignore:end */
 
 angular.module('mwUI.Modal')
 
@@ -3060,11 +3504,506 @@ angular.module('mwUI.Modal')
     };
   });
 
+/* jshint ignore:start */
+// This is the orginal bootstrap backdrop implementation with the only
+// modification that the element can be defined as parameter where the backdrop should be placed
+$.fn.modal.Constructor.prototype.backdrop = function (callback, holderEl) {
+  var animate = this.$element.hasClass('fade') ? 'fade' : '';
+
+  if (this.isShown && this.options.backdrop) {
+    var doAnimate = $.support.transition && animate;
+
+    this.$backdrop = $('<div class="modal-backdrop ' + animate + '" />')
+      .appendTo(holderEl);
+
+    this.$backdrop.on('click', $.proxy(function (e) {
+      if (e.target !== e.currentTarget) {
+        return;
+      }
+      this.options.backdrop == 'static'
+        ? this.$element[0].focus.call(this.$element[0])
+        : this.hide.call(this)
+    }, this));
+
+    if (doAnimate) {
+      this.$backdrop[0].offsetWidth;
+    } // force reflow
+
+    this.$backdrop.addClass('in');
+
+    if (!callback) return;
+
+    doAnimate ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (!this.isShown && this.$backdrop) {
+    this.$backdrop.removeClass('in');
+
+    $.support.transition && this.$element.hasClass('fade') ?
+      this.$backdrop
+        .one($.support.transition.end, callback)
+        .emulateTransitionEnd(150) :
+      callback()
+
+  } else if (callback) {
+    callback()
+  }
+};
+/* jshint ignore:end */
+
 angular.module('mwUI.Modal')
 
   .config(['i18nProvider', function(i18nProvider){
     i18nProvider.addResource('uikit/mw-modal/i18n');
   }]);
+angular.module('mwUI.ResponseToastHandler', ['mwUI.Toast','mwUI.ResponseHandler', 'mwUI.i18n']);
+
+angular.module('mwUI.ResponseToastHandler')
+
+  .provider('ResponseToastHandler', ['$provide', 'ResponseHandlerProvider', function ($provide, ResponseHandlerProvider) {
+    var _registeredIds = [],
+      _registeredToastOptions = {
+        DEFAULT: {
+          type: 'default',
+          autoHide: false
+        }
+      };
+
+    var _getNotificationCallback = function (messages, id, options) {
+      options = options || {};
+      var factoryName = _.uniqueId('notification_factory');
+      $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
+        return function ($httpResponse) {
+          if(!messages){
+            return;
+          }
+
+          var prevToast = Toast.findToast(id),
+            data = {},
+            messageStr = prevToast ? messages.plural : messages.singular,
+            message,
+            toastOptions = {
+              id: id
+            };
+
+          if (!!prevToast && messages.plural) {
+            messageStr = messages.plural;
+          } else if (messages.singular) {
+            messageStr = messages.singular;
+          }
+
+          data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
+          data.$count++;
+
+          if (options.preProcess && typeof options.preProcess === 'function') {
+            _.extend(data, $httpResponse.data);
+            message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
+            if(!message){
+              return;
+            }
+          } else {
+            var resp = $httpResponse.data || {};
+
+            if (resp.results && !_.isObject(resp.results)) {
+              data = {message: resp.results};
+            } else if (resp.results && resp.results.length > 0) {
+              _.extend(data, resp.results[0]);
+            }
+
+            if ($httpResponse.config.instance && typeof $httpResponse.config.instance.toJSON === 'function') {
+              var json = $httpResponse.config.instance.toJSON();
+              _.extend(json, data);
+              data = json;
+            }
+
+            message = i18n.get(messageStr, data);
+          }
+
+          if (options.toastType) {
+            var opts = _registeredToastOptions[options.toastType];
+            if (opts) {
+              _.extend(toastOptions, opts);
+            } else {
+              throw new Error('Type ' + options.toastType + ' is not available. Make sure you have configured it first');
+            }
+          } else {
+            _.extend(toastOptions, _registeredToastOptions.DEFAULT);
+          }
+
+          Toast.addToast(message, toastOptions);
+        };
+      }]);
+      return factoryName;
+    };
+
+    this.registerToastType = function (typeId, toastOptions) {
+      if (_registeredToastOptions[typeId]) {
+        throw new Error('The toast type ' + typeId + ' is already defined. You can configure a toast type only once');
+      } else {
+        _registeredToastOptions[typeId] = toastOptions;
+      }
+    };
+
+    this.registerToast = function (route, messages, options) {
+      options = options || {};
+      var codes = options.statusCodes || [options.onSuccess ? 'SUCCESS' : 'ERROR'];
+
+      if (_.isUndefined(messages) || _.isObject(messages) && !messages.singular) {
+        throw new Error('You have to pass a messages object and define at least the singular message {singular:"Mandatory", plural:"Optional"}');
+      }
+
+      codes.forEach(function (code) {
+        var msgId = options.id || route + '_' + options.method + '_' + code,
+          callbackFactory = _getNotificationCallback(messages, msgId, options);
+
+        if (_registeredIds.indexOf(msgId) > -1) {
+          throw new Error('You can not define a second message for the route ' + route + ' and method ' + options.method + ' because you have already registered one!');
+        } else {
+          if(code==='SUCCESS' || code ==='ERROR'){
+            delete options.statusCodes;
+          } else {
+            options.statusCodes = [code];
+          }
+          ResponseHandlerProvider.registerAction(route, callbackFactory, options);
+          _registeredIds.push(msgId);
+        }
+      });
+
+    };
+
+    this.registerSuccessToast = function (route, messages, method, toastType, preProcessFn) {
+      this.registerToast(route, messages, {
+        method: method,
+        toastType: toastType,
+        onSuccess: true,
+        preProcess: preProcessFn
+      });
+    };
+
+    this.registerErrorToast = function (route, messages, method, toastType, preProcessFn) {
+      this.registerToast(route, messages, {
+        method: method,
+        toastType: toastType,
+        onError: true,
+        preProcess: preProcessFn
+      });
+    };
+
+    this.registerDefaultSuccessToast = function (messages, method, toastType, preProcessFn) {
+      return this.registerToast('*', messages, {
+        method: method,
+        toastType: toastType,
+        onSuccess: true,
+        preProcess: preProcessFn
+      });
+    };
+
+    this.registerDefaultErrorToast = function (messages, method, toastType, preProcessFn) {
+      return this.registerToast('*', messages, {
+        method: method,
+        toastType: toastType,
+        onError: true,
+        preProcess: preProcessFn
+      });
+    };
+
+    this.$get = function () {};
+
+  }]);
+angular.module('mwUI.ResponseHandler', ['mwUI.Utils']);
+
+angular.module('mwUI.ResponseHandler')
+
+  .provider('ResponseHandler', function () {
+
+    var _routeHandlersPerMethodContainer = {
+      POST: [],
+      PUT: [],
+      GET: [],
+      DELETE: [],
+      PATCH: []
+    };
+
+    var _methodIsInValidError = function(method){
+      return new Error('Method '+method+' is invalid. Valid methods are POST, PUT, GET, DELETE, PATCH');
+    };
+
+    var _routeToRegex = mwUI.Utils.shims.routeToRegExp;
+
+    var RouteHandler = function (route) {
+
+      var _codes = {
+          ERROR: [],
+          SUCCESS: []
+        },
+        _route = route,
+        _routeRegex = null;
+
+      var _registerCallbackForCode = function (code, callback) {
+
+        var existingCallbacks = _codes[code],
+          callbacks = existingCallbacks || [];
+
+        callbacks.push(callback);
+
+        _codes[code] = callbacks;
+      };
+
+      var _getCallbackForCode = function (code) {
+        return _codes[code];
+      };
+
+      this.matchesUrl = function (url) {
+        return url.match(_routeRegex);
+      };
+
+      this.registerCallbackForStatusCodes = function (statusCodes, callback) {
+        statusCodes.forEach(function (statusCode) {
+          _registerCallbackForCode(statusCode, callback);
+        }, this);
+      };
+
+      this.registerCallbackForSuccess = function (callback) {
+        _registerCallbackForCode('SUCCESS', callback);
+      };
+
+      this.registerCallbackForError = function (callback) {
+        _registerCallbackForCode('ERROR', callback);
+      };
+
+      this.getCallbacksForStatusCode = function (statusCode) {
+        return _getCallbackForCode(statusCode);
+      };
+
+      this.getCallbacksForSuccess = function () {
+        return _getCallbackForCode('SUCCESS');
+      };
+
+      this.getCallbacksForError = function () {
+        return _getCallbackForCode('ERROR');
+      };
+
+      var main = function () {
+        _routeRegex = _routeToRegex(_route);
+      };
+
+      main.call(this);
+    };
+
+    this.registerAction = function (route, callback, options) {
+      options = options || {};
+
+      if(!options.onError && !options.onSuccess && !options.statusCodes){
+        throw new Error('You have to specify either some statusCodes or set onSuccess or onError to true in the options parameter object');
+      }
+
+      if (( options.onError && options.onSuccess ) || ( (options.onError || options.onSuccess) && options.statusCodes )) {
+        throw new Error('Definition is too imprecise');
+      }
+      if (!options.method && !options.methods) {
+        throw new Error('Method has to be defined in options e.g method: "POST" or methods:["POST"]');
+      }
+
+      options.methods = options.methods || [options.method];
+
+      options.methods.forEach(function(method){
+
+        if (!_routeHandlersPerMethodContainer[method]) {
+          throw _methodIsInValidError(method);
+        }
+
+        var existingRouteHandlerContainer = _.findWhere(_routeHandlersPerMethodContainer[method], {id: route}),
+          routeHandlerContainer = existingRouteHandlerContainer || {id: route, handler: new RouteHandler(route)},
+          routeHandler = routeHandlerContainer.handler;
+
+        if (options.statusCodes) {
+          routeHandler.registerCallbackForStatusCodes(options.statusCodes, callback);
+        } else if (options.onSuccess) {
+          routeHandler.registerCallbackForSuccess(callback);
+        } else if (options.onError) {
+          routeHandler.registerCallbackForError(callback);
+        }
+
+        if (!existingRouteHandlerContainer) {
+          _routeHandlersPerMethodContainer[method].push(routeHandlerContainer);
+        }
+
+      });
+    };
+
+    this.registerSuccessAction = function (route, callback, method) {
+      return this.registerAction(route, callback, {
+        method: method,
+        onSuccess: true
+      });
+    };
+
+    this.registerErrorAction = function (route, callback, method) {
+      return this.registerAction(route, callback, {
+        method: method,
+        onError: true
+      });
+    };
+
+    this.registerDefaultAction = function(callback, options){
+      options = options || {};
+      return this.registerAction('*', callback, options);
+    };
+
+    this.registerDefaultSuccessAction = function (callback, method) {
+      return this.registerAction('*', callback, {
+        method: method,
+        onSuccess: true
+      });
+    };
+
+    this.registerDefaultErrorAction = function (callback, method) {
+      return this.registerAction('*', callback, {
+        method: method,
+        onError: true
+      });
+    };
+
+    this.$get = ['$injector', '$q', 'callbackHandler', function ($injector, $q, callbackHandler) {
+
+      /*
+       *  Execute promises sequentially
+       *  When funtion does not return a promise it converts the response into a promise
+       *  The last function defines if the chain should be resolved or rejected by rejecting or resolving value
+       *  When the first function rejectes value but the last function resolves it the whole chain will be resolved
+       */
+      var _executePromiseQueue = function(fns, resp, isError, dfd){
+        var fn = fns.shift();
+
+        if(!dfd){
+          dfd = $q.defer();
+        }
+
+        if(fn){
+          var returnVal = fn(resp, isError),
+            promise;
+          if(returnVal && returnVal.then){
+            promise = returnVal;
+          } else {
+            if(isError){
+              promise = $q.reject(returnVal || resp);
+            } else {
+              promise = $q.when(returnVal || resp);
+            }
+          }
+
+          promise.then(function(rsp){
+            _executePromiseQueue(fns, rsp, false, dfd);
+          },function(rsp){
+            _executePromiseQueue(fns, rsp, true, dfd);
+          });
+        } else {
+          if(isError){
+            dfd.reject(resp);
+          } else {
+            dfd.resolve(resp);
+          }
+        }
+        return dfd.promise;
+      };
+
+      var _executeCallbacks = function (callbacks, response, isError) {
+        var fns = [];
+        callbacks.forEach(function (callback) {
+          if(callback){
+            callback = callbackHandler.getFn(callback);
+            fns.push(callback);
+          }
+        }, this);
+        return _executePromiseQueue(fns, response, isError);
+      };
+
+      var _getCallbacks = function(handler, statusCode, isError){
+        var statusCallbacks = handler.getCallbacksForStatusCode(statusCode),
+          successCallbacks = handler.getCallbacksForSuccess(),
+          errorCallbacks = handler.getCallbacksForError();
+
+        if(statusCallbacks){
+          return statusCallbacks;
+        } else if(isError){
+          return errorCallbacks;
+        } else {
+          return successCallbacks;
+        }
+      };
+
+      return {
+        getHandlerForUrlAndCode: function (method, url, statusCode, isError) {
+          var _returnHandler;
+
+          if (!_routeHandlersPerMethodContainer[method]) {
+            throw _methodIsInValidError(method);
+          }
+
+          _routeHandlersPerMethodContainer[method].forEach(function (routeHandlerContainer) {
+            var handler = routeHandlerContainer.handler,
+              callbacks = _getCallbacks(handler, statusCode, isError);
+            if (!_returnHandler && handler.matchesUrl(url) && callbacks && callbacks.length>0) {
+              _returnHandler = handler;
+            }
+          });
+
+          return _returnHandler;
+        },
+        handle: function (response, isError) {
+          var url = response.config.url,
+            method = response.config.method,
+            statusCode = response.status,
+            handler = this.getHandlerForUrlAndCode(method, url, statusCode, isError);
+
+          if (handler) {
+            var callbacks = _getCallbacks(handler, statusCode, isError);
+            if(callbacks){
+              return _executeCallbacks(callbacks, response, isError);
+            }
+          }
+        }
+      };
+    }];
+  });
+
+
+
+angular.module('mwUI.ResponseHandler')
+
+  .config(['$provide', '$httpProvider', function ($provide, $httpProvider) {
+
+    $provide.factory('requestInterceptorForHandling', ['$q', 'ResponseHandler', function ($q, ResponseHandler) {
+
+      var handle = function(response, isError){
+        var handler = ResponseHandler.handle(response, isError);
+        if(handler){
+          return handler;
+        } else if(isError){
+          return $q.reject(response);
+        } else {
+          return $q.when(response);
+        }
+      };
+
+      return {
+        response: function (response) {
+          return handle(response, false);
+        },
+        responseError: function (response) {
+          return handle(response, true);
+        }
+      };
+    }]);
+
+    $httpProvider.interceptors.push('requestInterceptorForHandling');
+
+  }]);
+
+
 angular.module('mwUI.Toast', []);
 
 'use strict';
@@ -3087,35 +4026,6 @@ angular.module('mwUI.Toast')
       options = options || {};
       options.button = options.button || {};
 
-      var replaceMessage = function (newMessage) {
-        toast.message = newMessage;
-        toast.replaceCount++;
-        resetAutoHideTimer();
-      };
-
-      var setAutoHideCallback = function (fn) {
-        toast.autoHideCallback = fn;
-        resetAutoHideTimer();
-      };
-
-      var resetAutoHideTimer = function () {
-        if (_autoRemoveTimeout) {
-          window.clearTimeout(_autoRemoveTimeout);
-        }
-        startAutoHideTimer();
-      };
-
-      var startAutoHideTimer = function () {
-        if (toast.autoHide) {
-          _autoRemoveTimeout = window.setTimeout(function () {
-            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
-              toast.visible = false;
-              toast.autoHideCallback.apply(this, arguments);
-            }
-          }.bind(this), toast.autoHideTime);
-        }
-      };
-
       var toast = {
           id: options.id || _.uniqueId('toast'),
           type: options.type || 'default',
@@ -3134,12 +4044,43 @@ angular.module('mwUI.Toast')
             isLink: options.button.isLink || !!options.button.link,
             action: options.button.action
           },
-          replaceMessage: replaceMessage,
           replaceCount: 0,
-          setAutoHideCallback: setAutoHideCallback,
           initDate: +new Date()
         },
         _autoRemoveTimeout;
+
+      var startAutoHideTimer = function () {
+        if (toast.autoHide) {
+          _autoRemoveTimeout = window.setTimeout(function () {
+            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
+              toast.visible = false;
+              toast.autoHideCallback.apply(this, arguments);
+            }
+          }.bind(this), toast.autoHideTime);
+        }
+      };
+
+      var resetAutoHideTimer = function () {
+        if (_autoRemoveTimeout) {
+          window.clearTimeout(_autoRemoveTimeout);
+        }
+        startAutoHideTimer();
+      };
+
+      var setAutoHideCallback = function (fn) {
+        toast.autoHideCallback = fn;
+        resetAutoHideTimer();
+      };
+
+      var replaceMessage = function (newMessage) {
+        toast.message = newMessage;
+        toast.replaceCount++;
+        resetAutoHideTimer();
+      };
+
+      toast.replaceMessage = replaceMessage;
+      toast.setAutoHideCallback = setAutoHideCallback;
+
 
       startAutoHideTimer();
 
@@ -3247,7 +4188,7 @@ angular.module('mwUI.Toast')
     };
   }]);
 
-angular.module('mwUI.UiComponents', []);
+angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils']);
 
 angular.module('mwUI.UiComponents')
 
@@ -3317,6 +4258,13 @@ angular.module('mwUI.UiComponents')
         var helpIcon = angular.element('<div>').addClass('help-icon fa fa-question hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
+        var buildPopup = function () {
+          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mw-button-help-popover popover');
+          angular.forEach(scope.hintsToShow, function (hint) {
+            popup.find('ul').append('<li>' + hint.text + '</li>');
+          });
+        };
+
         helpIcon.hover(function () {
           buildPopup();
           var targetOffset = angular.element(this).offset();
@@ -3327,15 +4275,8 @@ angular.module('mwUI.UiComponents')
           angular.element('body > .mw-button-help-popover').remove();
         });
 
-        var buildPopup = function () {
-          popup = angular.element('<div>' + scope.helpText + '<ul></ul></div>').addClass('mw-button-help-popover popover');
-          angular.forEach(scope.hintsToShow, function (hint) {
-            popup.find('ul').append('<li>' + hint.text + '</li>');
-          });
-        };
-
         scope.$watch('hintsToShow', function (newVal) {
-          if (newVal.length) {
+          if (newVal && newVal.length) {
             helpIcon.removeClass('hidden');
           } else {
             helpIcon.addClass('hidden');
@@ -3396,6 +4337,7 @@ angular.module('mwUI.UiComponents')
 
 angular.module('mwUI.UiComponents')
 
+  //TODO rename to mwCollapsible
   .directive('mwCollapsable', function () {
     return {
       transclude: true,
@@ -3403,25 +4345,50 @@ angular.module('mwUI.UiComponents')
         mwCollapsable: '=',
         title: '@mwTitle'
       },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsable.html',
-      link: function (scope, elm) {
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsible.html',
+      link: function (scope) {
         scope.viewModel = {};
         scope.viewModel.collapsed = false;
-        if (scope.mwCollapsable === false) {
-          scope.viewModel.collapsed = true;
-        }
-        var level = elm.parents('.mw-collapsable').length;
-        if (level) {
-          elm.css('margin-left', level * 20 + 'px');
-        }
 
         scope.toggle = function () {
           scope.viewModel.collapsed = !scope.viewModel.collapsed;
         };
+
+        if (scope.mwCollapsable === false) {
+          scope.viewModel.collapsed = true;
+        }
       }
     };
   });
 angular.module('mwUI.UiComponents')
+
+  .directive('mwIndefiniteLoading', function () {
+    return {
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_indefinite_loading.html'
+    };
+  });
+angular.module('mwUI.UiComponents')
+
+  .directive('mwIconNew', ['mwIcon', function (mwIcon) {
+    return {
+      scope: {
+        icon: '@mwIcon'
+      },
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_icon.html',
+      link: function (scope) {
+        scope.viewModel = {
+          icon: null
+        };
+
+        if(scope.icon){
+          mwIcon.getIconSet(scope.icon).then(function(icon){
+            scope.viewModel.icon = icon;
+          });
+        }
+      }
+    };
+  }])
+
   //TODO remove relution dependency
   .directive('mwIcon', function () {
     return {
@@ -3479,16 +4446,26 @@ angular.module('mwUI.UiComponents')
       restrict: 'A',
       transclude: true,
       scope: {
-        type: "@mwPanel",
-        title: "@",
-        closeable: "="
+        type: '@mwPanel',
+        title: '@',
+        closeable: '='
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_panel.html',
       link: function(scope, el){
         scope.closePanel = function(){
           el.remove();
-        }
+        };
       }
+    };
+  });
+angular.module('mwUI.UiComponents')
+
+  .directive('mwSpinner', function () {
+    return {
+      restrict: 'A',
+      scope: true,
+      replace: true,
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_spinner.html'
     };
   });
 angular.module('mwUI.UiComponents')
@@ -3499,7 +4476,7 @@ angular.module('mwUI.UiComponents')
       scope: true,
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_star_rating.html',
       link: function (scope, elm, attr) {
-        
+
         scope.stars = [];
 
         var buildStars = function () {
@@ -3538,18 +4515,69 @@ angular.module('mwUI.UiComponents')
         });
       }
     };
-  })
+  });
 angular.module('mwUI.UiComponents')
-  //Todo rename
-  .directive('mwTextCollapse', ['$filter', function ($filter) {
+  //TODO rename
+  .directive('mwTabs', function () {
+    return {
+      transclude: true,
+      scope: {
+        justified: '=',
+        activePaneNumber: '='
+      },
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
+      controller: ['$scope', function ($scope) {
+        var panes = $scope.panes = [];
+
+        $scope.select = function (pane) {
+          angular.forEach(panes, function (p) {
+            p.selected = false;
+          });
+
+          if($scope.activePaneNumber){
+            $scope.activePaneNumber = _.indexOf($scope.panes,pane)+1;
+          }
+
+          pane.selected = true;
+        };
+
+        this.registerPane = function (pane) {
+          if ( ( $scope.activePaneNumber && $scope.activePaneNumber-1 === panes.length) || (!panes.length && !$scope.activePaneNumber) ) {
+            var bak = $scope.activePaneNumber;
+            $scope.select(pane);
+            $scope.activePaneNumber = bak;
+          }
+          panes.push(pane);
+        };
+      }]
+    };
+  });
+angular.module('mwUI.UiComponents')
+  //TODO rename
+  .directive('mwTabsPane', function () {
+    return {
+      scope: {
+        title: '@mwTabsPane',
+        isInvalid: '='
+      },
+      transclude: true,
+      replace: true,
+      require: '^mwTabs',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_pane.html',
+      link: function (scope, elm, attr, mwTabsCtrl) {
+        mwTabsCtrl.registerPane(scope);
+      }
+    };
+  });
+angular.module('mwUI.UiComponents')
+  .directive('mwTextCollapsible', ['$filter', function ($filter) {
     return {
       restrict: 'A',
       scope: {
-        mwTextCollapse: '@',
-        length: '=',
-        markdown: '='
+        collapsibleText: '@mwTextCollapsible',
+        length: '='
       },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_text_collapsable.html',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_text_collapsible.html',
       link: function (scope) {
 
         // set default length
@@ -3565,22 +4593,22 @@ angular.module('mwUI.UiComponents')
         // apply filter length to text
         scope.text = function () {
           return $filter('reduceStringTo')(
-            scope.mwTextCollapse, scope.filterLength
+            scope.collapsibleText, scope.filterLength
           );
         };
 
         // show Button if text is longer than desired
         scope.showButton = false;
-        if (scope.mwTextCollapse.length > scope.defaultLength) {
+        if (scope.collapsibleText && scope.collapsibleText.length > scope.defaultLength) {
           scope.showButton = true;
         }
 
         // set button to "show more" or "show less"
         scope.showLessOrMore = function () {
           if (scope.filterLength === scope.defaultLength) {
-            return 'UiComponents.mwTextCollapsable.showMore';
+            return 'UiComponents.mwTextCollapsible.showMore';
           } else {
-            return 'UiComponents.mwTextCollapsable.showLess';
+            return 'UiComponents.mwTextCollapsible.showLess';
           }
         };
 
@@ -3635,7 +4663,7 @@ angular.module('mwUI.UiComponents')
       }
 
     };
-  }])
+  }]);
 
 angular.module('mwUI.UiComponents')
 
@@ -3685,7 +4713,7 @@ angular.module('mwUI.UiComponents')
         };
       }]
     };
-  }])
+  }]);
 
 angular.module('mwUI.UiComponents')
 
@@ -3775,6 +4803,415 @@ angular.module('mwUI.UiComponents')
       }
     };
   }]);
+angular.module('mwUI.UiComponents')
+
+  .directive('mwWizard', ['Wizard', function (Wizard) {
+    return {
+      scope: {
+        wizard: '=mwWizard'
+      },
+      transclude: true,
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_wizard.html',
+      controller: ['$scope', function ($scope) {
+
+        var wizard = $scope.wizard || Wizard.createWizard(_.uniqueId('wizard_'));
+
+        this.registerStep = function (scope, id) {
+          wizard._registerStep(scope, id);
+        };
+
+        this.unRegisterStep = function (scope) {
+          wizard._unRegisterStep(scope);
+        };
+
+        this.getWizard = function(){
+          return wizard;
+        };
+
+        $scope.$on('$destroy', function () {
+          wizard.destroy();
+        });
+
+      }]
+    };
+  }]);
+angular.module('mwUI.UiComponents')
+
+  .directive('mwWizardNavigation', function () {
+    return {
+      scope: {
+        finishedAction: '&'
+      },
+      transclude: true,
+      require: '^mwWizard',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_wizard_navigation.html',
+      link: function (scope, el, attr, mwWizardCtrl, $transclude) {
+        scope.wizard = mwWizardCtrl.getWizard();
+        scope.finish = function(){
+          scope.$eval(scope.finishedAction);
+        };
+
+        $transclude(function (clone) {
+          var wizardEl = el.find('.mw-wizard-navigation');
+
+          if ((clone && clone.length > 0)) {
+            wizardEl.addClass('has-extra-content');
+          }
+        });
+      }
+    };
+  });
+angular.module('mwUI.UiComponents')
+
+  .directive('mwWizardProgress', function () {
+    return {
+      require: '^mwWizard',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_wizard_progress.html',
+      link: function (scope, el, attr, mwWizardCtrl) {
+        var wizard = mwWizardCtrl.getWizard();
+        scope.getProgress = function(){
+          return ((wizard.getCurrentStepNumber()+1) / wizard.getAllSteps().length ) *100;
+        };
+      }
+    };
+  });
+angular.module('mwUI.UiComponents')
+
+  .directive('mwWizardStep', function () {
+    return {
+      restrict: 'A',
+      scope: true,
+      transclude: true,
+      replace: true,
+      require: '^mwWizard',
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_wizard_step.html',
+      link: function (scope, el, attr, mwWizardCtrl) {
+        scope._isActive = false;
+        //we need to set a default value here, see
+        //https://github.com/angular/angular.js/commit/531a8de72c439d8ddd064874bf364c00cedabb11
+        attr.title = attr.title || 'noname';
+        attr.$observe('title', function (title) {
+          if (title && title.length > 0) {
+            scope.title = title;
+          }
+          mwWizardCtrl.registerStep(scope, attr.id);
+        });
+
+        scope.$on('$destroy', function () {
+          mwWizardCtrl.unRegisterStep(scope);
+        });
+      }
+    };
+  });
+
+/**
+ * Created by zarges on 25/02/16.
+ */
+angular.module('mwUI.UiComponents')
+
+  .provider('mwIcon', function () {
+
+    var Icon = Backbone.Model.extend({
+        defaults: function () {
+          return {
+            classPrefix: '',
+            type: 'ICON',
+            fileUrl: null,
+            isLoading: false,
+            loaded: false,
+            icons: {}
+          };
+        },
+        _throwNotValidIconError: function () {
+          throw new Error('You have to set either icons or set a filePath');
+        },
+        getIconForKey: function (key) {
+          var keys = key.split('.'),
+            icons = this.get('icons'),
+            dfd = Backbone.$.Deferred(),
+            icon;
+
+          keys.forEach(function (key) {
+            if (icon && icon[key]) {
+              icon = icon[key];
+            } else {
+              icon = icons[key];
+            }
+          });
+
+          if (icon) {
+            dfd.resolve(icon);
+          } else if (this.get('isLoading')) {
+            this.on('change:isLoading', function () {
+              this.getIconForKey(key).then(function (icon) {
+                dfd.resolve(icon);
+              });
+            }.bind(this));
+          } else {
+            throw new Error('No Icon was found for the key ' + key);
+          }
+          return dfd.promise();
+        },
+        isValidIcon: function (icon) {
+          return (icon.icons && _.size(icon.icons) > 0 || icon.fileUrl);
+        },
+        constructor: function (icon, options) {
+          if (!this.isValidIcon(icon)) {
+            this._throwNotValidIconError();
+          }
+          return Backbone.Model.prototype.constructor.call(this, icon, options);
+        }
+      }),
+      Icons = Backbone.Collection.extend({
+        model: Icon
+      }),
+      icons = new Icons();
+
+    this.register = function (icon) {
+      return icons.add(icon);
+    };
+
+    this.$get = ['$q', '$templateRequest', function ($q, $templateRequest) {
+      var _loadIconFile = function (icon) {
+        if (icon.get('fileUrl') && !icon.get('loaded')) {
+          icon.set('isLoading', true);
+          return $templateRequest(icon.get('fileUrl')).then(function (content) {
+            icon.set('icons', JSON.parse(content));
+            icon.set('isLoading', false);
+            icon.set('loaded', true);
+            return icon;
+          });
+        } else {
+          return $q.reject('The icon has nor fileUrl');
+        }
+      };
+
+
+      icons.each(_loadIconFile);
+      icons.on('add', _loadIconFile);
+
+      return {
+        register: function (icon) {
+          return icons.add(icon);
+        },
+        getIconSet: function (key, id) {
+          var icon;
+
+          key = key.split('.');
+          if (key.length > 1 && (!id || id === key[0])) {
+            id = key.splice(0, 1)[0];
+          }
+          key = key.join('.');
+
+          if (id) {
+            icon = icons.get(id);
+          } else if (!id && icons.length < 2) {
+            icon = icons.first();
+          } else {
+            throw new Error('Multiple icons are registered. Please pass an ID to find an icon for the key ' + key);
+          }
+
+          if (icon) {
+            return icon;
+          } else {
+            throw new Error('No icons have been registered yet. Please register at least one icon');
+          }
+        },
+        getIcons: function () {
+          return icons;
+        }
+      };
+    }];
+
+  });
+angular.module('mwUI.UiComponents')
+
+  .service('Wizard', function () {
+
+    var wizards = [];
+
+    var Wizard = function (id) {
+
+      var _steps = [],
+        _currentlyActive = 0,
+        _id = id;
+
+      /*
+       * name _registerStep()
+       * @description
+       * This method should not be called manually but rather automatically by using the mwWizardStep directive
+       */
+      this._registerStep = function (step, id) {
+        if (_steps.length < 1) {
+          step._isActive = true;
+        }
+        step.slideId = id || _.uniqueId(_id + '_');
+        _steps.push(step);
+      };
+
+      /*
+       * name _registerStep()
+       * @description
+       * This method should not be called manually but rather automatically by using the mwWizardStep directive
+       */
+      this._unRegisterStep = function (scope) {
+        var scopeInArray = _.findWhere(_steps, {$id: scope.$id}),
+          indexOfScope = _.indexOf(_steps, scopeInArray);
+
+        if (indexOfScope > -1) {
+          _steps.splice(indexOfScope, 1);
+        }
+      };
+
+      this.destroy = function () {
+        var self = this;
+        _steps.forEach(function (step) {
+          self._unRegisterStep(step);
+        });
+      };
+
+      this.getId = function () {
+        return _id;
+      };
+
+      this.getAllSteps = function () {
+        return _steps;
+      };
+
+      this.getCurrentStep = function () {
+        return _steps[_currentlyActive];
+      };
+
+      this.getCurrentStepNumber = function () {
+        return _currentlyActive;
+      };
+
+      this.getCurrentStepId = function () {
+        return _steps[_currentlyActive].slideId;
+      };
+
+      this.getTotalStepAmount = function () {
+        return _steps.length;
+      };
+
+      this.hasNextStep = function () {
+        return this.getCurrentStepNumber() < this.getTotalStepAmount() - 1;
+      };
+
+      this.hasPreviousStep = function () {
+        return this.getCurrentStepNumber() > 0;
+      };
+
+      /*
+       * name next()
+       * @description
+       * Navigates to the next step of the currently active step
+       */
+      this.next = function () {
+        this.goTo(_currentlyActive + 1);
+      };
+
+      /*
+       * name back()
+       * @description
+       * Navigates to the previous step of the currently active step
+       */
+      this.back = function () {
+        this.goTo(_currentlyActive - 1);
+      };
+
+      this.gotoStep = function (step) {
+
+        if (typeof step === 'string') {
+          step = _.findWhere(_steps, {slideId: step});
+        }
+
+        this.goTo(_.indexOf(_steps, step));
+      };
+
+      /*
+       * name goTo()
+       * @description
+       * Goto a specific step number
+       *
+       * @params {integer} number of the step where you want to navigate to
+       */
+      this.goTo = function (num) {
+        _steps[_currentlyActive]._isActive = false;
+        if (num >= _steps.length) {
+          throw new Error('Step ' + (num + 1) + ' is not available');
+        } else {
+          _steps[num]._isActive = true;
+          _currentlyActive = num;
+        }
+      };
+
+    };
+
+    /*
+     * name findWizard()
+     * @description
+     * Finds an existing instance of a wizzard with a certain id but throws NO error
+     * when the wizard with the id could not be found
+     *
+     * @params {string} id Unique identifier of the Wizard you want to find
+     * @returns {object} wizard returns wizard object
+     */
+    var findWizard = function (id) {
+      var _wizard = null;
+      wizards.forEach(function (wizard) {
+        if (wizard.getId === id) {
+          _wizard = wizard;
+        }
+      });
+      return _wizard;
+    };
+
+    /*
+     * name getWizard()
+     * @description
+     * Finds an existing instance of a wizzard with a certain id and throws an error
+     * when the wizard with the id could not be found
+     *
+     * @params {string} id Unique identifier of the Wizard you want to find
+     * @returns {object} wizard returns wizard object
+     */
+    var getWizard = function (id) {
+      var _wizard = findWizard(id);
+      if (!_wizard) {
+        throw new Error('The wizard with the id ' + id + ' does not exist');
+      } else {
+        return _wizard;
+      }
+
+    };
+
+    /*
+     * name createWizard
+     * @description
+     * Creates an instance of Wizard. Throws an error when wizzard with the id
+     * could not be found or is not initialized yet
+     *
+     * @param {string} id Unique identifier of the Wizard
+     * @returns {object} wizard returns wizard object
+     */
+    var createWizard = function (id) {
+      if (findWizard(id)) {
+        throw new Error('The wizard with the id ' + id + ' is already existing');
+      } else {
+        var wizard = new Wizard(id);
+        wizards.push(wizard);
+        return wizard;
+      }
+    };
+
+    //Public interface of the service
+    return {
+      createWizard: createWizard,
+      getWizard: getWizard
+    };
+
+  });
 
 angular.module('mwUI.UiComponents')
 
