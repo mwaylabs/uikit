@@ -1,4 +1,4 @@
-describe('mwTextCollapsable', function () {
+describe('mwTextCollapsible', function () {
   var $compile;
   var $rootScope;
   var scope;
