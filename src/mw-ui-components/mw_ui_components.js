@@ -20,7 +20,6 @@ angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils']);
 // @include ./directives/mw_timeline.js
 // @include ./directives/mw_timeline_entry.js
 // @include ./directives/mw_timeline_fieldset.js
-// @include ./directives/mw_toggle.js
 // @include ./directives/mw_tooltip.js
 // @include ./directives/mw_view_change_loader.js
 // @include ./directives/mw_wizard.js

@@ -1,4 +1,4 @@
-angular.module('mwUI.UiComponents')
+angular.module('mwUI.Inputs')
 
   .directive('mwToggle', function ($timeout) {
     return {
@@ -8,7 +8,7 @@ angular.module('mwUI.UiComponents')
         mwChange: '&'
       },
       replace: true,
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_toggle.html',
+      templateUrl: 'uikit/mw-inputs/directives/templates/mw_toggle.html',
       link: function (scope) {
         scope.toggle = function (value) {
           if (scope.mwModel !== value) {
