@@ -4,6 +4,7 @@
   angular.module('mwUI', [
       'mwUI.Backbone',
       'mwUI.ExceptionHandler',
+      'mwUI.Form',
       'mwUI.Inputs',
       'mwUI.i18n',
       'mwUI.Layout',
