@@ -1,4 +1,4 @@
-fdescribe('mwTextCollapse', function () {
+describe('mwTextCollapse', function () {
   var $compile;
   var $rootScope;
   var scope;
@@ -42,7 +42,6 @@ fdescribe('mwTextCollapse', function () {
     var textCollapse = '<span mw-text-collapse="short text"></span>';
     var el = $compile(textCollapse)(scope);
     scope.$digest();
-
     expect(el.has('span').length).toBe(1);
     expect(el.has('a').length).toBe(0);
 
