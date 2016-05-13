@@ -1,4 +1,4 @@
-angular.module('mwUI.ResponseHandler', []);
+angular.module('mwUI.ResponseHandler', ['mwUI.Utils']);
 
 // @include ./services/mw_response_handler.js
 
