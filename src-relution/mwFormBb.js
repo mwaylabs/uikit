@@ -19,11 +19,11 @@ angular.module('mwFormBb', [])
       link: function (scope, el, attr, form) {
         scope.optionsKey = scope.mwOptionsKey || 'key';
 
-        if (!(scope.collection instanceof window.mCAP.Collection)) {
+        if (!(scope.collection instanceof Backbone.Collection)) {
           throw new Error('mwFormMultiSelect: collection attribute has to be a collection');
         }
 
-        if (scope.disabledCollection && !(scope.disabledCollection instanceof window.mCAP.Collection)) {
+        if (scope.disabledCollection && !(scope.disabledCollection instanceof Backbone.Collection)) {
           throw new Error('mwFormMultiSelect: disabledCollection attribuet has to be a collection');
         }
 
