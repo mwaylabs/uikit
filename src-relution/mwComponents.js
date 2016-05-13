@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('mwComponents', [])
+angular.module('mwComponents', ['ngSanitize','btford.markdown'])
 
   .directive('mwTextCollapse', function ($filter) {
     return {
@@ -12,7 +12,6 @@ angular.module('mwComponents', [])
       },
       templateUrl: 'uikit/templates/mwComponents/mwTextCollapse.html',
       link: function (scope) {
-
         // set default length
         if (scope.length && typeof scope.length === 'number') {
           scope.defaultLength = scope.length;
@@ -170,18 +169,21 @@ angular.module('mwComponents', [])
     return {
       restrict: 'AE',
       link: function (scope, element, attrs) {
+        var convertText = function(text){
+          try {
+            var html = text ? $sanitize(mwMarkdown.convert(text)) : '';
+            element.html(html);
+          } catch (e) {
+            element.text(text);
+          }
+        };
+
         if (attrs.mwMarkdown) {
           scope.$watch(attrs.mwMarkdown, function (newVal) {
-            try {
-              var html = newVal ? $sanitize(mwMarkdown.convert(newVal)) : '';
-              element.html(html);
-            } catch (e) {
-              element.text(newVal);
-            }
+            convertText(newVal);
           });
         } else {
-          var html = $sanitize(mwMarkdown.convert(element.text()));
-          element.html(html);
+          convertText(element.text());
         }
       }
     };
