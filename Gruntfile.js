@@ -44,6 +44,7 @@ module.exports = function (grunt) {
         src: [
           'src-relution/mwUI.js',
           'src-relution/**/*.js',
+          '!src-relution/test/**/*.js',
           '.tmp/templates.js',
           '.tmp/templates-relution.js',
           'libs/angular-sanitize/angular-sanitize.js',
