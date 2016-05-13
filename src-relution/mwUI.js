@@ -1,4 +1,5 @@
 angular.module('mwUI.Relution', [
+  'mwUI',
   'ngSanitize',
   'mwCollection',
   'mwListable',
