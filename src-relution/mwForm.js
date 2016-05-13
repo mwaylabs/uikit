@@ -555,32 +555,6 @@
 
     /**
      * @ngdoc directive
-     * @name mwForm.directive:mwLeaveConfirmation
-     * @element form
-     * @description
-     *
-     * Opens a confirmation modal when the form has been edited and a the user wants to navigate to a new page
-     *
-     */
-
-    .directive('mwFormLeaveConfirmation', function ($window, $document, $location, i18n, Modal, $compile) {
-      return {
-        require: '^form',
-        link: function (scope, elm, attr, form) {
-          scope.form = form;
-          scope.text = i18n.get('common.confirmModal.description');
-          var confirmation = $compile('<div mw-leave-confirmation="form.$dirty" text="{{text}}"></div>')(scope);
-          elm.append(confirmation);
-
-          scope.$on('$destroy', function () {
-            scope.form.$dirty = false;
-          });
-        }
-      };
-    })
-
-    /**
-     * @ngdoc directive
      * @name mwForm.directive:mwFormActions
      * @element form
      * @description
