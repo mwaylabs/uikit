@@ -55,7 +55,7 @@ describe('mwUi mwIcon Service', function () {
 
     describe('querying icons', function(){
       it('returns the iconkey', function(){
-        var uSpy =jasmine.createSpy('userKeySpy')
+        var uSpy =jasmine.createSpy('userKeySpy');
         mwIconProvider.addIconSet({
           id: 'fa',
           icons: {
@@ -69,7 +69,7 @@ describe('mwUi mwIcon Service', function () {
       });
 
       it('returns the iconkey for nested icons', function(){
-        var uSpy =jasmine.createSpy('userKeySpy')
+        var uSpy =jasmine.createSpy('userKeySpy');
         mwIconProvider.addIconSet({
           id: 'fa',
           icons: {

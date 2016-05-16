@@ -13,7 +13,7 @@ describe('mwUi mwMultiSelectBoxes', function () {
   beforeEach(module('mwUI'));
   beforeEach(module('mwUI.Relution'));
 
-  mockI18nFilter();
+  window.mockI18nFilter();
 
   beforeEach(function () {
     inputCollection = new mwUI.Backbone.Collection();

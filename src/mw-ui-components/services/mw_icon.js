@@ -129,7 +129,6 @@ angular.module('mwUI.UiComponents')
     this.$get = function ($q, $templateRequest) {
       var _loadIconFile = function (icon) {
         icon.loadFn = function () {
-          console.log('IS LOADING')
           return $templateRequest(icon.get('iconsUrl')).then(function (content) {
             return JSON.parse(content);
           });

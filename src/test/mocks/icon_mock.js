@@ -1,5 +1,5 @@
 'use strict';
-var mockIconService = function() {
+window.mockIconService = function() {
 
   beforeEach(function () {
     module(function ($provide) {

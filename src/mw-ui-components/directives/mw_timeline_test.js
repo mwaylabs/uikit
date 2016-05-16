@@ -9,9 +9,9 @@ describe('mwTimeline', function () {
 
   beforeEach(module('mwUI.UiComponents'));
 
-  mockIconService();
+  window.mockIconService();
 
-  mockI18nFilter();
+  window.mockI18nFilter();
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;
