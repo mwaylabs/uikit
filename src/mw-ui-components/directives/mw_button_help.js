@@ -7,7 +7,7 @@ angular.module('mwUI.UiComponents')
       link: function (scope, elm) {
         var popup;
         var helpIcon =
-          $compile(angular.element('<div mw-icon="fa-question">'))(scope)
+          $compile(angular.element('<div mw-icon="mwUI.question">'))(scope)
           .addClass('help-icon hidden-sm hidden-xs');
 
         elm.addClass('mw-button-help');
