@@ -9,6 +9,8 @@ describe('mwButtonHelp', function () {
 
   beforeEach(module('mwUI.UiComponents'));
 
+  window.mockIconService();
+
   beforeEach(module(function ($provide) {
     $provide.service('i18n', function () {
       var i18n = jasmine.createSpyObj('i18n', ['get', 'setLocale']);
