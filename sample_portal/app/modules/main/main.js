@@ -16,7 +16,7 @@ angular.module('SampleApp.Main', [])
     };
   })
 
-  .config(function ($routeProvider, i18nProvider, exceptionHandlerModalProvider) {
+  .config(function ($routeProvider, i18nProvider, mwIconProvider, exceptionHandlerModalProvider) {
 
     i18nProvider.addLocale('de_DE', 'Deutsch', 'de_DE.json');
     i18nProvider.addLocale('en_US', 'English (US)', 'en_US.json');
@@ -28,6 +28,12 @@ angular.module('SampleApp.Main', [])
     $routeProvider
 
       .when('/', {redirectTo: '/start'});
+
+    mwIconProvider.addIconSet({
+      id: 'FA',
+      classPrefix: 'fa',
+      iconsUrl:'modules/main/icons/fa.json'
+    });
 
   })
 
