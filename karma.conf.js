@@ -30,6 +30,7 @@ module.exports = function(config){
       'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
       'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
 
+      'src/test/**/*.js',
       'src/**/*.html',
       'src-relution/**/*.html',
       'dist/uikit.js',
