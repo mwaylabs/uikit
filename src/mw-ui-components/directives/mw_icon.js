@@ -1,6 +1,6 @@
 angular.module('mwUI.UiComponents')
 
-  .directive('mwIconNew', function (mwIcon) {
+  .directive('mwIcon', function (mwIcon) {
     return {
       scope: {
         icon: '@mwIcon'
@@ -8,44 +8,55 @@ angular.module('mwUI.UiComponents')
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_icon.html',
       link: function (scope) {
         scope.viewModel = {
-          icon: null
+          icon: null,
+          iconSet: null,
+          oldIcon: null
         };
 
-        if(scope.icon){
-          mwIcon.getIconSet(scope.icon).then(function(icon){
+        var setIconOld = function(iconStr){
+          var isFontAwesome = iconStr.match(/^fa-/),
+            isRlnIcon = iconStr.match(/rln-icon/);
+
+          if (isFontAwesome) {
+            scope.viewModel.oldIcon = 'fa ' + iconStr;
+          } else if (isRlnIcon) {
+            scope.viewModel.oldIcon = 'rln-icon ' + iconStr;
+          } else {
+            scope.viewModel.oldIcon = 'glyphicon glyphicon-' + iconStr;
+          }
+        };
+
+        var setViewIcon = function(key){
+          scope.viewModel.iconSet.getIconForKey(key).then(function(icon){
             scope.viewModel.icon = icon;
           });
-        }
-      }
-    };
-  })
+        };
 
-  //TODO remove relution dependency
-  .directive('mwIcon', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        mwIcon: '@',
-        tooltip: '@',
-        placement: '@',
-        style: '@'
-      },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_icon.html',
-      link: function (scope, el) {
+        var setIcon = function(iconStr){
+          var splicedStr = iconStr.split('.'),
+            iconSetId,
+            iconKey;
 
-        el.addClass('mw-icon');
-        //set icon classes
-        scope.$watch('mwIcon', function (newVal) {
+          if (splicedStr.length > 1) {
+            iconSetId = splicedStr.splice(0, 1)[0];
+            iconKey = splicedStr.join('.');
+
+            scope.viewModel.iconSet = mwIcon.getIconSet(iconSetId);
+
+            setViewIcon(iconKey);
+
+            scope.viewModel.iconSet.on('icons:replace', function(){
+              setViewIcon(iconKey);
+            });
+
+          } else {
+            setIconOld(iconStr);
+          }
+        };
+
+        scope.$watch('icon', function (newVal) {
           if (newVal) {
-            var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
-              isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
-            if (isFontAwesome) {
-              scope.iconClasses = 'fa ' + scope.mwIcon;
-            } else if (isRlnIcon) {
-              scope.iconClasses = 'rln-icon ' + scope.mwIcon;
-            } else {
-              scope.iconClasses = 'glyphicon glyphicon-' + scope.mwIcon;
-            }
+            setIcon(newVal);
           }
         });
       }

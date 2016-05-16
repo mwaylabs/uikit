@@ -1,4 +1,14 @@
-<i ng-class="iconClasses"
-   style="{{style}}"
-   mw-tooltip="{{tooltip}}"
-   placement="{{placement}}"></i>
+<span class="mw-icon">
+
+  <i ng-if="viewModel.oldIcon"
+     ng-class="viewModel.oldIcon"
+     style="{{style}}"
+     mw-tooltip="{{tooltip}}"
+     placement="{{placement}}"></i>
+
+  <i ng-if="viewModel.icon" ng-class="viewModel.iconSet.get('classPrefix') +' '+ viewModel.icon"
+     style="{{style}}"
+     mw-tooltip="{{tooltip}}"
+     placement="{{placement}}"></i>
+
+</span>
