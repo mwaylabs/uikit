@@ -113,7 +113,8 @@ module.exports = function (grunt) {
       new: {
         src: [
           'src/**/templates/**/*.html',
-          'src/**/i18n/**/*.json'
+          'src/**/i18n/**/*.json',
+          'src/mw_ui_icons.json'
         ],
         dest: '.tmp/templates.js',
         options: {
