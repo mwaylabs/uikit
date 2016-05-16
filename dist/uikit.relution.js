@@ -16,8 +16,14 @@ angular.module('mwUI.Relution', [
   'mwMap',
   'mwFilters',
   'mwFileUpload'
-]).config(function(){
+]).config(['mwIconProvider', function(mwIconProvider){
   'use strict';
+
+  mwIconProvider.getIconSet('mwUI').replaceIcons({
+    cross: 'rln-icon close_cross',
+    question: 'rln-icon support'
+  });
+
   window.requestAnimFrame = (function () {
     return  window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
@@ -35,7 +41,7 @@ angular.module('mwUI.Relution', [
     }
   })();
 
-});
+}]);
 'use strict';
 
 angular.module('mwFilters', [])
