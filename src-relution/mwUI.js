@@ -16,8 +16,14 @@ angular.module('mwUI.Relution', [
   'mwMap',
   'mwFilters',
   'mwFileUpload'
-]).config(function(){
+]).config(function(mwIconProvider){
   'use strict';
+
+  mwIconProvider.getIconSet('mwUI').replaceIcons({
+    cross: 'rln-icon close_cross',
+    question: 'rln-icon support'
+  });
+
   window.requestAnimFrame = (function () {
     return  window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
