@@ -314,7 +314,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw_ui_icons.json',
-    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\" }"
+    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\", \"question\": \"fa-question\" }"
   );
 }]);
 
@@ -4291,7 +4291,7 @@ angular.module('mwUI.UiComponents')
       link: function (scope, elm) {
         var popup;
         var helpIcon =
-          $compile(angular.element('<div mw-icon="fa-question">'))(scope)
+          $compile(angular.element('<div mw-icon="mwUI.question">'))(scope)
           .addClass('help-icon hidden-sm hidden-xs');
 
         elm.addClass('mw-button-help');
