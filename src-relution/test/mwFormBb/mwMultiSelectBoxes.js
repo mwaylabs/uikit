@@ -13,6 +13,8 @@ describe('mwUi mwMultiSelectBoxes', function () {
   beforeEach(module('mwUI'));
   beforeEach(module('mwUI.Relution'));
 
+  mockI18nFilter();
+
   beforeEach(function () {
     inputCollection = new mwUI.Backbone.Collection();
     for (var i = 0; i < 10; i++) {
@@ -20,20 +22,6 @@ describe('mwUi mwMultiSelectBoxes', function () {
     }
     selectedCollection = new mwUI.Backbone.Collection();
   });
-
-  beforeEach(module(function ($provide) {
-    //$provide.value('i18n', function () {
-    //  var i18n = jasmine.createSpyObj('i18n', ['get', 'setLocale']);
-    //  debugger;
-    //  i18n.get.and.returnValue('not_translated');
-    //  return i18n;
-    //});
-    $provide.value('i18nFilter', function () {
-      return function (input) {
-        return input;
-      };
-    });
-  }));
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $rootScope = _$rootScope_;

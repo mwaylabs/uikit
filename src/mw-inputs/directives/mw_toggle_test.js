@@ -7,7 +7,7 @@ describe('mwToggle', function () {
 
   beforeEach(module('karmaDirectiveTemplates'));
 
-  beforeEach(module('mwUI.UiComponents'));
+  beforeEach(module('mwUI.Inputs'));
 
   //mock i18n filter
   beforeEach(function(){

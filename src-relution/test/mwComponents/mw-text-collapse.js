@@ -11,16 +11,7 @@ describe('mwTextCollapse', function () {
   beforeEach(module('ngSanitize'));
   beforeEach(module('btford.markdown'));
 
-  //mock i18n filter
-  beforeEach(function(){
-    module(function($provide){
-      $provide.value('i18nFilter', function(){
-        return function(input){
-          return input;
-        };
-      });
-    });
-  });
+  mockI18nFilter();
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;

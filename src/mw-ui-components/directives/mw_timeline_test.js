@@ -9,16 +9,9 @@ describe('mwTimeline', function () {
 
   beforeEach(module('mwUI.UiComponents'));
 
-  //mock i18n filter
-  beforeEach(function(){
-    module(function($provide){
-      $provide.value('i18nFilter', function(){
-        return function(input){
-          return input;
-        };
-      });
-    });
-  });
+  mockIconService();
+
+  mockI18nFilter();
 
   beforeEach(inject(function (_$compile_, _$rootScope_) {
     $compile = _$compile_;
