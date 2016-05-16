@@ -4,6 +4,7 @@
   angular.module('mwUI', [
       'mwUI.Backbone',
       'mwUI.ExceptionHandler',
+      'mwUI.Form',
       'mwUI.Inputs',
       'mwUI.i18n',
       'mwUI.Layout',
@@ -17,9 +18,16 @@
       'mwUI.UiComponents'
     ])
 
-    .config(['i18nProvider', function (i18nProvider) {
+    .config(['i18nProvider', 'mwIconProvider', function (i18nProvider, mwIconProvider) {
       i18nProvider.addLocale('de_DE', 'Deutsch', 'de_DE.json');
       i18nProvider.addLocale('en_US', 'English (US)', 'en_US.json');
+
+      mwIconProvider.addIconSet({
+        id: 'mwUI',
+        classPrefix: 'fa',
+        iconsUrl:'uikit/mw_ui_icons.json'
+      }, true);
+
     }])
 
     .run(['i18n', function(i18n){
@@ -40,13 +48,18 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
+    "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
+  );
+
+
   $templateCache.put('uikit/mw-layout/directives/templates/mw_app.html',
     "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Title</title></head><body></body></html>"
   );
 
 
   $templateCache.put('uikit/mw-layout/directives/templates/mw_header.html',
-    "<div class=\"mw-header row\"><div class=\"fixed-content col-md-12\"><div ng-if=\"showBackButton\" class=\"back-btn clickable\" data-text=\"{{'common.back' | i18n}}\" ng-click=\"back()\"><span mw-icon=\"fa-angle-left\"></span></div><div class=\"title-holder\"><span mw-icon=\"{{mwTitleIcon}}\" class=\"header-icon\" ng-if=\"mwTitleIcon\"></span><div ng-if=\"mwBreadCrumbs\" mw-bread-crumbs-holder><div ng-repeat=\"breadCrumb in mwBreadCrumbs\" mw-bread-crumb url=\"{{breadCrumb.url}}\" title=\"{{breadCrumb.title}}\" show-arrow=\"true\"></div></div><h1 class=\"lead page-title\" ng-click=\"refresh()\">{{title}}</h1></div><div ng-if=\"warningCondition\" class=\"warnin-content\" mw-tooltip=\"{{ warningText }}\"><span class=\"text-warning\" mw-icon=\"fa-warning\"></span> <span class=\"popover-container\"></span></div><div class=\"additional-content-holder\" ng-transclude></div></div></div>"
+    "<div class=\"mw-header row\"><div class=\"fixed-content col-md-12\"><div ng-if=\"showBackButton\" class=\"back-btn clickable\" data-text=\"{{'common.back' | i18n}}\" ng-click=\"back()\"><span mw-icon=\"mwUI.angleLeft\"></span></div><div class=\"title-holder\"><span mw-icon=\"{{mwTitleIcon}}\" class=\"header-icon\" ng-if=\"mwTitleIcon\"></span><div ng-if=\"mwBreadCrumbs\" mw-bread-crumbs-holder><div ng-repeat=\"breadCrumb in mwBreadCrumbs\" mw-bread-crumb url=\"{{breadCrumb.url}}\" title=\"{{breadCrumb.title}}\" show-arrow=\"true\"></div></div><h1 class=\"lead page-title\" ng-click=\"refresh()\">{{title}}</h1></div><div ng-if=\"warningCondition\" class=\"warnin-content\" mw-tooltip=\"{{ warningText }}\"><span class=\"text-warning\" mw-icon=\"mwUI.warning\"></span> <span class=\"popover-container\"></span></div><div class=\"additional-content-holder\" ng-transclude></div></div></div>"
   );
 
 
@@ -71,12 +84,12 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_head.html',
-    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}\"><div class=\"selection-controller\"><div ng-if=\"selectable\" class=\"holder\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.selectAll' | i18n }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"fa-times\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.clearSelection' | i18n}}</a></span></div></div><div class=\"search-bar\"><div ng-if=\"searchAttribute\" mw-filterable-search-bb collection=\"collection\" placeholder=\"{{'List.mwListHead.searchFor' | i18n:{name: collectionName} }}\" property=\"{{searchAttribute}}\"></div></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"fa-angle-up\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"fa-angle-down\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'List.mwListHead.notAvailableTooltip' | i18n}}\"><span mw-icon=\"fa-warning\"></span>{{'List.mwListHead.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"fa-times\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
+    "<div class=\"mw-listable-header clearfix\" ng-class=\"{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}\"><div class=\"selection-controller\"><div ng-if=\"selectable\" class=\"holder\"><span ng-click=\"toggleSelectAll()\" class=\"clickable select-all\" ng-if=\"!selectable.isSingleSelection()\"><span class=\"selected-icon\"><span class=\"indicator\" ng-if=\"selectable.allSelected()\"></span></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.selectAll' | i18n }}</a></span> <span ng-if=\"selectedAmount > 0\" class=\"clickable clear\" ng-click=\"selectable.unSelectAll()\"><span mw-icon=\"mwUI.cross\"></span> <a href=\"#\" mw-prevent-default=\"click\">{{'List.mwListHead.clearSelection' | i18n}}</a></span></div></div><div class=\"search-bar\"><div ng-if=\"searchAttribute\" mw-filterable-search-bb collection=\"collection\" placeholder=\"{{'List.mwListHead.searchFor' | i18n:{name: collectionName} }}\" property=\"{{searchAttribute}}\"></div></div><div class=\"selected-counter\"><span ng-if=\"selectable && selectedAmount>0\" class=\"clickable\" ng-click=\"toggleShowSelected()\"><a href=\"#\" mw-prevent-default=\"click\"><span ng-if=\"selectedAmount === 1\">{{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}</span> <span ng-if=\"selectedAmount > 1\">{{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}</span> <span mw-icon=\"mwUI.angleUp\" ng-show=\"canShowSelected()\"></span> <span mw-icon=\"mwUI.angleDown\" ng-show=\"!canShowSelected()\"></span></a></span><div ng-if=\"!selectable || selectedAmount<1\" ng-transclude class=\"extra-content\"></div><span ng-if=\"!selectable || selectedAmount<1\">{{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}</span></div><div class=\"selected-items\" ng-if=\"canShowSelected()\"><div class=\"items clearfix\"><div class=\"box-shadow-container\"><div ng-if=\"!isLoadingModelsNotInCollection\" ng-repeat=\"item in selectable.getSelected().models\" ng-click=\"unSelect(item)\" ng-class=\"{'label-danger':item.selectable.isDeletedItem}\" class=\"label label-default clickable\"><span ng-if=\"item.selectable.isDeletedItem\" mw-tooltip=\"{{'List.mwListHead.notAvailableTooltip' | i18n}}\"><span mw-icon=\"mwUI.warning\"></span>{{'List.mwListHead.notAvailable' | i18n}}</span> <span ng-if=\"!item.selectable.isDeletedItem\">{{getModelAttribute(item)}}</span> <span mw-icon=\"mwUI.cross\"></span></div><div ng-if=\"isLoadingModelsNotInCollection\"><div rln-spinner></div></div></div></div><div class=\"close-pane\" ng-click=\"hideSelected()\"></div></div></div>"
   );
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_header.html',
-    "<th ng-class=\"{ clickable: property, 'sort-active':(property && isSelected())||sortActive }\"><span ng-if=\"property\" ng-click=\"toggleSortOrder()\" class=\"sort-indicators\"><i ng-show=\"property && !isSelected()\" mw-icon=\"fa-sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"fa-sort-asc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"fa-sort-desc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
+    "<th ng-class=\"{ clickable: property, 'sort-active':(property && isSelected())||sortActive }\"><span ng-if=\"property\" ng-click=\"toggleSortOrder()\" class=\"sort-indicators\"><i ng-show=\"property && !isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
   );
 
 
@@ -121,17 +134,17 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-toast/directives/templates/mw_toasts.html',
-    "<div class=\"message messages-list mw-toasts\"><div class=\"content\"><ul><li ng-repeat=\"toast in toasts\" class=\"message-item\"><div class=\"status-indicator {{toast.type}}\"><span mw-icon=\"{{toast.icon}}\"></span></div><div class=\"message\"><div class=\"holder margin-top-5\"><h5 ng-if=\"toast.title\">{{toast.title}}</h5><span ng-if=\"!toast.isHtmlMessage\">{{toast.message | limitTo:500}}</span> <span ng-if=\"toast.isHtmlMessage\" ng-bind-html=\"toast.message\"></span> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.action && !toast.button.link\" href=\"#\"><span ng-click=\"hideToast(toast); toast.button.action()\" mw-prevent-default=\"click\">{{toast.button.title}}</span></a> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.link\" ng-href=\"{{toast.button.link}}\" target=\"{{toast.button.target}}\"><span>{{toast.button.title}}</span></a><div ng-if=\"toast.button && !toast.button.isLink && toast.button.action\"><div class=\"action-button btn btn-default btn-xs margin-top-5\"><div ng-click=\"hideToast(toast); toast.button.action()\">{{toast.button.title}}</div></div></div></div><div class=\"closer\" ng-click=\"hideToast(toast.id)\"><span mw-icon=\"fa-times\"></span></div></div></li></ul></div></div>"
+    "<div class=\"message messages-list mw-toasts\"><div class=\"content\"><ul><li ng-repeat=\"toast in toasts\" class=\"message-item\"><div class=\"status-indicator {{toast.type}}\"><span mw-icon=\"{{toast.icon}}\"></span></div><div class=\"message\"><div class=\"holder margin-top-5\"><h5 ng-if=\"toast.title\">{{toast.title}}</h5><span ng-if=\"!toast.isHtmlMessage\">{{toast.message | limitTo:500}}</span> <span ng-if=\"toast.isHtmlMessage\" ng-bind-html=\"toast.message\"></span> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.action && !toast.button.link\" href=\"#\"><span ng-click=\"hideToast(toast); toast.button.action()\" mw-prevent-default=\"click\">{{toast.button.title}}</span></a> <a class=\"action-button btn btn-link btn-xs\" ng-if=\"toast.button && toast.button.isLink && toast.button.link\" ng-href=\"{{toast.button.link}}\" target=\"{{toast.button.target}}\"><span>{{toast.button.title}}</span></a><div ng-if=\"toast.button && !toast.button.isLink && toast.button.action\"><div class=\"action-button btn btn-default btn-xs margin-top-5\"><div ng-click=\"hideToast(toast); toast.button.action()\">{{toast.button.title}}</div></div></div></div><div class=\"closer\" ng-click=\"hideToast(toast.id)\"><span mw-icon=\"mwUI.cross\"></span></div></div></li></ul></div></div>"
   );
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_alert.html',
-    "<div class=\"mw-alert alert alert-{{ type || 'default' }}\"><div ng-transclude class=\"alert-content\"></div><div ng-if=\"closeable\" ng-click=\"closeAlert()\" mw-icon=\"fa-times\"></div></div>"
+    "<div class=\"mw-alert alert alert-{{ type || 'default' }}\"><div ng-transclude class=\"alert-content\"></div><div ng-if=\"closeable\" ng-click=\"closeAlert()\" mw-icon=\"mwUI.cross\"></div></div>"
   );
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_arrow_link.html',
-    "<a ng-href=\"{{ link }}\" class=\"btn btn-default btn-sm mw-arrow-link\" mw-stop-propagation=\"click\"><span mw-icon=\"fa-angle-right\"></span></a>"
+    "<a ng-href=\"{{ link }}\" class=\"btn btn-default btn-sm mw-arrow-link\" mw-stop-propagation=\"click\"><span mw-icon=\"mwUI.angleRight\"></span></a>"
   );
 
 
@@ -141,7 +154,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_bread_crumb.html',
-    "<div class=\"mw-bread-crumb\"><a ng-href=\"{{url}}\" class=\"bread-crumb\">{{title}}</a> <span mw-icon=\"fa-caret-right\" class=\"arrow\"></span></div>"
+    "<div class=\"mw-bread-crumb\"><a ng-href=\"{{url}}\" class=\"bread-crumb\">{{title}}</a> <span mw-icon=\"mwUI.caretRight\" class=\"arrow\"></span></div>"
   );
 
 
@@ -156,7 +169,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_icon.html',
-    "<i ng-class=\"iconClasses\" style=\"{{style}}\" mw-tooltip=\"{{tooltip}}\" placement=\"{{placement}}\"></i>"
+    "<span class=\"mw-icon\"><i ng-if=\"viewModel.oldIcon\" ng-class=\"viewModel.oldIcon\" style=\"{{style}}\" mw-tooltip=\"{{tooltip}}\" placement=\"{{placement}}\"></i> <i ng-if=\"viewModel.icon\" ng-class=\"viewModel.iconSet.get('classPrefix') +' '+ viewModel.icon\" style=\"{{style}}\" mw-tooltip=\"{{tooltip}}\" placement=\"{{placement}}\"></i></span>"
   );
 
 
@@ -171,7 +184,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_panel.html',
-    "<div class=\"mw-panel panel panel-{{type || 'default'}}\"><div class=\"panel-heading\" ng-if=\"title\"><h3 class=\"panel-title\">{{title}}</h3><span ng-if=\"closeable\" ng-click=\"closePanel()\" mw-icon=\"fa-times\"></span></div><div class=\"panel-body\" ng-transclude></div></div>"
+    "<div class=\"mw-panel panel panel-{{type || 'default'}}\"><div class=\"panel-heading\" ng-if=\"title\"><h3 class=\"panel-title\">{{title}}</h3><span ng-if=\"closeable\" ng-click=\"closePanel()\" mw-icon=\"mwUI.cross\"></span></div><div class=\"panel-body\" ng-transclude></div></div>"
   );
 
 
@@ -211,12 +224,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-ui-components/directives/templates/mw_timeline_fieldset.html',
-    "<fieldset class=\"mw-timeline-fieldset\" ng-class=\"{'entries-are-hidden':!entriesVisible, 'collapsable': collapsable}\"><div ng-if=\"mwTitle\" ng-click=\"toggleEntries()\" class=\"legend\">{{mwTitle}} <span ng-if=\"collapsable && entriesVisible\" class=\"toggler\"><i mw-icon=\"fa-chevron-circle-down\"></i></span> <span ng-if=\"collapsable && !entriesVisible\" class=\"toggler\"><i mw-icon=\"fa-chevron-circle-up\"></i></span></div><div ng-show=\"!entriesVisible\" class=\"hidden-entries\" ng-click=\"toggleEntries()\">{{ hiddenEntriesText() | i18n:{count:entries.length} }}</div><ul class=\"clearfix timeline-entry-list\" ng-transclude ng-show=\"entriesVisible\"></ul></fieldset>"
-  );
-
-
-  $templateCache.put('uikit/mw-ui-components/directives/templates/mw_toggle.html',
-    "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
+    "<fieldset class=\"mw-timeline-fieldset\" ng-class=\"{'entries-are-hidden':!entriesVisible, 'collapsable': collapsable}\"><div ng-if=\"mwTitle\" ng-click=\"toggleEntries()\" class=\"legend\">{{mwTitle}} <span ng-if=\"collapsable && entriesVisible\" class=\"toggler\"><i mw-icon=\"mwUI.chevronDownCircle\"></i></span> <span ng-if=\"collapsable && !entriesVisible\" class=\"toggler\"><i mw-icon=\"mwUI.chevronUpCircle\"></i></span></div><div ng-show=\"!entriesVisible\" class=\"hidden-entries\" ng-click=\"toggleEntries()\">{{ hiddenEntriesText() | i18n:{count:entries.length} }}</div><ul class=\"clearfix timeline-entry-list\" ng-transclude ng-show=\"entriesVisible\"></ul></fieldset>"
   );
 
 
@@ -302,6 +310,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/mw-utils/i18n/en_US.json',
     "{ \"Utils\": { \"ok\": \"Ok\", \"cancel\": \"Cancel\" }, \"mwLeaveConfirmationModal\": { \"title\": \"Do you really want to leave the current page?\", \"continue\": \"Continue\", \"stay\": \"Stay on this page\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw_ui_icons.json',
+    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\" }"
   );
 }]);
 
@@ -2074,7 +2087,7 @@ angular.module('mwUI.i18n')
 
     return i18nFilter;
   }]);
-angular.module('mwUI.Inputs', []);
+angular.module('mwUI.Inputs', ['mwUI.i18n']);
 
 angular.module('mwUI.Inputs')
 
@@ -2162,6 +2175,29 @@ angular.module('mwUI.Inputs')
       }
     };
   });
+angular.module('mwUI.Inputs')
+
+  .directive('mwToggle', ['$timeout', function ($timeout) {
+    return {
+      scope: {
+        mwModel: '=',
+        mwDisabled: '=',
+        mwChange: '&'
+      },
+      replace: true,
+      templateUrl: 'uikit/mw-inputs/directives/templates/mw_toggle.html',
+      link: function (scope) {
+        scope.toggle = function (value) {
+          if (scope.mwModel !== value) {
+            scope.mwModel = !scope.mwModel;
+            $timeout(function () {
+              scope.mwChange({value: scope.mwModel});
+            });
+          }
+        };
+      }
+    };
+  }]);
 angular.module('mwUI.Layout', []);
 
 angular.module('mwUI.Layout')
@@ -4248,14 +4284,17 @@ angular.module('mwUI.UiComponents')
   });
 angular.module('mwUI.UiComponents')
 
-  .directive('mwButtonHelp', ['i18n', function (i18n) {
+  .directive('mwButtonHelp', ['i18n', '$compile', function (i18n, $compile) {
     return {
       restrict: 'A',
       scope: true,
       link: function (scope, elm) {
         var popup;
+        var helpIcon =
+          $compile(angular.element('<div mw-icon="fa-question">'))(scope)
+          .addClass('help-icon hidden-sm hidden-xs');
+
         elm.addClass('mw-button-help');
-        var helpIcon = angular.element('<div>').addClass('help-icon fa fa-question hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
         var buildPopup = function () {
@@ -4369,7 +4408,7 @@ angular.module('mwUI.UiComponents')
   });
 angular.module('mwUI.UiComponents')
 
-  .directive('mwIconNew', ['mwIcon', function (mwIcon) {
+  .directive('mwIcon', ['mwIcon', function (mwIcon) {
     return {
       scope: {
         icon: '@mwIcon'
@@ -4377,49 +4416,60 @@ angular.module('mwUI.UiComponents')
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_icon.html',
       link: function (scope) {
         scope.viewModel = {
-          icon: null
+          icon: null,
+          iconSet: null,
+          oldIcon: null
         };
 
-        if(scope.icon){
-          mwIcon.getIconSet(scope.icon).then(function(icon){
+        var setIconOld = function(iconStr){
+          var isFontAwesome = iconStr.match(/^fa-/),
+            isRlnIcon = iconStr.match(/rln-icon/);
+
+          if (isFontAwesome) {
+            scope.viewModel.oldIcon = 'fa ' + iconStr;
+          } else if (isRlnIcon) {
+            scope.viewModel.oldIcon = 'rln-icon ' + iconStr;
+          } else {
+            scope.viewModel.oldIcon = 'glyphicon glyphicon-' + iconStr;
+          }
+        };
+
+        var setViewIcon = function(key){
+          scope.viewModel.iconSet.getIconForKey(key).then(function(icon){
             scope.viewModel.icon = icon;
           });
-        }
-      }
-    };
-  }])
+        };
 
-  //TODO remove relution dependency
-  .directive('mwIcon', function () {
-    return {
-      restrict: 'A',
-      scope: {
-        mwIcon: '@',
-        tooltip: '@',
-        placement: '@',
-        style: '@'
-      },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_icon.html',
-      link: function (scope, el) {
+        var setIcon = function(iconStr){
+          var splicedStr = iconStr.split('.'),
+            iconSetId,
+            iconKey;
 
-        el.addClass('mw-icon');
-        //set icon classes
-        scope.$watch('mwIcon', function (newVal) {
+          if (splicedStr.length > 1) {
+            iconSetId = splicedStr.splice(0, 1)[0];
+            iconKey = splicedStr.join('.');
+
+            scope.viewModel.iconSet = mwIcon.getIconSet(iconSetId);
+
+            setViewIcon(iconKey);
+
+            scope.viewModel.iconSet.on('icons:replace', function(){
+              setViewIcon(iconKey);
+            });
+
+          } else {
+            setIconOld(iconStr);
+          }
+        };
+
+        scope.$watch('icon', function (newVal) {
           if (newVal) {
-            var isFontAwesome = angular.isArray(scope.mwIcon.match(/^fa-/)),
-              isRlnIcon = angular.isArray(scope.mwIcon.match(/rln-icon/));
-            if (isFontAwesome) {
-              scope.iconClasses = 'fa ' + scope.mwIcon;
-            } else if (isRlnIcon) {
-              scope.iconClasses = 'rln-icon ' + scope.mwIcon;
-            } else {
-              scope.iconClasses = 'glyphicon glyphicon-' + scope.mwIcon;
-            }
+            setIcon(newVal);
           }
         });
       }
     };
-  });
+  }]);
 angular.module('mwUI.UiComponents')
 
   .directive('mwOptionGroup', function () {
@@ -4716,29 +4766,6 @@ angular.module('mwUI.UiComponents')
   }]);
 
 angular.module('mwUI.UiComponents')
-
-  .directive('mwToggle', ['$timeout', function ($timeout) {
-    return {
-      scope: {
-        mwModel: '=',
-        mwDisabled: '=',
-        mwChange: '&'
-      },
-      replace: true,
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_toggle.html',
-      link: function (scope) {
-        scope.toggle = function (value) {
-          if (scope.mwModel !== value) {
-            scope.mwModel = !scope.mwModel;
-            $timeout(function () {
-              scope.mwChange({value: scope.mwModel});
-            });
-          }
-        };
-      }
-    };
-  }]);
-angular.module('mwUI.UiComponents')
   .directive('mwTooltip', function () {
     return {
       restrict: 'A',
@@ -4911,12 +4938,12 @@ angular.module('mwUI.UiComponents')
 
   .provider('mwIcon', function () {
 
-    var Icon = Backbone.Model.extend({
+    var IconSet = Backbone.Model.extend({
         defaults: function () {
           return {
             classPrefix: '',
-            type: 'ICON',
-            fileUrl: null,
+            type: 'FONTICON',
+            iconsUrl: null,
             isLoading: false,
             loaded: false,
             icons: {}
@@ -4924,6 +4951,12 @@ angular.module('mwUI.UiComponents')
         },
         _throwNotValidIconError: function () {
           throw new Error('You have to set either icons or set a filePath');
+        },
+        _needsToBeLoaded: function(){
+          return this.get('iconsUrl') && !this.get('loaded');
+        },
+        loadFn: function () {
+          throw new Error('Has to overwritten with a real loader fn');
         },
         getIconForKey: function (key) {
           var keys = key.split('.'),
@@ -4939,87 +4972,108 @@ angular.module('mwUI.UiComponents')
             }
           });
 
-          if (icon) {
+          if (icon && !this._needsToBeLoaded()) {
             dfd.resolve(icon);
-          } else if (this.get('isLoading')) {
-            this.on('change:isLoading', function () {
-              this.getIconForKey(key).then(function (icon) {
+          } else if (this._needsToBeLoaded()) {
+
+            this.on('change:loaded', function () {
+              return this.getIconForKey(key).then(function (icon) {
                 dfd.resolve(icon);
               });
             }.bind(this));
+
+            if (!this.get('isLoading')) {
+              this.set('isLoading', true);
+              this.loadFn().then(function (icons) {
+                _.extend(this.get('icons'), icons);
+                this.set('isLoading', false);
+                this.set('loaded', true);
+              }.bind(this));
+            }
+
           } else {
             throw new Error('No Icon was found for the key ' + key);
           }
           return dfd.promise();
         },
         isValidIcon: function (icon) {
-          return (icon.icons && _.size(icon.icons) > 0 || icon.fileUrl);
+          return (icon.icons && _.size(icon.icons) > 0 || icon.iconsUrl);
+        },
+        addIcons: function (icons, replace) {
+          var alreadyRegistered = _.intersection(_.keys(this.get('icons')), _.keys(icons));
+          if (alreadyRegistered.length > 0 && !replace) {
+            throw new Error('The icons ' + alreadyRegistered.join(',') + ' already exists. If you want to replace them use the method replaceIcons');
+          } else {
+            _.extend(this.get('icons'), icons);
+            if(alreadyRegistered.length>0){
+              this.trigger('icons:replace');
+            } else {
+              this.trigger('icons:add', icons);
+            }
+          }
+        },
+        replaceIcons: function (icons) {
+          if (!this._needsToBeLoaded()) {
+            this.addIcons(icons, true);
+          } else {
+            this.on('change:loaded', function () {
+              this.addIcons(icons, true);
+            }.bind(this));
+          }
         },
         constructor: function (icon, options) {
           if (!this.isValidIcon(icon)) {
             this._throwNotValidIconError();
           }
+          if (icon.iconsUrl) {
+            icon.loaded = false;
+          }
           return Backbone.Model.prototype.constructor.call(this, icon, options);
         }
       }),
-      Icons = Backbone.Collection.extend({
-        model: Icon
+      IconSets = Backbone.Collection.extend({
+        model: IconSet
       }),
-      icons = new Icons();
+      icons = new IconSets();
 
-    this.register = function (icon) {
-      return icons.add(icon);
+    var _addIconSet = function (iconSet) {
+      if (!iconSet.id) {
+        throw new Error('You have to set an identifier for you iconset');
+      } else if (icons.get(iconSet.id)) {
+        throw new Error('The iconset has already been registered');
+      } else {
+        icons.add(iconSet);
+      }
     };
+
+    var _getIconSet = function (id) {
+      var icon = icons.get(id);
+      if (icon) {
+        return icon;
+      } else {
+        throw new Error('No iconset has been found for the id ' + id);
+      }
+    };
+
+    this.addIconSet = _addIconSet;
+
+    this.getIconSet = _getIconSet;
 
     this.$get = ['$q', '$templateRequest', function ($q, $templateRequest) {
       var _loadIconFile = function (icon) {
-        if (icon.get('fileUrl') && !icon.get('loaded')) {
-          icon.set('isLoading', true);
-          return $templateRequest(icon.get('fileUrl')).then(function (content) {
-            icon.set('icons', JSON.parse(content));
-            icon.set('isLoading', false);
-            icon.set('loaded', true);
-            return icon;
+        icon.loadFn = function () {
+          return $templateRequest(icon.get('iconsUrl')).then(function (content) {
+            return JSON.parse(content);
           });
-        } else {
-          return $q.reject('The icon has nor fileUrl');
-        }
+        };
       };
-
 
       icons.each(_loadIconFile);
       icons.on('add', _loadIconFile);
 
       return {
-        register: function (icon) {
-          return icons.add(icon);
-        },
-        getIconSet: function (key, id) {
-          var icon;
-
-          key = key.split('.');
-          if (key.length > 1 && (!id || id === key[0])) {
-            id = key.splice(0, 1)[0];
-          }
-          key = key.join('.');
-
-          if (id) {
-            icon = icons.get(id);
-          } else if (!id && icons.length < 2) {
-            icon = icons.first();
-          } else {
-            throw new Error('Multiple icons are registered. Please pass an ID to find an icon for the key ' + key);
-          }
-
-          if (icon) {
-            return icon;
-          } else {
-            throw new Error('No icons have been registered yet. Please register at least one icon');
-          }
-        },
-        getIcons: function () {
-          return icons;
-        }
+        addIconSet: _addIconSet,
+        getIconSet: _getIconSet
       };
     }];
 
