@@ -16,7 +16,7 @@
       <span ng-if="selectedAmount > 0"
             class="clickable clear"
             ng-click="selectable.unSelectAll()">
-        <span mw-icon="fa-times"></span>
+        <span mw-icon="mwUI.cross"></span>
        <a href="#" mw-prevent-default="click">{{'List.mwListHead.clearSelection' | i18n}}</a>
       </span>
 
@@ -41,8 +41,8 @@
       <span ng-if="selectedAmount > 1">
         {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}
       </span>
-        <span mw-icon="fa-angle-up" ng-show="canShowSelected()"></span>
-        <span mw-icon="fa-angle-down" ng-show="!canShowSelected()"></span>
+        <span mw-icon="mwUI.angleUp" ng-show="canShowSelected()"></span>
+        <span mw-icon="mwUI.angleDown" ng-show="!canShowSelected()"></span>
       </a>
     </span>
 
@@ -62,10 +62,10 @@
              class="label label-default clickable">
           <span ng-if="item.selectable.isDeletedItem"
                 mw-tooltip="{{'List.mwListHead.notAvailableTooltip' | i18n}}">
-            <span mw-icon="fa-warning"></span>{{'List.mwListHead.notAvailable' | i18n}}
+            <span mw-icon="mwUI.warning"></span>{{'List.mwListHead.notAvailable' | i18n}}
           </span>
           <span ng-if="!item.selectable.isDeletedItem">{{getModelAttribute(item)}}</span>
-          <span mw-icon="fa-times"></span>
+          <span mw-icon="mwUI.cross"></span>
         </div>
 
         <div ng-if="isLoadingModelsNotInCollection">

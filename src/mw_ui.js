@@ -18,9 +18,16 @@
       'mwUI.UiComponents'
     ])
 
-    .config(function (i18nProvider) {
+    .config(function (i18nProvider, mwIconProvider) {
       i18nProvider.addLocale('de_DE', 'Deutsch', 'de_DE.json');
       i18nProvider.addLocale('en_US', 'English (US)', 'en_US.json');
+
+      mwIconProvider.addIconSet({
+        id: 'mwUI',
+        classPrefix: 'fa',
+        iconsUrl:'uikit/mw_ui_icons.json'
+      }, true);
+
     })
 
     .run(function(i18n){

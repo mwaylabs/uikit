@@ -1,13 +1,16 @@
 angular.module('mwUI.UiComponents')
 
-  .directive('mwButtonHelp', function (i18n) {
+  .directive('mwButtonHelp', function (i18n, $compile) {
     return {
       restrict: 'A',
       scope: true,
       link: function (scope, elm) {
         var popup;
+        var helpIcon =
+          $compile(angular.element('<div mw-icon="fa-question">'))(scope)
+          .addClass('help-icon hidden-sm hidden-xs');
+
         elm.addClass('mw-button-help');
-        var helpIcon = angular.element('<div>').addClass('help-icon fa fa-question hidden-sm hidden-xs');
         elm.prepend(helpIcon);
 
         var buildPopup = function () {

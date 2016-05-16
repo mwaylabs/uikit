@@ -1,8 +1,8 @@
 <th ng-class="{ clickable: property, 'sort-active':(property && isSelected())||sortActive }">
   <span ng-if="property" ng-click="toggleSortOrder()" class="sort-indicators">
-    <i ng-show="property && !isSelected()" mw-icon="fa-sort" class="sort-indicator"></i>
-    <i ng-if="isSelected('-')" mw-icon="fa-sort-asc"></i>
-    <i ng-if="isSelected('+')" mw-icon="fa-sort-desc"></i>
+    <i ng-show="property && !isSelected()" mw-icon="mwUI.sort" class="sort-indicator"></i>
+    <i ng-if="isSelected('-')" mw-icon="mwUI.sortAsc"></i>
+    <i ng-if="isSelected('+')" mw-icon="mwUI.sortDesc"></i>
   </span>
 
   <span ng-transclude class="title"></span>
