@@ -77,10 +77,14 @@ angular.module('mwUI.Modal')
             // This enables us a backdrop per modal because we are appending the backdrop to the modal
             // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
             /* jshint ignore:start */
-            var $bootstrapBackdrop = _bootstrapModal.data()['bs.modal'].backdrop;
-            _bootstrapModal.data()['bs.modal'].backdrop = function (callback) {
-              $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
-            };
+            if (_bootstrapModal.data()) {
+              var bootstrapModal = _bootstrapModal.data()['bs.modal'],
+                $bootstrapBackdrop = bootstrapModal.backdrop;
+
+              bootstrapModal.backdrop = function (callback) {
+                $bootstrapBackdrop.call(bootstrapModal, callback, $(_holderEl).find('.modal'));
+              };
+            }
             /* jshint ignore:end */
 
             _bindModalCloseEvent();
@@ -249,7 +253,7 @@ angular.module('mwUI.Modal')
       var ModalDefinition = function () {
         return new Modal(modalOptions, bootstrapModalOptions);
       };
-       return ModalDefinition;
+      return ModalDefinition;
     };
 
     this.getOpenedModals = function () {
