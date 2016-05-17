@@ -148,31 +148,4 @@ fdescribe('testing mwModel', function(){
       expect(this.scope.select).toEqual(this.scope.options[1]);
     });
   });
-
-  fit('backbone model triggers change event when ngModel is updated', function(){
-    var input = '<select ng-options="item as item.label for item in options track by item.id" ng-model="select" mw-model="testModel"></select>',
-        changeSpy = jasmine.createSpy('changeSpy'),
-        el;
-    el = this.$compile(input)(this.scope);
-    this.scope.testModel = this.testModel;
-    this.scope.options = [{id:1, label:"eins"},{id:2, label:"zwei"}];
-    this.scope.testModel.on('change:select', changeSpy);
-    this.scope.$digest();
-    debugger;
-    el.find('option')[1].click();
-    this.scope.$digest();
-
-    expect(changeSpy).toHaveBeenCalled();
-  });
-
-  it('updates backbone model when ngModel changes', function(){
-
-
-
-    this.scope.text = 'XYZ';
-    this.scope.$digest();
-
-    expect(this.testModel.get('text')).toBe('XYZ');
-  });
-
 });
