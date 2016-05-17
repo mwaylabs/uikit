@@ -124,9 +124,13 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
       obj = attributes;
     }
 
+    if(!_.isObject(options)){
+      options = null;
+    }
+
     obj = this._setNestedAttributes(obj);
 
-    return Backbone.Model.prototype.set.call(this, obj);
+    return Backbone.Model.prototype.set.call(this, obj, options);
   },
 
   compose: function (attrs) {
