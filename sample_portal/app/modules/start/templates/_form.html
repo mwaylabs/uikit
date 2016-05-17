@@ -1,0 +1,32 @@
+<fieldset>
+  <input type="text"
+         ng-model="name"
+         mw-model="SFCtrl.model"
+         required><br>
+  <input type="url" ng-model="SFCtrl.model.attributes.urli"><br>
+  <input type="date" ng-model="SFCtrl.model.attributes.dati"><br>
+  <select ng-options="item as item.label for item in SFCtrl.viewModel.selectOptions track by item.id"
+          ng-model="selecti"
+          mw-model="SFCtrl.model"></select><br>
+  <input type="checkbox" ng-model="checki" mw-model="SFCtrl.model">
+</fieldset>
+
+<fieldset>
+  <input type="radio" ng-model="radio" mw-model="SFCtrl.model" value="red"/>
+  <input type="radio" ng-model="radio" mw-model="SFCtrl.model" ng-value="SFCtrl.viewModel.selectOptions[0]"/>
+  <input type="radio" ng-model="radio" mw-model="SFCtrl.model" value="blue"/>
+</fieldset>
+
+<fieldset>
+  Name {{ SFCtrl.model.get('name') }}<br>
+  URL {{ SFCtrl.model.get('urli') }}<br>
+  Date {{ SFCtrl.model.get('dati') }}<br>
+  Select {{ SFCtrl.model.get('selecti') }}<br>
+  Checkbox {{ SFCtrl.model.get('checki') }}<br>
+  Radio {{ SFCtrl.model.get('radio') }}<br>
+</fieldset>
+
+<button ng-click="SFCtrl.setDate()">CHANGE</button><br>
+
+Form VALID: {{startForm.$valid}}
+

@@ -24,6 +24,14 @@ angular.module('SampleApp.Start', [])
         controllerAs: 'SDCtrl',
         resolve: $injector.get('StartDetailsControllerResolver'),
         cssClasses: 'start details'
+      })
+
+      .when('/start/new', {
+        templateUrl: 'modules/start/templates/new.html',
+        controller: 'StartFormController',
+        controllerAs: 'SFCtrl',
+        resolve: $injector.get('StartFormControllerResolver'),
+        cssClasses: 'start new form'
       });
 
     ResponseHandlerProvider.registerAction('*/start/i18n/*',function(rsp){
