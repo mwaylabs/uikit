@@ -14,9 +14,15 @@ angular.module('mwUI.ExceptionHandler')
         return function (exception,cause) {
           exception = exception || '';
           cause = cause || '';
-          _handlers.forEach(function(callback){
-            callbackHandler.exec(callback, [exception.toString(), cause.toString()]);
-          });
+
+          try{
+            _handlers.forEach(function(callback){
+              callbackHandler.exec(callback, [exception.toString(), cause.toString()]);
+            });
+          } catch (err){
+            $log.error(err);
+          }
+
           $log.error(exception);
         };
       }
