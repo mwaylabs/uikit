@@ -8,7 +8,7 @@ angular.module('mwUI.Backbone')
 
         var updateNgModel = function () {
           var val = model.get(modelAttr);
-          console.log('UPDATE ANGULAR')
+
           ngModel.$formatters.forEach(function (formatFn) {
             val = formatFn(val);
           });
@@ -19,7 +19,7 @@ angular.module('mwUI.Backbone')
 
         var updateBackboneModel = function () {
           var obj = {};
-          console.log('UPDATE BACKBONE')
+
           obj[modelAttr] = ngModel.$modelValue;
           model.set(obj, {fromNgModel: true});
         };
