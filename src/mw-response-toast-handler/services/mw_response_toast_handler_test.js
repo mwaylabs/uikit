@@ -8,7 +8,8 @@ describe('mwUi Response Handler', function () {
     ResponseToastHandler,
     ResponseHandler,
     Toast,
-    i18n;
+    i18n,
+    serviceSpy = jasmine.createSpy('serviceSpy');
 
   var _handleResponse = function(){
     ResponseHandler.handle({
@@ -29,6 +30,10 @@ describe('mwUi Response Handler', function () {
         return input;
       });
       return i18n;
+    });
+
+    $provide.service('ResponseToastTestService', function(){
+      return serviceSpy;
     });
   }));
 
@@ -234,6 +239,27 @@ describe('mwUi Response Handler', function () {
       expect(spy.calls.argsFor(1)[1].$count).toBe(2);
       expect(Toast.getToasts()[0].message).toEqual('CUSTOM');
 
+    });
+
+    it('executes the pre process service  when it is defined in options', function(){
+      ResponseToastHandlerProvider.registerToast('/test/2', {
+        singular: 'One',
+        plural: 'Plural'
+      }, {
+        method: 'POST',
+        statusCodes: [200, 201],
+        preProcess: 'ResponseToastTestService'
+      });
+
+      ResponseHandler.handle({
+        config: {
+          url: '/test/2',
+          method: 'POST'
+        },
+        status: 200
+      });
+
+      expect(serviceSpy).toHaveBeenCalled();
     });
 
     it('should be possible to define different toastTypes', function(){

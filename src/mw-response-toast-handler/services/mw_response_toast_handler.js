@@ -12,7 +12,7 @@ angular.module('mwUI.ResponseToastHandler')
     var _getNotificationCallback = function (messages, id, options) {
       options = options || {};
       var factoryName = _.uniqueId('notification_factory');
-      $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
+      $provide.factory(factoryName, ['Toast', 'i18n', 'callbackHandler', function (Toast, i18n, callbackHandler) {
         return function ($httpResponse) {
           if(!messages){
             return;
@@ -35,9 +35,10 @@ angular.module('mwUI.ResponseToastHandler')
           data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
           data.$count++;
 
-          if (options.preProcess && typeof options.preProcess === 'function') {
+          if (options.preProcess) {
             _.extend(data, $httpResponse.data);
-            message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
+
+            message = callbackHandler.exec(options.preProcess, [messageStr, data, i18n, $httpResponse]);
             if(!message){
               return;
             }
