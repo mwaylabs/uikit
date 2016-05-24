@@ -30,7 +30,7 @@ angular.module('SampleApp.Main', [])
       .when('/', {redirectTo: '/start'});
 
     mwIconProvider.addIconSet({
-      id: 'FA',
+      id: 'fa',
       classPrefix: 'fa',
       iconsUrl:'modules/main/icons/fa.json'
     });
