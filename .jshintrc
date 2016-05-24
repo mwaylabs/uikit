@@ -49,6 +49,7 @@
     "inject"     : false,
     "Backbone": false,
     "sinon": false,
-    "mwUI": false
+    "mwUI": false,
+    "uiDeprecationWarning": false
   }
 }
