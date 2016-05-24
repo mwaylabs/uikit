@@ -1,0 +1,13 @@
+<div>
+  <div mw-input-wrapper
+       label="{{label}}"
+       tooltip="{{tooltip}}"
+       hide-errors="hideErrors">
+    <div ng-transclude></div>
+    <span ng-repeat="badge in typedBadges"
+          mw-badge="{{badge.type}}"
+          style="top: 0">
+      {{ badge.text }}
+    </span>
+  </div>
+</div>
