@@ -16,13 +16,19 @@ angular.module('mwUI.Relution', [
   'mwMap',
   'mwFilters',
   'mwFileUpload'
-]).config(['mwIconProvider', function(mwIconProvider){
+]).config(['mwIconProvider', 'mwValidationMessagesProvider', function(mwIconProvider, mwValidationMessagesProvider){
   'use strict';
 
   mwIconProvider.getIconSet('mwUI').replaceIcons({
     cross: 'rln-icon close_cross',
     question: 'rln-icon support'
   });
+
+  mwValidationMessagesProvider.registerValidator('hex','errors.hex');
+  mwValidationMessagesProvider.registerValidator('unique','errors.notUnique');
+  mwValidationMessagesProvider.registerValidator('match','errors.doesNotMatch');
+  mwValidationMessagesProvider.registerValidator('emailOrPlaceholder','errors.emailOrPlaceholder');
+  mwValidationMessagesProvider.registerValidator('itunesOrHttpLink','errors.itunesOrHttpLink');
 
   window.requestAnimFrame = (function () {
     return  window.requestAnimationFrame ||
@@ -40,8 +46,119 @@ angular.module('mwUI.Relution', [
       return false;
     }
   })();
-
 }]);
+
+var shownDeprecationWarnings = [];
+window.uiDeprecationWarning = function(message){
+  if(shownDeprecationWarnings.indexOf(message) === -1){
+    console.warn(message);
+    shownDeprecationWarnings.push(message);
+  }
+};
+angular.module('mwUI.Relution', [])
+
+  .directive('mwFormInput', function(){
+    return {
+      transclude: true,
+      scope: {
+        label: '@',
+        tooltip: '@',
+        hideErrors: '='
+      },
+      templateUrl: 'uikit/templates/deprecated/mw_form_input.html',
+      link: function(){
+        uiDeprecationWarning('The directive mw-form-input has been renamed to mw-input-wrapper. Please use the new directive instead!');
+      }
+    };
+  })
+
+  .directive('mwFormWrapper', function () {
+    return {
+      transclude: true,
+      scope: {
+        label: '@',
+        tooltip: '@',
+        hideErrors: '='
+      },
+      templateUrl: 'uikit/templates/deprecated/mw_form_input.html',
+      link: function () {
+        uiDeprecationWarning('The directive mw-form-wrapper does not exist anymore. Please use the directive mw-input-wrapper instead!');
+      }
+    };
+  })
+
+  .directive('mwFormCheckbox', function(){
+    return {
+      transclude: true,
+      scope: {
+        label: '@',
+        tooltip: '@',
+        hideErrors: '=',
+        badges: '@'
+      },
+      templateUrl: 'uikit/templates/deprecated/mw_form_checkbox.html',
+      link: function(scope) {
+        uiDeprecationWarning('The directive mw-form-checkbox does not exist anymore. Please use the directive mw-input-wrapper instead!');
+
+        if (scope.badges) {
+          var formatBadges = function () {
+            uiDeprecationWarning('The badges attribute of the deprecated mw-form-checkbox is not supported anymore. Please transclude the badges instead');
+            scope.typedBadges = [];
+            var splittedBadges = scope.badges.split(',');
+            angular.forEach(splittedBadges, function (badge) {
+              var type = 'info';
+              if (badge.toLowerCase().indexOf('android') > -1) {
+                type = 'android';
+              }
+              if (badge.toLowerCase().indexOf('ios') > -1) {
+                type = 'ios';
+              }
+              if (badge.toLowerCase().indexOf('knox') > -1) {
+                type = 'knox';
+              }
+              if (badge.toLowerCase().indexOf('-knox-') > -1) {
+                badge = 'KNOX';
+                type = 'notsafe';
+              }
+              if (badge.toLowerCase().indexOf('knox') > -1 &&
+                badge.toLowerCase().indexOf('android') > -1) {
+                type = 'multi';
+              }
+              scope.typedBadges.push({
+                text: badge,
+                type: type
+              });
+            });
+          };
+          scope.$watch('badges', formatBadges);
+        }
+      }
+    };
+  })
+
+  .directive('mwCustomCheckbox', function(){
+    return {
+      link: function(){
+        uiDeprecationWarning('The directive mw-custom-checkbox is deprecated. The custom checkbox is default now. You can remove this directive from the checkbox input element');
+      }
+    };
+  })
+
+  .directive('mwCustomRadio', function(){
+    return {
+      link: function(){
+        uiDeprecationWarning('The directive mw-custom-radio is deprecated. The custom radio box is default now. You can remove this directive from the radio input element');
+      }
+    };
+  })
+
+  .directive('mwCustomSelect', function(){
+    return {
+      link: function(){
+        uiDeprecationWarning('The directive mw-custom-select is deprecated. The custom selectbox is default now. You can remove this directive from the select input');
+      }
+    };
+  });
 'use strict';
 
 angular.module('mwFilters', [])
@@ -1106,29 +1223,6 @@ angular.module('mwFileUpload')
 
 (function () {
 
-  // Common used function to put defaults onto some HTML elements
-  var extendHTMLElement = function () {
-    return {
-      restrict: 'E',
-      require: '?^mwFormInput',
-      link: function (scope, elm, attr, ctrl) {
-        var formInputController = ctrl,
-          skipTheFollowing = ['checkbox', 'radio'],
-          dontSkipIt = skipTheFollowing.indexOf(attr.type) === -1;
-
-        // Add default class coming from bootstrap
-        if (dontSkipIt) {
-          elm.addClass('form-control');
-        }
-
-        //append validation messages to element
-        if (dontSkipIt && formInputController) {
-          formInputController.buildValidationMessages(elm);
-        }
-      }
-    };
-  };
-
   var addDefaultValidations = function () {
     return {
       restrict: 'E',
@@ -1167,230 +1261,6 @@ angular.module('mwFileUpload')
 
 
   angular.module('mwForm', [])
-
-    .provider('mwValidationMessages', function () {
-      var _registeredValidators = {},
-        _translatedValidators = {},
-        _functionValidators = {},
-        _executedValidators = {};
-
-      var _setValidationMessage = function (key, validationMessage) {
-        if (typeof validationMessage === 'function') {
-          _functionValidators[key] = validationMessage;
-        } else {
-          _registeredValidators[key] = validationMessage;
-        }
-      };
-
-      this.registerValidator = function (key, validationMessage) {
-        if (!_registeredValidators[key] && !_functionValidators[key]) {
-          _setValidationMessage(key, validationMessage);
-        } else {
-          throw new Error('The key ' + key + ' has already been registered');
-        }
-      };
-
-      this.$get = ['$rootScope', 'i18n', function ($rootScope, i18n) {
-        var _translateRegisteredValidators = function () {
-          _.pairs(_registeredValidators).forEach(function (pair) {
-            var key = pair[0],
-              value = pair[1];
-            if (i18n.translationIsAvailable(value)) {
-              _translatedValidators[key] = i18n.get(value);
-            } else {
-              _translatedValidators[key] = value;
-            }
-          });
-        };
-
-        var _executeFunctionValidators = function () {
-          _.pairs(_functionValidators).forEach(function (pair) {
-            var key = pair[0],
-              fn = pair[1];
-            _executedValidators[key] = fn();
-          });
-        };
-
-        var _setValidationMessages = function () {
-          _translateRegisteredValidators();
-          _executeFunctionValidators();
-          $rootScope.$broadcast('mwValidationMessages:change');
-        };
-
-        _setValidationMessages();
-        $rootScope.$on('i18n:localeChanged', function () {
-          _setValidationMessages();
-        });
-
-        return {
-          getRegisteredValidators: function () {
-            return _.extend(_translatedValidators, _executedValidators);
-          },
-          updateMessage: function (key, message) {
-            if (_registeredValidators[key] || _functionValidators[key]) {
-              _setValidationMessage(key, message);
-              _setValidationMessages();
-            } else {
-              throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
-            }
-          }
-        };
-      }];
-    })
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwFormInput
-     * @element div
-     * @description
-     *
-     * Wrapper for input elements. Adds validation messages, form HTML and corresponding CSS.
-     * The following elements can register itself on mwFormInput:
-     *
-     * - select
-     * - input[text]
-     * - textarea
-     *
-     * @scope
-     *
-     * @param {string} label Label to show
-     * @param {expression} hideErrors If true, doesn't show validation messages. Default is false
-     *
-     */
-    .directive('mwFormInput', ['i18n', function (i18n) {
-      return {
-        restrict: 'A',
-        transclude: true,
-        require: '^form',
-        scope: {
-          label: '@',
-          tooltip: '@',
-          hideErrors: '='
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormInput.html',
-        link: function (scope, elm, attr, ctrl) {
-
-          var getElementCtrl = function () {
-            if (ctrl && scope.elementName && ctrl[scope.elementName]) {
-              return ctrl[scope.elementName];
-            }
-          };
-
-
-          scope.isInvalid = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl) ? elCtrl.$invalid : false;
-          };
-
-          scope.isDirty = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl) ? elCtrl.$dirty : false;
-          };
-
-          scope.getCurrentErrors = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl) ? elCtrl.$error : undefined;
-          };
-
-          scope.isRequiredError = function () {
-            var elCtrl = getElementCtrl();
-            return (elCtrl && elCtrl.$error) ? elCtrl.$error.required : false;
-          };
-
-          scope.isRequired = function () {
-            var requiredInputs = elm.find('input[required],select[required],textarea[required]');
-            return requiredInputs.length > 0;
-          };
-
-
-        },
-        controller: ['$scope', 'mwValidationMessages', function ($scope, mwValidationMessages) {
-          var that = this;
-          that.element = null;
-
-          this.buildValidationMessages = function (element) {
-            if (!that.element) {
-              that.element = element;
-
-              $scope.$watch(function () {
-                return element.attr('name');
-              }, function (val) {
-                if (val) {
-                  $scope.elementName = val;
-                }
-              });
-
-              $scope.$watch(function () {
-                return element.attr('mw-validation-message');
-              }, function (val) {
-                if (val) {
-                  buildValidationValues();
-                }
-              });
-
-              var buildValidationValues = function () {
-                var registeredValidators = mwValidationMessages.getRegisteredValidators(),
-                  defaultValidators = {
-                    required: i18n.get('errors.isRequired'),
-                    email: i18n.get('errors.hasToBeAnEmail'),
-                    pattern: i18n.get('errors.hasToMatchPattern'),
-                    url: i18n.get('errors.validUrl'),
-                    min: i18n.get('errors.minValue', {count: element.attr('min')}),
-                    minlength: i18n.get('errors.minLength', {count: element.attr('ng-minlength')}),
-                    max: i18n.get('errors.maxValue', {count: element.attr('max')}),
-                    maxlength: i18n.get('errors.maxLength', {count: element.attr('ng-maxlength')}),
-                    phone: i18n.get('errors.phoneNumber'),
-                    hex: i18n.get('errors.hex'),
-                    unique: i18n.get('errors.notUnique'),
-                    match: i18n.get('errors.doesNotMatch'),
-                    emailOrPlaceholder: i18n.get('errors.emailOrPlaceholder'),
-                    itunesOrHttpLink: i18n.get('errors.itunesOrHttpLink')
-                  };
-
-                $scope.validationValues = _.extend(defaultValidators, registeredValidators);
-
-              };
-              buildValidationValues();
-              $scope.$on('mwValidationMessages:change', buildValidationValues);
-            }
-          };
-        }]
-      };
-    }])
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwFormWrapper
-     * @element div
-     * @description
-     *
-     * Wrapper for custom elements. Adds form HTML and corresponding CSS.
-     * Does not include validation or any other functional components.
-     *
-     * @scope
-     *
-     * @param {string} label Label to show
-     * @param {string} tooltip Tooltip to display
-     *
-     */
-    .directive('mwFormWrapper', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          label: '@',
-          tooltip: '@'
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormWrapper.html',
-        link: function (scope, el) {
-          scope.isRequired = function () {
-            var requiredInputs = el.find('input[required],select[required],textarea[required]');
-            return requiredInputs.length > 0;
-          };
-        }
-      };
-    })
 
     /**
      * @ngdoc directive
@@ -1519,119 +1389,6 @@ angular.module('mwFileUpload')
 
     /**
      * @ngdoc directive
-     * @name mwForm.directive:mwFormCheckbox
-     * @element div
-     * @description
-     *
-     * Wrapper for checkbox elements. Adds form HTML and corresponding CSS.
-     *
-     * @scope
-     *
-     * @param {string} label Label to show
-     *
-     */
-    .directive('mwFormCheckbox', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        scope: {
-          mwClass: '@class',
-          label: '@',
-          tooltip: '@',
-          badges: '@'
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormCheckbox.html',
-        link: function (scope) {
-          if (scope.badges) {
-            var formatBadges = function () {
-              scope.typedBadges = [];
-              var splittedBadges = scope.badges.split(',');
-              angular.forEach(splittedBadges, function (badge) {
-                var type = 'info';
-                if (badge.toLowerCase().indexOf('android') > -1) {
-                  type = 'android';
-                }
-                if (badge.toLowerCase().indexOf('ios') > -1) {
-                  type = 'ios';
-                }
-                if (badge.toLowerCase().indexOf('knox') > -1) {
-                  type = 'knox';
-                }
-                if (badge.toLowerCase().indexOf('-knox-') > -1) {
-                  badge = 'KNOX';
-                  type = 'notsafe';
-                }
-                if (badge.toLowerCase().indexOf('knox') > -1 &&
-                  badge.toLowerCase().indexOf('android') > -1) {
-                  type = 'multi';
-                }
-                scope.typedBadges.push({
-                  text: badge,
-                  type: type
-                });
-              });
-            };
-            scope.$watch('badges', formatBadges);
-          }
-        }
-      };
-    })
-
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:mwFormValidation
-     * @element span
-     * @description
-     * **Important!:** Can only be placed inside of {@link mwForm.directive:mwFormInput mwFormInput}.
-     *
-     * Adds validation messages if validation for given key fails.
-     *
-     * @scope
-     *
-     * @param {string} mwFormsValidation The key to validate a model
-     */
-    .directive('mwFormValidation', function () {
-      return {
-        restrict: 'A',
-        replace: true,
-        transclude: true,
-        require: ['^mwFormInput', '^form'],
-        scope: {
-          validation: '@mwFormValidation'
-        },
-        template: '<span class="help-block" ng-show="isValid()" ng-transclude></span>',
-        link: function (scope, elm, attr, controllers) {
-          var mwFormInputCtrl = controllers[0],
-            inputName = mwFormInputCtrl.element.attr('name'),
-            form = controllers[1],
-            invalid = false;
-
-          if (!inputName) {
-            invalid = true;
-            throw new Error('element doesn\'t have name attribute');
-          }
-
-          if (form && !form[inputName]) {
-            invalid = true;
-            throw new Error('element ' + inputName + ' not found');
-          }
-
-          scope.isValid = function () {
-            if (invalid || !form) {
-              return false;
-            } else {
-              if (form[inputName]) {
-                return form[inputName].$error[scope.validation];
-              }
-            }
-          };
-        }
-      };
-    })
-
-    /**
-     * @ngdoc directive
      * @name mwForm.directive:mwForm
      * @element form
      * @description
@@ -1643,9 +1400,6 @@ angular.module('mwFileUpload')
       return {
         restrict: 'E',
         link: function (scope, el) {
-          el.addClass('form-horizontal');
-          el.attr('novalidate', 'true');
-
           var noPasswordAutocomplete = angular.element(
             '<!-- fake fields are a workaround for chrome autofill getting the wrong fields -->' +
             '<input style="display:none" type="text" name="fakeusernameremembered"/>' +
@@ -1730,17 +1484,6 @@ angular.module('mwFileUpload')
     }])
 
 
-    /**
-     * @ngdoc directive
-     * @name mwForm.directive:select
-     * @restrict E
-     * @description
-     *
-     * Extends the select element, by adding class 'form-control' and registers
-     * it on {@link mwForm.directive:mwFormInput mwFormInput}.
-     *
-     */
-    .directive('select', extendHTMLElement)
 
 
     /**
@@ -1753,7 +1496,6 @@ angular.module('mwFileUpload')
      * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
      *
      */
-    .directive('input', extendHTMLElement)
     .directive('input', addDefaultValidations)
 
     /**
@@ -1766,7 +1508,6 @@ angular.module('mwFileUpload')
      * registers it on {@link mwForm.directive:mwFormInput mwFormInput}.
      *
      */
-    .directive('textarea', extendHTMLElement)
     .directive('textarea', addDefaultValidations)
 
     /**
@@ -4507,6 +4248,20 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-form/directives/templates/mw_error_messages.html',
+    "<div class=\"mw-error-messages\"><ul ng-repeat=\"errorModel in errors().models\"><li class=\"error-message\">{{getMessageForError(errorModel)}}</li></ul></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-form/directives/templates/mw_input_wrapper.html',
+    "<div class=\"mw-input-wrapper form-group\" ng-model-errors ng-class=\"{\n" +
+    "      'has-error': showError(),\n" +
+    "      'is-required': isRequired(),\n" +
+    "      'is-required-error':showRequiredError()\n" +
+    "     }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-tooltip=\"{{ tooltip }}\"><span mw-icon=\"mwUI.questionCircle\"></span></span></label><div class=\"input-holder\" ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"!hideErrors\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><div mw-error-messages></div></div></div>"
+  );
+
+
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
     "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
   );
@@ -4732,6 +4487,16 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-form/i18n/de_DE.json',
+    "{ \"mwErrorMessages\": { \"required\": \"ist ein Pflichtfeld\", \"hasToBeValidEmail\": \"muss eine valide E-Mail Adresse sein\", \"hasToMatchPattern\": \"muss dem Muster entsprechen\", \"hasToBeValidUrl\": \"muss eine valide URL sein\", \"hasToBeValidPhoneNumber\": \"muss eine gültige URL sein\", \"hasToBeMin\": \"muss mindestens {{min}} sein\", \"hasToBeMinLength\": \"muss mindestens {{min}} Zeichen haben\", \"hasToBeSmaller\": \"darf maximal {{max}} sein\", \"hasToBeSmallerLength\": \"darf maximal {{max}} Zeichen haben\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw-form/i18n/en_US.json',
+    "{ }"
+  );
+
+
   $templateCache.put('uikit/mw-list/i18n/de_DE.json',
     "{ \"List\": { \"mwListHead\": { \"items\": \"Einträge\", \"selectAll\": \"Alle selektieren\", \"clearSelection\": \"Selektion aufheben\", \"itemSelected\": \"{{name}} ist selektiert\", \"itemsSelected\": \"{{count}} {{name}} sind selektiert\", \"itemAmount\": \"{{count}} {{name}}\", \"searchFor\": \"{{name}} suchen\", \"notAvailable\": \"N/V\", \"notAvailableTooltip\": \"Der Eintrag ist nicht verfügbar. Eventuell wurde dieser gelöscht.\" }, \"mwListFooter\": { \"noneFound\": \"Es wurden keine Einträge gefunden\" } } }"
   );
@@ -4773,10 +4538,20 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw_ui_icons.json',
-    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\", \"question\": \"fa-question\" }"
+    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\", \"question\": \"fa-question\", \"questionCircle\": \"fa-question-circle-o\" }"
   );
 }]);
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
+
+  $templateCache.put('uikit/templates/deprecated/mw_form_checkbox.html',
+    "<div><div mw-input-wrapper label=\"{{label}}\" tooltip=\"{{tooltip}}\" hide-errors=\"hideErrors\"><div ng-transclude></div><span ng-repeat=\"badge in typedBadges\" mw-badge=\"{{badge.type}}\" style=\"top: 0\">{{ badge.text }}</span></div></div>"
+  );
+
+
+  $templateCache.put('uikit/templates/deprecated/mw_form_input.html',
+    "<div><div mw-input-wrapper label=\"{{label}}\" tooltip=\"{{tooltip}}\" hide-errors=\"hideErrors\"><div ng-transclude></div></div></div>"
+  );
+
 
   $templateCache.put('uikit/templates/mwComponents/_mwMarkdownPreviewPopoper.html',
     "<div class=\"mw-markdown-preview-popover\"><p>{{ 'markdownTooltip.description' | i18n }}</p><h1>#{{ 'markdownTooltip.level1Header' | i18n }}</h1><h2>##{{ 'markdownTooltip.level2Header' | i18n }}</h2>{{ 'markdownTooltip.list' | i18n }}<ul><li>* {{ 'markdownTooltip.item' | i18n }} 1</li><li>* {{ 'markdownTooltip.item' | i18n }} 2</li><li>* {{ 'markdownTooltip.item' | i18n }} 3</li></ul><ol><li>1. {{ 'markdownTooltip.item' | i18n }}</li><li>2. {{ 'markdownTooltip.item' | i18n }}</li><li>3. {{ 'markdownTooltip.item' | i18n }}</li></ol><p>{{ 'markdownTooltip.link' | i18n }}</p></div>"
@@ -4858,16 +4633,6 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
-  $templateCache.put('uikit/templates/mwForm/mwFormCheckbox.html',
-    "<div class=\"mw-form-checkbox mw-form form-group clearfix\" ng-class=\"mwClass\"><div class=\"col-sm-offset-3 col-sm-9\"><div class=\"checkbox\"><label><div ng-transclude></div>{{ label }}</label><span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span> <span ng-repeat=\"badge in typedBadges\" ng-class=\"'label-' + badge.type\" class=\"mw-badge label\">{{ badge.text }}</span></div></div></div>"
-  );
-
-
-  $templateCache.put('uikit/templates/mwForm/mwFormInput.html',
-    "<div class=\"mw-form mw-form-input form-group\" ng-class=\"{'has-error': isInvalid() && isDirty(), 'is-required': isRequired(), 'is-required-error':isRequiredError() }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"hideErrors !== true\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><span ng-if=\"hideErrors !== true && hideErrors !== key && isInvalid()\" ng-repeat=\"(key, value) in getCurrentErrors()\" mw-form-validation=\"{{ key }}\">{{ validationValues[key] }}</span></div></div>"
-  );
-
-
   $templateCache.put('uikit/templates/mwForm/mwFormMultiSelect.html',
     "<div ng-form><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"(key,value) in filter(options)\"><label><input type=\"checkbox\" name=\"selectOption\" mw-custom-checkbox ng-checked=\"model.indexOf(key) >= 0\" ng-click=\"toggleKeyIntoModelArray(key); setDirty()\"> {{ value }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div><!--<div ng-class=\"col-sm-12\">--><!--<span class=\"help-block\" ng-show=\"showRequiredMessage()\">{{'errors.isRequired' | i18n}}</span>--><!--</div>--><div ng-show=\"getObjectSize(filter(options)) == 0\" ng-transclude></div></div></div>"
   );
@@ -4875,11 +4640,6 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/templates/mwForm/mwFormMultiSelect2.html',
     "<div ng-form class=\"mw-form mw-form-multi-select\"><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"model in mwOptionsCollection.models\"><label><input type=\"checkbox\" name=\"selectOption\" ng-disabled=\"mwDisabled\" mw-custom-checkbox ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span ng-if=\"!mwOptionsLabelI18nPrefix\">{{ model.get(mwOptionsLabelKey) }}</span> <span ng-if=\"mwOptionsLabelI18nPrefix\">{{mwOptionsLabelI18nPrefix+'.'+model.get(mwOptionsLabelKey) | i18n}}</span></label></div><div mw-form-input><span mw-validate-collection-or-model=\"mwCollection\" mw-required=\"mwRequired\"></span></div></div></div>"
-  );
-
-
-  $templateCache.put('uikit/templates/mwForm/mwFormWrapper.html',
-    "<div class=\"mw-form mw-form-wrapper form-group\" ng-class=\"{'is-required': isRequired()}\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div class=\"col-sm-6 col-lg-5\" ng-class=\"{ false: 'col-sm-offset-3' }[label.length > 0]\" ng-transclude></div></div>"
   );
 
 

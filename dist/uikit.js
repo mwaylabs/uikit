@@ -48,6 +48,20 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-form/directives/templates/mw_error_messages.html',
+    "<div class=\"mw-error-messages\"><ul ng-repeat=\"errorModel in errors().models\"><li class=\"error-message\">{{getMessageForError(errorModel)}}</li></ul></div>"
+  );
+
+
+  $templateCache.put('uikit/mw-form/directives/templates/mw_input_wrapper.html',
+    "<div class=\"mw-input-wrapper form-group\" ng-model-errors ng-class=\"{\n" +
+    "      'has-error': showError(),\n" +
+    "      'is-required': isRequired(),\n" +
+    "      'is-required-error':showRequiredError()\n" +
+    "     }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-tooltip=\"{{ tooltip }}\"><span mw-icon=\"mwUI.questionCircle\"></span></span></label><div class=\"input-holder\" ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"!hideErrors\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><div mw-error-messages></div></div></div>"
+  );
+
+
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
     "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
   );
@@ -273,6 +287,16 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-form/i18n/de_DE.json',
+    "{ \"mwErrorMessages\": { \"required\": \"ist ein Pflichtfeld\", \"hasToBeValidEmail\": \"muss eine valide E-Mail Adresse sein\", \"hasToMatchPattern\": \"muss dem Muster entsprechen\", \"hasToBeValidUrl\": \"muss eine valide URL sein\", \"hasToBeValidPhoneNumber\": \"muss eine gültige URL sein\", \"hasToBeMin\": \"muss mindestens {{min}} sein\", \"hasToBeMinLength\": \"muss mindestens {{min}} Zeichen haben\", \"hasToBeSmaller\": \"darf maximal {{max}} sein\", \"hasToBeSmallerLength\": \"darf maximal {{max}} Zeichen haben\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw-form/i18n/en_US.json',
+    "{ }"
+  );
+
+
   $templateCache.put('uikit/mw-list/i18n/de_DE.json',
     "{ \"List\": { \"mwListHead\": { \"items\": \"Einträge\", \"selectAll\": \"Alle selektieren\", \"clearSelection\": \"Selektion aufheben\", \"itemSelected\": \"{{name}} ist selektiert\", \"itemsSelected\": \"{{count}} {{name}} sind selektiert\", \"itemAmount\": \"{{count}} {{name}}\", \"searchFor\": \"{{name}} suchen\", \"notAvailable\": \"N/V\", \"notAvailableTooltip\": \"Der Eintrag ist nicht verfügbar. Eventuell wurde dieser gelöscht.\" }, \"mwListFooter\": { \"noneFound\": \"Es wurden keine Einträge gefunden\" } } }"
   );
@@ -314,7 +338,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw_ui_icons.json',
-    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\", \"question\": \"fa-question\" }"
+    "{ \"angleLeft\": \"fa-angle-left\", \"angleRight\": \"fa-angle-right\", \"angleUp\": \"fa-angle-up\", \"angleDown\": \"fa-angle-down\", \"caretRight\": \"fa-caret-right\", \"sort\": \"fa-sort\", \"sortAsc\": \"fa-sort-asc\", \"sortDesc\": \"fa-sort-desc\", \"warning\": \"fa-warning\", \"cross\": \"fa-times\", \"chevronUpCircle\": \"fa-chevron-circle-up\", \"chevronDownCircle\": \"fa-chevron-circle-down\", \"question\": \"fa-question\", \"questionCircle\": \"fa-question-circle-o\" }"
   );
 }]);
 
@@ -862,9 +886,13 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
       obj = attributes;
     }
 
+    if(!_.isObject(options)){
+      options = null;
+    }
+
     obj = this._setNestedAttributes(obj);
 
-    return Backbone.Model.prototype.set.call(this, obj);
+    return Backbone.Model.prototype.set.call(this, obj, options);
   },
 
   compose: function (attrs) {
@@ -1629,6 +1657,67 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   }
 });
 
+angular.module('mwUI.Backbone')
+
+  .directive('mwModel', function () {
+    return {
+      require: '?ngModel',
+      link: function (scope, el, attrs, ngModel) {
+        var model, modelAttr;
+
+        var updateNgModel = function () {
+          var val = model.get(modelAttr);
+
+          ngModel.$formatters.forEach(function (formatFn) {
+            val = formatFn(val);
+          });
+
+          ngModel.$setViewValue(val);
+          ngModel.$render();
+        };
+
+        var updateBackboneModel = function () {
+          var obj = {};
+
+          obj[modelAttr] = ngModel.$modelValue;
+          model.set(obj, {fromNgModel: true});
+        };
+
+        var init = function () {
+          model = scope.$eval(attrs.mwModel);
+          modelAttr = attrs.ngModel.split('.');
+          modelAttr = modelAttr[modelAttr.length-1];
+
+          if (model) {
+            updateNgModel();
+            model.on('change:' + modelAttr, function (model, val, options) {
+              if (!options.fromNgModel) {
+                updateNgModel();
+              }
+            });
+
+            ngModel.$viewChangeListeners.push(updateBackboneModel);
+            ngModel.$parsers.push(function (val) {
+              updateBackboneModel();
+              return val;
+            });
+          }
+        };
+
+        if (ngModel) {
+          if (scope.mwModel) {
+            init();
+          } else {
+            var off = scope.$watch('mwModel', function () {
+              off();
+              init();
+            });
+          }
+        }
+      }
+    };
+  });
+
 var _$http,
   _$q,
   _sync = Backbone.sync,
@@ -1710,9 +1799,15 @@ angular.module('mwUI.ExceptionHandler')
         return function (exception,cause) {
           exception = exception || '';
           cause = cause || '';
-          _handlers.forEach(function(callback){
-            callbackHandler.exec(callback, [exception.toString(), cause.toString()]);
-          });
+
+          try{
+            _handlers.forEach(function(callback){
+              callbackHandler.exec(callback, [exception.toString(), cause.toString()]);
+            });
+          } catch (err){
+            $log.error(err);
+          }
+
           $log.error(exception);
         };
       }]
@@ -1792,6 +1887,34 @@ angular.module('mwUI.Form', ['mwUI.i18n','mwUI.Modal','mwUI.Utils']);
 
 angular.module('mwUI.Form')
 
+  .directive('mwErrorMessages', ['mwValidationMessages', function (mwValidationMessages) {
+    return {
+      require: '^ngModelErrors',
+      templateUrl: 'uikit/mw-form/directives/templates/mw_error_messages.html',
+      link: function(scope, el, attrs, ngModelErrorsCtrl){
+        scope.errors = ngModelErrorsCtrl.getErrors;
+
+        scope.getMessageForError = function(errorModel){
+          return mwValidationMessages.getMessageFor(errorModel);
+        };
+      }
+    };
+  }]);
+var extendForm = function () {
+  return {
+    restrict: 'E',
+    link: function (scope, el) {
+      el.addClass('form-horizontal');
+      el.attr('novalidate', 'true');
+    }
+  };
+};
+
+angular.module('mwUI.Form')
+
+  .directive('form', extendForm);
+angular.module('mwUI.Form')
+
   .directive('mwFormLeaveConfirmation', ['$window', '$document', '$location', 'i18n', 'Modal', '$compile', function ($window, $document, $location, i18n, Modal, $compile) {
     return {
       require: '^form',
@@ -1814,6 +1937,330 @@ angular.module('mwUI.Form')
         });
       }
     };
+  }]);
+angular.module('mwUI.Form')
+
+  .directive('mwInputWrapper', function () {
+    return {
+      transclude: true,
+      scope: {
+        label: '@',
+        tooltip: '@',
+        hideErrors: '='
+      },
+      templateUrl: 'uikit/mw-form/directives/templates/mw_input_wrapper.html',
+      controller: function () {
+        var modelState = {
+            dirty: true,
+            valid: false,
+            touched: false
+          },
+          inputState = {
+            required: false,
+            focused: false
+          };
+
+        var setObj = function (obj, val) {
+          if (angular.isObject(val)) {
+            _.extend(obj, val);
+          } else {
+            throw new Error('State has to be an object');
+          }
+        };
+
+        // Will be called by ngModel modification in mw-form/directives/ng-model
+        this.setModelState = function (newState) {
+          setObj(modelState, newState);
+        };
+
+        this.getModelState = function () {
+          return modelState;
+        };
+
+        // Will be called by ngModel modification in mw-form/directives/ng-model
+        this.setInputState = function (newState) {
+          setObj(inputState, newState);
+        };
+
+        this.getInputState = function () {
+          return inputState;
+        };
+      },
+      link: function (scope, el, attrs, ctrl) {
+
+        scope.isValid = function () {
+          return ctrl.getModelState().valid;
+        };
+
+        scope.isDirty = function () {
+          return ctrl.getModelState().dirty;
+        };
+
+        scope.isTouched = function () {
+          return ctrl.getModelState().touched;
+        };
+
+        scope.isRequired = function () {
+          return ctrl.getInputState().required;
+        };
+
+        scope.isFocused = function () {
+          return ctrl.getInputState().focused;
+        };
+
+        scope.isModified = function(){
+          return scope.isTouched() || scope.isDirty() || (scope.isDirty() && !scope.isFocused());
+        };
+
+        scope.showError = function () {
+          return !scope.isValid() && scope.isModified();
+        };
+
+        scope.showRequiredError = function () {
+          return scope.isRequired() && !scope.isValid();
+        };
+      }
+    };
+  });
+angular.module('mwUI.Form')
+
+  .directive('ngModel', function () {
+    return {
+      require: ['ngModel', '?^ngModelErrors', '?^mwInputWrapper'],
+      link: function (scope, el, attrs, ctrls) {
+        var ngModelCtrl = ctrls[0],
+          ngModelErrorsCtrl = ctrls[1],
+          mwInputWrapper = ctrls[2],
+          inputId = _.uniqueId('input_el');
+
+        var setErrors = function (newErrorObj, oldErrorObj) {
+          var newErrors = _.keys(newErrorObj),
+            oldErrors = _.keys(oldErrorObj),
+            removeErrors = _.difference(oldErrors, newErrors);
+
+          if (ngModelErrorsCtrl) {
+            ngModelErrorsCtrl.addErrorsForInput(newErrors, inputId, _.clone(attrs));
+            ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
+          }
+        };
+
+
+        var setModelState = function () {
+          if (mwInputWrapper) {
+            mwInputWrapper.setModelState({
+              dirty: ngModelCtrl.$dirty,
+              valid: ngModelCtrl.$valid,
+              touched: ngModelCtrl.$touched
+            });
+          }
+        };
+
+        var setInputState = function(){
+          if (mwInputWrapper) {
+            mwInputWrapper.setInputState({
+              required: el.is(':required'),
+              focused: el.is(':focus')
+            });
+          }
+        };
+
+        var init = function () {
+          scope.$watch(function () {
+            return ngModelCtrl.$error;
+          }, function (newErrorObj, oldErrorObj) {
+            setErrors(newErrorObj, oldErrorObj);
+            setModelState();
+          }, true);
+
+          scope.$watch(function(){
+            return ngModelCtrl.$touched;
+          }, setModelState);
+
+          attrs.$observe('required', setInputState);
+          el.on('focus blur', setInputState);
+          scope.$on('$destroy', el.off.bind(el));
+        };
+
+        if (ngModelErrorsCtrl) {
+          init();
+        }
+      }
+    };
+
+  });
+angular.module('mwUI.Form')
+
+  .directive('ngModelErrors', function () {
+    return {
+      scope: true,
+      controller: function () {
+        var ErrorModel = mwUI.Backbone.Model.extend({
+            idAttribute: 'error',
+            nested: function () {
+              return {
+                inputIds: Backbone.Collection
+              };
+            }
+          }),
+          Errors = Backbone.Collection.extend({
+            model: ErrorModel
+          }),
+          allErrors = new Errors();
+
+        var addErrorForInput = function (error, inputId, attrs) {
+          var alreadyExistingError = allErrors.get(error);
+
+          if (alreadyExistingError) {
+            var inputIds = alreadyExistingError.get('inputIds');
+
+            _.extend(alreadyExistingError.get('attrs'),attrs);
+            inputIds.add({id: inputId});
+          } else {
+            allErrors.add({error: error, inputIds: [inputId], attrs: attrs});
+          }
+        };
+
+        var removeErrorForInput = function (error, inputId) {
+          var existingError = allErrors.get(error);
+
+          if(existingError){
+            var inputIdsInError = existingError.get('inputIds'),
+              inputIdModel = inputIdsInError.get(inputId);
+
+            if (inputIdModel) {
+              inputIdsInError.remove(inputIdModel);
+
+              if (inputIdsInError.length === 0) {
+                allErrors.remove(existingError);
+              }
+            }
+          }
+        };
+
+        this.addErrorsForInput = function (errors, inputId, attrs) {
+          errors.forEach(function(error){
+            addErrorForInput(error, inputId, attrs);
+          });
+        };
+
+        this.removeErrorsForInput = function (errors, inputId) {
+          errors.forEach(function(error){
+            removeErrorForInput(error, inputId);
+          });
+        };
+
+        this.getErrors = function(){
+          return allErrors;
+        };
+
+      }
+    };
+  });
+
+angular.module('mwUI.Form')
+
+  .provider('mwValidationMessages', function () {
+    var _registeredValidators = {},
+      _translatedValidators = {},
+      _functionValidators = {},
+      _executedValidators = {};
+
+    var _setValidationMessage = function (key, validationMessage) {
+      if (typeof validationMessage === 'function') {
+        _functionValidators[key] = validationMessage;
+      } else {
+        _registeredValidators[key] = validationMessage;
+      }
+    };
+
+    this.registerValidator = function (key, validationMessage) {
+      if (!_registeredValidators[key] && !_functionValidators[key]) {
+        _setValidationMessage(key, validationMessage);
+      } else {
+        throw new Error('The key ' + key + ' has already been registered');
+      }
+    };
+
+    this.$get = ['$rootScope', 'i18n', function ($rootScope, i18n) {
+      var _translateRegisteredValidators = function () {
+        _.pairs(_registeredValidators).forEach(function (pair) {
+          var key = pair[0],
+            value = pair[1];
+
+          if (i18n.translationIsAvailable(value)) {
+            _translatedValidators[key] = i18n.get(value);
+          } else {
+            _translatedValidators[key] = value;
+          }
+        });
+      };
+
+      //var _executeFunctionValidators = function () {
+      //  _.pairs(_functionValidators).forEach(function (pair) {
+      //    var key = pair[0],
+      //      fn = pair[1];
+      //    _executedValidators[key] = fn();
+      //  });
+      //};
+
+      var _setValidationMessages = function () {
+        _translateRegisteredValidators();
+        //_executeFunctionValidators();
+        $rootScope.$broadcast('mwValidationMessages:change');
+      };
+
+      _setValidationMessages();
+      $rootScope.$on('i18n:localeChanged', function () {
+        _setValidationMessages();
+      });
+
+      return {
+        getRegisteredValidators: function () {
+          return _.extend(_translatedValidators, _executedValidators);
+        },
+        getMessageFor: function(errorModel){
+          var errorId = errorModel.get('error');
+
+          if(_functionValidators[errorId]){
+            return _functionValidators[errorId](i18n, errorModel.get('attrs'));
+          } else {
+            return _translatedValidators[errorId];
+          }
+        },
+        updateMessage: function (key, message) {
+          if (_registeredValidators[key] || _functionValidators[key]) {
+            _setValidationMessage(key, message);
+            _setValidationMessages();
+          } else {
+            throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
+          }
+        }
+      };
+    }];
+  });
+
+angular.module('mwUI.Form')
+
+  .config(['i18nProvider', 'mwValidationMessagesProvider', function(i18nProvider, mwValidationMessagesProvider){
+    i18nProvider.addResource('uikit/mw-form/i18n');
+
+    mwValidationMessagesProvider.registerValidator('required','mwErrorMessages.required');
+    mwValidationMessagesProvider.registerValidator('email','mwErrorMessages.hasToBeValidEmail');
+    mwValidationMessagesProvider.registerValidator('pattern','mwErrorMessages.hasToMatchPattern');
+    mwValidationMessagesProvider.registerValidator('url','mwErrorMessages.hasToBeValidUrl');
+    mwValidationMessagesProvider.registerValidator('phone','mwErrorMessages.hasToBeValidPhoneNumber');
+    mwValidationMessagesProvider.registerValidator('min',function(i18n, attrs){
+      return i18n.get('mwErrorMessages.hasToBeMin',{min: attrs.min});
+    });
+    mwValidationMessagesProvider.registerValidator('minlength',function(i18n, attrs){
+      return i18n.get('mwErrorMessages.hasToBeMinLength',{min: attrs.minlength});
+    });
+    mwValidationMessagesProvider.registerValidator('max',function(i18n, attrs){
+      return i18n.get('mwErrorMessages.hasToBeSmaller',{max: attrs.max});
+    });
+    mwValidationMessagesProvider.registerValidator('maxlength',function(i18n, attrs){
+      return i18n.get('mwErrorMessages.hasToBeSmallerLength',{max: attrs.maxlength});
+    });
   }]);
 angular.module('mwUI.i18n', [
 
@@ -2091,11 +2538,10 @@ angular.module('mwUI.Inputs', ['mwUI.i18n']);
 
 angular.module('mwUI.Inputs')
 
-  //TODO rename to mwCheckbox
-  .directive('mwCustomCheckbox', function () {
+  .directive('input', function () {
     return {
-      restrict: 'A',
-      link: function (scope, el) {
+      restrict: 'E',
+      link: function (scope, el, attrs) {
         // render custom checkbox
         // to preserve the functionality of the original checkbox we just wrap it with a custom element
         // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
@@ -2110,7 +2556,7 @@ angular.module('mwUI.Inputs')
           customCheckboxStateFocusIndicator.insertAfter(customCheckboxStateIndicator);
         };
 
-        (function init() {
+        var init = function() {
           //after this the remaining element is removed
           scope.$on('$destroy', function () {
             el.off();
@@ -2119,17 +2565,44 @@ angular.module('mwUI.Inputs')
 
           render();
 
-        }());
+        };
+
+        if(attrs.type==='checkbox'){
+          init();
+        }
       }
     };
   });
+var extendInput = function () {
+  return {
+    restrict: 'E',
+    require: '?^mwInputWrapper',
+    link: function (scope, el, attrs, mwInputWrapperCtrl) {
+      var skipTypes = ['radio','checkbox'];
+
+      if(mwInputWrapperCtrl){
+        if(skipTypes.indexOf(attrs.type)===-1){
+          el.addClass('form-control');
+        }
+      }
+    }
+  };
+};
+
 angular.module('mwUI.Inputs')
 
-  //TODO rename to mwRadio
-  .directive('mwCustomRadio', function () {
+  .directive('select', extendInput)
+
+  .directive('input', extendInput)
+
+  .directive('textarea', extendInput);
+
+angular.module('mwUI.Inputs')
+
+  .directive('input', function () {
     return {
-      restrict: 'A',
-      link: function (scope, el) {
+      restrict: 'E',
+      link: function (scope, el, attrs) {
         // render custom radio
         // to preserve the functionality of the original checkbox we just wrap it with a custom element
         // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
@@ -2144,7 +2617,7 @@ angular.module('mwUI.Inputs')
           customRadioStateFocusIndicator.insertAfter(customRadioStateIndicator);
         };
 
-        (function init() {
+        var init = function() {
           //after this the remaining element is removed
           scope.$on('$destroy', function () {
             el.off();
@@ -2153,18 +2626,20 @@ angular.module('mwUI.Inputs')
 
           render();
 
-        }());
+        };
+
+        if(attrs.type === 'radio'){
+          init();
+        }
       }
     };
   });
 angular.module('mwUI.Inputs')
 
-  //TODO rename to mwSelect
-  .directive('mwCustomSelect', function () {
+  .directive('select', function () {
     return {
-      require: '^?ngModel',
       link: function (scope, el) {
-        var customSelectWrapper = angular.element('<span class="custom-select mw-select"></span>');
+        var customSelectWrapper = angular.element('<span class="mw-select"></span>');
 
         var render = function () {
           el.wrap(customSelectWrapper);
@@ -3341,10 +3816,14 @@ angular.module('mwUI.Modal')
             // This enables us a backdrop per modal because we are appending the backdrop to the modal
             // When opening multiple modals the previous will be covered by the backdrop of the latest opened modal
             /* jshint ignore:start */
-            var $bootstrapBackdrop = _bootstrapModal.data()['bs.modal'].backdrop;
-            _bootstrapModal.data()['bs.modal'].backdrop = function (callback) {
-              $bootstrapBackdrop.call(_bootstrapModal.data()['bs.modal'], callback, $(_holderEl).find('.modal'));
-            };
+            if (_bootstrapModal.data()) {
+              var bootstrapModal = _bootstrapModal.data()['bs.modal'],
+                $bootstrapBackdrop = bootstrapModal.backdrop;
+
+              bootstrapModal.backdrop = function (callback) {
+                $bootstrapBackdrop.call(bootstrapModal, callback, $(_holderEl).find('.modal'));
+              };
+            }
             /* jshint ignore:end */
 
             _bindModalCloseEvent();
@@ -3513,7 +3992,7 @@ angular.module('mwUI.Modal')
       var ModalDefinition = function () {
         return new Modal(modalOptions, bootstrapModalOptions);
       };
-       return ModalDefinition;
+      return ModalDefinition;
     };
 
     this.getOpenedModals = function () {
@@ -3611,7 +4090,7 @@ angular.module('mwUI.ResponseToastHandler')
     var _getNotificationCallback = function (messages, id, options) {
       options = options || {};
       var factoryName = _.uniqueId('notification_factory');
-      $provide.factory(factoryName, ['Toast', 'i18n', function (Toast, i18n) {
+      $provide.factory(factoryName, ['Toast', 'i18n', 'callbackHandler', function (Toast, i18n, callbackHandler) {
         return function ($httpResponse) {
           if(!messages){
             return;
@@ -3634,9 +4113,10 @@ angular.module('mwUI.ResponseToastHandler')
           data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
           data.$count++;
 
-          if (options.preProcess && typeof options.preProcess === 'function') {
+          if (options.preProcess) {
             _.extend(data, $httpResponse.data);
-            message = options.preProcess.call(this, messageStr, data, i18n, $httpResponse);
+
+            message = callbackHandler.exec(options.preProcess, [messageStr, data, i18n, $httpResponse]);
             if(!message){
               return;
             }
