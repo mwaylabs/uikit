@@ -1,11 +1,9 @@
 angular.module('mwUI.Inputs')
 
-  //TODO rename to mwSelect
-  .directive('mwCustomSelect', function () {
+  .directive('select', function () {
     return {
-      require: '^?ngModel',
       link: function (scope, el) {
-        var customSelectWrapper = angular.element('<span class="custom-select mw-select"></span>');
+        var customSelectWrapper = angular.element('<span class="mw-select"></span>');
 
         var render = function () {
           el.wrap(customSelectWrapper);

@@ -1,10 +1,9 @@
 angular.module('mwUI.Inputs')
 
-  //TODO rename to mwCheckbox
-  .directive('mwCustomCheckbox', function () {
+  .directive('input', function () {
     return {
-      restrict: 'A',
-      link: function (scope, el) {
+      restrict: 'E',
+      link: function (scope, el, attrs) {
         // render custom checkbox
         // to preserve the functionality of the original checkbox we just wrap it with a custom element
         // checkbox is set to opacity 0 and has to be positioned absolute inside the custom checkbox element which has to be positioned relative
@@ -19,7 +18,7 @@ angular.module('mwUI.Inputs')
           customCheckboxStateFocusIndicator.insertAfter(customCheckboxStateIndicator);
         };
 
-        (function init() {
+        var init = function() {
           //after this the remaining element is removed
           scope.$on('$destroy', function () {
             el.off();
@@ -28,7 +27,11 @@ angular.module('mwUI.Inputs')
 
           render();
 
-        }());
+        };
+
+        if(attrs.type==='checkbox'){
+          init();
+        }
       }
     };
   });
