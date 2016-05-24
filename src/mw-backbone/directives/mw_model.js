@@ -24,12 +24,11 @@ angular.module('mwUI.Backbone')
           model.set(obj, {fromNgModel: true});
         };
 
-        var init = function(){
+        var init = function () {
           model = scope.$eval(attrs.mwModel);
           modelAttr = attrs.ngModel;
 
-          if(model){
-
+          if (model) {
             updateNgModel();
             model.on('change:' + modelAttr, function (model, val, options) {
               if (!options.fromNgModel) {
@@ -38,14 +37,18 @@ angular.module('mwUI.Backbone')
             });
 
             ngModel.$viewChangeListeners.push(updateBackboneModel);
+            ngModel.$parsers.push(function (val) {
+              updateBackboneModel();
+              return val;
+            });
           }
         };
 
-        if(ngModel){
-          if(scope.mwModel){
+        if (ngModel) {
+          if (scope.mwModel) {
             init();
           } else {
-            var off = scope.$watch('mwModel', function(){
+            var off = scope.$watch('mwModel', function () {
               off();
               init();
             });
