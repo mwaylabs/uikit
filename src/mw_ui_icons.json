@@ -11,5 +11,6 @@
   "cross": "fa-times",
   "chevronUpCircle": "fa-chevron-circle-up",
   "chevronDownCircle": "fa-chevron-circle-down",
-  "question": "fa-question"
+  "question": "fa-question",
+  "questionCircle": "fa-question-circle-o"
 }
