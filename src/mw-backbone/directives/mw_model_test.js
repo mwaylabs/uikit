@@ -33,6 +33,19 @@ fdescribe('testing mwModel', function () {
       expect(this.scope.text).toBe('Abc');
     });
 
+    it('for input type text when ngModel a nested object', function () {
+      var input = '<input type="text" ng-model="viewModel.text" mw-model="testModel"/>';
+      this.$compile(input)(this.scope);
+      this.scope.viewModel = {
+        text: ''
+      };
+      this.scope.testModel = this.testModel;
+
+      this.scope.$digest();
+
+      expect(this.scope.viewModel.text).toBe('Abc');
+    });
+
     it('for input type date', function () {
       var input = '<input type="date" ng-model="date" mw-model="testModel"/>';
       this.$compile(input)(this.scope);

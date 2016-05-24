@@ -26,7 +26,8 @@ angular.module('mwUI.Backbone')
 
         var init = function () {
           model = scope.$eval(attrs.mwModel);
-          modelAttr = attrs.ngModel;
+          modelAttr = attrs.ngModel.split('.');
+          modelAttr = modelAttr[modelAttr.length-1];
 
           if (model) {
             updateNgModel();
