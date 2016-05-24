@@ -36,13 +36,13 @@ angular.module('mwUI.Form')
         });
       };
 
-      var _executeFunctionValidators = function () {
-        _.pairs(_functionValidators).forEach(function (pair) {
-          var key = pair[0],
-            fn = pair[1];
-          _executedValidators[key] = fn();
-        });
-      };
+      //var _executeFunctionValidators = function () {
+      //  _.pairs(_functionValidators).forEach(function (pair) {
+      //    var key = pair[0],
+      //      fn = pair[1];
+      //    _executedValidators[key] = fn();
+      //  });
+      //};
 
       var _setValidationMessages = function () {
         _translateRegisteredValidators();
@@ -70,6 +70,7 @@ angular.module('mwUI.Form')
         },
         updateMessage: function (key, message) {
           if (_registeredValidators[key] || _functionValidators[key]) {
+            _setValidationMessage(key, message);
             _setValidationMessages();
           } else {
             throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
