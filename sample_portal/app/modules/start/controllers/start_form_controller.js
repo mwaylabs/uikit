@@ -20,17 +20,12 @@ angular.module('SampleApp.Start')
           label: 'bLabel',
           subItem: { name: 'bSubItem' }
         }
-      ],
-      test: +new Date(1)
+      ]
     };
 
     this.model.on('change', function(model){
       console.log('CHANGE', model.changed);
     });
-
-    this.setDate = function(){
-      this.model.set('dati',new Date(Math.floor(Math.random()*1000000000000)));
-    };
   })
 
   .constant('StartFormControllerResolver', {
@@ -38,12 +33,12 @@ angular.module('SampleApp.Start')
       return new ( mwUI.Backbone.Model.extend({
         defaults: function(){
           return {
-            name: 'Alex',
-            dati: new Date(1),
-            urli: 'http://jo.de',
-            checki: true,
-            radio: 'blue',
-            selecti: {
+            name: 'Muster',
+            url: 'http://localhost',
+            checkbox: true,
+            radio: 'val_b',
+            number: 5,
+            select: {
               id: 2,
               label: 'bLabel',
               subItem: { name: 'bSubItem' }

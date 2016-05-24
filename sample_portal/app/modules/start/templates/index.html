@@ -1,15 +1,20 @@
 <div mw-row-layout
      class="container" style="width: 100%">
 
-  <div mw-row mw-header title="{{'start.index.title' | i18n }}" mw-title-icon="rln-icon apps">
+  <div mw-row mw-header title="{{'start.index.title' | i18n }}" mw-title-icon="fa.user">
     <button class="btn btn-default">Jo</button>
   </div>
 
-  <div mw-row mw-body>
+  <div mw-row mw-body mw-extend>
 
     <div class="row">
       <div class="col-md-3">
-        <button class="btn btn-primary btn-block"
+        <a href="#/start/new" class="btn btn-primary btn-block"
+                ng-click="SICtrl.openTestModal()">
+          New
+        </a>
+
+        <button class="btn btn-default btn-block"
                 ng-click="SICtrl.openTestModal()">
           Open Modal
         </button>
