@@ -63,7 +63,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
-    "<div class=\"mw-checkbox-group\"><fieldset ng-repeat=\"model in mwOptionsCollection.models\" ng-disabled=\"mwDisabled\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></fieldset><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></div>"
+    "<fieldset class=\"mw-checkbox-group\" ng-disabled=\"mwDisabled\"><div ng-repeat=\"model in mwOptionsCollection.models\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></div><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></fieldset>"
   );
 
 

@@ -4246,7 +4246,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
-    "<div class=\"mw-checkbox-group\"><fieldset ng-repeat=\"model in mwOptionsCollection.models\" ng-disabled=\"mwDisabled\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></fieldset><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></div>"
+    "<fieldset class=\"mw-checkbox-group\" ng-disabled=\"mwDisabled\"><div ng-repeat=\"model in mwOptionsCollection.models\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></div><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></fieldset>"
   );
 
 
@@ -4537,12 +4537,12 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/deprecated/mw_form_input.html',
-    "<div><div mw-input-wrapper label=\"{{label}}\" tooltip=\"{{tooltip}}\" hide-errors=\"hideErrors\"><div ng-transclude></div></div></div>"
+    "<div><div mw-input-wrapper label=\"{{label}}\" tooltip=\"{{tooltip}}\" hide-errors=\"hideErrors\"><div ng-transclude style=\"width:100%\"></div></div></div>"
   );
 
 
   $templateCache.put('uikit/templates/deprecated/mw_form_multi_select_2.html',
-    "<div mw-checkbox-group mw-collection=\"mwCollection\" mw-options-collection=\"mwOptionsCollection\" mw-options-label-key=\"mwOptionsLabelKey\" mw-options-label-i18n-prefix=\"mwOptionsLabelI18nPrefix\" mw-required=\"mwRequired\" mw-disabled=\"mwDisabled\"></div>"
+    "<div mw-checkbox-group mw-collection=\"mwCollection\" mw-options-collection=\"mwOptionsCollection\" mw-options-label-key=\"{{mwOptionsLabelKey}}\" mw-options-label-i18n-prefix=\"{{mwOptionsLabelI18nPrefix}}\" mw-required=\"mwRequired\" mw-disabled=\"mwDisabled\"></div>"
   );
 
 
