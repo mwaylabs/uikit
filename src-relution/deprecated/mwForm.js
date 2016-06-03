@@ -1,4 +1,4 @@
-angular.module('mwUI.Relution', [])
+angular.module('mwUI.Relution')
 
   .directive('mwFormInput', function(){
     return {
