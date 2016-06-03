@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('mwFileUpload', [])
 
   .provider('mwFileUpload', function(){

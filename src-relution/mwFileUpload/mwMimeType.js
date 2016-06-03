@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('mwFileUpload')
 
     .service('mwMimetype', function () {
