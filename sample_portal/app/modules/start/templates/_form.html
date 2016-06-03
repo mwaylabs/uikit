@@ -76,7 +76,16 @@
     </label><br/>
   </div>
 
+  <div mw-input-wrapper
+       label="Multi Checkboxes">
+    <div mw-checkbox-group
+         mw-options-collection="SFCtrl.viewModel.checkboxGroupOptionsCollection"
+         mw-options-label-key="label"
+         mw-collection="SFCtrl.model.get('checkboxGroup')"
+         mw-required="true"></div>
+  </div>
+
 </fieldset>
 
-<button ng-click="SFCtrl.model.save()">Save</button>
+<button ng-click="SFCtrl.model.save()" ng-disabled="startForm.$invalid">Save</button>
 

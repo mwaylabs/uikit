@@ -6,6 +6,18 @@
 angular.module('SampleApp.Start')
 
   .controller('StartFormController', function (model) {
+    var CheckboxGroupOptionsWithDisabledItems = mwUI.Backbone.Collection.extend({
+      model: mwUI.Backbone.Model.extend({
+        selectableOptions: function(){
+          return {
+            isDisabled: function(){
+              return this.get('id') === 1;
+            }
+          };
+        }
+      })
+    });
+
     this.model = model;
 
     this.viewModel = {
@@ -20,8 +32,24 @@ angular.module('SampleApp.Start')
           label: 'bLabel',
           subItem: { name: 'bSubItem' }
         }
-      ]
+      ],
+      checkboxGroupOptionsCollection: new CheckboxGroupOptionsWithDisabledItems()
     };
+
+    this.viewModel.checkboxGroupOptionsCollection.add([
+      {
+        id: 1,
+        label: 'Should be Disabled'
+      },
+      {
+        id: 2,
+        label: 'Option B'
+      },
+      {
+        id: 3,
+        label: 'Option C'
+      }
+    ]);
 
     this.model.on('change', function(model){
       console.log('CHANGE', model.changed);
@@ -31,6 +59,11 @@ angular.module('SampleApp.Start')
   .constant('StartFormControllerResolver', {
     model: function(){
       return new ( mwUI.Backbone.Model.extend({
+        nested: function(){
+          return {
+            checkboxGroup: mwUI.Backbone.Collection
+          };
+        },
         defaults: function(){
           return {
             name: 'Muster',
