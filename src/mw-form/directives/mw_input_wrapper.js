@@ -69,11 +69,11 @@ angular.module('mwUI.Form')
         };
 
         scope.isModified = function(){
-          return scope.isTouched() || scope.isDirty() || (scope.isDirty() && !scope.isFocused());
+          return scope.isTouched() || scope.isDirty();
         };
 
         scope.showError = function () {
-          return !scope.isValid() && scope.isModified();
+          return !scope.hideErrors && !scope.isValid() && scope.isModified();
         };
 
         scope.showRequiredError = function () {
