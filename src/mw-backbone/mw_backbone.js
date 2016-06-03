@@ -21,6 +21,7 @@ angular.module('mwUI.Backbone', []);
 // @include ./collection/selectable_collection.js
 // @include ./collection/mw_collection.js
 
+// @include ./directives/mw_collection.js
 // @include ./directives/mw_model.js
 
 // @include mw_backbone_config.js
