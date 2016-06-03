@@ -101,4 +101,25 @@ angular.module('mwUI.Relution')
         uiDeprecationWarning('The directive mw-custom-select is deprecated. The custom selectbox is default now. You can remove this directive from the select input');
       }
     };
+  })
+
+  .directive('mwFormMultiSelect2', function () {
+    return {
+      scope: {
+        mwCollection: '=',
+        mwOptionsCollection: '=',
+        mwOptionsLabelKey: '@',
+        mwOptionsLabelI18nPrefix: '@',
+        mwRequired: '=',
+        mwDisabled: '='
+      },
+      templateUrl: 'uikit/templates/deprecated/mw_form_multi_select_2.html',
+      link: function (scope) {
+        if (scope.mwOptionsCollection.length === 0) {
+          scope.mwOptionsCollection.fetch();
+        }
+        uiDeprecationWarning('The directive mw-form-multi-select-2 is deprecated. It has been renamed to mw-checkbox-group. ' +
+          'The new directive wont fetch the options collection automatically when it is empty');
+      }
+    };
   });
