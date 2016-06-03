@@ -19,7 +19,7 @@ angular.module('mwUI.Utils')
         }
       },
       exec: function(cb, params, scope){
-        this.execFn(this.getFn(cb), params, scope);
+        return this.execFn(this.getFn(cb), params, scope);
       }
     };
   });
