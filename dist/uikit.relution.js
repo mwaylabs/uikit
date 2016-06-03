@@ -4238,9 +4238,13 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/mw-form/directives/templates/mw_input_wrapper.html',
     "<div class=\"mw-input-wrapper form-group\" ng-model-errors ng-class=\"{\n" +
-    "      'has-error': showError(),\n" +
     "      'is-required': isRequired(),\n" +
-    "      'is-required-error':showRequiredError()\n" +
+    "      'is-focused': isFocused(),\n" +
+    "      'is-touched': isTouched(),\n" +
+    "      'is-dirty': isDirty(),\n" +
+    "      'is-invalid': !isValid(),\n" +
+    "      'is-required-error':showRequiredError(),\n" +
+    "      'has-error': showError()\n" +
     "     }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-tooltip=\"{{ tooltip }}\"><span mw-icon=\"mwUI.questionCircle\"></span></span></label><div class=\"input-holder\" ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"!hideErrors\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><div mw-error-messages></div></div></div>"
   );
 
