@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('mwFormBb', [])
+angular.module('mwFormBb', ['mwUI.i18n'])
 
   .directive('mwFormMultiSelectBb', function () {
     return {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('mwComponents', ['ngSanitize'])
+angular.module('mwComponents', ['ngSanitize','btford.markdown','mwUI.Utils'])
 
   .directive('mwTextCollapse', function ($filter) {
     return {
