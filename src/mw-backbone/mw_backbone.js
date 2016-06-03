@@ -3,7 +3,8 @@
  */
 window.mwUI.Backbone = {
   baseUrl: '',
-  Selectable: {}
+  Selectable: {},
+  use$http: true
 };
 
 angular.module('mwUI.Backbone', []);
