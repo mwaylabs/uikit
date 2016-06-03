@@ -5,11 +5,7 @@ describe('mwTextCollapse', function () {
 
   beforeEach(module('karmaDirectiveTemplates'));
 
-  beforeEach(module('mwUI.Relution'));
   beforeEach(module('mwComponents'));
-
-  beforeEach(module('ngSanitize'));
-  beforeEach(module('btford.markdown'));
 
   window.mockI18nFilter();
 

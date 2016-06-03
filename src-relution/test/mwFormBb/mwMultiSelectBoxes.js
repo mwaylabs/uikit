@@ -10,8 +10,7 @@ describe('mwUi mwMultiSelectBoxes', function () {
 
   beforeEach(module('karmaDirectiveTemplates'));
 
-  beforeEach(module('mwUI'));
-  beforeEach(module('mwUI.Relution'));
+  beforeEach(module('mwFormBb'));
 
   window.mockI18nFilter();
 

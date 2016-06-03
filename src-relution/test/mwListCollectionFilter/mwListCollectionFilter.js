@@ -8,7 +8,7 @@ describe('MwListCollectionFilter', function() {
     MCAPFilterHolderSpy,
     MCAPAuthenticatedUserSpy;
 
-  beforeEach(module('mwUI.Relution'));
+  beforeEach(module('mwCollection'));
 
   beforeEach(module(function($provide) {
     //create stubs to mimic external input-methods from the real context

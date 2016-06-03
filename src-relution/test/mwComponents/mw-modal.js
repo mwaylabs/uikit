@@ -1,6 +1,6 @@
 describe('mwModal', function() {
 
-  beforeEach(module('mwUI.Relution'));
+  beforeEach(module('mwComponents'));
 
   describe('EnterKeyUpValidation', function() {
     var validateEnterKeyUp;
