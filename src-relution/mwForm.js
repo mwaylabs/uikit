@@ -132,40 +132,6 @@
       };
     })
 
-    .directive('mwFormMultiSelect2', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        require: '^?form',
-        scope: {
-          mwCollection: '=',
-          mwOptionsCollection: '=',
-          mwOptionsLabelKey: '@',
-          mwOptionsLabelI18nPrefix: '@',
-          mwRequired: '=',
-          mwDisabled: '='
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect2.html',
-        link: function (scope, elm, attr, formCtrl) {
-          if (scope.mwOptionsCollection.length === 0) {
-            scope.mwOptionsCollection.fetch();
-          }
-
-          scope.toggleModel = function (model) {
-            var existingModel = scope.mwCollection.findWhere(model.toJSON());
-            if (existingModel) {
-              scope.mwCollection.remove(existingModel);
-            } else {
-              scope.mwCollection.add(model.toJSON());
-            }
-            if (formCtrl) {
-              formCtrl.$setDirty();
-            }
-          };
-        }
-      };
-    })
-
     /**
      * @ngdoc directive
      * @name mwForm.directive:mwForm

@@ -1,0 +1,14 @@
+<div class="mw-checkbox-group">
+  <fieldset ng-repeat="model in mwOptionsCollection.models" ng-disabled="mwDisabled">
+    <label>
+      <input type="checkbox"
+             ng-disabled="isOptionDisabled(model)"
+             ng-checked="mwCollection.findWhere(model.toJSON())"
+             ng-click="toggleModel(model); setDirty()">
+      <span class="checkbox-label">{{getLabel(model)}}</span>
+    </label>
+  </fieldset>
+
+  <input type="hidden" ng-model="viewModel.tmp" ng-required="mwRequired" mw-collection="mwCollection">
+
+</div>
