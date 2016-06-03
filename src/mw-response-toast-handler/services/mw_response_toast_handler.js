@@ -38,7 +38,7 @@ angular.module('mwUI.ResponseToastHandler')
           if (options.preProcess) {
             _.extend(data, $httpResponse.data);
 
-            message = callbackHandler.exec(options.preProcess, [messageStr, data, i18n, $httpResponse]);
+            message = callbackHandler.exec(options.preProcess, [messageStr, data, i18n, $httpResponse], this);
             if(!message){
               return;
             }
