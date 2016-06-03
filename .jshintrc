@@ -44,6 +44,8 @@
     "xdescribe"  : false,
     "beforeEach" : false,
     "afterEach"  : false,
+    "beforeAll"  : false,
+    "afterAll"   : false,
     "expect"     : false,
     "spyOn"      : false,
     "inject"     : false,

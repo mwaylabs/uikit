@@ -5,6 +5,14 @@ describe('mwBackbone nested models', function () {
 
   var NestedModel = window.mwUI.Backbone.NestedModel;
 
+  beforeAll(function(){
+    mwUI.Backbone.use$http = false;
+  });
+
+  afterAll(function(){
+    mwUI.Backbone.use$http = true;
+  });
+
   describe('nested model as attribute', function () {
     var NestedModelAttr, ModelWithNestedModel;
     beforeEach(function () {
