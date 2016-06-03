@@ -31,10 +31,10 @@ angular.module('mwUI.Form')
           }
         };
 
-        var setInputState = function(){
+        var setInputState = function () {
           if (mwInputWrapper) {
             mwInputWrapper.setInputState({
-              required: el.is(':required'),
+              required: el.attr('required'),
               focused: el.is(':focus')
             });
           }
@@ -48,7 +48,7 @@ angular.module('mwUI.Form')
             setModelState();
           }, true);
 
-          scope.$watch(function(){
+          scope.$watch(function () {
             return ngModelCtrl.$touched;
           }, setModelState);
 
