@@ -158,6 +158,27 @@ angular.module('mwUI.Relution')
         uiDeprecationWarning('The directive mw-custom-select is deprecated. The custom selectbox is default now. You can remove this directive from the select input');
       }
     };
+  })
+
+  .directive('mwFormMultiSelect2', function () {
+    return {
+      scope: {
+        mwCollection: '=',
+        mwOptionsCollection: '=',
+        mwOptionsLabelKey: '@',
+        mwOptionsLabelI18nPrefix: '@',
+        mwRequired: '=',
+        mwDisabled: '='
+      },
+      templateUrl: 'uikit/templates/deprecated/mw_form_multi_select_2.html',
+      link: function (scope) {
+        if (scope.mwOptionsCollection.length === 0) {
+          scope.mwOptionsCollection.fetch();
+        }
+        uiDeprecationWarning('The directive mw-form-multi-select-2 is deprecated. It has been renamed to mw-checkbox-group. ' +
+          'The new directive wont fetch the options collection automatically when it is empty');
+      }
+    };
   });
 'use strict';
 
@@ -1343,40 +1364,6 @@ angular.module('mwFileUpload')
           scope.setDirty = function () {
             if (form) {
               form.$setDirty();
-            }
-          };
-        }
-      };
-    })
-
-    .directive('mwFormMultiSelect2', function () {
-      return {
-        restrict: 'A',
-        transclude: true,
-        require: '^?form',
-        scope: {
-          mwCollection: '=',
-          mwOptionsCollection: '=',
-          mwOptionsLabelKey: '@',
-          mwOptionsLabelI18nPrefix: '@',
-          mwRequired: '=',
-          mwDisabled: '='
-        },
-        templateUrl: 'uikit/templates/mwForm/mwFormMultiSelect2.html',
-        link: function (scope, elm, attr, formCtrl) {
-          if (scope.mwOptionsCollection.length === 0) {
-            scope.mwOptionsCollection.fetch();
-          }
-
-          scope.toggleModel = function (model) {
-            var existingModel = scope.mwCollection.findWhere(model.toJSON());
-            if (existingModel) {
-              scope.mwCollection.remove(existingModel);
-            } else {
-              scope.mwCollection.add(model.toJSON());
-            }
-            if (formCtrl) {
-              formCtrl.$setDirty();
             }
           };
         }
@@ -4258,6 +4245,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
+    "<div class=\"mw-checkbox-group\"><fieldset ng-repeat=\"model in mwOptionsCollection.models\" ng-disabled=\"mwDisabled\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></fieldset><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></div>"
+  );
+
+
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
     "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
   );
@@ -4549,6 +4541,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/templates/deprecated/mw_form_multi_select_2.html',
+    "<div mw-checkbox-group mw-collection=\"mwCollection\" mw-options-collection=\"mwOptionsCollection\" mw-options-label-key=\"mwOptionsLabelKey\" mw-options-label-i18n-prefix=\"mwOptionsLabelI18nPrefix\" mw-required=\"mwRequired\" mw-disabled=\"mwDisabled\"></div>"
+  );
+
+
   $templateCache.put('uikit/templates/mwComponents/_mwMarkdownPreviewPopoper.html',
     "<div class=\"mw-markdown-preview-popover\"><p>{{ 'markdownTooltip.description' | i18n }}</p><h1>#{{ 'markdownTooltip.level1Header' | i18n }}</h1><h2>##{{ 'markdownTooltip.level2Header' | i18n }}</h2>{{ 'markdownTooltip.list' | i18n }}<ul><li>* {{ 'markdownTooltip.item' | i18n }} 1</li><li>* {{ 'markdownTooltip.item' | i18n }} 2</li><li>* {{ 'markdownTooltip.item' | i18n }} 3</li></ul><ol><li>1. {{ 'markdownTooltip.item' | i18n }}</li><li>2. {{ 'markdownTooltip.item' | i18n }}</li><li>3. {{ 'markdownTooltip.item' | i18n }}</li></ol><p>{{ 'markdownTooltip.link' | i18n }}</p></div>"
   );
@@ -4631,11 +4628,6 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/templates/mwForm/mwFormMultiSelect.html',
     "<div ng-form><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"(key,value) in filter(options)\"><label><input type=\"checkbox\" name=\"selectOption\" mw-custom-checkbox ng-checked=\"model.indexOf(key) >= 0\" ng-click=\"toggleKeyIntoModelArray(key); setDirty()\"> {{ value }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div><!--<div ng-class=\"col-sm-12\">--><!--<span class=\"help-block\" ng-show=\"showRequiredMessage()\">{{'errors.isRequired' | i18n}}</span>--><!--</div>--><div ng-show=\"getObjectSize(filter(options)) == 0\" ng-transclude></div></div></div>"
-  );
-
-
-  $templateCache.put('uikit/templates/mwForm/mwFormMultiSelect2.html',
-    "<div ng-form class=\"mw-form mw-form-multi-select\"><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"model in mwOptionsCollection.models\"><label><input type=\"checkbox\" name=\"selectOption\" ng-disabled=\"mwDisabled\" mw-custom-checkbox ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span ng-if=\"!mwOptionsLabelI18nPrefix\">{{ model.get(mwOptionsLabelKey) }}</span> <span ng-if=\"mwOptionsLabelI18nPrefix\">{{mwOptionsLabelI18nPrefix+'.'+model.get(mwOptionsLabelKey) | i18n}}</span></label></div><div mw-form-input><span mw-validate-collection-or-model=\"mwCollection\" mw-required=\"mwRequired\"></span></div></div></div>"
   );
 
 

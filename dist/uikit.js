@@ -62,6 +62,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
+    "<div class=\"mw-checkbox-group\"><fieldset ng-repeat=\"model in mwOptionsCollection.models\" ng-disabled=\"mwDisabled\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></fieldset><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></div>"
+  );
+
+
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
     "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
   );
@@ -1660,6 +1665,47 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
 
 angular.module('mwUI.Backbone')
 
+  .directive('mwCollection', function () {
+    return {
+      require: '?ngModel',
+      link: function (scope, el, attrs, ngModel) {
+        var collection;
+
+        var updateNgModel = function () {
+          if(collection.length>0){
+            ngModel.$setViewValue(collection);
+            ngModel.$render();
+          } else {
+            ngModel.$setViewValue(null);
+            ngModel.$render();
+          }
+        };
+
+
+        var init = function () {
+          collection = scope.$eval(attrs.mwCollection);
+
+          if (collection) {
+            updateNgModel();
+            collection.on('add remove reset', updateNgModel);
+          }
+        };
+
+        if (ngModel) {
+          if (scope.mwModel) {
+            init();
+          } else {
+            var off = scope.$watch('mwCollection', function () {
+              off();
+              init();
+            });
+          }
+        }
+      }
+    };
+  });
+angular.module('mwUI.Backbone')
+
   .directive('mwModel', function () {
     return {
       require: '?ngModel',
@@ -1719,30 +1765,33 @@ angular.module('mwUI.Backbone')
     };
   });
 
+var _backboneAjax = Backbone.ajax,
+  _backboneSync = Backbone.sync,
+  _$http;
+
 angular.module('mwUI.Backbone')
 
   .run(['$http', function ($http) {
-    var _backboneAjax = Backbone.ajax,
-      _backboneSync = Backbone.sync;
-
-    Backbone.ajax = function (options) {
-      if (mwUI.Backbone.use$http) {
-        // Set HTTP Verb as 'method'
-        options.method = options.type;
-        // Use angulars $http implementation for requests
-        return $http.apply(angular, arguments);
-      } else {
-        return _backboneAjax.apply(this, arguments);
-      }
-    };
-
-    Backbone.sync = function (method, model, options) {
-      // Instead of the response object we are returning the backbone model in the promise
-      return _backboneSync.call(Backbone, method, model, options).then(function () {
-        return model;
-      });
-    };
+    _$http = $http;
   }]);
+
+Backbone.ajax = function (options) {
+  if (mwUI.Backbone.use$http && _$http) {
+    // Set HTTP Verb as 'method'
+    options.method = options.type;
+    // Use angulars $http implementation for requests
+    return _$http.apply(angular, arguments);
+  } else {
+    return _backboneAjax.apply(this, arguments);
+  }
+};
+
+Backbone.sync = function (method, model, options) {
+  // Instead of the response object we are returning the backbone model in the promise
+  return _backboneSync.call(Backbone, method, model, options).then(function () {
+    return model;
+  });
+};
 angular.module('mwUI.ExceptionHandler', ['mwUI.Modal', 'mwUI.i18n', 'mwUI.UiComponents', 'mwUI.Utils']);
 
 angular.module('mwUI.ExceptionHandler')
@@ -1949,7 +1998,7 @@ angular.module('mwUI.Form')
       controller: function () {
         var modelState = {
             dirty: true,
-            valid: false,
+            valid: true,
             touched: false
           },
           inputState = {
@@ -2052,10 +2101,10 @@ angular.module('mwUI.Form')
           }
         };
 
-        var setInputState = function(){
+        var setInputState = function () {
           if (mwInputWrapper) {
             mwInputWrapper.setInputState({
-              required: el.is(':required'),
+              required: el.attr('required'),
               focused: el.is(':focus')
             });
           }
@@ -2069,7 +2118,7 @@ angular.module('mwUI.Form')
             setModelState();
           }, true);
 
-          scope.$watch(function(){
+          scope.$watch(function () {
             return ngModelCtrl.$touched;
           }, setModelState);
 
@@ -2570,6 +2619,52 @@ angular.module('mwUI.Inputs')
       }
     };
   });
+angular.module('mwUI.Inputs')
+
+  .directive('mwCheckboxGroup', ['i18n', function (i18n) {
+    return {
+      restrict: 'A',
+      scope: {
+        mwCollection: '=',
+        mwOptionsCollection: '=',
+        mwOptionsLabelKey: '@',
+        mwOptionsLabelI18nPrefix: '@',
+        mwRequired: '=',
+        mwDisabled: '='
+      },
+      templateUrl: 'uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
+      link: function (scope) {
+        if (scope.mwOptionsCollection.length === 0) {
+          scope.mwOptionsCollection.fetch();
+        }
+
+        scope.getLabel = function(model){
+          var modelAttr = model.get(scope.mwOptionsLabelKey);
+
+          if(modelAttr){
+            if(scope.mwOptionsLabelI18nPrefix){
+              return i18n.get(scope.mwOptionsLabelI18nPrefix+'.'+modelAttr);
+            } else {
+              return modelAttr;
+            }
+          }
+        };
+        
+        scope.isOptionDisabled = function(model){
+          return model.selectable.isDisabled();
+        };
+
+        scope.toggleModel = function (model) {
+          var existingModel = scope.mwCollection.findWhere(model.toJSON());
+          if (existingModel) {
+            scope.mwCollection.remove(existingModel);
+          } else {
+            scope.mwCollection.add(model.toJSON());
+          }
+        };
+      }
+    };
+  }]);
 var extendInput = function () {
   return {
     restrict: 'E',
