@@ -55,7 +55,7 @@ window.uiDeprecationWarning = function(message){
     shownDeprecationWarnings.push(message);
   }
 };
-angular.module('mwUI.Relution', [])
+angular.module('mwUI.Relution')
 
   .directive('mwFormInput', function(){
     return {
@@ -863,8 +863,6 @@ angular.module('mwUI.Relution')
       }
     };
   }]);
-'use strict';
-
 angular.module('mwFileUpload', [])
 
   .provider('mwFileUpload', function(){
@@ -1116,8 +1114,6 @@ angular.module('mwFileUpload', [])
       }
     };
   }]);
-'use strict';
-
 angular.module('mwFileUpload')
 
     .service('mwMimetype', function () {
