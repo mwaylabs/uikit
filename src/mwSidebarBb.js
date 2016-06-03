@@ -41,7 +41,7 @@ angular.module('mwSidebarBb', [])
       },
       link: function (scope, el, attr) {
 
-        scope.autoShowForm = scope.$eval(attr.autoShowForm);
+        scope.showFilterForm = scope.$eval(attr.showFilterForm);
         scope.mwListCollection = scope.$eval(attr.mwListCollection);
         scope.collection = scope.$eval(attr.collection);
 
@@ -60,7 +60,7 @@ angular.module('mwSidebarBb', [])
             canShowForm: false
           };
 
-          if(scope.autoShowForm){
+          if(scope.showFilterForm){
             scope.viewModel.showFilterForm = true;
           }
 
