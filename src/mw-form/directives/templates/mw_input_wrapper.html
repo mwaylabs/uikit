@@ -1,9 +1,13 @@
 <div class="mw-input-wrapper form-group"
      ng-model-errors
      ng-class="{
-      'has-error': showError(),
       'is-required': isRequired(),
-      'is-required-error':showRequiredError()
+      'is-focused': isFocused(),
+      'is-touched': isTouched(),
+      'is-dirty': isDirty(),
+      'is-invalid': !isValid(),
+      'is-required-error':showRequiredError(),
+      'has-error': showError()
      }">
 
   <div class="clearfix">
