@@ -12,7 +12,7 @@ angular.module('mwUI.Form')
       controller: function () {
         var modelState = {
             dirty: true,
-            valid: false,
+            valid: true,
             touched: false
           },
           inputState = {
