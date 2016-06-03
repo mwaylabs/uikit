@@ -234,7 +234,7 @@ angular.module('mwFilters', [])
 
 'use strict';
 
-angular.module('mwComponents', ['ngSanitize'])
+angular.module('mwComponents', ['ngSanitize','btford.markdown','mwUI.Utils'])
 
   .directive('mwTextCollapse', ['$filter', function ($filter) {
     return {
@@ -1574,7 +1574,7 @@ angular.module('mwFileUpload')
 
 'use strict';
 
-angular.module('mwFormBb', [])
+angular.module('mwFormBb', ['mwUI.i18n'])
 
   .directive('mwFormMultiSelectBb', function () {
     return {
