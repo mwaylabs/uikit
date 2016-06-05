@@ -27,10 +27,9 @@ angular.module('mwUI.Backbone')
         var init = function () {
           model = scope.$eval(attrs.mwModel);
           modelAttr = attrs.ngModel.split('.');
-          modelAttr = modelAttr[modelAttr.length-1];
+          modelAttr = modelAttr[modelAttr.length - 1];
 
           if (model) {
-            updateNgModel();
             model.on('change:' + modelAttr, function (model, val, options) {
               if (!options.fromNgModel) {
                 updateNgModel();
@@ -42,6 +41,14 @@ angular.module('mwUI.Backbone')
               updateBackboneModel();
               return val;
             });
+
+            if(model.get(modelAttr) && ngModel.$modelValue&& model.get(modelAttr) !== ngModel.$modelValue){
+              throw new Error('The ng-model and the backbone model can not have different values during initialization!');
+            } else if (model.get(modelAttr)) {
+              updateNgModel();
+            } else if (ngModel.$modelValue) {
+              updateBackboneModel();
+            }
           }
         };
 
