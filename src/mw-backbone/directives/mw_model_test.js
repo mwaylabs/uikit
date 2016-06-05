@@ -1,4 +1,4 @@
-describe('testing mwModel', function () {
+fdescribe('testing mwModel', function () {
 
   beforeEach(module('mwUI.Backbone'));
 
@@ -160,5 +160,85 @@ describe('testing mwModel', function () {
 
       expect(this.scope.select).toEqual(this.scope.options[1]);
     });
+  });
+
+  describe('updates Backbone model when ng-Model changes', function () {
+    it('sets value of backbone model from ng-model', function () {
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.testModel.unset('text');
+
+      this.scope.text = 'VALUE';
+      this.scope.$digest();
+
+      expect(this.scope.testModel.get('text')).toBe('VALUE');
+    });
+
+    it('updates backbone model when ng-model changes', function () {
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      var el = this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.$digest();
+
+      el.val('XYZ').triggerHandler('input');
+      this.scope.$digest();
+
+      expect(this.scope.testModel.get('text')).toBe('XYZ');
+    });
+
+    it('unsets backbone model when value of ng-model is invalid', function () {
+      var input = '<input type="url" ng-model="text" mw-model="testModel" ng-minlength="3"/>';
+      var el = this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.$digest();
+
+      el.val('A').triggerHandler('input');
+      this.scope.$digest();
+
+      expect(this.scope.testModel.get('text')).toBeUndefined();
+    });
+
+    it('fires backbone change events when ng-Model changes', function () {
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      var el = this.$compile(input)(this.scope);
+      var changeSpy = jasmine.createSpy('backboneChangeSpy');
+      this.scope.testModel = this.testModel;
+      this.scope.testModel.on('change:text',changeSpy);
+      this.scope.$digest();
+
+      el.val('XYZ').triggerHandler('input');
+      this.scope.$digest();
+
+      expect(changeSpy).toHaveBeenCalled();
+    });
+  });
+
+  it('throws error when ng-model and backbone model is defined and values are different', function(){
+    var exception = function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.testModel.set('text','VALUE_1');
+
+      this.scope.text = 'VALUE_2';
+      this.scope.$digest();
+    }.bind(this);
+
+    expect(exception).toThrowError();
+  });
+
+  it('throws no error when ng-model and backbone model is defined but the values are the same', function(){
+    var exception = function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.testModel.set('text','VALUE');
+
+      this.scope.text = 'VALUE';
+      this.scope.$digest();
+    }.bind(this);
+
+    expect(exception).not.toThrowError();
   });
 });
