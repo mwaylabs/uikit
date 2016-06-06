@@ -1,4 +1,4 @@
-fdescribe('testing mwModel', function () {
+describe('testing mwModel', function () {
 
   beforeEach(module('mwUI.Backbone'));
 
