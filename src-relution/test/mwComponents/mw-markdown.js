@@ -13,7 +13,6 @@ describe('mwMarkdown', function () {
 
 
   it('should convert transcluded text to markdown', function () {
-    debugger;
     var elt = angular.element('<mw-markdown>*hi*</mw-markdown>');
     $compile(elt)($rootScope);
     expect(elt.html()).toBe('<p><em>hi</em></p>');
