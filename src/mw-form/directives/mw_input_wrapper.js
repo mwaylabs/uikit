@@ -68,15 +68,11 @@ angular.module('mwUI.Form')
           return ctrl.getInputState().focused;
         };
 
-        scope.isModified = function(){
-          return scope.isTouched() || scope.isDirty();
+        scope.hasError = function () {
+          return !scope.hideErrors && !scope.isValid() && scope.isDirty();
         };
 
-        scope.showError = function () {
-          return !scope.hideErrors && !scope.isValid() && scope.isModified();
-        };
-
-        scope.showRequiredError = function () {
+        scope.hasRequiredError = function () {
           return scope.isRequired() && !scope.isValid();
         };
       }
