@@ -4243,8 +4243,8 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
     "      'is-touched': isTouched(),\n" +
     "      'is-dirty': isDirty(),\n" +
     "      'is-invalid': !isValid(),\n" +
-    "      'is-required-error':showRequiredError(),\n" +
-    "      'has-error': showError()\n" +
+    "      'is-required-error':hasRequiredError(),\n" +
+    "      'has-error': hasError()\n" +
     "     }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-tooltip=\"{{ tooltip }}\"><span mw-icon=\"mwUI.questionCircle\"></span></span></label><div class=\"input-holder\" ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"!hideErrors\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><div mw-error-messages></div></div></div>"
   );
 
@@ -4480,12 +4480,12 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-form/i18n/de_DE.json',
-    "{ \"mwErrorMessages\": { \"required\": \"ist ein Pflichtfeld\", \"hasToBeValidEmail\": \"muss eine valide E-Mail Adresse sein\", \"hasToMatchPattern\": \"muss dem Muster entsprechen\", \"hasToBeValidUrl\": \"muss eine valide URL sein\", \"hasToBeValidPhoneNumber\": \"muss eine gültige URL sein\", \"hasToBeMin\": \"muss mindestens {{min}} sein\", \"hasToBeMinLength\": \"muss mindestens {{min}} Zeichen haben\", \"hasToBeSmaller\": \"darf maximal {{max}} sein\", \"hasToBeSmallerLength\": \"darf maximal {{max}} Zeichen haben\" } }"
+    "{ \"mwErrorMessages\": { \"required\": \"ist ein Pflichtfeld\", \"hasToBeValidEmail\": \"muss eine valide E-Mail Adresse sein\", \"hasToMatchPattern\": \"muss dem Muster entsprechen\", \"hasToBeValidUrl\": \"muss eine valide URL sein\", \"hasToBeValidPhoneNumber\": \"muss eine gültige Telefonnummer sein\", \"hasToBeMin\": \"muss mindestens {{min}} sein\", \"hasToBeMinLength\": \"muss mindestens {{ngMinlength}} Zeichen haben\", \"hasToBeSmaller\": \"darf maximal {{max}} sein\", \"hasToBeSmallerLength\": \"darf maximal {{ngMaxlength}} Zeichen haben\" } }"
   );
 
 
   $templateCache.put('uikit/mw-form/i18n/en_US.json',
-    "{ }"
+    "{ \"mwErrorMessages\": { \"required\": \"is required\", \"hasToBeValidEmail\": \"has to be a valid e-mail\", \"hasToMatchPattern\": \"has to match the pattern\", \"hasToBeValidUrl\": \"has to be a valid URL\", \"hasToBeValidPhoneNumber\": \"has to be a valid phone number\", \"hasToBeMin\": \"has to be at least {{min}}\", \"hasToBeMinLength\": \"has to have a least {{ngMinlength}} chars\", \"hasToBeSmaller\": \"must not be greater than {{max}}\", \"hasToBeSmallerLength\": \"must not have more chars than {{ngMaxlength}}\" } }"
   );
 
 

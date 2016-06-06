@@ -60,8 +60,8 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
     "      'is-touched': isTouched(),\n" +
     "      'is-dirty': isDirty(),\n" +
     "      'is-invalid': !isValid(),\n" +
-    "      'is-required-error':showRequiredError(),\n" +
-    "      'has-error': showError()\n" +
+    "      'is-required-error':hasRequiredError(),\n" +
+    "      'has-error': hasError()\n" +
     "     }\"><div class=\"clearfix\"><label ng-if=\"label\" class=\"col-sm-3 control-label\">{{ label }} <span ng-if=\"tooltip\" mw-tooltip=\"{{ tooltip }}\"><span mw-icon=\"mwUI.questionCircle\"></span></span></label><div class=\"input-holder\" ng-class=\"{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]\" ng-transclude></div></div><div ng-if=\"!hideErrors\" ng-class=\"{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]\"><div mw-error-messages></div></div></div>"
   );
 
@@ -297,12 +297,12 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-form/i18n/de_DE.json',
-    "{ \"mwErrorMessages\": { \"required\": \"ist ein Pflichtfeld\", \"hasToBeValidEmail\": \"muss eine valide E-Mail Adresse sein\", \"hasToMatchPattern\": \"muss dem Muster entsprechen\", \"hasToBeValidUrl\": \"muss eine valide URL sein\", \"hasToBeValidPhoneNumber\": \"muss eine gültige URL sein\", \"hasToBeMin\": \"muss mindestens {{min}} sein\", \"hasToBeMinLength\": \"muss mindestens {{min}} Zeichen haben\", \"hasToBeSmaller\": \"darf maximal {{max}} sein\", \"hasToBeSmallerLength\": \"darf maximal {{max}} Zeichen haben\" } }"
+    "{ \"mwErrorMessages\": { \"required\": \"ist ein Pflichtfeld\", \"hasToBeValidEmail\": \"muss eine valide E-Mail Adresse sein\", \"hasToMatchPattern\": \"muss dem Muster entsprechen\", \"hasToBeValidUrl\": \"muss eine valide URL sein\", \"hasToBeValidPhoneNumber\": \"muss eine gültige Telefonnummer sein\", \"hasToBeMin\": \"muss mindestens {{min}} sein\", \"hasToBeMinLength\": \"muss mindestens {{ngMinlength}} Zeichen haben\", \"hasToBeSmaller\": \"darf maximal {{max}} sein\", \"hasToBeSmallerLength\": \"darf maximal {{ngMaxlength}} Zeichen haben\" } }"
   );
 
 
   $templateCache.put('uikit/mw-form/i18n/en_US.json',
-    "{ }"
+    "{ \"mwErrorMessages\": { \"required\": \"is required\", \"hasToBeValidEmail\": \"has to be a valid e-mail\", \"hasToMatchPattern\": \"has to match the pattern\", \"hasToBeValidUrl\": \"has to be a valid URL\", \"hasToBeValidPhoneNumber\": \"has to be a valid phone number\", \"hasToBeMin\": \"has to be at least {{min}}\", \"hasToBeMinLength\": \"has to have a least {{ngMinlength}} chars\", \"hasToBeSmaller\": \"must not be greater than {{max}}\", \"hasToBeSmallerLength\": \"must not have more chars than {{ngMaxlength}}\" } }"
   );
 
 
@@ -1737,10 +1737,9 @@ angular.module('mwUI.Backbone')
         var init = function () {
           model = scope.$eval(attrs.mwModel);
           modelAttr = attrs.ngModel.split('.');
-          modelAttr = modelAttr[modelAttr.length-1];
+          modelAttr = modelAttr[modelAttr.length - 1];
 
           if (model) {
-            updateNgModel();
             model.on('change:' + modelAttr, function (model, val, options) {
               if (!options.fromNgModel) {
                 updateNgModel();
@@ -1752,6 +1751,14 @@ angular.module('mwUI.Backbone')
               updateBackboneModel();
               return val;
             });
+
+            if(model.get(modelAttr) && ngModel.$modelValue&& model.get(modelAttr) !== ngModel.$modelValue){
+              throw new Error('The ng-model and the backbone model can not have different values during initialization!');
+            } else if (model.get(modelAttr)) {
+              updateNgModel();
+            } else if (ngModel.$modelValue) {
+              updateBackboneModel();
+            }
           }
         };
 
@@ -1945,7 +1952,7 @@ angular.module('mwUI.Form')
         scope.errors = ngModelErrorsCtrl.getErrors;
 
         scope.getMessageForError = function(errorModel){
-          return mwValidationMessages.getMessageFor(errorModel);
+          return mwValidationMessages.getMessageFor(errorModel.get('error'),errorModel.get('attrs'));
         };
       }
     };
@@ -2058,15 +2065,11 @@ angular.module('mwUI.Form')
           return ctrl.getInputState().focused;
         };
 
-        scope.isModified = function(){
-          return scope.isTouched() || scope.isDirty();
+        scope.hasError = function () {
+          return !scope.hideErrors && !scope.isValid() && scope.isDirty();
         };
 
-        scope.showError = function () {
-          return !scope.hideErrors && !scope.isValid() && scope.isModified();
-        };
-
-        scope.showRequiredError = function () {
+        scope.hasRequiredError = function () {
           return scope.isRequired() && !scope.isValid();
         };
       }
@@ -2080,7 +2083,7 @@ angular.module('mwUI.Form')
       link: function (scope, el, attrs, ctrls) {
         var ngModelCtrl = ctrls[0],
           ngModelErrorsCtrl = ctrls[1],
-          mwInputWrapper = ctrls[2],
+          mwInputWrapperCtrl = ctrls[2],
           inputId = _.uniqueId('input_el');
 
         var setErrors = function (newErrorObj, oldErrorObj) {
@@ -2088,51 +2091,56 @@ angular.module('mwUI.Form')
             oldErrors = _.keys(oldErrorObj),
             removeErrors = _.difference(oldErrors, newErrors);
 
-          if (ngModelErrorsCtrl) {
-            ngModelErrorsCtrl.addErrorsForInput(newErrors, inputId, _.clone(attrs));
-            ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
-          }
+          ngModelErrorsCtrl.addErrorsForInput(newErrors, inputId, _.clone(attrs));
+          ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
         };
 
 
         var setModelState = function () {
-          if (mwInputWrapper) {
-            mwInputWrapper.setModelState({
-              dirty: ngModelCtrl.$dirty,
-              valid: ngModelCtrl.$valid,
-              touched: ngModelCtrl.$touched
-            });
-          }
+          mwInputWrapperCtrl.setModelState({
+            dirty: ngModelCtrl.$dirty,
+            valid: ngModelCtrl.$valid,
+            touched: ngModelCtrl.$touched
+          });
         };
 
-        var setInputState = function () {
-          if (mwInputWrapper) {
-            mwInputWrapper.setInputState({
-              required: el.attr('required'),
-              focused: el.is(':focus')
-            });
-          }
-        };
-
-        var init = function () {
+        var initErrorState = function () {
           scope.$watch(function () {
             return ngModelCtrl.$error;
           }, function (newErrorObj, oldErrorObj) {
             setErrors(newErrorObj, oldErrorObj);
-            setModelState();
           }, true);
+        };
+
+        var initModelAndInputState = function () {
+          scope.$watch(function () {
+            return ngModelCtrl.$error;
+          }, setModelState, true);
 
           scope.$watch(function () {
             return ngModelCtrl.$touched;
           }, setModelState);
 
-          attrs.$observe('required', setInputState);
-          el.on('focus blur', setInputState);
+          attrs.$observe('required', function(){
+            mwInputWrapperCtrl.setInputState({
+              required: angular.isDefined(el.attr('required'))
+            });
+          });
+
+          el.on('focus blur', function(ev){
+            mwInputWrapperCtrl.setInputState({
+              focused: ev.type === 'focus'
+            });
+          });
           scope.$on('$destroy', el.off.bind(el));
         };
 
         if (ngModelErrorsCtrl) {
-          init();
+          initErrorState();
+        }
+
+        if(mwInputWrapperCtrl){
+          initModelAndInputState();
         }
       }
     };
@@ -2210,21 +2218,22 @@ angular.module('mwUI.Form')
 angular.module('mwUI.Form')
 
   .provider('mwValidationMessages', function () {
-    var _registeredValidators = {},
-      _translatedValidators = {},
+    var _stringValidators = {},
       _functionValidators = {},
       _executedValidators = {};
 
     var _setValidationMessage = function (key, validationMessage) {
       if (typeof validationMessage === 'function') {
         _functionValidators[key] = validationMessage;
-      } else {
-        _registeredValidators[key] = validationMessage;
+      } else if (typeof validationMessage === 'string') {
+        _stringValidators[key] = validationMessage;
+      } else if (validationMessage) {
+        throw new Error('The validation has to be either a string or a function. String can be also a reference to i18n');
       }
     };
 
     this.registerValidator = function (key, validationMessage) {
-      if (!_registeredValidators[key] && !_functionValidators[key]) {
+      if (!_stringValidators[key] && !_functionValidators[key]) {
         _setValidationMessage(key, validationMessage);
       } else {
         throw new Error('The key ' + key + ' has already been registered');
@@ -2232,55 +2241,34 @@ angular.module('mwUI.Form')
     };
 
     this.$get = ['$rootScope', 'i18n', function ($rootScope, i18n) {
-      var _translateRegisteredValidators = function () {
-        _.pairs(_registeredValidators).forEach(function (pair) {
-          var key = pair[0],
-            value = pair[1];
+      var getTranslatedValidator = function (key, options) {
+        var message = _stringValidators[key];
 
-          if (i18n.translationIsAvailable(value)) {
-            _translatedValidators[key] = i18n.get(value);
-          } else {
-            _translatedValidators[key] = value;
-          }
-        });
+        if (i18n.translationIsAvailable(message)) {
+          return i18n.get(message, options);
+        } else {
+          return message;
+        }
       };
 
-      //var _executeFunctionValidators = function () {
-      //  _.pairs(_functionValidators).forEach(function (pair) {
-      //    var key = pair[0],
-      //      fn = pair[1];
-      //    _executedValidators[key] = fn();
-      //  });
-      //};
-
-      var _setValidationMessages = function () {
-        _translateRegisteredValidators();
-        //_executeFunctionValidators();
-        $rootScope.$broadcast('mwValidationMessages:change');
+      var getExecutedValidator = function (key, options) {
+        return _functionValidators[key](i18n, options);
       };
-
-      _setValidationMessages();
-      $rootScope.$on('i18n:localeChanged', function () {
-        _setValidationMessages();
-      });
 
       return {
         getRegisteredValidators: function () {
-          return _.extend(_translatedValidators, _executedValidators);
+          return _.extend(_stringValidators, _executedValidators);
         },
-        getMessageFor: function(errorModel){
-          var errorId = errorModel.get('error');
-
-          if(_functionValidators[errorId]){
-            return _functionValidators[errorId](i18n, errorModel.get('attrs'));
-          } else {
-            return _translatedValidators[errorId];
+        getMessageFor: function (key, options) {
+          if (_functionValidators[key]) {
+            return getExecutedValidator(key, options);
+          } else if (_stringValidators[key]) {
+            return getTranslatedValidator(key, options);
           }
         },
         updateMessage: function (key, message) {
-          if (_registeredValidators[key] || _functionValidators[key]) {
+          if (_stringValidators[key] || _functionValidators[key]) {
             _setValidationMessage(key, message);
-            _setValidationMessages();
           } else {
             throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
           }
@@ -2299,18 +2287,10 @@ angular.module('mwUI.Form')
     mwValidationMessagesProvider.registerValidator('pattern','mwErrorMessages.hasToMatchPattern');
     mwValidationMessagesProvider.registerValidator('url','mwErrorMessages.hasToBeValidUrl');
     mwValidationMessagesProvider.registerValidator('phone','mwErrorMessages.hasToBeValidPhoneNumber');
-    mwValidationMessagesProvider.registerValidator('min',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeMin',{min: attrs.min});
-    });
-    mwValidationMessagesProvider.registerValidator('minlength',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeMinLength',{min: attrs.minlength});
-    });
-    mwValidationMessagesProvider.registerValidator('max',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeSmaller',{max: attrs.max});
-    });
-    mwValidationMessagesProvider.registerValidator('maxlength',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeSmallerLength',{max: attrs.maxlength});
-    });
+    mwValidationMessagesProvider.registerValidator('min','mwErrorMessages.hasToBeMin');
+    mwValidationMessagesProvider.registerValidator('minlength','mwErrorMessages.hasToBeMinLength');
+    mwValidationMessagesProvider.registerValidator('max','mwErrorMessages.hasToBeSmaller');
+    mwValidationMessagesProvider.registerValidator('maxlength','mwErrorMessages.hasToBeSmallerLength');
   }]);
 angular.module('mwUI.i18n', [
 
