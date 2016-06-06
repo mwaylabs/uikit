@@ -4,10 +4,10 @@
     "hasToBeValidEmail": "muss eine valide E-Mail Adresse sein",
     "hasToMatchPattern": "muss dem Muster entsprechen",
     "hasToBeValidUrl": "muss eine valide URL sein",
-    "hasToBeValidPhoneNumber": "muss eine gültige URL sein",
+    "hasToBeValidPhoneNumber": "muss eine gültige Telefonnummer sein",
     "hasToBeMin": "muss mindestens {{min}} sein",
-    "hasToBeMinLength": "muss mindestens {{min}} Zeichen haben",
+    "hasToBeMinLength": "muss mindestens {{ngMinlength}} Zeichen haben",
     "hasToBeSmaller": "darf maximal {{max}} sein",
-    "hasToBeSmallerLength": "darf maximal {{max}} Zeichen haben"
+    "hasToBeSmallerLength": "darf maximal {{ngMaxlength}} Zeichen haben"
   }
 }

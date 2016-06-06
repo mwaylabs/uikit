@@ -19,16 +19,8 @@ angular.module('mwUI.Form')
     mwValidationMessagesProvider.registerValidator('pattern','mwErrorMessages.hasToMatchPattern');
     mwValidationMessagesProvider.registerValidator('url','mwErrorMessages.hasToBeValidUrl');
     mwValidationMessagesProvider.registerValidator('phone','mwErrorMessages.hasToBeValidPhoneNumber');
-    mwValidationMessagesProvider.registerValidator('min',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeMin',{min: attrs.min});
-    });
-    mwValidationMessagesProvider.registerValidator('minlength',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeMinLength',{min: attrs.minlength});
-    });
-    mwValidationMessagesProvider.registerValidator('max',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeSmaller',{max: attrs.max});
-    });
-    mwValidationMessagesProvider.registerValidator('maxlength',function(i18n, attrs){
-      return i18n.get('mwErrorMessages.hasToBeSmallerLength',{max: attrs.maxlength});
-    });
+    mwValidationMessagesProvider.registerValidator('min','mwErrorMessages.hasToBeMin');
+    mwValidationMessagesProvider.registerValidator('minlength','mwErrorMessages.hasToBeMinLength');
+    mwValidationMessagesProvider.registerValidator('max','mwErrorMessages.hasToBeSmaller');
+    mwValidationMessagesProvider.registerValidator('maxlength','mwErrorMessages.hasToBeSmallerLength');
   });
