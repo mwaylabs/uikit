@@ -10,3 +10,20 @@ window.mockI18nFilter = function(){
     });
   });
 };
+
+window.mockI18nService = function(){
+  beforeEach(function(){
+    module(function($provide){
+      $provide.service('i18n', function(){
+        return {
+          get: function (input) {
+            return input;
+          },
+          translationIsAvailable: function(){
+            return true;
+          }
+        };
+      });
+    });
+  });
+};
