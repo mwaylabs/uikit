@@ -8,7 +8,7 @@ angular.module('mwUI.Form')
         scope.errors = ngModelErrorsCtrl.getErrors;
 
         scope.getMessageForError = function(errorModel){
-          return mwValidationMessages.getMessageFor(errorModel);
+          return mwValidationMessages.getMessageFor(errorModel.get('error'),errorModel.get('attrs'));
         };
       }
     };
