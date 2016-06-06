@@ -6,7 +6,7 @@ angular.module('mwUI.Form')
       link: function (scope, el, attrs, ctrls) {
         var ngModelCtrl = ctrls[0],
           ngModelErrorsCtrl = ctrls[1],
-          mwInputWrapper = ctrls[2],
+          mwInputWrapperCtrl = ctrls[2],
           inputId = _.uniqueId('input_el');
 
         var setErrors = function (newErrorObj, oldErrorObj) {
@@ -14,51 +14,56 @@ angular.module('mwUI.Form')
             oldErrors = _.keys(oldErrorObj),
             removeErrors = _.difference(oldErrors, newErrors);
 
-          if (ngModelErrorsCtrl) {
-            ngModelErrorsCtrl.addErrorsForInput(newErrors, inputId, _.clone(attrs));
-            ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
-          }
+          ngModelErrorsCtrl.addErrorsForInput(newErrors, inputId, _.clone(attrs));
+          ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
         };
 
 
         var setModelState = function () {
-          if (mwInputWrapper) {
-            mwInputWrapper.setModelState({
-              dirty: ngModelCtrl.$dirty,
-              valid: ngModelCtrl.$valid,
-              touched: ngModelCtrl.$touched
-            });
-          }
+          mwInputWrapperCtrl.setModelState({
+            dirty: ngModelCtrl.$dirty,
+            valid: ngModelCtrl.$valid,
+            touched: ngModelCtrl.$touched
+          });
         };
 
-        var setInputState = function () {
-          if (mwInputWrapper) {
-            mwInputWrapper.setInputState({
-              required: el.attr('required'),
-              focused: el.is(':focus')
-            });
-          }
-        };
-
-        var init = function () {
+        var initErrorState = function () {
           scope.$watch(function () {
             return ngModelCtrl.$error;
           }, function (newErrorObj, oldErrorObj) {
             setErrors(newErrorObj, oldErrorObj);
-            setModelState();
           }, true);
+        };
+
+        var initModelAndInputState = function () {
+          scope.$watch(function () {
+            return ngModelCtrl.$error;
+          }, setModelState, true);
 
           scope.$watch(function () {
             return ngModelCtrl.$touched;
           }, setModelState);
 
-          attrs.$observe('required', setInputState);
-          el.on('focus blur', setInputState);
+          attrs.$observe('required', function(){
+            mwInputWrapperCtrl.setInputState({
+              required: angular.isDefined(el.attr('required'))
+            });
+          });
+
+          el.on('focus blur', function(ev){
+            mwInputWrapperCtrl.setInputState({
+              focused: ev.type === 'focus'
+            });
+          });
           scope.$on('$destroy', el.off.bind(el));
         };
 
         if (ngModelErrorsCtrl) {
-          init();
+          initErrorState();
+        }
+
+        if(mwInputWrapperCtrl){
+          initModelAndInputState();
         }
       }
     };
