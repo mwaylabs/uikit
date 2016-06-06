@@ -1,21 +1,22 @@
 angular.module('mwUI.Form')
 
   .provider('mwValidationMessages', function () {
-    var _registeredValidators = {},
-      _translatedValidators = {},
+    var _stringValidators = {},
       _functionValidators = {},
       _executedValidators = {};
 
     var _setValidationMessage = function (key, validationMessage) {
       if (typeof validationMessage === 'function') {
         _functionValidators[key] = validationMessage;
-      } else {
-        _registeredValidators[key] = validationMessage;
+      } else if (typeof validationMessage === 'string') {
+        _stringValidators[key] = validationMessage;
+      } else if (validationMessage) {
+        throw new Error('The validation has to be either a string or a function. String can be also a reference to i18n');
       }
     };
 
     this.registerValidator = function (key, validationMessage) {
-      if (!_registeredValidators[key] && !_functionValidators[key]) {
+      if (!_stringValidators[key] && !_functionValidators[key]) {
         _setValidationMessage(key, validationMessage);
       } else {
         throw new Error('The key ' + key + ' has already been registered');
@@ -23,55 +24,34 @@ angular.module('mwUI.Form')
     };
 
     this.$get = function ($rootScope, i18n) {
-      var _translateRegisteredValidators = function () {
-        _.pairs(_registeredValidators).forEach(function (pair) {
-          var key = pair[0],
-            value = pair[1];
+      var getTranslatedValidator = function (key, options) {
+        var message = _stringValidators[key];
 
-          if (i18n.translationIsAvailable(value)) {
-            _translatedValidators[key] = i18n.get(value);
-          } else {
-            _translatedValidators[key] = value;
-          }
-        });
+        if (i18n.translationIsAvailable(message)) {
+          return i18n.get(message, options);
+        } else {
+          return message;
+        }
       };
 
-      //var _executeFunctionValidators = function () {
-      //  _.pairs(_functionValidators).forEach(function (pair) {
-      //    var key = pair[0],
-      //      fn = pair[1];
-      //    _executedValidators[key] = fn();
-      //  });
-      //};
-
-      var _setValidationMessages = function () {
-        _translateRegisteredValidators();
-        //_executeFunctionValidators();
-        $rootScope.$broadcast('mwValidationMessages:change');
+      var getExecutedValidator = function (key, options) {
+        return _functionValidators[key](i18n, options);
       };
-
-      _setValidationMessages();
-      $rootScope.$on('i18n:localeChanged', function () {
-        _setValidationMessages();
-      });
 
       return {
         getRegisteredValidators: function () {
-          return _.extend(_translatedValidators, _executedValidators);
+          return _.extend(_stringValidators, _executedValidators);
         },
-        getMessageFor: function(errorModel){
-          var errorId = errorModel.get('error');
-
-          if(_functionValidators[errorId]){
-            return _functionValidators[errorId](i18n, errorModel.get('attrs'));
-          } else {
-            return _translatedValidators[errorId];
+        getMessageFor: function (key, options) {
+          if (_functionValidators[key]) {
+            return getExecutedValidator(key, options);
+          } else if (_stringValidators[key]) {
+            return getTranslatedValidator(key, options);
           }
         },
         updateMessage: function (key, message) {
-          if (_registeredValidators[key] || _functionValidators[key]) {
+          if (_stringValidators[key] || _functionValidators[key]) {
             _setValidationMessage(key, message);
-            _setValidationMessages();
           } else {
             throw new Error('The key ' + key + ' is not available. You have to register it first via the provider');
           }
