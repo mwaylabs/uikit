@@ -399,8 +399,8 @@ div[mw-listable-head-2] {
   .search-bar {
     margin: 0 auto;
     min-width: 0;
-    -webkit-flex-basis: 50%;
-    flex-basis: 50%;
+    -webkit-flex-basis: 80%;
+    flex-basis: 80%;
     @include single-transition(flex-basis, 0.4s, ease);
 
     .input-holder{
