@@ -18,7 +18,8 @@ angular.module('mwUI.Form')
           inputState = {
             required: false,
             focused: false
-          };
+          },
+          inputType = 'text';
 
         var setObj = function (obj, val) {
           if (angular.isObject(val)) {
@@ -44,6 +45,15 @@ angular.module('mwUI.Form')
 
         this.getInputState = function () {
           return inputState;
+        };
+
+        // Will be called by mwInputDefaults in mw-inputs/directives
+        this.setType = function(type){
+          inputType = type;
+        };
+
+        this.getType = function(){
+          return inputType;
         };
       },
       link: function (scope, el, attrs, ctrl) {
@@ -75,6 +85,8 @@ angular.module('mwUI.Form')
         scope.hasRequiredError = function () {
           return scope.isRequired() && !scope.isValid();
         };
+
+        scope.getType = ctrl.getType;
       }
     };
   });
