@@ -1,0 +1,14 @@
+<fieldset class="mw-checkbox-group" ng-disabled="mwDisabled">
+  <div ng-repeat="model in mwOptionsCollection.models">
+    <label>
+      <input type="radio"
+             ng-disabled="isOptionDisabled(model)"
+             ng-checked="isChecked(model)"
+             name="radio_group"
+             ng-click="setNgModelVal(model);">
+      <span class="checkbox-label">{{getLabel(model)}}</span>
+    </label>
+  </div>
+
+  <!--<input type="text" ng-model="viewModel.id" ng-required="mwRequired" mw-model="mwModel" mw-model-attr="{{getModelAttr()}}">-->
+</fieldset>
