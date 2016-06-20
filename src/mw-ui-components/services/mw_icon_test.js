@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 29/05/15.
- */
 describe('mwUi mwIcon Service', function () {
   var mwIconProvider;
 
@@ -64,6 +61,7 @@ describe('mwUi mwIcon Service', function () {
         });
 
         mwIconProvider.getIconSet('fa').getIconForKey('user').then(uSpy);
+        this.$rootScope.$digest();
 
         expect(uSpy).toHaveBeenCalledWith('fa-user');
       });
@@ -81,6 +79,7 @@ describe('mwUi mwIcon Service', function () {
         });
 
         mwIconProvider.getIconSet('fa').getIconForKey('user.opaque').then(uSpy);
+        this.$rootScope.$digest();
 
         expect(uSpy).toHaveBeenCalledWith('fa-user-o');
       });
