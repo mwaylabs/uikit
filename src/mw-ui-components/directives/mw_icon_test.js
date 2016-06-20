@@ -16,7 +16,7 @@ describe('mwIcon', function () {
     this.scope = $rootScope.$new();
   }));
 
-  xdescribe('old implementation', function(){
+  describe('old implementation', function(){
     it('should have a font awesome icon class', function () {
       var icon = '<span mw-icon="fa-star"></span>';
       var el = this.$compile(icon)(this.scope);
