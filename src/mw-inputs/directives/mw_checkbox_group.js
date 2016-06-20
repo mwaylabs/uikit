@@ -13,10 +13,6 @@ angular.module('mwUI.Inputs')
       },
       templateUrl: 'uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
       link: function (scope) {
-        if (scope.mwOptionsCollection.length === 0) {
-          scope.mwOptionsCollection.fetch();
-        }
-
         scope.getLabel = function(model){
           var modelAttr = model.get(scope.mwOptionsLabelKey);
 
