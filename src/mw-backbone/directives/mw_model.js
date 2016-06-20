@@ -9,6 +9,7 @@ angular.module('mwUI.Backbone')
         var updateNgModel = function () {
           var val = model.get(modelAttr);
 
+          debugger;
           ngModel.$formatters.forEach(function (formatFn) {
             val = formatFn(val);
           });
@@ -19,17 +20,38 @@ angular.module('mwUI.Backbone')
 
         var updateBackboneModel = function () {
           var obj = {};
+          debugger;
+          if(model.get(modelAttr) instanceof Backbone.Model){
+            if(ngModel.$modelValue && ngModel.$modelValue instanceof Backbone.Model){
+              obj = ngModel.$modelValue.toJSON();
+            } else if(angular.isObject(ngModel.$modelValue)){
+              obj = ngModel.$modelValue;
+            } else {
+              //obj[modelAttr] = ngModel.$modelValue;
+            }
+            model.get(modelAttr).set(obj,{fromNgModel: true});
+          } else {
+            obj[modelAttr] = ngModel.$modelValue;
+            model.set(obj, {fromNgModel: true});
+          }
+        };
 
-          obj[modelAttr] = ngModel.$modelValue;
-          model.set(obj, {fromNgModel: true});
+        var getModelAttrName = function(){
+          var mwModelAttrOption = attrs.mwModelAttr,
+              mwModelAttrFromNgModel = attrs.ngModel;
+
+          if(mwModelAttrOption && mwModelAttrOption.length>0){
+            return mwModelAttrOption
+          } else if(angular.isUndefined(mwModelAttrOption) && mwModelAttrFromNgModel){
+            return mwModelAttrFromNgModel.split('.').pop();
+          }
         };
 
         var init = function () {
           model = scope.$eval(attrs.mwModel);
-          modelAttr = attrs.ngModel.split('.');
-          modelAttr = modelAttr[modelAttr.length - 1];
+          modelAttr = getModelAttrName();
 
-          if (model) {
+          if (model && modelAttr) {
             model.on('change:' + modelAttr, function (model, val, options) {
               if (!options.fromNgModel) {
                 updateNgModel();
@@ -53,11 +75,16 @@ angular.module('mwUI.Backbone')
         };
 
         if (ngModel) {
-          if (scope.mwModel) {
+          if (scope.mwModel && getModelAttrName()) {
             init();
           } else {
-            var off = scope.$watch('mwModel', function () {
-              off();
+            var offModel = scope.$watch('mwModel', function (val) {
+              offModel();
+              init();
+            });
+
+            var offModelAttr = scope.$watch('mwModelAttr', function (val) {
+              offModelAttr();
               init();
             });
           }
