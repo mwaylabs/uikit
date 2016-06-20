@@ -25,10 +25,11 @@ angular.module('mwUI.UiComponents')
         loadFn: function () {
           throw new Error('Has to overwritten with a real loader fn');
         },
+        $q: null,
         getIconForKey: function (key) {
           var keys = key.split('.'),
             icons = this.get('icons'),
-            dfd = Backbone.$.Deferred(),
+            dfd = this.$q(),
             icon;
 
           keys.forEach(function (key) {
@@ -61,7 +62,7 @@ angular.module('mwUI.UiComponents')
           } else {
             throw new Error('No Icon was found for the key ' + key);
           }
-          return dfd.promise();
+          return dfd.promise;
         },
         isValidIcon: function (icon) {
           return (icon.icons && _.size(icon.icons) > 0 || icon.iconsUrl);
@@ -128,6 +129,7 @@ angular.module('mwUI.UiComponents')
 
     this.$get = function ($q, $templateRequest) {
       var _loadIconFile = function (icon) {
+        icon.$q = $q.defer;
         icon.loadFn = function () {
           return $templateRequest(icon.get('iconsUrl')).then(function (content) {
             return JSON.parse(content);
