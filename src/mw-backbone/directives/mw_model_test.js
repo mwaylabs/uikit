@@ -214,6 +214,53 @@ describe('testing mwModel', function () {
     });
   });
 
+  describe('testing backbone attribute options', function(){
+    it('uses attribute name that was defined in mw-model-attr', function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel" mw-model-attr="abc"/>';
+      var el = this.$compile(input)(this.scope);
+      var changeSpy = jasmine.createSpy('backboneChangeSpy');
+      this.scope.testModel = this.testModel;
+      this.scope.testModel.on('change:abc',changeSpy);
+      this.scope.$digest();
+
+      el.val('XYZ').triggerHandler('input');
+      this.scope.$digest();
+
+      expect(changeSpy).toHaveBeenCalled();
+    });
+
+    it('uses attribute name that was defined in mw-model-attr as function', function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel" mw-model-attr="{{getModelAttr}}"/>';
+      var el = this.$compile(input)(this.scope);
+      var changeSpy = jasmine.createSpy('backboneChangeSpy');
+      this.scope.testModel = this.testModel;
+      this.scope.getModelAttr = function(){
+        return 'fn'
+      };
+      this.scope.testModel.on('change:fn',changeSpy);
+      this.scope.$digest();
+
+      el.val('XYZ').triggerHandler('input');
+      this.scope.$digest();
+
+      expect(changeSpy).toHaveBeenCalled();
+    });
+
+    it('uses ng-model attribute that was defined in dot notation', function(){
+      var input = '<input type="text" ng-model="viewModel.text" mw-model="testModel"/>';
+      var el = this.$compile(input)(this.scope);
+      var changeSpy = jasmine.createSpy('backboneChangeSpy');
+      this.scope.testModel = this.testModel;
+      this.scope.testModel.on('change:text',changeSpy);
+      this.scope.$digest();
+
+      el.val('XYZ').triggerHandler('input');
+      this.scope.$digest();
+
+      expect(changeSpy).toHaveBeenCalled();
+    });
+  });
+
   it('throws error when ng-model and backbone model is defined and values are different', function(){
     var exception = function(){
       var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
