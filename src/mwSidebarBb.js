@@ -41,6 +41,7 @@ angular.module('mwSidebarBb', [])
       },
       link: function (scope, el, attr) {
 
+        scope.showFilterForm = scope.$eval(attr.showFilterForm);
         scope.mwListCollection = scope.$eval(attr.mwListCollection);
         scope.collection = scope.$eval(attr.collection);
 
@@ -58,6 +59,10 @@ angular.module('mwSidebarBb', [])
             showFilterForm: false,
             canShowForm: false
           };
+
+          if(scope.showFilterForm){
+            scope.viewModel.showFilterForm = true;
+          }
 
           var setTotalAmount = function (filterModel) {
             var filterModelInCollection = scope.filters.get(filterModel),
