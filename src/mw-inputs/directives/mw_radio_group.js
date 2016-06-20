@@ -4,6 +4,8 @@ angular.module('mwUI.Inputs')
     return {
       restrict: 'A',
       scope: {
+        mwModel: '=',
+        mwModelAttr: '@',
         mwOptionsCollection: '=',
         mwOptionsKey: '@',
         mwOptionsLabelKey: '@',
@@ -11,59 +13,65 @@ angular.module('mwUI.Inputs')
         mwRequired: '=',
         mwDisabled: '='
       },
-      require: '?ngModel',
       templateUrl: 'uikit/mw-inputs/directives/templates/mw_radio_group.html',
-      link: function (scope, el, attr, ngModelCtrl) {
-        if(!ngModelCtrl){
-          return;
-        }
+      link: function (scope) {
+        scope.radioGroupId = _.uniqueId('radio_');
 
-        var getNgModelVal = function(){
-          if(ngModelCtrl.$modelValue instanceof Backbone.Model){
-            if(scope.mwOptionsKey){
-              return ngModelCtrl.$modelValue.get(scope.mwOptionsKey);
-            } else {
-              return ngModelCtrl.$modelValue.get(ngModelCtrl.$modelValue.idAttribute);
-            }
+        var setBackboneModel = function(model){
+          if(scope.mwModelAttr){
+            scope.mwModel.set(scope.mwModelAttr, model.get(scope.mwOptionsKey))
           } else {
-            return ngModelCtrl.$modelValue;
+            scope.mwModel.set(model.toJSON());
           }
         };
 
-        scope.getLabel = function(model){
+        var unSetBackboneModel = function(){
+          if(scope.mwModelAttr){
+            scope.mwModel.unset(scope.mwModelAttr);
+          } else {
+            scope.mwModel.clear();
+          }
+        };
+
+        scope.getLabel = function (model) {
           var modelAttr = model.get(scope.mwOptionsLabelKey);
 
-          if(modelAttr){
-            if(scope.mwOptionsLabelI18nPrefix){
-              return i18n.get(scope.mwOptionsLabelI18nPrefix+'.'+modelAttr);
+          if (modelAttr) {
+            if (scope.mwOptionsLabelI18nPrefix) {
+              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + modelAttr);
             } else {
               return modelAttr;
             }
           }
         };
 
-        scope.isOptionDisabled = function(model){
+        scope.isOptionDisabled = function (model) {
           return model.selectable.isDisabled();
         };
 
-        scope.isChecked = function(model){
-          if(scope.mwOptionsKey){
-            return model.get(scope.mwOptionsKey) === getNgModelVal();
+        scope.getModelAttribute = function(){
+          return scope.mwModelAttr || scope.mwModel.idAttribute;
+        };
+
+        scope.isChecked = function (model) {
+          if(scope.mwModelAttr){
+            return model.get(scope.mwOptionsKey) === scope.mwModel.get(scope.mwModelAttr);
           } else {
-            return model.get(model.idAttribute) === getNgModelVal();
+            return model.id === scope.mwModel.id;
           }
         };
 
-        scope.setNgModelVal = function(model){
-          debugger;
-          if(ngModelCtrl.$modelValue instanceof Backbone.Model){
-            ngModelCtrl.$setViewValue(model.toJSON());
-          } else if(scope.mwOptionsKey){
-            ngModelCtrl.$setViewValue(model.get(scope.mwOptionsKey));
+        scope.selectOption = function (model) {
+          if (!scope.isChecked(model)) {
+            setBackboneModel(model);
           } else {
-            ngModelCtrl.$setViewValue(model.get(model.idAttribute));
+            unSetBackboneModel();
           }
         };
+
+        if(scope.mwModelAttr && !scope.mwOptionsKey){
+          throw new Error('[mwRadioGroup] When using mwModelAttr the attribute mwOptionsKey is required!')
+        }
       }
     };
   });
