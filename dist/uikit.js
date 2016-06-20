@@ -54,7 +54,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-form/directives/templates/mw_input_wrapper.html',
-    "<div class=\"mw-input-wrapper form-group\" ng-model-errors ng-class=\"{\n" +
+    "<div class=\"mw-input-wrapper form-group input-{{getType()}}\" ng-model-errors ng-class=\"{\n" +
     "      'is-required': isRequired(),\n" +
     "      'is-focused': isFocused(),\n" +
     "      'is-touched': isTouched(),\n" +
@@ -68,6 +68,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
     "<fieldset class=\"mw-checkbox-group\" ng-disabled=\"mwDisabled\"><div ng-repeat=\"model in mwOptionsCollection.models\"><label><input type=\"checkbox\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"mwCollection.findWhere(model.toJSON())\" ng-click=\"toggleModel(model); setDirty()\"> <span class=\"checkbox-label\">{{getLabel(model)}}</span></label></div><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-collection=\"mwCollection\"></fieldset>"
+  );
+
+
+  $templateCache.put('uikit/mw-inputs/directives/templates/mw_radio_group.html',
+    "<fieldset class=\"mw-radio-group\" ng-disabled=\"mwDisabled\"><div ng-repeat=\"model in mwOptionsCollection.models\"><label><input type=\"radio\" ng-disabled=\"isOptionDisabled(model)\" ng-checked=\"isChecked(model)\" name=\"{{radioGroupId}}\" ng-click=\"selectOption(model);\"> <span class=\"radio-label\">{{getLabel(model)}}</span></label></div><input type=\"hidden\" ng-model=\"viewModel.tmp\" ng-required=\"mwRequired\" mw-model=\"mwModel\" mw-model-attr=\"{{getModelAttribute()}}\"></fieldset>"
   );
 
 
@@ -1713,64 +1718,78 @@ angular.module('mwUI.Backbone')
   .directive('mwModel', function () {
     return {
       require: '?ngModel',
-      link: function (scope, el, attrs, ngModel) {
+      link: function (scope, el, attrs, ngModelCtrl) {
         var model, modelAttr;
 
         var updateNgModel = function () {
           var val = model.get(modelAttr);
 
-          ngModel.$formatters.forEach(function (formatFn) {
+          ngModelCtrl.$formatters.forEach(function (formatFn) {
             val = formatFn(val);
           });
 
-          ngModel.$setViewValue(val);
-          ngModel.$render();
+          ngModelCtrl.$setViewValue(val);
+          ngModelCtrl.$render();
         };
 
         var updateBackboneModel = function () {
           var obj = {};
 
-          obj[modelAttr] = ngModel.$modelValue;
+          obj[modelAttr] = ngModelCtrl.$modelValue;
           model.set(obj, {fromNgModel: true});
+        };
+
+        var getModelAttrName = function () {
+          var mwModelAttrOption = attrs.mwModelAttr,
+            mwModelAttrFromNgModel = attrs.ngModel;
+
+          if (mwModelAttrOption && mwModelAttrOption.length > 0) {
+            return mwModelAttrOption;
+          } else if (angular.isUndefined(mwModelAttrOption) && mwModelAttrFromNgModel) {
+            return mwModelAttrFromNgModel.split('.').pop();
+          }
         };
 
         var init = function () {
           model = scope.$eval(attrs.mwModel);
-          modelAttr = attrs.ngModel.split('.');
-          modelAttr = modelAttr[modelAttr.length - 1];
+          modelAttr = getModelAttrName();
 
-          if (model) {
+          if (ngModelCtrl && model && modelAttr) {
+
             model.on('change:' + modelAttr, function (model, val, options) {
               if (!options.fromNgModel) {
                 updateNgModel();
               }
             });
 
-            ngModel.$viewChangeListeners.push(updateBackboneModel);
-            ngModel.$parsers.push(function (val) {
+            ngModelCtrl.$viewChangeListeners.push(updateBackboneModel);
+            ngModelCtrl.$parsers.push(function (val) {
               updateBackboneModel();
               return val;
             });
 
-            if(model.get(modelAttr) && ngModel.$modelValue&& model.get(modelAttr) !== ngModel.$modelValue){
+            if (model.get(modelAttr) && ngModelCtrl.$modelValue && model.get(modelAttr) !== ngModelCtrl.$modelValue) {
               throw new Error('The ng-model and the backbone model can not have different values during initialization!');
             } else if (model.get(modelAttr)) {
               updateNgModel();
-            } else if (ngModel.$modelValue) {
+            } else if (ngModelCtrl.$modelValue) {
               updateBackboneModel();
             }
           }
         };
 
-        if (ngModel) {
-          if (scope.mwModel) {
+        if (scope.mwModel && getModelAttrName()) {
+          init();
+        } else {
+          var offModel = scope.$watch('mwModel', function () {
+            offModel();
             init();
-          } else {
-            var off = scope.$watch('mwModel', function () {
-              off();
-              init();
-            });
-          }
+          });
+
+          var offModelAttr = scope.$watch('mwModelAttr', function () {
+            offModelAttr();
+            init();
+          });
         }
       }
     };
@@ -2015,7 +2034,8 @@ angular.module('mwUI.Form')
           inputState = {
             required: false,
             focused: false
-          };
+          },
+          inputType = 'text';
 
         var setObj = function (obj, val) {
           if (angular.isObject(val)) {
@@ -2041,6 +2061,15 @@ angular.module('mwUI.Form')
 
         this.getInputState = function () {
           return inputState;
+        };
+
+        // Will be called by mwInputDefaults in mw-inputs/directives
+        this.setType = function(type){
+          inputType = type;
+        };
+
+        this.getType = function(){
+          return inputType;
         };
       },
       link: function (scope, el, attrs, ctrl) {
@@ -2072,6 +2101,8 @@ angular.module('mwUI.Form')
         scope.hasRequiredError = function () {
           return scope.isRequired() && !scope.isValid();
         };
+
+        scope.getType = ctrl.getType;
       }
     };
   });
@@ -2094,7 +2125,6 @@ angular.module('mwUI.Form')
           ngModelErrorsCtrl.addErrorsForInput(newErrors, inputId, _.clone(attrs));
           ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
         };
-
 
         var setModelState = function () {
           mwInputWrapperCtrl.setModelState({
@@ -2564,7 +2594,7 @@ angular.module('mwUI.i18n')
 
     return i18nFilter;
   }]);
-angular.module('mwUI.Inputs', ['mwUI.i18n']);
+angular.module('mwUI.Inputs', ['mwUI.i18n', 'mwUI.Backbone']);
 
 angular.module('mwUI.Inputs')
 
@@ -2618,10 +2648,6 @@ angular.module('mwUI.Inputs')
       },
       templateUrl: 'uikit/mw-inputs/directives/templates/mw_checkbox_group.html',
       link: function (scope) {
-        if (scope.mwOptionsCollection.length === 0) {
-          scope.mwOptionsCollection.fetch();
-        }
-
         scope.getLabel = function(model){
           var modelAttr = model.get(scope.mwOptionsLabelKey);
 
@@ -2659,6 +2685,11 @@ var extendInput = function () {
       if(mwInputWrapperCtrl){
         if(skipTypes.indexOf(attrs.type)===-1){
           el.addClass('form-control');
+        }
+        if(attrs.type){
+          mwInputWrapperCtrl.setType(attrs.type);
+        } else if(el[0].tagName){
+          mwInputWrapperCtrl.setType(el[0].tagName.toLowerCase());
         }
       }
     }
@@ -2710,6 +2741,83 @@ angular.module('mwUI.Inputs')
       }
     };
   });
+angular.module('mwUI.Inputs')
+
+  .directive('mwRadioGroup', ['i18n', function (i18n) {
+    return {
+      restrict: 'A',
+      scope: {
+        mwModel: '=',
+        mwModelAttr: '@',
+        mwOptionsCollection: '=',
+        mwOptionsKey: '@',
+        mwOptionsLabelKey: '@',
+        mwOptionsLabelI18nPrefix: '@',
+        mwRequired: '=',
+        mwDisabled: '='
+      },
+      templateUrl: 'uikit/mw-inputs/directives/templates/mw_radio_group.html',
+      link: function (scope) {
+        scope.radioGroupId = _.uniqueId('radio_');
+
+        var setBackboneModel = function(model){
+          if(scope.mwModelAttr){
+            scope.mwModel.set(scope.mwModelAttr, model.get(scope.mwOptionsKey));
+          } else {
+            scope.mwModel.set(model.toJSON());
+          }
+        };
+
+        var unSetBackboneModel = function(){
+          if(scope.mwModelAttr){
+            scope.mwModel.unset(scope.mwModelAttr);
+          } else {
+            scope.mwModel.clear();
+          }
+        };
+
+        scope.getLabel = function (model) {
+          var modelAttr = model.get(scope.mwOptionsLabelKey);
+
+          if (modelAttr) {
+            if (scope.mwOptionsLabelI18nPrefix) {
+              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + modelAttr);
+            } else {
+              return modelAttr;
+            }
+          }
+        };
+
+        scope.isOptionDisabled = function (model) {
+          return model.selectable.isDisabled();
+        };
+
+        scope.getModelAttribute = function(){
+          return scope.mwModelAttr || scope.mwModel.idAttribute;
+        };
+
+        scope.isChecked = function (model) {
+          if(scope.mwModelAttr){
+            return model.get(scope.mwOptionsKey) === scope.mwModel.get(scope.mwModelAttr);
+          } else {
+            return model.id === scope.mwModel.id;
+          }
+        };
+
+        scope.selectOption = function (model) {
+          if (!scope.isChecked(model)) {
+            setBackboneModel(model);
+          } else {
+            unSetBackboneModel();
+          }
+        };
+
+        if(scope.mwModelAttr && !scope.mwOptionsKey){
+          throw new Error('[mwRadioGroup] When using mwModelAttr the attribute mwOptionsKey is required!');
+        }
+      }
+    };
+  }]);
 angular.module('mwUI.Inputs')
 
   .directive('select', function () {
@@ -5514,10 +5622,11 @@ angular.module('mwUI.UiComponents')
         loadFn: function () {
           throw new Error('Has to overwritten with a real loader fn');
         },
+        $q: null,
         getIconForKey: function (key) {
           var keys = key.split('.'),
             icons = this.get('icons'),
-            dfd = Backbone.$.Deferred(),
+            dfd = this.$q(),
             icon;
 
           keys.forEach(function (key) {
@@ -5550,7 +5659,7 @@ angular.module('mwUI.UiComponents')
           } else {
             throw new Error('No Icon was found for the key ' + key);
           }
-          return dfd.promise();
+          return dfd.promise;
         },
         isValidIcon: function (icon) {
           return (icon.icons && _.size(icon.icons) > 0 || icon.iconsUrl);
@@ -5617,6 +5726,7 @@ angular.module('mwUI.UiComponents')
 
     this.$get = ['$q', '$templateRequest', function ($q, $templateRequest) {
       var _loadIconFile = function (icon) {
+        icon.$q = $q.defer;
         icon.loadFn = function () {
           return $templateRequest(icon.get('iconsUrl')).then(function (content) {
             return JSON.parse(content);
