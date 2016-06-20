@@ -234,7 +234,7 @@ describe('testing mwModel', function () {
       var changeSpy = jasmine.createSpy('backboneChangeSpy');
       this.scope.testModel = this.testModel;
       this.scope.getModelAttr = function(){
-        return 'fn'
+        return 'fn';
       };
       this.scope.testModel.on('change:fn',changeSpy);
       this.scope.$digest();

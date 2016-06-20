@@ -54,7 +54,7 @@ describe('testing mwRadioGroup', function () {
         })
       });
       var checkboxGroupOptionsWithDisabledItems = new CheckboxGroupOptionsWithDisabledItems();
-      checkboxGroupOptionsWithDisabledItems.add([{id:1, label: 'Opt 1'}, {id:2, label:'Opt 2'},{id:3, label:'Opt 3'}])
+      checkboxGroupOptionsWithDisabledItems.add([{id:1, label: 'Opt 1'}, {id:2, label:'Opt 2'},{id:3, label:'Opt 3'}]);
       this.scope.optionsCollection = checkboxGroupOptionsWithDisabledItems;
 
       this.scope.$digest();

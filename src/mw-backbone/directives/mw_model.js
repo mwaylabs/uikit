@@ -29,7 +29,7 @@ angular.module('mwUI.Backbone')
             mwModelAttrFromNgModel = attrs.ngModel;
 
           if (mwModelAttrOption && mwModelAttrOption.length > 0) {
-            return mwModelAttrOption
+            return mwModelAttrOption;
           } else if (angular.isUndefined(mwModelAttrOption) && mwModelAttrFromNgModel) {
             return mwModelAttrFromNgModel.split('.').pop();
           }
@@ -66,12 +66,12 @@ angular.module('mwUI.Backbone')
         if (scope.mwModel && getModelAttrName()) {
           init();
         } else {
-          var offModel = scope.$watch('mwModel', function (val) {
+          var offModel = scope.$watch('mwModel', function () {
             offModel();
             init();
           });
 
-          var offModelAttr = scope.$watch('mwModelAttr', function (val) {
+          var offModelAttr = scope.$watch('mwModelAttr', function () {
             offModelAttr();
             init();
           });

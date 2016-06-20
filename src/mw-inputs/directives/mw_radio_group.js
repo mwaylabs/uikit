@@ -19,7 +19,7 @@ angular.module('mwUI.Inputs')
 
         var setBackboneModel = function(model){
           if(scope.mwModelAttr){
-            scope.mwModel.set(scope.mwModelAttr, model.get(scope.mwOptionsKey))
+            scope.mwModel.set(scope.mwModelAttr, model.get(scope.mwOptionsKey));
           } else {
             scope.mwModel.set(model.toJSON());
           }
@@ -70,7 +70,7 @@ angular.module('mwUI.Inputs')
         };
 
         if(scope.mwModelAttr && !scope.mwOptionsKey){
-          throw new Error('[mwRadioGroup] When using mwModelAttr the attribute mwOptionsKey is required!')
+          throw new Error('[mwRadioGroup] When using mwModelAttr the attribute mwOptionsKey is required!');
         }
       }
     };
