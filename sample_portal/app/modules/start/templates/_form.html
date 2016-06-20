@@ -86,6 +86,30 @@
          mw-required="true"></div>
   </div>
 
+  <div mw-input-wrapper
+       label="Multi Checkboxes">
+    <div mw-radio-group
+         mw-model="SFCtrl.model"
+         mw-model-attr="radioOption"
+         mw-options-collection="SFCtrl.viewModel.checkboxGroupOptionsCollection"
+         mw-options-key="id"
+         mw-options-label-key="label"
+         mw-required="true"></div>
+
+    {{SFCtrl.model}}
+  </div>
+
+  <div mw-input-wrapper
+       label="Multi Checkboxes">
+    <div mw-radio-group
+         mw-options-collection="SFCtrl.viewModel.checkboxGroupOptionsCollection"
+         mw-options-label-key="label"
+         mw-model="SFCtrl.model.get('selectedRadio')"
+         mw-required="true"></div>
+
+    {{SFCtrl.model}}
+  </div>
+
 </fieldset>
 
 <button ng-click="SFCtrl.model.save()" ng-disabled="startForm.$invalid">Save</button>

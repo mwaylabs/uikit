@@ -61,7 +61,8 @@ angular.module('SampleApp.Start')
       return new ( mwUI.Backbone.Model.extend({
         nested: function(){
           return {
-            checkboxGroup: mwUI.Backbone.Collection
+            checkboxGroup: mwUI.Backbone.Collection,
+            selectedRadio: mwUI.Backbone.Model
           };
         },
         defaults: function(){
