@@ -27,7 +27,6 @@ describe('testing mwModel', function () {
       var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
       this.$compile(input)(this.scope);
       this.scope.testModel = this.testModel;
-
       this.scope.$digest();
 
       expect(this.scope.text).toBe('Abc');
@@ -230,7 +229,7 @@ describe('testing mwModel', function () {
     });
 
     it('uses attribute name that was defined in mw-model-attr as function', function(){
-      var input = '<input type="text" ng-model="text" mw-model="testModel" mw-model-attr="{{getModelAttr}}"/>';
+      var input = '<input type="text" ng-model="text" mw-model="testModel" mw-model-attr="{{getModelAttr()}}"/>';
       var el = this.$compile(input)(this.scope);
       var changeSpy = jasmine.createSpy('backboneChangeSpy');
       this.scope.testModel = this.testModel;
