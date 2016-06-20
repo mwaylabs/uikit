@@ -18,7 +18,6 @@ angular.module('mwUI.Form')
           ngModelErrorsCtrl.removeErrorsForInput(removeErrors, inputId, _.clone(attrs));
         };
 
-
         var setModelState = function () {
           mwInputWrapperCtrl.setModelState({
             dirty: ngModelCtrl.$dirty,
