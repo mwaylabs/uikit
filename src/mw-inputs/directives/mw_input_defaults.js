@@ -5,10 +5,11 @@ var extendInput = function () {
     link: function (scope, el, attrs, mwInputWrapperCtrl) {
       var skipTypes = ['radio','checkbox'];
 
+      if(skipTypes.indexOf(attrs.type)===-1){
+        el.addClass('form-control');
+      }
+      
       if(mwInputWrapperCtrl){
-        if(skipTypes.indexOf(attrs.type)===-1){
-          el.addClass('form-control');
-        }
         if(attrs.type){
           mwInputWrapperCtrl.setType(attrs.type);
         } else if(el[0].tagName){
