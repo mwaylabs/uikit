@@ -2,8 +2,7 @@ angular.module('mwUI.Modal')
 
   .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest, $timeout, Toast) {
 
-    var _body = $document.find('body').eq(0),
-      _openedModals = [];
+    var _openedModals = [];
 
     var Modal = function (modalOptions, bootStrapModalOptions) {
 
@@ -111,11 +110,6 @@ angular.module('mwUI.Modal')
        * @description Shows the modal
        */
       this.show = function () {
-        _body.css({
-          height: '100%',
-          width: '100%',
-          overflow: 'hidden'
-        });
         Toast.clear();
         _previousFocusedEl = angular.element(document.activeElement);
 
@@ -202,11 +196,6 @@ angular.module('mwUI.Modal')
         });
 
         $timeout(function () {
-          _body.css({
-            height: '',
-            width: '',
-            overflow: ''
-          });
           if (_modal) {
             _modal.remove();
             _modalOpened = false;

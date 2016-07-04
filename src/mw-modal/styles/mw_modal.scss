@@ -68,9 +68,13 @@
         position: absolute;
       }
     }
-    .modal-body {
+
+    *[mw-modal-body]{
       max-height: 70%;
       overflow: auto;
+    }
+
+    .modal-body {
       border-bottom: none;
       border-top: none;
       -webkit-box-shadow: 0 0px 4px rgba(122,122,122,.5);
