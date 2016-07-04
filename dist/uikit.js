@@ -112,7 +112,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_footer.html',
-    "<tr><td colspan=\"{{ columns.length + 4 }}\"><div ng-if=\"showSpinner()\"><div mw-spinner></div></div><div ng-if=\"collection.models.length < 1\" class=\"text-center\"><p class=\"lead\">{{ 'List.mwListFooter.noneFound' | i18n }}</p></div></td></tr>"
+    "<tr class=\"mw-list-footer\"><td colspan=\"{{ columns.length + 4 }}\"><div ng-if=\"showSpinner()\"><div mw-spinner></div></div><div ng-if=\"collection.models.length < 1\" class=\"text-center\"><p class=\"lead\">{{ 'List.mwListFooter.noneFound' | i18n }}</p></div></td></tr>"
   );
 
 
@@ -4056,8 +4056,7 @@ angular.module('mwUI.Modal')
 
   .service('Modal', ['$rootScope', '$templateCache', '$document', '$compile', '$controller', '$q', '$templateRequest', '$timeout', 'Toast', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest, $timeout, Toast) {
 
-    var _body = $document.find('body').eq(0),
-      _openedModals = [];
+    var _openedModals = [];
 
     var Modal = function (modalOptions, bootStrapModalOptions) {
 
@@ -4165,11 +4164,6 @@ angular.module('mwUI.Modal')
        * @description Shows the modal
        */
       this.show = function () {
-        _body.css({
-          height: '100%',
-          width: '100%',
-          overflow: 'hidden'
-        });
         Toast.clear();
         _previousFocusedEl = angular.element(document.activeElement);
 
@@ -4256,11 +4250,6 @@ angular.module('mwUI.Modal')
         });
 
         $timeout(function () {
-          _body.css({
-            height: '',
-            width: '',
-            overflow: ''
-          });
           if (_modal) {
             _modal.remove();
             _modalOpened = false;
