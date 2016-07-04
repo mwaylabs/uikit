@@ -114,6 +114,12 @@
     }
   }
 
+  tfoot{
+    .mw-spinner{
+      margin: 0 auto;
+    }
+  }
+
   @media (max-width: $screen-md) {
     thead {
       th {
