@@ -3902,6 +3902,7 @@ angular.module('mwSidebarBb', [])
       }],
       link: function (scope, el, attr) {
 
+        scope.showFilterForm = scope.$eval(attr.showFilterForm);
         scope.mwListCollection = scope.$eval(attr.mwListCollection);
         scope.collection = scope.$eval(attr.collection);
 
@@ -3919,6 +3920,10 @@ angular.module('mwSidebarBb', [])
             showFilterForm: false,
             canShowForm: false
           };
+
+          if(scope.showFilterForm){
+            scope.viewModel.showFilterForm = true;
+          }
 
           var setTotalAmount = function (filterModel) {
             var filterModelInCollection = scope.filters.get(filterModel),
@@ -4259,6 +4264,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-inputs/directives/templates/mw_select_box.html',
+    "<select ng-disabled=\"mwDisabled\" ng-required=\"mwRequired\" ng-model=\"viewModel.selected\" ng-change=\"select(viewModel.selected)\"><option value=\"\" ng-if=\"hasPlaceholder()\" ng-disabled=\"mwRequired\">{{getPlaceholder()}}</option><option value=\"\" ng-if=\"!hasPlaceholder()\"></option><option ng-repeat=\"model in mwOptionsCollection.models\" value=\"{{model.id}}\" ng-disabled=\"isOptionDisabled(model)\" ng-selected=\"isChecked(model)\" ng-click=\"selectOption(model)\">{{getLabel(model)}}</option></select>"
+  );
+
+
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
     "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
   );
@@ -4491,6 +4501,16 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/mw-form/i18n/en_US.json',
     "{ \"mwErrorMessages\": { \"required\": \"is required\", \"hasToBeValidEmail\": \"has to be a valid e-mail\", \"hasToMatchPattern\": \"has to match the pattern\", \"hasToBeValidUrl\": \"has to be a valid URL\", \"hasToBeValidPhoneNumber\": \"has to be a valid phone number\", \"hasToBeMin\": \"has to be at least {{min}}\", \"hasToBeMinLength\": \"has to have a least {{ngMinlength}} chars\", \"hasToBeSmaller\": \"must not be greater than {{max}}\", \"hasToBeSmallerLength\": \"must not have more chars than {{ngMaxlength}}\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw-inputs/i18n/de_DE.json',
+    "{ \"mwSelectBox\": { \"pleaseSelect\": \"Option auswählen\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw-inputs/i18n/en_US.json',
+    "{ \"mwSelectBox\": { \"pleaseSelect\": \"Select an option\" } }"
   );
 
 
