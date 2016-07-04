@@ -76,6 +76,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-inputs/directives/templates/mw_select_box.html',
+    "<select ng-disabled=\"mwDisabled\" ng-required=\"mwRequired\" ng-model=\"viewModel.selected\" ng-change=\"select(viewModel.selected)\"><option value=\"\" ng-if=\"hasPlaceholder()\" ng-disabled=\"mwRequired\">{{getPlaceholder()}}</option><option value=\"\" ng-if=\"!hasPlaceholder()\"></option><option ng-repeat=\"model in mwOptionsCollection.models\" value=\"{{model.id}}\" ng-disabled=\"isOptionDisabled(model)\" ng-selected=\"isChecked(model)\" ng-click=\"selectOption(model)\">{{getLabel(model)}}</option></select>"
+  );
+
+
   $templateCache.put('uikit/mw-inputs/directives/templates/mw_toggle.html',
     "<div class=\"mw-toggle\"><button class=\"no toggle btn btn-link\" ng-click=\"toggle(true)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.on' | i18n }}</span></button> <button class=\"yes toggle btn btn-link\" ng-click=\"toggle(false)\" ng-disabled=\"mwDisabled\"><span>{{ 'UiComponents.mwToggle.off' | i18n }}</span></button> <span class=\"label indicator\" ng-class=\"{ true: 'label-success enabled', false: 'label-danger' }[mwModel]\"></span></div>"
   );
@@ -308,6 +313,16 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
   $templateCache.put('uikit/mw-form/i18n/en_US.json',
     "{ \"mwErrorMessages\": { \"required\": \"is required\", \"hasToBeValidEmail\": \"has to be a valid e-mail\", \"hasToMatchPattern\": \"has to match the pattern\", \"hasToBeValidUrl\": \"has to be a valid URL\", \"hasToBeValidPhoneNumber\": \"has to be a valid phone number\", \"hasToBeMin\": \"has to be at least {{min}}\", \"hasToBeMinLength\": \"has to have a least {{ngMinlength}} chars\", \"hasToBeSmaller\": \"must not be greater than {{max}}\", \"hasToBeSmallerLength\": \"must not have more chars than {{ngMaxlength}}\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw-inputs/i18n/de_DE.json',
+    "{ \"mwSelectBox\": { \"pleaseSelect\": \"Option auswählen\" } }"
+  );
+
+
+  $templateCache.put('uikit/mw-inputs/i18n/en_US.json',
+    "{ \"mwSelectBox\": { \"pleaseSelect\": \"Select an option\" } }"
   );
 
 
@@ -2682,10 +2697,11 @@ var extendInput = function () {
     link: function (scope, el, attrs, mwInputWrapperCtrl) {
       var skipTypes = ['radio','checkbox'];
 
+      if(skipTypes.indexOf(attrs.type)===-1){
+        el.addClass('form-control');
+      }
+      
       if(mwInputWrapperCtrl){
-        if(skipTypes.indexOf(attrs.type)===-1){
-          el.addClass('form-control');
-        }
         if(attrs.type){
           mwInputWrapperCtrl.setType(attrs.type);
         } else if(el[0].tagName){
@@ -2836,6 +2852,116 @@ angular.module('mwUI.Inputs')
   });
 angular.module('mwUI.Inputs')
 
+  .directive('mwSelectBox', ['i18n', function (i18n) {
+    return {
+      restrict: 'A',
+      scope: {
+        mwModel: '=',
+        mwModelAttr: '@',
+        mwOptionsCollection: '=',
+        mwOptionsKey: '@',
+        mwOptionsLabelKey: '@',
+        mwOptionsLabelI18nPrefix: '@',
+        mwPlaceholder: '@',
+        mwRequired: '=',
+        mwDisabled: '='
+      },
+      templateUrl: 'uikit/mw-inputs/directives/templates/mw_select_box.html',
+      link: function (scope) {
+
+        scope.viewModel = {};
+
+        var setBackboneModel = function(model){
+          if(scope.mwModelAttr){
+            scope.mwModel.set(scope.mwModelAttr, model.get(scope.mwOptionsKey));
+          } else {
+            scope.mwModel.set(model.toJSON());
+          }
+        };
+
+        var unSetBackboneModel = function(){
+          if(scope.mwModelAttr){
+            scope.mwModel.unset(scope.mwModelAttr);
+          } else {
+            scope.mwModel.clear();
+          }
+        };
+
+        var setSelectedVal = function(){
+          if(scope.mwModel.id){
+            scope.viewModel.selected = scope.mwModel.id.toString();
+          }
+        };
+
+        scope.getLabel = function (model) {
+          var modelAttr = model.get(scope.mwOptionsLabelKey);
+
+          if (modelAttr) {
+            if (scope.mwOptionsLabelI18nPrefix) {
+              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + modelAttr);
+            } else {
+              return modelAttr;
+            }
+          }
+        };
+
+        scope.hasPlaceholder = function(){
+          return scope.mwPlaceholder || scope.mwRequired;
+        };
+
+        scope.getPlaceholder = function(){
+          if(scope.mwPlaceholder){
+            return scope.mwPlaceholder;
+          } else if(scope.mwRequired){
+            return i18n.get('mwSelectBox.pleaseSelect');
+          }
+        };
+
+        scope.isOptionDisabled = function (model) {
+          return model.selectable.isDisabled();
+        };
+
+        scope.getModelAttribute = function(){
+          return scope.mwModelAttr || scope.mwModel.idAttribute;
+        };
+
+        scope.isChecked = function (model) {
+          if(scope.mwModelAttr){
+            return model.get(scope.mwOptionsKey) === scope.mwModel.get(scope.mwModelAttr);
+          } else {
+            return model.id === scope.mwModel.id;
+          }
+        };
+
+        scope.select = function(id){
+          if(id){
+            scope.selectOption(scope.mwOptionsCollection.get(id));
+          } else {
+            unSetBackboneModel();
+          }
+        };
+
+        scope.selectOption = function (model) {
+          if (!scope.isChecked(model)) {
+            setBackboneModel(model);
+          } else {
+            unSetBackboneModel();
+          }
+        };
+
+        if(scope.mwModel){
+          scope.mwModel.on('change:'+scope.mwModel.idAttribute, setSelectedVal);
+          setSelectedVal();
+        }
+
+        if(scope.mwModelAttr && !scope.mwOptionsKey){
+          throw new Error('[mwRadioGroup] When using mwModelAttr the attribute mwOptionsKey is required!');
+        }
+      }
+    };
+  }]);
+angular.module('mwUI.Inputs')
+
   .directive('mwToggle', ['$timeout', function ($timeout) {
     return {
       scope: {
@@ -2856,6 +2982,11 @@ angular.module('mwUI.Inputs')
         };
       }
     };
+  }]);
+
+angular.module('mwUI.Inputs')
+  .config(['i18nProvider', function(i18nProvider) {
+    i18nProvider.addResource('uikit/mw-inputs/i18n');
   }]);
 angular.module('mwUI.Layout', []);
 
