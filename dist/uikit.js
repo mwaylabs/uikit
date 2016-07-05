@@ -5195,7 +5195,8 @@ angular.module('mwUI.UiComponents')
   .directive('mwIcon', ['mwIcon', function (mwIcon) {
     return {
       scope: {
-        icon: '@mwIcon'
+        icon: '@mwIcon',
+        tooltip: '@'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_icon.html',
       link: function (scope) {

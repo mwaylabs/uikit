@@ -80,6 +80,18 @@ describe('mwIcon', function () {
       expect(el.find('.fa-user').length).toBe(1);
     });
 
+    it('has a tooltip', function(){
+      var icon = '<span mw-icon="FA.USER" tooltip="abc"></span>';
+      var el = this.$compile(icon)(this.scope);
+      this.scope.$digest();
+
+      el.find('.mw-icon i').triggerHandler('mouseover');
+      this.scope.$digest();
+
+      expect(angular.element('.popover').length).toBe(1);
+      expect(angular.element('.popover').text()).toMatch('abc');
+    });
+
     it('sets classPrefix for iconset', function(){
       var icon = '<span mw-icon="FA.USER"></span>';
       var el = this.$compile(icon)(this.scope);
