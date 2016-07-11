@@ -9,13 +9,20 @@
   .number-spinner-holder {
     float: left;
   }
+
   .date-picker-holder {
-    width: 60%;
+    width: 100%;
 
     .input-group-addon {
       border: none;
       background: transparent;
       padding-left: 0;
+    }
+  }
+
+  &.has-time-picker {
+    .date-picker-holder {
+      width: 60%;
     }
   }
 
