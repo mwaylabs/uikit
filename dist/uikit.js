@@ -2419,7 +2419,7 @@ angular.module('mwUI.i18n')
      */
     var _getUsedPlaceholdersInTranslationStr = function(str){
 
-      var re = /{{([a-zA-Z0-9$_]+)}}/g,
+      var re = /{{\s*([a-zA-Z0-9$_]+)\s*}}/g,
         usedPlaceHolders = [],
         matches;
 
@@ -2444,7 +2444,8 @@ angular.module('mwUI.i18n')
       if(placeholders){
         var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
         usedPlaceHolders.forEach(function(usedPlaceholder){
-          str = str.replace('{{' + usedPlaceholder + '}}', placeholders[usedPlaceholder]);
+          var replaceRegex = new RegExp('{{\\s*'+usedPlaceholder+'\\s*}}');
+          str = str.replace(replaceRegex, placeholders[usedPlaceholder]);
         });
       }
       return str;
