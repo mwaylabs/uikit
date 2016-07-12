@@ -17,7 +17,7 @@ angular.module('mwUI.List')
 
         var getSortOrder = function () {
           if (collection && collection.filterable) {
-            collection.filterable.getSortOrder();
+            return collection.filterable.getSortOrder();
           } else {
             return false;
           }
