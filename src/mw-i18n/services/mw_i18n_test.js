@@ -24,13 +24,13 @@ describe('mwUi i18n Service', function () {
           dfd.resolve(JSON.stringify({
             a1: 'DE:A1',
             a2: 'DE:A2',
-            a3: 'DE:A3 {{placeholder1}} {{ placeholder2 }}'
+            a3: 'DE:A3 {{placeholder1}} {{ placeholder2 }} {{$placeholder3}} {{ $placeholder4 }}'
           }));
         } else if (path === 'i18n/a/en_US.json') {
           dfd.resolve(JSON.stringify({
             a1: 'EN:A1',
             a2: 'EN:A2',
-            a3: 'EN:A3 {{placeholder1}} {{ placeholder2 }}'
+            a3: 'EN:A3 {{placeholder1}} {{ placeholder2 }} {{$placeholder3}} {{ $placeholder4 }}'
           }));
         } else if (path === 'i18n/b/de_DE.json') {
           dfd.resolve(JSON.stringify({b1: 'DE:B1', b2: 'DE:B2'}));
@@ -152,8 +152,10 @@ describe('mwUi i18n Service', function () {
       i18n.setLocale('de_DE').then(function () {
         expect(i18n.get('a3', {
           placeholder1: 'PH1',
-          placeholder2: 'PH2'
-        })).toEqual('DE:A3 PH1 PH2');
+          placeholder2: 'PH2',
+          $placeholder3: 'PH3',
+          $placeholder4: 'PH4'
+        })).toEqual('DE:A3 PH1 PH2 PH3 PH4');
         done();
       });
       $rootScope.$digest();
