@@ -2444,7 +2444,7 @@ angular.module('mwUI.i18n')
       if(placeholders){
         var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
         usedPlaceHolders.forEach(function(usedPlaceholder){
-          var replaceRegex = new RegExp('{{\\s*'+usedPlaceholder+'\\s*}}');
+          var replaceRegex = new RegExp('{{\\s*\\'+usedPlaceholder+'\\s*}}');
           str = str.replace(replaceRegex, placeholders[usedPlaceholder]);
         });
       }
