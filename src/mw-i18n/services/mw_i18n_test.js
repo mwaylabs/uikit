@@ -33,7 +33,7 @@ describe('mwUi i18n Service', function () {
           dfd.resolve(JSON.stringify({
             a1: 'EN:A1',
             a2: 'EN:A2',
-            a3: 'EN:A3 {{placeholder1}} {{ placeholder2 }} {{$placeholder3}} {{ $placeholder4 }}',
+            a3: 'EN:A3 {{placeholder1}} {{ placeholder2 }}',
             a4: 'EN:A3 {{ placeholder }} {{ placeholder2 }}',
             a5: 'EN:A3 {{$placeholder}} {{_placeholder2}}',
             a6: 'EN:A3 {{ $placeholder }} {{ _placeholder2 }}'
