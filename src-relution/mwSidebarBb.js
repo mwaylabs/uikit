@@ -357,7 +357,6 @@ angular.module('mwSidebarBb', [])
 
         scope.changed = function () {
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          console.log(property, scope.viewModel.val);
           ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
         };
       }

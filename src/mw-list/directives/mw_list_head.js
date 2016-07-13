@@ -60,7 +60,6 @@ angular.module('mwUI.List')
             listHeaderOffset = el.offset().top;
 
             newOffset = listHeaderOffset - headerBottomOffset - spacer;
-            console.log(newOffset);
           }
 
           var scrollTop = scrollEl.scrollTop();

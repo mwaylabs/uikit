@@ -13,9 +13,8 @@ angular.module('mwUI.Layout')
           return rows;
         };
       },
-      link: function(scope, el, attrs, mwRowLayoutCtrl){
+      link: function(scope, el){
         el.addClass('mw-row-layout');
-        console.log(mwRowLayoutCtrl);
       }
     };
   });

@@ -17,7 +17,6 @@ angular.module('mwUI.Layout')
               heightOfOtherEls += row.el.height();
             }
           });
-          console.log('CALCULATED HEIGHT', heightOfOtherEls);
           el.css('height','calc(100vh - '+heightOfOtherEls+'px)');
         };
 
