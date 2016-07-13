@@ -3059,7 +3059,6 @@ angular.module('mwUI.Layout')
               heightOfOtherEls += row.el.height();
             }
           });
-          console.log('CALCULATED HEIGHT', heightOfOtherEls);
           el.css('height','calc(100vh - '+heightOfOtherEls+'px)');
         };
 
@@ -3093,9 +3092,8 @@ angular.module('mwUI.Layout')
           return rows;
         };
       },
-      link: function(scope, el, attrs, mwRowLayoutCtrl){
+      link: function(scope, el){
         el.addClass('mw-row-layout');
-        console.log(mwRowLayoutCtrl);
       }
     };
   });
@@ -3379,7 +3377,6 @@ angular.module('mwUI.List')
             listHeaderOffset = el.offset().top;
 
             newOffset = listHeaderOffset - headerBottomOffset - spacer;
-            console.log(newOffset);
           }
 
           var scrollTop = scrollEl.scrollTop();
@@ -3612,7 +3609,7 @@ angular.module('mwUI.List')
 
         var getSortOrder = function () {
           if (collection && collection.filterable) {
-            collection.filterable.getSortOrder();
+            return collection.filterable.getSortOrder();
           } else {
             return false;
           }
