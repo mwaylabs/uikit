@@ -26,7 +26,7 @@ describe('mwUi i18n Service', function () {
             a2: 'DE:A2',
             a3: 'DE:A3 {{placeholder}} {{ placeholder2 }}',
             a4: 'DE:A3 {{ placeholder }} {{ placeholder2 }}',
-            a5: 'DE:A3 {{$placeholder}} {{_placeholder2}}',
+            a5: 'DE:A3 {{$place$holder}} {{_place_holder2}}',
             a6: 'DE:A3 {{ $placeholder }} {{ _placeholder2 }}'
           }));
         } else if (path === 'i18n/a/en_US.json') {
@@ -175,10 +175,12 @@ describe('mwUi i18n Service', function () {
 
       it('replaces placeholders that start with a special char with value', function (done) {
         i18n.setLocale('de_DE').then(function () {
+          /* jshint -W106 */
           expect(i18n.get('a5', {
-            $placeholder: 'XX',
-            _placeholder2: 'XX'
+            $place$holder: 'XX',
+            _place_holder2: 'XX'
           })).toEqual('DE:A3 XX XX');
+          /* jshint +W106 */
           done();
         });
         $rootScope.$digest();
