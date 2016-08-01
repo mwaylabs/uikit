@@ -4235,6 +4235,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-form/directives/templates/mw_checkbox_wrapper.html',
+    "<div class=\"mw-checkbox-wrapper form-group\"><div class=\"col-sm-offset-3 col-sm-9\"><div class=\"checkbox\"><label><div ng-transclude></div><span class=\"text-holder\">{{ label }}</span></label><span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></div></div></div>"
+  );
+
+
   $templateCache.put('uikit/mw-form/directives/templates/mw_error_messages.html',
     "<div class=\"mw-error-messages\"><ul ng-repeat=\"errorModel in errors().models\"><li class=\"error-message\">{{getMessageForError(errorModel)}}</li></ul></div>"
   );
@@ -4560,7 +4565,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
   $templateCache.put('uikit/templates/deprecated/mw_form_checkbox.html',
-    "<div><div mw-input-wrapper label=\"{{label}}\" tooltip=\"{{tooltip}}\" hide-errors=\"hideErrors\"><div ng-transclude></div><span ng-repeat=\"badge in typedBadges\" mw-badge=\"{{badge.type}}\" style=\"top: 0\">{{ badge.text }}</span></div></div>"
+    "<div><div ng-if=\"!typedBadges || typedBadges.length===0\" mw-checkbox-wrapper label=\"{{label}}\" tooltip=\"{{tooltip}}\"><div ng-transclude></div></div><div ng-if=\"typedBadges && typedBadges.length>0\" mw-checkbox-wrapper><label><div ng-transclude class=\"input-holder\"></div><span class=\"text-holder\" style=\"padding-left: 5px\">{{ label }}</span> <span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></label><div class=\"badges-holder\"><span ng-repeat=\"badge in typedBadges\" mw-badge=\"{{badge.type}}\" style=\"top: 0\">{{ badge.text }}</span></div></div></div>"
   );
 
 

@@ -48,6 +48,11 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
   );
 
 
+  $templateCache.put('uikit/mw-form/directives/templates/mw_checkbox_wrapper.html',
+    "<div class=\"mw-checkbox-wrapper form-group\"><div class=\"col-sm-offset-3 col-sm-9\"><div class=\"checkbox\"><label><div ng-transclude></div><span class=\"text-holder\">{{ label }}</span></label><span ng-if=\"tooltip\" mw-icon=\"rln-icon support\" tooltip=\"{{ tooltip }}\"></span></div></div></div>"
+  );
+
+
   $templateCache.put('uikit/mw-form/directives/templates/mw_error_messages.html',
     "<div class=\"mw-error-messages\"><ul ng-repeat=\"errorModel in errors().models\"><li class=\"error-message\">{{getMessageForError(errorModel)}}</li></ul></div>"
   );
@@ -2029,6 +2034,18 @@ angular.module('mwUI.Form')
       }
     };
   }]);
+angular.module('mwUI.Form')
+
+  .directive('mwCheckboxWrapper', function () {
+    return {
+      transclude: true,
+      scope: {
+        label: '@',
+        tooltip: '@'
+      },
+      templateUrl: 'uikit/mw-form/directives/templates/mw_checkbox_wrapper.html'
+    };
+  });
 angular.module('mwUI.Form')
 
   .directive('mwInputWrapper', function () {
