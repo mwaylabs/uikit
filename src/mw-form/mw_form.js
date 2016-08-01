@@ -3,6 +3,7 @@ angular.module('mwUI.Form', ['mwUI.i18n','mwUI.Modal','mwUI.Utils']);
 // @include ./directives/mw_error_messages.js
 // @include ./directives/mw_form_defaults.js
 // @include ./directives/mw_form_leave_confirmation.js
+// @include ./directives/mw_checkbox_wrapper.js
 // @include ./directives/mw_input_wrapper.js
 // @include ./directives/ng_model.js
 // @include ./directives/ng_model_errors.js
