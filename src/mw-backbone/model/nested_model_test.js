@@ -5,11 +5,11 @@ describe('mwBackbone nested models', function () {
 
   var NestedModel = window.mwUI.Backbone.NestedModel;
 
-  beforeAll(function(){
+  beforeAll(function () {
     mwUI.Backbone.use$http = false;
   });
 
-  afterAll(function(){
+  afterAll(function () {
     mwUI.Backbone.use$http = true;
   });
 
@@ -58,6 +58,26 @@ describe('mwBackbone nested models', function () {
       });
 
       expect(modelWithNestedModel.get('nestedModelAttr') instanceof NestedModelAttr).toBeTruthy();
+    });
+
+    it('clears the model and its nested model', function () {
+      var modelWithNestedModel = new ModelWithNestedModel();
+      modelWithNestedModel.set('name', 'xxx');
+      modelWithNestedModel.get('nestedModelAttr').set('name','xxx');
+
+      modelWithNestedModel.clear();
+
+      expect(modelWithNestedModel.get('name')).toBeUndefined();
+      expect(modelWithNestedModel.get('nestedModelAttr').get('name')).toBeUndefined();
+    });
+
+    it('keeps the reference to nested model on clear', function () {
+      var modelWithNestedModel = new ModelWithNestedModel(),
+        referenceToNestedModel = modelWithNestedModel.get('nestedModelAttr');
+
+      modelWithNestedModel.clear();
+
+      expect(modelWithNestedModel.get('nestedModelAttr')).toBe(referenceToNestedModel);
     });
 
   });
@@ -113,6 +133,26 @@ describe('mwBackbone nested models', function () {
       expect(modelWithNestedModel.get('nestedCollectionAttr') instanceof NestedCollectionAttr).toBeTruthy();
       expect(modelWithNestedModel.get('nestedCollectionAttr').first().get('id')).toBe(1);
       expect(modelWithNestedModel.get('nestedCollectionAttr').last().get('name')).toEqual('Test 2');
+    });
+
+    it('clears the model and its nested collection', function () {
+      var modelWithNestedCollection = new ModelWithNestedCollection();
+      modelWithNestedCollection.set('name', 'xxx');
+      modelWithNestedCollection.get('nestedCollectionAttr').add({'id':1});
+
+      modelWithNestedCollection.clear();
+
+      expect(modelWithNestedCollection.get('name')).toBeUndefined();
+      expect(modelWithNestedCollection.get('nestedCollectionAttr').length).toBe(0);
+    });
+
+    it('keeps the reference to nested collection on clear', function () {
+      var modelWithNestedCollection = new ModelWithNestedCollection(),
+        referenceToNestedCollection = modelWithNestedCollection.get('nestedCollectionAttr');
+
+      modelWithNestedCollection.clear();
+
+      expect(modelWithNestedCollection.get('nestedCollectionAttr')).toBe(referenceToNestedCollection);
     });
 
   });
