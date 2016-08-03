@@ -149,7 +149,6 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
   },
 
   clear: function (options) {
-
     var attrs = {};
 
     for (var key in this.attributes){
