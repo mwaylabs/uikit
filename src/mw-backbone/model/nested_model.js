@@ -148,10 +148,20 @@ mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
     }
   },
 
-  clear: function () {
-    var superClear = Backbone.Model.prototype.clear.apply(this, arguments);
-    this.attributes = this._prepare();
-    return superClear;
+  clear: function (options) {
+    var attrs = {};
+
+    for (var key in this.attributes){
+      if(this.get(key) instanceof Backbone.Model){
+        this.get(key).clear();
+      } else if(this.get(key) instanceof Backbone.Collection){
+        this.get(key).reset();
+      } else {
+        attrs[key] = void 0;
+      }
+    }
+
+    return this.set(attrs, _.extend({}, options, {unset: true}));
   }
 });
 
