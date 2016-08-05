@@ -2629,18 +2629,13 @@ angular.module('mwCollection', [])
     return MwListCollection;
 
   }]);
-/**
- * Created by zarges on 27/05/15.
- */
-'use strict';
-
 angular.module('mwCollection')
 
-  .service('MwListCollectionFilter', ['$q', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolderProvider', 'MCAPauthenticatedUser', function ($q,
+  .service('MwListCollectionFilter', ['$q', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolderProvider', 'AuthenticatedUser', function ($q,
                                                LocalForage,
                                                MCAPFilterHolders,
                                                MCAPFilterHolderProvider,
-                                               MCAPauthenticatedUser) {
+                                               AuthenticatedUser) {
 
     var Filter = function (type) {
 
@@ -2692,7 +2687,7 @@ angular.module('mwCollection')
       };
 
       this._setAppliedFilter = function(appliedFilter) {
-        if (JSON.stringify(appliedFilter).indexOf(MCAPauthenticatedUser.get('uuid')) !== -1) {
+        if (JSON.stringify(appliedFilter).indexOf(AuthenticatedUser.get('uuid')) !== -1) {
           _appliedFilter.set(appliedFilter);
         }
         return _appliedFilter;
