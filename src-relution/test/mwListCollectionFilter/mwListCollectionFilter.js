@@ -6,7 +6,7 @@ describe('MwListCollectionFilter', function() {
     currentUserUuid = 'userUuid',
     MCAPFilterHolderProviderSpy,
     MCAPFilterHolderSpy,
-    MCAPAuthenticatedUserSpy;
+    AuthenticatedUserSpy;
 
   beforeEach(module('mwCollection'));
 
@@ -34,7 +34,7 @@ describe('MwListCollectionFilter', function() {
       set: function(value) {}
     };
 
-    MCAPAuthenticatedUserSpy = {
+    AuthenticatedUserSpy = {
       get: function() {}
     };
 
@@ -42,12 +42,12 @@ describe('MwListCollectionFilter', function() {
     $provide.value('LocalForage', LocalForageStub);
     $provide.value('MCAPFilterHolders', MCAPFilterHolderStub);
     $provide.value('MCAPFilterHolderProvider', MCAPFilterHolderProviderSpy);
-    $provide.value('MCAPauthenticatedUser', MCAPAuthenticatedUserSpy);
+    $provide.value('AuthenticatedUser', AuthenticatedUserSpy);
 
     //spy on these methods to see if they get called
     spyOn(MCAPFilterHolderProviderSpy, 'createFilterHolder').and.returnValue(MCAPFilterHolderSpy);
     spyOn(MCAPFilterHolderSpy, 'set');
-    spyOn(MCAPAuthenticatedUserSpy, 'get').and.returnValue(currentUserUuid);
+    spyOn(AuthenticatedUserSpy, 'get').and.returnValue(currentUserUuid);
   }));
 
 
