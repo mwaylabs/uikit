@@ -1827,12 +1827,14 @@ angular.module('mwUI.Backbone')
 
 var _backboneAjax = Backbone.ajax,
   _backboneSync = Backbone.sync,
-  _$http;
+  _$http,
+  _$q;
 
 angular.module('mwUI.Backbone')
 
-  .run(['$http', function ($http) {
+  .run(['$http', '$q', function ($http, $q) {
     _$http = $http;
+    _$q = $q;
   }]);
 
 Backbone.ajax = function (options) {
@@ -1840,7 +1842,17 @@ Backbone.ajax = function (options) {
     // Set HTTP Verb as 'method'
     options.method = options.type;
     // Use angulars $http implementation for requests
-    return _$http.apply(angular, arguments);
+    return _$http.apply(angular, arguments).then(function(resp){
+      if (options.success && typeof options.success === 'function') {
+        options.success(resp);
+      }
+      return resp;
+    }, function(resp){
+      if (options.error && typeof options.error === 'function') {
+        options.error(resp);
+      }
+      return _$q.reject(resp);
+    });
   } else {
     return _backboneAjax.apply(this, arguments);
   }
