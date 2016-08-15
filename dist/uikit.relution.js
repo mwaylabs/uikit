@@ -2585,7 +2585,7 @@ angular.module('mwUI.mwLayout')
 
 angular.module('mwCollection', [])
 
-  .service('MwListCollection', ['$q', 'MCAPFilterHolders', 'MCAPFilterHolder', 'MwListCollectionFilter', function ($q, MCAPFilterHolders, MCAPFilterHolder, MwListCollectionFilter) {
+  .service('MwListCollection', ['$q', 'MwListCollectionFilter', function ($q, MwListCollectionFilter) {
 
     var MwListCollection = function(collection, id){
 
@@ -2631,10 +2631,10 @@ angular.module('mwCollection', [])
   }]);
 angular.module('mwCollection')
 
-  .service('MwListCollectionFilter', ['$q', 'LocalForage', 'MCAPFilterHolders', 'MCAPFilterHolderProvider', 'AuthenticatedUser', function ($q,
+  .service('MwListCollectionFilter', ['$q', 'LocalForage', 'FilterHoldersCollection', 'FilterHolderProvider', 'AuthenticatedUser', function ($q,
                                                LocalForage,
-                                               MCAPFilterHolders,
-                                               MCAPFilterHolderProvider,
+                                               FilterHoldersCollection,
+                                               FilterHolderProvider,
                                                AuthenticatedUser) {
 
     var Filter = function (type) {
@@ -2642,8 +2642,8 @@ angular.module('mwCollection')
       var _type = type,
         _localFilterIdentifier = 'applied_filter_' + _type,
         _localSortOrderIdentifier = 'applied_sort_order_' + _type,
-        _filterHolders = new MCAPFilterHolders(null, type),
-        _appliedFilter = MCAPFilterHolderProvider.createFilterHolder(),
+        _filterHolders = new FilterHoldersCollection(null, type),
+        _appliedFilter = FilterHolderProvider.createFilterHolder(),
         _appliedSortOrder = {
           order: null,
           property: null
@@ -2747,10 +2747,10 @@ angular.module('mwCollection')
     return Filter;
   }])
 
-  .service('MCAPFilterHolderProvider', ['MCAPFilterHolder', function(MCAPFilterHolder) {
+  .service('FilterHolderProvider', ['FilterHolderModel', function(FilterHolderModel) {
     return {
       createFilterHolder: function() {
-        return new MCAPFilterHolder(); // using new in MwListCollectionFilter above destroys testability
+        return new FilterHolderModel(); // using new in MwListCollectionFilter above destroys testability
       }
     };
   }]);
@@ -3866,7 +3866,7 @@ angular.module('mwSidebarBb', [])
    * Container for filters
    *
    */
-  .directive('mwSidebarFiltersBb', ['$timeout', 'MCAPFilterHolder', function ($timeout, MCAPFilterHolder) {
+  .directive('mwSidebarFiltersBb', ['$timeout', 'FilterHolderModel', function ($timeout, FilterHolderModel) {
     return {
       transclude: true,
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
@@ -3911,7 +3911,7 @@ angular.module('mwSidebarBb', [])
           scope.appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
 
           scope.viewModel = {
-            tmpFilter: new MCAPFilterHolder(),
+            tmpFilter: new FilterHolderModel(),
             showFilterForm: false,
             canShowForm: false
           };
@@ -3941,7 +3941,7 @@ angular.module('mwSidebarBb', [])
           scope.saveFilter = function () {
             var filter;
             if (scope.viewModel.tmpFilter.isNew()) {
-              filter = new MCAPFilterHolder(scope.viewModel.tmpFilter.toJSON());
+              filter = new FilterHolderModel(scope.viewModel.tmpFilter.toJSON());
             } else {
               filter = scope.viewModel.tmpFilter;
             }
@@ -3979,7 +3979,7 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.addFilter = function () {
-            var emptyFilter = new MCAPFilterHolder();
+            var emptyFilter = new FilterHolderModel();
 
             scope.viewModel.canShowForm = true;
             scope.viewModel.tmpFilter.clear();
@@ -4024,7 +4024,7 @@ angular.module('mwSidebarBb', [])
           scope.viewModel = {
             showFilterForm: true,
             canShowForm: true,
-            tmpFilter: new MCAPFilterHolder()
+            tmpFilter: new FilterHolderModel()
           };
         } else {
           throw new Error('please pass a collection or mwCollection as scope attribute');

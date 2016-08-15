@@ -10,7 +10,7 @@ angular.module('mwSidebarBb', [])
    * Container for filters
    *
    */
-  .directive('mwSidebarFiltersBb', function ($timeout, MCAPFilterHolder) {
+  .directive('mwSidebarFiltersBb', function ($timeout, FilterHolderModel) {
     return {
       transclude: true,
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
@@ -55,7 +55,7 @@ angular.module('mwSidebarBb', [])
           scope.appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
 
           scope.viewModel = {
-            tmpFilter: new MCAPFilterHolder(),
+            tmpFilter: new FilterHolderModel(),
             showFilterForm: false,
             canShowForm: false
           };
@@ -85,7 +85,7 @@ angular.module('mwSidebarBb', [])
           scope.saveFilter = function () {
             var filter;
             if (scope.viewModel.tmpFilter.isNew()) {
-              filter = new MCAPFilterHolder(scope.viewModel.tmpFilter.toJSON());
+              filter = new FilterHolderModel(scope.viewModel.tmpFilter.toJSON());
             } else {
               filter = scope.viewModel.tmpFilter;
             }
@@ -123,7 +123,7 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.addFilter = function () {
-            var emptyFilter = new MCAPFilterHolder();
+            var emptyFilter = new FilterHolderModel();
 
             scope.viewModel.canShowForm = true;
             scope.viewModel.tmpFilter.clear();
@@ -168,7 +168,7 @@ angular.module('mwSidebarBb', [])
           scope.viewModel = {
             showFilterForm: true,
             canShowForm: true,
-            tmpFilter: new MCAPFilterHolder()
+            tmpFilter: new FilterHolderModel()
           };
         } else {
           throw new Error('please pass a collection or mwCollection as scope attribute');

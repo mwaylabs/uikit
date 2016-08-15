@@ -2,8 +2,8 @@ angular.module('mwCollection')
 
   .service('MwListCollectionFilter', function ($q,
                                                LocalForage,
-                                               MCAPFilterHolders,
-                                               MCAPFilterHolderProvider,
+                                               FilterHoldersCollection,
+                                               FilterHolderProvider,
                                                AuthenticatedUser) {
 
     var Filter = function (type) {
@@ -11,8 +11,8 @@ angular.module('mwCollection')
       var _type = type,
         _localFilterIdentifier = 'applied_filter_' + _type,
         _localSortOrderIdentifier = 'applied_sort_order_' + _type,
-        _filterHolders = new MCAPFilterHolders(null, type),
-        _appliedFilter = MCAPFilterHolderProvider.createFilterHolder(),
+        _filterHolders = new FilterHoldersCollection(null, type),
+        _appliedFilter = FilterHolderProvider.createFilterHolder(),
         _appliedSortOrder = {
           order: null,
           property: null
@@ -116,10 +116,10 @@ angular.module('mwCollection')
     return Filter;
   })
 
-  .service('MCAPFilterHolderProvider', function(MCAPFilterHolder) {
+  .service('FilterHolderProvider', function(FilterHolderModel) {
     return {
       createFilterHolder: function() {
-        return new MCAPFilterHolder(); // using new in MwListCollectionFilter above destroys testability
+        return new FilterHolderModel(); // using new in MwListCollectionFilter above destroys testability
       }
     };
   });
