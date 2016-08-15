@@ -5,7 +5,7 @@
 
 angular.module('mwCollection', [])
 
-  .service('MwListCollection', function ($q, MCAPFilterHolders, MCAPFilterHolder, MwListCollectionFilter) {
+  .service('MwListCollection', function ($q, MwListCollectionFilter) {
 
     var MwListCollection = function(collection, id){
 

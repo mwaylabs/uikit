@@ -4,8 +4,8 @@ describe('MwListCollectionFilter', function() {
   var MwListCollectionFilter,
     filterInLocalStorage,
     currentUserUuid = 'userUuid',
-    MCAPFilterHolderProviderSpy,
-    MCAPFilterHolderSpy,
+    FilterHolderProviderSpy,
+    FilterHolderSpy,
     AuthenticatedUserSpy;
 
   beforeEach(module('mwCollection'));
@@ -22,14 +22,14 @@ describe('MwListCollectionFilter', function() {
       }
     };
 
-    var MCAPFilterHolderStub = function (dummy, type) {
+    var FilterHolderStub = function (dummy, type) {
       this.type = type;
     };
 
     //create spies to mimic output-methods to external real context
-    MCAPFilterHolderProviderSpy = { createFilterHolder: function() {}};
+    FilterHolderProviderSpy = { createFilterHolder: function() {}};
 
-    MCAPFilterHolderSpy = {
+    FilterHolderSpy = {
       get: function() {},
       set: function(value) {}
     };
@@ -40,13 +40,13 @@ describe('MwListCollectionFilter', function() {
 
     //redirect calls-to-this-external-methods to the stubs / spies
     $provide.value('LocalForage', LocalForageStub);
-    $provide.value('MCAPFilterHolders', MCAPFilterHolderStub);
-    $provide.value('MCAPFilterHolderProvider', MCAPFilterHolderProviderSpy);
+    $provide.value('FilterHoldersCollection', FilterHolderStub);
+    $provide.value('FilterHolderProvider', FilterHolderProviderSpy);
     $provide.value('AuthenticatedUser', AuthenticatedUserSpy);
 
     //spy on these methods to see if they get called
-    spyOn(MCAPFilterHolderProviderSpy, 'createFilterHolder').and.returnValue(MCAPFilterHolderSpy);
-    spyOn(MCAPFilterHolderSpy, 'set');
+    spyOn(FilterHolderProviderSpy, 'createFilterHolder').and.returnValue(FilterHolderSpy);
+    spyOn(FilterHolderSpy, 'set');
     spyOn(AuthenticatedUserSpy, 'get').and.returnValue(currentUserUuid);
   }));
 
@@ -89,7 +89,7 @@ describe('MwListCollectionFilter', function() {
       var appliedFilter = listCollectionFilter._setAppliedFilter(filterInLocalStorage);
 
       expect(appliedFilter).not.toBeNull();
-      expect(MCAPFilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
+      expect(FilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
     });
 
     it('sets appliedfilter if current user uuid matches with the filter owner', function() {
@@ -101,7 +101,7 @@ describe('MwListCollectionFilter', function() {
       var appliedFilter = listCollectionFilter._setAppliedFilter(filterInLocalStorage);
 
       expect(appliedFilter).not.toBeNull();
-      expect(MCAPFilterHolderSpy.set).toHaveBeenCalledWith(filterInLocalStorage);
+      expect(FilterHolderSpy.set).toHaveBeenCalledWith(filterInLocalStorage);
     });
   });
 
