@@ -90,4 +90,32 @@ describe('mwTextCollapse', function () {
     expect(el.find('span').text().length).toEqual(539);
   });
 
+  it('shows show more button and cuts text when the text is changing and is longer than the limit', function () {
+    var textCollapse = '<span mw-text-collapse="{{text}}" length="50"></span>';
+    var el = $compile(textCollapse)(scope);
+    scope.text = 'XXX';
+    scope.$digest();
+    var isolateScope = el.isolateScope();
+
+    scope.text = longText;
+    scope.$digest();
+
+    expect(el.find('span').text().length).toEqual(53);
+    expect(isolateScope.showButton).toBeTruthy();
+  });
+
+  it('hides show more button when the text is changing and is not longer than the limit anymore', function () {
+    var textCollapse = '<span mw-text-collapse="{{text}}" length="50"></span>';
+    var el = $compile(textCollapse)(scope);
+    scope.text = longText;
+    scope.$digest();
+    var isolateScope = el.isolateScope();
+
+    scope.text = 'XXX';
+    scope.$digest();
+
+    expect(el.find('span').text().length).toEqual(3);
+    expect(isolateScope.showButton).toBeFalsy();
+  });
+
 });
