@@ -37,14 +37,18 @@ describe('mwInfiniteScroll', function () {
       this.$scrollEl = this.$el;
       jasmine.clock().install();
 
-      this.scrollToPos = function(pos, append){
-        var el = this.$el.find('*[mw-infinite-scroll]');
+      this.scrollToPos = function(pos){
         this.$scrollEl.scrollTop(pos);
         this.$scrollEl.triggerHandler('scroll');
         jasmine.clock().tick(501);
-        if(append!==false){
-          el.height(parseInt(el.height(),10)+3000);
-        }
+        this.scope.$digest();
+      };
+
+      this.scrollToPosAndIncreaseHeight = function(pos){
+        var el = this.$el.find('*[mw-infinite-scroll]');
+        
+        this.scrollToPos(pos);
+        el.height(parseInt(el.height(),10)+3000);
         this.scope.$digest();
       };
     });
@@ -55,7 +59,7 @@ describe('mwInfiniteScroll', function () {
     });
 
     it('paginates on scroll when filterable is available and has a next page', function () {
-      this.scrollToPos(3000);
+      this.scrollToPosAndIncreaseHeight(3000);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalled();
     });
@@ -65,7 +69,7 @@ describe('mwInfiniteScroll', function () {
         return false;
       });
 
-      this.scrollToPos(3000);
+      this.scrollToPosAndIncreaseHeight(3000);
 
       expect(this.scope.collection.filterable.loadNextPage).not.toHaveBeenCalled();
     });
@@ -74,9 +78,9 @@ describe('mwInfiniteScroll', function () {
       this.loadNextSpy.and.callFake(function () {
         return this.$q.defer().promise;
       }.bind(this));
-      this.scrollToPos(2999, false);
+      this.scrollToPos(2999);
 
-      this.scrollToPos(3000);
+      this.scrollToPosAndIncreaseHeight(3000);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(1);
     });
@@ -86,11 +90,11 @@ describe('mwInfiniteScroll', function () {
       this.loadNextSpy.and.callFake(function () {
         return dfd.promise;
       }.bind(this));
-      this.scrollToPos(2999, false);
+      this.scrollToPos(2999);
 
       dfd.resolve();
       this.scope.$digest();
-      this.scrollToPos(3000);
+      this.scrollToPosAndIncreaseHeight(3000);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(2);
     });
@@ -98,45 +102,45 @@ describe('mwInfiniteScroll', function () {
     it('has a minimum threshold of 40% scrolled before a load request is triggered', function () {
       // scroll el has a height of 3000px, container 2000px, min threshold starts at 40%
       // (3000px-20000px)*0.4 = 400px
-      this.scrollToPos(399, false);
+      this.scrollToPos(399);
 
-      this.scrollToPos(401);
+      this.scrollToPosAndIncreaseHeight(401);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(1);
     });
 
     it('triggers not another request before the next threshold stage is reached', function () {
       // (3000px-20000px)*0.4 = 400px
-      this.scrollToPos(401);
+      this.scrollToPosAndIncreaseHeight(401);
 
       // (6000px-20000px)*0.4 = 1600px
-      this.scrollToPos(1601);
+      this.scrollToPosAndIncreaseHeight(1601);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(1);
     });
 
     it('increases threshold before it loads next page over time', function () {
       // (3000px-20000px)*0.4 = 400px
-      this.scrollToPos(401);
+      this.scrollToPosAndIncreaseHeight(401);
       // (6000px-20000px)*0.5 = 2000px
-      this.scrollToPos(2001);
+      this.scrollToPosAndIncreaseHeight(2001);
       // (9000px-20000px)*0.6 = 4200px
-      this.scrollToPos(4201);
+      this.scrollToPosAndIncreaseHeight(4201);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(3);
     });
 
     it('has a maximum threshold of 90% after that it wont be increased anymore', function () {
-      this.scrollToPos(401);
-      this.scrollToPos(2001);
-      this.scrollToPos(4201);
-      this.scrollToPos(7001);
-      this.scrollToPos(10401);
+      this.scrollToPosAndIncreaseHeight(401);
+      this.scrollToPosAndIncreaseHeight(2001);
+      this.scrollToPosAndIncreaseHeight(4201);
+      this.scrollToPosAndIncreaseHeight(7001);
+      this.scrollToPosAndIncreaseHeight(10401);
       // (18000px-20000px)*0.9 = 14401px
-      this.scrollToPos(14401);
+      this.scrollToPosAndIncreaseHeight(14401);
 
       // (21000px-20000px)*0.9 = 17100px
-      this.scrollToPos(17101);
+      this.scrollToPosAndIncreaseHeight(17101);
 
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(7);
     });
