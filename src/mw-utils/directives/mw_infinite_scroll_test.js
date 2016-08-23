@@ -81,7 +81,7 @@ describe('mwInfiniteScroll', function () {
       expect(this.scope.collection.filterable.loadNextPage).toHaveBeenCalledTimes(1);
     });
 
-    it('does trigger another load request when the previous one is done and another scroll happens', function () {
+    it('triggers another load request when the previous one is done and another scroll happens', function () {
       var dfd = this.$q.defer();
       this.loadNextSpy.and.callFake(function () {
         return dfd.promise;

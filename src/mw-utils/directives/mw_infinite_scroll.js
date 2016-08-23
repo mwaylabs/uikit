@@ -35,11 +35,11 @@ angular.module('mwUI.Utils')
         };
 
         // The threshold is controlled by how many pages are loaded
-        // The first pagination request should be done quiet early so the user does not recognize that something
+        // The first pagination request should be done quite early so the user does not recognize that something
         // is loaded.
-        // As scrollbar is getting longer and longer the threshold has to be increased as well.
+        // As scrollbar is getting longer and longer the threshold has to be also increased.
         // Threshold starts at 40% and is increased by 10% until the max threshold of 90% is reached
-        var getLoadNextThreshold = function(){
+        var getLoadThreshold = function(){
           var minThreshold = 4,
               maxThreshold = 9;
 
@@ -49,7 +49,7 @@ angular.module('mwUI.Utils')
         var scrollFn = function () {
           var contentHeight = scrollContentEl[0].clientHeight || scrollContentEl.height(),
               totalHeight = contentHeight - scrollContainerEl.height(),
-              threshold = getLoadNextThreshold();
+              threshold = getLoadThreshold();
 
           if ( scrollContainerEl.scrollTop() / totalHeight > threshold) {
             loadNextPage();
