@@ -1895,6 +1895,7 @@ Backbone.sync = function (method, model, options) {
   // https://github.com/jashkenas/backbone/issues/3534
   // This flag means that the server has to confirm the creation/deletion before the model will be added/removed to the
   // collection
+  options = options || {};
   if (_.isUndefined(options.wait)) {
     options.wait = true;
   }
