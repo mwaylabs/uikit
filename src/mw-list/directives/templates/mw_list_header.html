@@ -1,7 +1,8 @@
-<th ng-class="{ clickable: property, 'sort-active':(property && isSelected())||sortActive }"
+<th ng-class="{ clickable: canBeSorted(), 'sort-active':(canBeSorted() && isSelected()) }"
+    class="mw-list-header"
     ng-click="toggleSortOrder()">
-  <span ng-if="property" class="sort-indicators">
-    <i ng-show="property && !isSelected()" mw-icon="mwUI.sort" class="sort-indicator"></i>
+  <span ng-if="canBeSorted()" class="sort-indicators">
+    <i ng-show="!isSelected()" mw-icon="mwUI.sort" class="sort-indicator"></i>
     <i ng-if="isSelected('-')" mw-icon="mwUI.sortAsc"></i>
     <i ng-if="isSelected('+')" mw-icon="mwUI.sortDesc"></i>
   </span>

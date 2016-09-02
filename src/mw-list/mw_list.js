@@ -1,4 +1,4 @@
-angular.module('mwUI.List', ['mwUI.i18n']);
+angular.module('mwUI.List', ['mwUI.i18n', 'mwUI.Backbone']);
 
 // @include ./directives/mw_list.js
 // @include ./directives/mw_list_body_row.js

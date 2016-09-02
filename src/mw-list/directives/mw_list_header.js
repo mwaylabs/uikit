@@ -30,9 +30,12 @@ angular.module('mwUI.List')
           return collection.fetch();
         };
 
+        scope.canBeSorted = function(){
+          return angular.isString(scope.property) && scope.property.length > 0 && !!collection.filterable;
+        };
 
         scope.toggleSortOrder = function () {
-          if (scope.property) {
+          if (scope.canBeSorted()) {
             var sortOrder = ascending; //default
             if (getSortOrder() === ascending + scope.property) {
               sortOrder = descending;
