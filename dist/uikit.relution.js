@@ -4316,7 +4316,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_header.html',
-    "<th ng-class=\"{ clickable: property, 'sort-active':(property && isSelected())||sortActive }\" ng-click=\"toggleSortOrder()\"><span ng-if=\"property\" class=\"sort-indicators\"><i ng-show=\"property && !isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
+    "<th ng-class=\"{ clickable: canBeSorted(), 'sort-active':(canBeSorted() && isSelected()) }\" class=\"mw-list-header\" ng-click=\"toggleSortOrder()\"><span ng-if=\"canBeSorted()\" class=\"sort-indicators\"><i ng-show=\"!isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
   );
 
 
