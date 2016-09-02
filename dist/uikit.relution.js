@@ -4301,7 +4301,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_body_row_checkbox.html',
-    "<input ng-if=\"!isSingleSelection\" type=\"checkbox\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\" mw-custom-checkbox> <input ng-if=\"isSingleSelection\" type=\"radio\" name=\"{{selectable.id}}\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\" mw-custom-radio>"
+    "<input ng-if=\"!isSingleSelection\" type=\"checkbox\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\"> <input ng-if=\"isSingleSelection\" type=\"radio\" name=\"{{selectable.id}}\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\">"
   );
 
 
@@ -4316,7 +4316,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_header.html',
-    "<th ng-class=\"{ clickable: property, 'sort-active':(property && isSelected())||sortActive }\"><span ng-if=\"property\" ng-click=\"toggleSortOrder()\" class=\"sort-indicators\"><i ng-show=\"property && !isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
+    "<th ng-class=\"{ clickable: property, 'sort-active':(property && isSelected())||sortActive }\" ng-click=\"toggleSortOrder()\"><span ng-if=\"property\" class=\"sort-indicators\"><i ng-show=\"property && !isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
   );
 
 
@@ -4662,7 +4662,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwForm/mwFormMultiSelect.html',
-    "<div ng-form><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"(key,value) in filter(options)\"><label><input type=\"checkbox\" name=\"selectOption\" mw-custom-checkbox ng-checked=\"model.indexOf(key) >= 0\" ng-click=\"toggleKeyIntoModelArray(key); setDirty()\"> {{ value }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div><!--<div ng-class=\"col-sm-12\">--><!--<span class=\"help-block\" ng-show=\"showRequiredMessage()\">{{'errors.isRequired' | i18n}}</span>--><!--</div>--><div ng-show=\"getObjectSize(filter(options)) == 0\" ng-transclude></div></div></div>"
+    "<div ng-form><div ng-class=\"{'has-error': showRequiredMessage()}\"><div class=\"checkbox\" ng-repeat=\"(key,value) in filter(options)\"><label><input type=\"checkbox\" name=\"selectOption\" ng-checked=\"model.indexOf(key) >= 0\" ng-click=\"toggleKeyIntoModelArray(key); setDirty()\"> {{ value }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div><!--<div ng-class=\"col-sm-12\">--><!--<span class=\"help-block\" ng-show=\"showRequiredMessage()\">{{'errors.isRequired' | i18n}}</span>--><!--</div>--><div ng-show=\"getObjectSize(filter(options)) == 0\" ng-transclude></div></div></div>"
   );
 
 
@@ -4672,7 +4672,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwFormBb/mwFormMultiSelect.html',
-    "<div ng-form><div class=\"checkbox\" ng-repeat=\"item in collection.models\"><label><input type=\"checkbox\" name=\"selectOption\" mw-custom-checkbox ng-disabled=\"isDisabled(item)\" ng-checked=\"model.indexOf(item.attributes.key) >= 0\" ng-click=\"toggleKeyIntoModelArray(item.attributes.key); setDirty()\"> {{ translationPrefix + '.' + item.attributes.key | i18n }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div></div>"
+    "<div ng-form><div class=\"checkbox\" ng-repeat=\"item in collection.models\"><label><input type=\"checkbox\" name=\"selectOption\" ng-disabled=\"isDisabled(item)\" ng-checked=\"model.indexOf(item.attributes.key) >= 0\" ng-click=\"toggleKeyIntoModelArray(item.attributes.key); setDirty()\"> {{ translationPrefix + '.' + item.attributes.key | i18n }}</label></div><div mw-form-input><input type=\"hidden\" name=\"requireChecker\" ng-model=\"model[0]\" ng-required=\"mwRequired\"></div></div>"
   );
 
 
@@ -4697,7 +4697,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwListable/mwListableColumnCheckbox.html',
-    "<input ng-if=\"!radio\" type=\"checkbox\" ng-click=\"click(item, $event)\" ng-disabled=\"mwDisabled || false\" ng-checked=\"selectable.isSelected(item)\" mw-custom-checkbox> <input ng-if=\"radio\" type=\"radio\" name=\"{{selectable.id}}\" ng-click=\"click(item, $event)\" ng-disabled=\"mwDisabled || false\" ng-checked=\"selectable.isSelected(item)\" mw-custom-radio>"
+    "<input ng-if=\"!radio\" type=\"checkbox\" ng-click=\"click(item, $event)\" ng-disabled=\"mwDisabled || false\" ng-checked=\"selectable.isSelected(item)\"> <input ng-if=\"radio\" type=\"radio\" name=\"{{selectable.id}}\" ng-click=\"click(item, $event)\" ng-disabled=\"mwDisabled || false\" ng-checked=\"selectable.isSelected(item)\">"
   );
 
 
@@ -4712,7 +4712,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/templates/mwListable/mwListableHeaderCheckbox.html',
-    "<input type=\"checkbox\" ng-if=\"!radio && (!filterable || filterable.items().length > 0)\" ng-click=\"toggleAll()\" ng-checked=\"selectable.allSelected()\" ng-disabled=\"selectable.allDisabled()\" mw-custom-checkbox>"
+    "<input type=\"checkbox\" ng-if=\"!radio && (!filterable || filterable.items().length > 0)\" ng-click=\"toggleAll()\" ng-checked=\"selectable.allSelected()\" ng-disabled=\"selectable.allDisabled()\">"
   );
 
 
