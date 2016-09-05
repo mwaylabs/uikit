@@ -26,11 +26,11 @@ The Uikit itself is split into several submodules so you can also just use parts
  
 ## Dependendencies
  - AngularJS 1.5.x
- - BackboneJS
+ - BackboneJS 1.x
  - Bootstrap 3.x
  
 ## Customize it
-It is build with SASS and Bootstrap so you can easy customize it. For example to use a different color you can overwrite the bootstrap `$brand-primary` with your own color module.
+It is build with SASS and Bootstrap so you can easy customize it. For example to use a different color you can overwrite the bootstrap `$brand-primary` variable with your own color code.
 
 ## Documentation
 A documentation and a sample portal is currently in progress and available soon
