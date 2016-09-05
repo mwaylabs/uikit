@@ -1,6 +1,8 @@
 {
-  "name": "relution-uikit",
-  "version": "0.0.0",
+  "name": "mw-uikit",
+  "description": "A toolbox to build portals with AngularJS 1.5.x that have a lot of forms and list views for example admin portals to manage data.",
+  "author": "Alexander Zarges <a.zarges@mwaysolutions.com> (http://relution.io)",
+  "version": "1.0.0",
   "devDependencies": {
     "angular": "1.5.7",
     "angular-mocks": "1.5.7",
@@ -20,7 +22,6 @@
     "grunt-regarde": "0.1.1",
     "husky": "^0.10.2",
     "matchdep": "~0.1.1",
-    "mcapjs-client": "git+https://github.com/mwaylabs/mcapjs-client.git#master",
     "ng-html2js ": "2.0.0",
     "sinon": "1.17.3",
     "underscore": "1.8.3",
@@ -35,8 +36,14 @@
     "phantomjs-prebuilt": "^2.1.5"
   },
   "scripts": {
+    "install": "bower install",
     "start": "grunt watch",
     "test": "grunt test",
     "prepush": "./git-hooks/pre-push"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mwaylabs/uikit.git"
+  },
+  "bugs": "https://github.com/mwaylabs/uikit/issues"
 }
