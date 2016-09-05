@@ -61,7 +61,6 @@ angular.module('mwUI.List')
           _collection = $scope.mwListCollection.getCollection();
           _mwListCollectionFilter = $scope.mwListCollection.getMwListCollectionFilter();
         } else if ($scope.collection) {
-          console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
           _collection = $scope.collection;
         }
       }

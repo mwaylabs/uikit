@@ -3,7 +3,6 @@
     <label>
       <input type="checkbox"
              name="selectOption"
-             mw-custom-checkbox
              ng-disabled="isDisabled(item)"
              ng-checked="model.indexOf(item.attributes.key) >= 0"
              ng-click="toggleKeyIntoModelArray(item.attributes.key); setDirty()">

@@ -112,7 +112,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_body_row_checkbox.html',
-    "<input ng-if=\"!isSingleSelection\" type=\"checkbox\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\" mw-custom-checkbox> <input ng-if=\"isSingleSelection\" type=\"radio\" name=\"{{selectable.id}}\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\" mw-custom-radio>"
+    "<input ng-if=\"!isSingleSelection\" type=\"checkbox\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\"> <input ng-if=\"isSingleSelection\" type=\"radio\" name=\"{{selectable.id}}\" ng-click=\"click(item, $event)\" ng-disabled=\"item.selectable.isDisabled()\" ng-checked=\"item.selectable.isSelected()\">"
   );
 
 
@@ -127,7 +127,7 @@ angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use s
 
 
   $templateCache.put('uikit/mw-list/directives/templates/mw_list_header.html',
-    "<th ng-class=\"{ clickable: property, 'sort-active':(property && isSelected())||sortActive }\"><span ng-if=\"property\" ng-click=\"toggleSortOrder()\" class=\"sort-indicators\"><i ng-show=\"property && !isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
+    "<th ng-class=\"{ clickable: canBeSorted(), 'sort-active':(canBeSorted() && isSelected()) }\" class=\"mw-list-header\" ng-click=\"toggleSortOrder()\"><span ng-if=\"canBeSorted()\" class=\"sort-indicators\"><i ng-show=\"!isSelected()\" mw-icon=\"mwUI.sort\" class=\"sort-indicator\"></i> <i ng-if=\"isSelected('-')\" mw-icon=\"mwUI.sortAsc\"></i> <i ng-if=\"isSelected('+')\" mw-icon=\"mwUI.sortDesc\"></i></span> <span ng-transclude class=\"title\"></span></th>"
   );
 
 
@@ -3231,7 +3231,7 @@ angular.module('mwUI.Layout')
       }
     };
   }]);
-angular.module('mwUI.List', ['mwUI.i18n']);
+angular.module('mwUI.List', ['mwUI.i18n', 'mwUI.Backbone']);
 
 angular.module('mwUI.List')
 
@@ -3296,7 +3296,6 @@ angular.module('mwUI.List')
           _collection = $scope.mwListCollection.getCollection();
           _mwListCollectionFilter = $scope.mwListCollection.getMwListCollectionFilter();
         } else if ($scope.collection) {
-          console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
           _collection = $scope.collection;
         }
       }]
@@ -3703,9 +3702,12 @@ angular.module('mwUI.List')
           return collection.fetch();
         };
 
+        scope.canBeSorted = function(){
+          return angular.isString(scope.property) && scope.property.length > 0 && !!collection.filterable;
+        };
 
         scope.toggleSortOrder = function () {
-          if (scope.property) {
+          if (scope.canBeSorted()) {
             var sortOrder = ascending; //default
             if (getSortOrder() === ascending + scope.property) {
               sortOrder = descending;
