@@ -1,4 +1,6 @@
 # Uikit
+[![Build Status](https://travis-ci.org/mwaylabs/uikit.svg?branch=master)](https://travis-ci.org/mwaylabs/uikit)
+
 A toolbox to build portals with AngularJS 1.5.x that have a lot of forms and list views for example admin portals to manage data. 
 We started with the uikit in our product http://relution.io. As our codebase was growing we decided to move out the core components into a seperate module so we could use it for other projects as well. This was the birthdate of the Uikit. Since then we used it internally for serveral portals. 
 The Uikit itself is split into several submodules so you can also just use parts from it, in case you don't want to use the whole package.
