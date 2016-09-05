@@ -39,6 +39,8 @@
 
   root.mwUI = {};
 
+  root.mwUI.VERSION = '1.0.0';
+
 // @include ../.tmp/templates.js
 
 // @include ./mw-utils/mw_utils.js
