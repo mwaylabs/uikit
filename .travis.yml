@@ -1,8 +1,17 @@
 language: node_js
 node_js:
-  - '5.6'
+- '5.6'
 before_install:
-  - npm install -g bower
-  - npm install -g grunt-cli
-  - npm install -g karma
-  - bower install
+- npm install -g bower
+- npm install -g grunt-cli
+- npm install -g karma
+- bower install
+before_deploy:
+  - npm run build -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+deploy:
+  provider: releases
+  api_key:
+    secure: xUE+D+FfaggHb75u5oFJU5rz+2Spo9EmvoZqe+5hxJ6gzOrkmKWBM1J1uKiKkrw9oSk4//j1RLGe0eWpZHj26d07yIL+lkGE0mGp8+OaJvXUUIQrpu9tkt8p0Bw1eFid1gHdeOlxB4dSwuUT5InOo0Z/NJlcYguRFPEupHs2QKlWPfbEy5aMHsgjd6smJw2/pTPI7JiZuKaU1Upm50ZHnZhFaz3Gd/s3aueRpKHzs6HUMhte0bQUqwgUGhPD2MezexOmMxWrLIUjpUtDyBqzA4/Z+OZFCySpqlZRvGa25azllLX0mjtofHOaO7ba8BD9yuIgmLADeABlAUi1Ry2Qe7Tv/qszp1KbxSOuF62HHn3FGUsiPOmThvjbYicyvKJlfz1ggDhknp/T0muI+iFrp6UTmOzRBcubplD67K0wN0BPK0meQ7SVufE3itPR8mOJaf0tRWqTUxEvGSVZb+zruOUtMndX1fR+iJB6oN80kPg5CDDyN/swD7i59ZYZsZt3eKt54x6GM9RKtujMx9fBTS297sFzhx4iU10chNZUxHEYTCMt8mxb8N5S0/nCqpCHkSbE3IGU4M/35NOC9doSLRGW0BaE/KPF8QMr8OTQqGHGv1+R/d4+siZyNzbJciAdEC7DBaxQuZC7mRYC6PwMTYQ/RIEJKeZH+rnMk4LE9Yg=
+  file: zip/*.zip
+  on:
+    repo: mwaylabs/uikit
