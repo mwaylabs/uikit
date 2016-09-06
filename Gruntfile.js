@@ -26,7 +26,7 @@ module.exports = function (grunt) {
       }
     },
     getversionWithBuildNumber: function(){
-      return uikitConfig.getVersion()+'-b'+uikitConfig.getGruntParam('buildNumber');
+      return uikitConfig.getVersion()+'-b'+uikitConfig.getGruntParam('buildNumber','LOCAL');
     },
     getReleaseNameWithBuildNum: function(){
       return uikitConfig.fileName+
