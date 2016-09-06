@@ -33,8 +33,8 @@ module.exports = function(config){
       'src/test/**/*.js',
       'src/**/*.html',
       'src-relution/**/*.html',
-      'dist/uikit.js',
-      'dist/uikit.relution.js',
+      'dist/mw-uikit.js',
+      'dist/mw-uikit.relution.js',
       'src/**/*_test.js',
       'src-relution/test/**/*.js'
     ],
