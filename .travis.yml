@@ -7,7 +7,7 @@ before_install:
 - npm install -g karma
 - bower install
 before_deploy:
-  - npm run build -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+  - npm run release -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
 deploy:
   provider: releases
   api_key:

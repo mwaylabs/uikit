@@ -42,7 +42,8 @@
     "test": "grunt test",
     "prepush": "./git-hooks/pre-push",
     "start": "grunt watch",
-    "build": "grunt build"
+    "build": "grunt build",
+    "release": "grunt release"
   },
   "repository": {
     "type": "git",

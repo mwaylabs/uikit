@@ -12,7 +12,7 @@ module.exports = function (grunt) {
     dist: 'dist',
     fileName: 'mw-uikit',
     fileNameRelution: 'mw-uikit.relution',
-    getVersion: function(){
+    getVersion: function () {
       var packageJson = grunt.file.readJSON('package.json');
       return packageJson.version;
     },
@@ -25,13 +25,13 @@ module.exports = function (grunt) {
         return gruntParam || defaultValue;
       }
     },
-    getversionWithBuildNumber: function(){
-      return uikitConfig.getVersion()+'-b'+uikitConfig.getGruntParam('buildNumber','LOCAL');
+    getversionWithBuildNumber: function () {
+      return uikitConfig.getVersion() + '-b' + uikitConfig.getGruntParam('buildNumber', 'LOCAL');
     },
-    getReleaseNameWithBuildNum: function(){
-      return uikitConfig.fileName+
+    getReleaseNameWithBuildNum: function () {
+      return uikitConfig.fileName +
         '-v' + uikitConfig.getversionWithBuildNumber() +
-        ' sha.c' + uikitConfig.getGruntParam('commitHash','none');
+        '-sha.c' + uikitConfig.getGruntParam('commitHash', 'none');
     }
   };
 
@@ -57,9 +57,9 @@ module.exports = function (grunt) {
       ]
     },
     preprocess: {
-      js : {
-        src : 'src/mw_ui.js',
-        dest : '<%= uikit.dist %>/<%= uikit.fileName %>.js'
+      js: {
+        src: 'src/mw_ui.js',
+        dest: '<%= uikit.dist %>/<%= uikit.fileName %>.js'
       }
     },
     concat: {
@@ -82,7 +82,7 @@ module.exports = function (grunt) {
       }
     },
     copy: {
-      distToSamplePortal:{
+      distToSamplePortal: {
         files: [
           {
             expand: true,
@@ -207,21 +207,22 @@ module.exports = function (grunt) {
         command: function () {
           return [
             'mkdir -p zip',
-            'cp -r dist zip/'+uikitConfig.getReleaseNameWithBuildNum(),
+            'cp -r dist zip/' + uikitConfig.getReleaseNameWithBuildNum(),
             'cd zip',
-            'zip -r ' + uikitConfig.getReleaseNameWithBuildNum() +'.zip '+uikitConfig.getReleaseNameWithBuildNum(),
-            'rm -rf '+ uikitConfig.getReleaseNameWithBuildNum()
+            'zip -r ' + uikitConfig.getReleaseNameWithBuildNum() + '.zip ' + uikitConfig.getReleaseNameWithBuildNum(),
+            'rm -rf ' + uikitConfig.getReleaseNameWithBuildNum()
           ].join('&&');
         }
       }
     },
-    clean: ['.tmp']
+    clean: ['dist', 'zip']
   });
 
-  grunt.registerTask('test', ['build','karma']);
-  grunt.registerTask('test:codequality',['jshint','test']);
+  grunt.registerTask('test', ['build', 'karma']);
+  grunt.registerTask('test:codequality', ['jshint', 'test']);
   grunt.registerTask('watch', ['process', 'regarde']);
-  grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'replace:setBuildNumber','ngAnnotate:dist','copy:distToSamplePortal']);
-  grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist','copy:distToSamplePortal']);
-  grunt.registerTask('build', ['jshint','process', 'process-old', 'uglify','copy:scssToDistfolder','copy:relutionScssToDistfolder','shell:zipUiKit','clean']);
+  grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
+  grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
+  grunt.registerTask('build', ['jshint', 'process', 'process-old']);
+  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit']);
 };
