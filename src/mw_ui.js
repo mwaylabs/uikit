@@ -39,7 +39,9 @@
 
   root.mwUI = {};
 
-  root.mwUI.VERSION = '1.0.0';
+  //Will be replaced with the actual version number duringh the build process;
+  //DO NOT TOUCH
+  root.mwUI.VERSION = 'UIKITVERSIONNUMBER';
 
 // @include ../.tmp/templates.js
 

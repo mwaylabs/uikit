@@ -7,9 +7,32 @@ module.exports = function (grunt) {
 
   // configurable paths
   var uikitConfig = {
+    src: 'src',
+    srcRelution: 'src-relution',
     dist: 'dist',
-    fileName: 'uikit',
-    fileNameRelution: 'uikit.relution'
+    fileName: 'mw-uikit',
+    fileNameRelution: 'mw-uikit.relution',
+    getVersion: function(){
+      var packageJson = grunt.file.readJSON('package.json');
+      return packageJson.version;
+    },
+    getGruntParam: function (paramName, defaultValue) {
+      var gruntParam = grunt.option(paramName);
+      // For any reasons the useminPrepare task calls all subtasks of copy and then it will crash because some copy tasks need a param name
+      if (!gruntParam && !defaultValue) {
+        throw new Error('The param "' + paramName + '" is required for the task ' + grunt.task.current.name + ' and was not passed as argument. Please pass the argument --' + paramName);
+      } else {
+        return gruntParam || defaultValue;
+      }
+    },
+    getversionWithBuildNumber: function(){
+      return uikitConfig.getVersion()+'-b'+uikitConfig.getGruntParam('buildNumber');
+    },
+    getReleaseNameWithBuildNum: function(){
+      return uikitConfig.fileName+
+        '-v' + uikitConfig.getversionWithBuildNumber() +
+        ' sha.c' + uikitConfig.getGruntParam('commitHash','none');
+    }
   };
 
   grunt.initConfig({
@@ -68,6 +91,34 @@ module.exports = function (grunt) {
             dest: 'sample_portal/app/components/mw-ui',
             src: [
               '<%= uikit.fileName %>.js'
+            ]
+          }
+        ]
+      },
+      relutionScssToDistfolder: {
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%= uikit.srcRelution %>/styles',
+            dest: '<%= uikit.dist %>/styles/relution',
+            src: [
+              '**/*.scss'
+            ]
+          }
+        ]
+      },
+      scssToDistfolder: {
+        files: [
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%= uikit.src %>',
+            dest: '<%= uikit.dist %>/styles',
+            src: [
+              '_mw_uis.scss',
+              '**/*.scss',
+              '**/styles/*.scss'
             ]
           }
         ]
@@ -133,13 +184,44 @@ module.exports = function (grunt) {
         configFile: 'karma.conf.js'
       }
     },
+    replace: {
+      setBuildNumber: {
+        src: ['<%= uikit.dist %>/<%= uikit.fileName %>.js'],
+        overwrite: true,
+        replacements: [
+          {
+            from: /UIKITVERSIONNUMBER/,
+            to: function () {
+              return uikitConfig.getversionWithBuildNumber();
+            }
+          }
+        ]
+      }
+    },
+    shell: {
+      zipUiKit: {
+        options: {
+          stdout: true,
+          failOnError: true
+        },
+        command: function () {
+          return [
+            'mkdir -p zip',
+            'cp -r dist zip/'+uikitConfig.getReleaseNameWithBuildNum(),
+            'cd zip',
+            'zip -r ' + uikitConfig.getReleaseNameWithBuildNum() +'.zip '+uikitConfig.getReleaseNameWithBuildNum(),
+            'rm -rf '+ uikitConfig.getReleaseNameWithBuildNum()
+          ].join('&&');
+        }
+      }
+    },
     clean: ['.tmp']
   });
 
-  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('test', ['build','karma']);
   grunt.registerTask('test:codequality',['jshint','test']);
   grunt.registerTask('watch', ['process', 'regarde']);
-  grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist','copy:distToSamplePortal']);
+  grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'replace:setBuildNumber','ngAnnotate:dist','copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist','copy:distToSamplePortal']);
-  grunt.registerTask('build', ['jshint','process', 'process-old', 'uglify', 'test','clean']);
+  grunt.registerTask('build', ['jshint','process', 'process-old', 'uglify','copy:scssToDistfolder','copy:relutionScssToDistfolder','shell:zipUiKit','clean']);
 };
