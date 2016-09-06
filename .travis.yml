@@ -2,8 +2,7 @@ language: node_js
 node_js:
   - '5.6'
 before_script:
+  - npm install -g bower
   - npm install -g grunt-cli
   - npm install -g karma
-  - npm install -g bower
-  - npm install
   - bower install
