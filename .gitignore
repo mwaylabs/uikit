@@ -5,7 +5,6 @@ libs
 .DS_Store
 .idea
 
-dist
 zip
 sample_portal/node_modules
 sample_portal/app/components
