@@ -192,6 +192,12 @@ describe('mwUi Response Handler', function () {
       expect(i18n.get.calls.argsFor(2)[1].$count).toBe(3);
     });
 
+    it('should provide the status of the response', function() {
+      _handleResponse();
+
+      expect(i18n.get.calls.argsFor(0)[1].$httpStatusCode).toBe(200);
+    });
+
     it('should add the singular message when the route is matching the first and replace it with the plural message when another request is coming', function () {
       spyOn(Toast, 'addToast').and.callThrough();
 

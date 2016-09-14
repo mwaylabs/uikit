@@ -35,6 +35,8 @@ angular.module('mwUI.ResponseToastHandler')
           data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
           data.$count++;
 
+          data.$httpStatusCode = $httpResponse.status;
+
           if (options.preProcess) {
             _.extend(data, $httpResponse.data);
 
