@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.0-b16';
+  root.mwUI.VERSION = '1.0.0-b23';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -4501,6 +4501,8 @@ angular.module('mwUI.ResponseToastHandler')
 
           data.$count = prevToast ? prevToast.replaceCount + 1 : 0;
           data.$count++;
+
+          data.$httpStatusCode = $httpResponse.status;
 
           if (options.preProcess) {
             _.extend(data, $httpResponse.data);
