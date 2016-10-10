@@ -213,6 +213,22 @@ module.exports = function (grunt) {
             'rm -rf ' + uikitConfig.getReleaseNameWithBuildNum()
           ].join('&&');
         }
+      },
+      gitRelease: {
+        options: {
+          stdout: true
+        },
+        command: function(){
+          return [
+            'if [ `git branch --list release` ]; then git checkout release; else git checkout --orphan release; fi',
+            'git reset',
+            'git add dist/* -f',
+            'git commit -m release build v' + uikitConfig.getReleaseNameWithBuildNum(),
+            'git push origin release',
+            'git tag v' + uikitConfig.getReleaseNameWithBuildNum(),
+            'git push origin v' + uikitConfig.getReleaseNameWithBuildNum()
+          ].join('&&');
+        }
       }
     },
     clean: ['dist', 'zip']
@@ -224,5 +240,5 @@ module.exports = function (grunt) {
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('build', ['jshint', 'process', 'process-old']);
-  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit']);
+  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit', 'shell:gitRelease']);
 };
