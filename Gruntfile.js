@@ -221,14 +221,15 @@ module.exports = function (grunt) {
         command: function(){
           return [
             'git config user.name "Bob Builder"',
-            'git config user.email "$COMMIT_AUTHOR_EMAIL"',
+            'git config user.email "info@mwaysolutions.com"',
             'if [ `git branch --list release` ]; then git checkout release; else git checkout --orphan release; fi',
             'git reset',
             'git add dist/* -f',
             'git commit -m "release build v' + uikitConfig.getReleaseNameWithBuildNum()+'"',
-            'git push origin release',
+            'git push -fq "https://${GH_TOKEN}@${GH_REF}" release &2>/dev/null',
             'git tag v' + uikitConfig.getReleaseNameWithBuildNum(),
-            'git push origin v' + uikitConfig.getReleaseNameWithBuildNum()
+            'git push origin v' + uikitConfig.getReleaseNameWithBuildNum(),
+            'git push -fq "https://${GH_TOKEN}@${GH_REF}" v' + uikitConfig.getReleaseNameWithBuildNum() + '&2>/dev/null'
           ].join('&&');
         }
       }
