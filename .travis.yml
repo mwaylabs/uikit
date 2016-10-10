@@ -10,9 +10,11 @@ before_install:
 - npm install -g grunt-cli
 - npm install -g karma
 - bower install
-before_deploy:
-- npm run release -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
 deploy:
+  - provider: script
+    script: npm run release -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+    on: 
+      repo: mwaylabs/uikit 
   - provider: releases 
     api_key: 
       secure: zKwIieslObd6N5afn9xVl/YLWzSE4zDxHdQT2JXOxGdgQ3jGcSQhFy5tfjEPubk6WiOUdPp7psLofHPg/crvgRPyIRvIZ+u10jVzz0gFVHBLagUknvxDn9Ugm/NTLj7IPQHmVji5BmbiAyVE1drlneG5xrAeD4leZSYMCtmasX50F3BBqRvqGI13JKzyDqHUmEnufMyVqW81F22Q1OW+yIG/Ls2ftbBF74vizp6ADj+5GL/b/kCvCKaJUrP7t9n4a0eM2dIQWAnmP5Rmp9W1Kl/DeR20ngkuyosgg4U2/zGRsM9UaB/kiEaboC9+vd9xX7ujznWB6VS6Wbo4OngwRoT8EfKf4zfEEq/kOpVrzZbtPXyML/Sjz+E5xWsUD+Lzk4YMrgvDJp00z/PN1mKqaU+6sgZVkw0FIDR9e1JU5yMNpoSm9l/oDrI7YsjwPystmYwYWj9aGU6QgaBQYeMPmHvdQxWvYZc8+EAsn0TZXeYrli1cuxHZ7NLpm4SnL9Sz7rGtjK06TInbMF2/PNJa9YXawQwiXApvfQFiKjr3tpaOBWzOW+5vVXATg41djbLhIU0pGw5pq+/8EDHbznH/arl2wAvcnj1MTfLvpqm7wj/FdATXzk1NHAlq5crWENzUxiVrKS3zCFCj1rwd40rhymNEbMcyPjHmZhclYTX8AM0=
@@ -20,10 +22,10 @@ deploy:
     skip_cleanup: true 
     file_glob: true 
     on: 
-      repo: mwaylabs/uikit 
+      tags: true
   - provider: npm
     email: a.zarges@mwaysolutions.com
     api_key:
       secure: RmhcogeQ5XJ5LCG7v9LRd3WOB6BJW0b+7YE3+dk5UkfMgYVIu3sKccWfvv2+O0RV0+5VG8qyuJ5AK07AzVWIW+UIA/slaI9dU7rcl2/+sUT2tmQ0CTF44wvrbfB5e921zfxZTM7iqG4UxRea2RHtjQDi1nHRs9GsMicv/IN8lFFK7NZQv3QeOT23sewE7STXg6cbhSzQh1In3l+wOzv7+e8PjK9NFCOCXmSSKp2keTgFu9sdH8rLUQAo3ervSzgQW0Qtreey7IloD7vKgZP6WpI5Xj4+m6ck+D5z6QZ8+ht3u+7y8IHLJAmswyJcha0j8e18dMeZxa5qZuwzWu1r1Jr5wNKY6UuJ91hB0dedYfp5Kmq7+a2tIvQKOyO4UNfTCZAMa+Gou2RTDzhbCRph3gCkPmp/EAh68qsbdrdODvvfeL0w51eAukIWtbl7VL3vexpMNPuZcdf1liEmF0x80iLk5WqHlY56sFnjHyFLoBL5F73jHGXTQDF+SzHkJMA8O/Ohd1XJmIt6RFxDASlp/Sz5ebG2b3qTEgde10UtRuC6GXqnCXVnusdxBrRS6zNQeSjdTnWGqo1ugUQL+NEb9OwIR4SuL3V6PfR59sZXrQD0f7JoRhoEnODVBZLBdXrRbveIMo0g2PCdyBcmn0PRwWxLUJkbEW1KHduUeD2VqDQ=
     on:
-      repo: mwaylabs/uikit
+      tags: true
