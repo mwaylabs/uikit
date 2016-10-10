@@ -226,9 +226,9 @@ module.exports = function (grunt) {
             'git reset',
             'git add dist/* -f',
             'git commit -m "release build v' + uikitConfig.getReleaseNameWithBuildNum()+'"',
-            'git push -fq "https://${GH_TOKEN}@${GH_REF}" release &2>/dev/null',
+            'git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" release  > /dev/null 2>&1',
             'git tag ' + uikitConfig.getReleaseNameWithBuildNum(),
-            'git push -fq "https://${GH_TOKEN}@${GH_REF}" v' + uikitConfig.getReleaseNameWithBuildNum() + '&2>/dev/null'
+            'git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ' + uikitConfig.getReleaseNameWithBuildNum() + ' > /dev/null 2>&1'
           ].join('&&');
         }
       }
