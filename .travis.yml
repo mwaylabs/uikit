@@ -13,6 +13,7 @@ before_install:
 deploy:
   - provider: script
     script: npm run release -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+    skip_cleanup: true 
     on: 
       repo: mwaylabs/uikit 
   - provider: releases 
