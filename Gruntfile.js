@@ -223,7 +223,7 @@ module.exports = function (grunt) {
             'if [ `git branch --list release` ]; then git checkout release; else git checkout --orphan release; fi',
             'git reset',
             'git add dist/* -f',
-            'git commit -m release build v' + uikitConfig.getReleaseNameWithBuildNum(),
+            'git commit -m "release build v' + uikitConfig.getReleaseNameWithBuildNum()+'"',
             'git push origin release',
             'git tag v' + uikitConfig.getReleaseNameWithBuildNum(),
             'git push origin v' + uikitConfig.getReleaseNameWithBuildNum()
