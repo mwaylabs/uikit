@@ -1,0 +1,36 @@
+$mw-font-path: "../fonts" !default;
+
+@font-face {
+  font-family: 'icomoon';
+  src: url('#{$mw-font-path}/mw-relution.eot');
+  src: url('#{$mw-font-path}/mw-relution.eot?#iefix') format('embedded-opentype'),
+  url('#{$mw-font-path}/mw-relution.woff') format('woff'),
+  url('#{$mw-font-path}/mw-relution.ttf') format('truetype'),
+  url('#{$mw-font-path}/mw-relution.svg#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body .rln-icon {
+  position: relative;
+}
+
+.rln-icon {
+  top: 1px;
+  display: inline-block;
+  font: normal normal normal 14px/1 icomoon;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+  color: #808080;
+
+  &:hover,
+  &:after:hover,
+  &:before:hover {
+    text-decoration: none !important;
+  }
+}
+
+@import "../fonts/style"

@@ -1,0 +1,137 @@
+@import "../../../libs/bootstrap-sass-datepicker/sass/datepicker";
+
+.mw-date-picker {
+  margin-bottom: 40px;
+
+  .date-picker-holder,
+  .time-picker-holder,
+  .time-picker-icon,
+  .number-spinner-holder {
+    float: left;
+  }
+
+  .date-picker-holder {
+    width: 100%;
+
+    .input-group-addon {
+      border: none;
+      background: transparent;
+      padding-left: 0;
+    }
+  }
+
+  &.has-time-picker {
+    .date-picker-holder {
+      width: 60%;
+    }
+  }
+
+  .time-picker-holder {
+    width: 30%;
+    margin-left: 10%;
+  }
+
+  .time-picker-icon {
+    margin-right: 10px;
+    margin-top: 8px;
+  }
+
+  .number-spinner-holder {
+    width: 50%;
+    position: relative;
+
+    .number-spinner {
+      position: absolute;
+      left: 50%;
+      font-size: 30px;
+      margin-left: -10px;
+      padding: 0;
+      border: none;
+
+      &[disabled]{
+        background: transparent;
+      }
+
+      &.increment {
+        top: -32px;
+      }
+
+      &.decrement {
+        bottom: -32px;
+      }
+
+      &:hover {
+        .fa {
+          color: $brand-primary;
+        }
+      }
+    }
+
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+
+    input {
+      text-align: center;
+      padding-left: 0;
+      padding-right: 0;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+
+    &.hours {
+      input {
+        border-right-width: 0px;
+
+        &:focus {
+          border-right-width: 1px;
+        }
+      }
+    }
+
+    &.minutes {
+      input {
+        border-left-width: 0px;
+
+        &:focus {
+          border-left-width: 1px;
+        }
+      }
+
+      &:after {
+        content: ':';
+        position: absolute;
+        top: 8px;
+        left: -2px;
+      }
+    }
+  }
+
+  .datepicker {
+    width: 100%;
+    width: calc(100% - 24px);
+    margin-left: 24px;
+
+    table.table-condensed {
+      width: 100%
+    }
+
+    &.datepicker-orient-bottom {
+      margin-top: -20px;
+      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.175);
+    }
+
+    &.datepicker-orient-top{
+      margin-top: -5px;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.175);
+    }
+
+    &:before, &:after {
+      content: none;
+    }
+
+  }
+}
