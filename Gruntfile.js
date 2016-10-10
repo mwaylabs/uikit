@@ -228,7 +228,6 @@ module.exports = function (grunt) {
             'git commit -m "release build v' + uikitConfig.getReleaseNameWithBuildNum()+'"',
             'git push -fq "https://${GH_TOKEN}@${GH_REF}" release &2>/dev/null',
             'git tag v' + uikitConfig.getReleaseNameWithBuildNum(),
-            'git push origin v' + uikitConfig.getReleaseNameWithBuildNum(),
             'git push -fq "https://${GH_TOKEN}@${GH_REF}" v' + uikitConfig.getReleaseNameWithBuildNum() + '&2>/dev/null'
           ].join('&&');
         }
