@@ -220,6 +220,8 @@ module.exports = function (grunt) {
         },
         command: function(){
           return [
+            'git config user.name "Bob Builder"',
+            'git config user.email "$COMMIT_AUTHOR_EMAIL"',
             'if [ `git branch --list release` ]; then git checkout release; else git checkout --orphan release; fi',
             'git reset',
             'git add dist/* -f',
