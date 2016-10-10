@@ -31,7 +31,7 @@ module.exports = function (grunt) {
     getReleaseNameWithBuildNum: function () {
       return uikitConfig.fileName +
         '-v' + uikitConfig.getversionWithBuildNumber() +
-        '-sha.c' + uikitConfig.getGruntParam('commitHash', 'none');
+        '-sha.c' + uikitConfig.getGruntParam('commitHash', 'none').toString().substr(0,5);
     }
   };
 
