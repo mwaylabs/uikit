@@ -220,7 +220,7 @@ module.exports = function (grunt) {
         },
         command: function(){
           return [
-            'VERSION_NUMBER='+uikitConfig.getversionWithBuildNumber(),
+            'export VERSION_NUMBER='+uikitConfig.getversionWithBuildNumber(),
             './bin/git_release.sh'
           ].join('&&');
         }
