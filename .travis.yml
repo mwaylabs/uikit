@@ -1,0 +1,32 @@
+language: node_js
+node_js:
+- '5.6'
+env:
+  global:
+  - GH_REF=github.com/mwaylabs/uikit
+  - secure: sskprPqosSQnQOmCvOjPYJGG45/Pv5B+wl57t58U5V3EOsPYIyIVQI6n38sbc3mIDzjn3tmfj8ETVhjm9uHI5HvdN4xCYw++pIkx8WnitwWYHKxkR0nIDYgDjOYY/O6GcEaNNZu+VIU+QoNFil1wti58cbf3DM2opUCEf4Up5VP0FqYrOQ8W4Kx3k9M4lx+iJSqrWvRPZlPsJRqSZ1IhZ3C7TehqT8onPzXnl4nqYQCmUSdxUI2wiWavJW9tDCYl5FMhlBkWtgOUnhD/lLVN8SBk7Iuj10nPBx6LPbWQ3u6B3yokvvEpMXY8WiQLeZNPy+K6p/Qr2/ixJd3aE6WQs0Ep70S/tngiby+/xgGxUt3U9q/YW0wqMAGQNIxfNrWpYbQ3ecuL/w3lDq4Tkw3OivLkXsTG+wApn+n+1ZvqgeyWlEqXrozfGO+Vmzqyxvqsm0UtlfQHS9Njpm+0rlPz+Rm5PACwvqeBxMjrckw57HpAVuY9TSZYAiufrcfhmwKD/2UbTTZ46lEu+e7aohSlIJUZxEaoNjAP+CShYm1QiUn2eMvW/RGJncXlsO204zB+cG2M9MMcU5+lDIqju/E9+Ik/YGNK3RPdGnJuHa6UZWq35KCpyaVHGyCaODac/QUtV1upNldHnua2XALtwvsINeDu+Lbsqg5PAb8x5vBIy+s=
+before_install:
+- npm install -g bower
+- npm install -g grunt-cli
+- npm install -g karma
+- bower install
+deploy:
+  - provider: script
+    script: npm run release -- --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+    skip_cleanup: true 
+    on: 
+      repo: mwaylabs/uikit 
+  - provider: releases 
+    api_key: 
+      secure: ZljtUnE6ZaGgw/HWZGXF4n1baBj6vGn95FIhFOTVYFZJdkxgWfkvdvepSo7V2zGbyoTwayRjCgu367OsjaQdwjhKvuRMgZYuwLyWXdVeUyRQo7DoLRP+XRPXPM5knHL/wlG+emnUX5U3hzJpIhh+Jcu6HWGEyMRXZAE9LkiC4u3ZN558S/USbx923qCM42zW/Nd/mQVzf0FiEbKOm/zcPTvqAYHmSJEB3nBVVOROQ/snQvLZ1Xxf1/VhouckrnSEyAch97o/M6F5FyEicdDzEknZKMKWRCD8xopBAX0re6ET9uLfpdA0TIh1a1Ec7xb9t1ZNiJ6zHN+KyyrcIpWPnJZr/O0SxxikOMEQqVxxUd3zKGjTm3TRrQBWYgHa15VjDL4AfqJ8QrTa3q1zLv2g/94peUcckyC7C3MIdGep3KwZX/JWuzuhSfe9v/nqgbEs4mnKvzZSuA7IaQnGX/ZbpwdToA4Y1Yu5nRG68HRbYSPJW3ntw46WckXOklCW2N5OXby1K0GK1PNYEHeNMq4nFXF6EZtWOX8FdnKzAENy1hsl5mVM4jw5HRDic1spAw2k7EQP69k6kMyC9DKiwaD7PcxdS+Gp+l04fOlcAhlmm7Yikh1pIJG+2lsInIQRekvtUs+t1zBBcyJmYSWM8VItT1YHXp4tIwuV1vKQwatEEZM=
+    file: zip/*.zip
+    skip_cleanup: true 
+    file_glob: true 
+    on: 
+      tags: true
+  - provider: npm
+    email: a.zarges@mwaysolutions.com
+    api_key:
+      secure: RmhcogeQ5XJ5LCG7v9LRd3WOB6BJW0b+7YE3+dk5UkfMgYVIu3sKccWfvv2+O0RV0+5VG8qyuJ5AK07AzVWIW+UIA/slaI9dU7rcl2/+sUT2tmQ0CTF44wvrbfB5e921zfxZTM7iqG4UxRea2RHtjQDi1nHRs9GsMicv/IN8lFFK7NZQv3QeOT23sewE7STXg6cbhSzQh1In3l+wOzv7+e8PjK9NFCOCXmSSKp2keTgFu9sdH8rLUQAo3ervSzgQW0Qtreey7IloD7vKgZP6WpI5Xj4+m6ck+D5z6QZ8+ht3u+7y8IHLJAmswyJcha0j8e18dMeZxa5qZuwzWu1r1Jr5wNKY6UuJ91hB0dedYfp5Kmq7+a2tIvQKOyO4UNfTCZAMa+Gou2RTDzhbCRph3gCkPmp/EAh68qsbdrdODvvfeL0w51eAukIWtbl7VL3vexpMNPuZcdf1liEmF0x80iLk5WqHlY56sFnjHyFLoBL5F73jHGXTQDF+SzHkJMA8O/Ohd1XJmIt6RFxDASlp/Sz5ebG2b3qTEgde10UtRuC6GXqnCXVnusdxBrRS6zNQeSjdTnWGqo1ugUQL+NEb9OwIR4SuL3V6PfR59sZXrQD0f7JoRhoEnODVBZLBdXrRbveIMo0g2PCdyBcmn0PRwWxLUJkbEW1KHduUeD2VqDQ=
+    on:
+      tags: true

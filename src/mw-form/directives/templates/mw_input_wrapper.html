@@ -1,0 +1,35 @@
+<div class="mw-input-wrapper form-group input-{{getType()}}"
+     ng-model-errors
+     ng-class="{
+      'is-required': isRequired(),
+      'is-focused': isFocused(),
+      'is-touched': isTouched(),
+      'is-dirty': isDirty(),
+      'is-invalid': !isValid(),
+      'is-required-error':hasRequiredError(),
+      'has-error': hasError()
+     }">
+
+  <div class="clearfix">
+
+    <label ng-if="label"
+           class="col-sm-3 control-label">
+      {{ label }}
+      <span ng-if="tooltip" mw-tooltip="{{ tooltip }}">
+        <span mw-icon="mwUI.questionCircle"></span>
+      </span>
+
+    </label>
+
+    <div class="input-holder"
+         ng-class="{ true: 'col-sm-6 col-lg-5', false: 'col-sm-12' }[label.length > 0]"
+         ng-transclude></div>
+
+  </div>
+
+  <div ng-if="!hideErrors"
+       ng-class="{ true: 'col-sm-6 col-sm-offset-3', false: 'col-sm-12' }[label.length > 0]">
+    <div mw-error-messages></div>
+  </div>
+
+</div>

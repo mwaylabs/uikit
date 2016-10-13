@@ -1,0 +1,13 @@
+<div>
+  <div ng-if="!showEmptyState()" ng-transclude></div>
+  <div ng-if="showEmptyState()"
+       class="mw-empty-state">
+    <img src="images/logo-grey.png">
+    <h2 class="lead">{{ text | i18n }}</h2>
+    <div ng-if="buttonText">
+      <button class="btn btn-primary btn-large" ng-click="button()">
+        {{buttonText}}
+      </button>
+    </div>
+  </div>
+</div>

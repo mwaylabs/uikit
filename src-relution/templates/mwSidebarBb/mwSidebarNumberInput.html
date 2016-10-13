@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="col-md-12 form-group"
+       ng-class="{'has-error': !isValid()}"
+       style="margin-bottom: 0">
+    <input type="number"
+           ng-if="!customUrlParameter"
+           class="form-control"
+           ng-model="viewModel.val"
+           ng-change="changed()"
+           ng-disabled="mwDisabled"
+           placeholder="{{placeholder}}"
+           min="{{min}}"
+           max="{{max}}"
+           ng-model-options="{ debounce: 500 }">
+    </input>
+
+    <input type="number"
+           ng-if="customUrlParameter"
+           class="form-control"
+           ng-model="viewModel.val"
+           ng-change="changed()"
+           ng-disabled="mwDisabled"
+           placeholder="{{placeholder}}"
+           min="{{min}}"
+           max="{{max}}"
+           ng-model-options="{ debounce: 500 }">
+    </input>
+  </div>
+</div>

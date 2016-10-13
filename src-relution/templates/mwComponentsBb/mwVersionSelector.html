@@ -1,0 +1,16 @@
+<div class="btn-group mw-version-selector">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <span class="descriptor">Version </span>
+    <span class="descriptor-sm">V. </span>
+    {{currentVersionModel.attributes[versionNumberKey]}}
+    <span ng-if="currentVersionModel.attributes.published" mw-icon="rln-icon published"></span>
+  </button>
+  <ul class="version-dropdown dropdown-menu pull-right" style="min-width:100%" role="menu">
+    <li ng-repeat="version in versionCollection.models" ng-class="{active:(version.attributes.uuid === currentVersionModel.attributes.uuid)}">
+      <a ng-href="{{getUrl(version.attributes.uuid)}}">
+        {{version.attributes[versionNumberKey]}}
+        <span ng-if="version.attributes.published" mw-icon="rln-icon published"></span>
+      </a>
+    </li>
+  </ul>
+</div>

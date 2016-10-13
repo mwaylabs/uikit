@@ -1,0 +1,12 @@
+<input ng-if="!isSingleSelection"
+       type="checkbox"
+       ng-click="click(item, $event)"
+       ng-disabled="item.selectable.isDisabled()"
+       ng-checked="item.selectable.isSelected()">
+
+<input ng-if="isSingleSelection"
+       type="radio"
+       name="{{selectable.id}}"
+       ng-click="click(item, $event)"
+       ng-disabled="item.selectable.isDisabled()"
+       ng-checked="item.selectable.isSelected()">

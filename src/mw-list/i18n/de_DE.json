@@ -1,0 +1,18 @@
+{
+  "List": {
+    "mwListHead": {
+      "items": "Einträge",
+      "selectAll": "Alle selektieren",
+      "clearSelection": "Selektion aufheben",
+      "itemSelected": "{{name}} ist selektiert",
+      "itemsSelected": "{{count}} {{name}} sind selektiert",
+      "itemAmount": "{{count}} {{name}}",
+      "searchFor": "{{name}} suchen",
+      "notAvailable": "N/V",
+      "notAvailableTooltip": "Der Eintrag ist nicht verfügbar. Eventuell wurde dieser gelöscht."
+    },
+    "mwListFooter": {
+      "noneFound": "Es wurden keine Einträge gefunden"
+    }
+  }
+}

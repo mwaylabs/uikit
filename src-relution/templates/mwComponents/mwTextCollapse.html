@@ -1,0 +1,14 @@
+<div ng-if="markdown">
+  <div mw-markdown="text()"></div>
+  <a ng-if="showButton"
+     ng-click="toggleLength()"
+     style="cursor: pointer">{{ showLessOrMore() | i18n }}</a>
+</div>
+
+<div ng-if="!markdown">
+  <span class="line-break">{{ text() }}</span>
+  <a ng-if="showButton"
+     ng-click="toggleLength()"
+     style="cursor: pointer">{{ showLessOrMore() | i18n }}</a>
+</div>
+

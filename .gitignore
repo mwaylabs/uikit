@@ -1,0 +1,12 @@
+node_modules
+libs
+.tmp
+.sass-cache
+.DS_Store
+.idea
+
+zip
+dist
+sample_portal/node_modules
+sample_portal/app/components
+sample_portal/app/fonts

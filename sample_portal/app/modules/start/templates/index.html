@@ -1,0 +1,81 @@
+<div mw-row-layout
+     class="container" style="width: 100%">
+
+  <div mw-row mw-header title="{{'start.index.title' | i18n }}" mw-title-icon="fa.user">
+    <button class="btn btn-default">Jo</button>
+  </div>
+
+  <div mw-row mw-body mw-extend>
+
+    <div class="row">
+      <div class="col-md-3">
+        <a href="#/start/new" class="btn btn-primary btn-block"
+                ng-click="SICtrl.openTestModal()">
+          New
+        </a>
+
+        <button class="btn btn-default btn-block"
+                ng-click="SICtrl.openTestModal()">
+          Open Modal
+        </button>
+
+        <button class="btn btn-default btn-block"
+                ng-click="SICtrl.showToast()">
+          Show Toast
+        </button>
+
+        <div mw-button-help>
+          <button class="btn btn-default btn-block" ng-disabled="SICtrl.collection.selectable.getSelected().length<1">
+            Execute action on selection
+          </button>
+       <span mw-button-help-condition="SICtrl.collection.selectable.getSelected().length < 1"
+             mw-button-help-text="No item is selected"></span>
+        </div>
+
+      </div>
+
+      <div class="col-md-9" mw-column>
+
+        <div mw-listable-head-2
+             collection="SICtrl.collection"
+             collection-name="Tests"
+             name-attribute="name"
+             search-attribute="name"></div>
+
+        <table mw-listable-bb
+               collection="SICtrl.collection"
+               mw-infinite-scroll>
+          <thead>
+          <tr mw-listable-header-row-bb>
+            <th mw-listable-header-bb
+                width="30%"
+                sort="name">
+              Name
+            </th>
+            <th mw-listable-header-bb
+                class="hidden-xs"
+                width="70%"
+                sort="description">
+              Description
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr mw-listable-body-row-bb
+              ng-repeat="item in SICtrl.collection.models">
+            <td class="primary-column">
+              <a href="#/start/details">{{ item.attributes.name }}</a>
+            </td>
+            <td class="truncated hidden-xs">{{ item.attributes.description }}</td>
+            <td mw-listable-link-show-bb="#/start/details"></td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

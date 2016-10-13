@@ -1,0 +1,17 @@
+<tr class="mw-list-footer">
+  <td colspan="{{ columns.length + 4 }}">
+
+    <div ng-if="showSpinner()">
+      <div mw-spinner></div>
+    </div>
+
+    <div ng-if="collection.models.length < 1"
+        class="text-center">
+      <p class="lead">{{ 'List.mwListFooter.noneFound' | i18n }}</p>
+    </div>
+  </td>
+</tr>
+
+
+
+

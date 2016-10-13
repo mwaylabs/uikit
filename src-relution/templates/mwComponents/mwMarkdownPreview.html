@@ -1,0 +1,18 @@
+<div class="toggler text-right text-muted">
+  <span ng-click="showPreview = !showPreview"
+        title="Show Markdown Preview">{{ showPreview ? 'common.hidePreview' : 'common.showMarkdownPreview' | i18n }}
+  </span>
+  <a href="http://daringfireball.net/projects/markdown/syntax" target="_blank">
+    <span mw-popover="markdownTooltip"
+          popover-url="uikit/templates/mwComponents/_mwMarkdownPreviewPopoper.html"
+          popover-trigger="hover"
+          popover-position="bottom"
+          popover-title="Markdown Syntax">
+      <span mw-icon="fa-question-circle"></span>
+    </span>
+  </a>
+</div>
+
+<div ng-if="showPreview"
+     class="preview"
+     mw-markdown="mwModel"></div>
