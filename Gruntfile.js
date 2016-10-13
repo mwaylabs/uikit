@@ -220,16 +220,8 @@ module.exports = function (grunt) {
         },
         command: function(){
           return [
-            'git config user.name "Bob Builder"',
-            'git config user.email "info@mwaysolutions.com"',
-            'git fetch',
-            'if [ `git branch --list release` ]; then git checkout release; else git checkout --orphan release; fi',
-            'git reset',
-            'git add dist/* -f',
-            'git commit -m "release build v' + uikitConfig.getReleaseNameWithBuildNum()+'"',
-            'git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" release  > /dev/null 2>&1',
-            'git tag ' + uikitConfig.getReleaseNameWithBuildNum(),
-            'git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ' + uikitConfig.getReleaseNameWithBuildNum() + ' > /dev/null 2>&1'
+            'VERSION_NUMBER='+uikitConfig.getversionWithBuildNumber(),
+            './bin/git_release.sh'
           ].join('&&');
         }
       }
