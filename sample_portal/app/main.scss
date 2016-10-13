@@ -1,0 +1,8 @@
+@import "compass/css3";
+@import "font-awesome/scss/font-awesome";
+@import "sass-bootstrap/lib/bootstrap";
+@import "../../src/mw_ui";
+
+.app {
+  @import "modules/start/start";
+}

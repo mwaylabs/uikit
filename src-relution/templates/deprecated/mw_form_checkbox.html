@@ -1,0 +1,24 @@
+<div>
+  <div ng-if="!typedBadges || typedBadges.length===0"
+       mw-checkbox-wrapper
+       label="{{label}}"
+       tooltip="{{tooltip}}">
+    <div ng-transclude></div>
+  </div>
+
+  <div ng-if="typedBadges && typedBadges.length>0"
+       mw-checkbox-wrapper>
+      <label>
+        <div ng-transclude class="input-holder"></div>
+        <span class="text-holder" style="padding-left: 5px">{{ label }}</span>
+        <span ng-if="tooltip" mw-icon="rln-icon support" tooltip="{{ tooltip }}"></span>
+      </label>
+      <div class="badges-holder">
+        <span ng-repeat="badge in typedBadges"
+              mw-badge="{{badge.type}}"
+              style="top: 0">
+        {{ badge.text }}
+      </span>
+    </div>
+  </div>
+</div>

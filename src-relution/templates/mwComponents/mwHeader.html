@@ -1,0 +1,47 @@
+<div class="mw-header">
+
+  <div ng-if="showBackButton"
+       class="back-btn clickable"
+       data-text="{{'common.back' | i18n}}"
+       ng-click="back()">
+          <span mw-icon="fa-angle-left">
+          </span>
+  </div>
+
+  <div class="title-holder">
+    <span mw-icon="{{mwTitleIcon}}"
+          class="header-icon"
+          ng-if="mwTitleIcon">
+    </span>
+
+    <div ng-if="mwBreadCrumbs"
+         mw-bread-crumbs-holder>
+      <div ng-repeat="breadCrumb in mwBreadCrumbs"
+           mw-bread-crumb
+           url="{{breadCrumb.url}}"
+           title="{{breadCrumb.title}}"
+           show-arrow="true">
+      </div>
+    </div>
+
+    <h1 class="lead page-title"
+        ng-click="refresh()">
+      {{title}}
+    </h1>
+  </div>
+
+  <div ng-if="warningCondition"
+       class="warnin-content"
+       mw-tooltip="{{ warningText }}">
+          <span class="text-warning"
+                mw-icon="fa-warning">
+          </span>
+          <span class="popover-container">
+          </span>
+  </div>
+
+  <div class="additional-content-holder"
+       ng-transclude>
+  </div>
+
+</div>

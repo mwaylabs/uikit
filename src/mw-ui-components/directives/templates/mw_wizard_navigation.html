@@ -1,0 +1,19 @@
+<div class="mw-wizard-navigation">
+  <button class="btn btn-default"
+          ng-disabled="!wizard.hasPreviousStep()"
+          ng-click="wizard.back()">
+    Previous
+  </button>
+  <button class="btn btn-primary"
+          ng-if="wizard.hasNextStep() || (!wizard.hasNextStep() && !finishedAction)"
+          ng-disabled="!wizard.hasNextStep()"
+          ng-click="wizard.next()">
+    Next
+  </button>
+  <button class="btn btn-primary"
+          ng-if="!wizard.hasNextStep() && finishedAction"
+          ng-click="finish()">
+    OK
+  </button>
+  <div class="extra-content" ng-transclude></div>
+</div>

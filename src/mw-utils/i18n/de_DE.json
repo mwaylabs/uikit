@@ -1,0 +1,11 @@
+{
+  "Utils": {
+    "ok": "Ok",
+    "cancel": "Abbrechen",
+    "mwLeaveConfirmationModal": {
+      "title": "Möchten Sie wirklich die aktuelle Seite verlassen?",
+      "continue": "Fortfahren",
+      "stay": "Auf Seite bleiben"
+    }
+  }
+}

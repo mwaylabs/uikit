@@ -1,0 +1,26 @@
+<div class="mw-form mw-actions">
+
+  <div class="btn-group">
+    <button type="button"
+            class="btn btn-danger"
+            ng-if="hasCancel && _showCancel"
+            ng-disabled="form.$pristine && executeDefaultCancel"
+            ng-click="cancelFacade()">
+      <span mw-icon="rln-icon close_cross"></span>
+      <span class="action-text cancel">
+        {{ 'common.cancel' | i18n }}
+      </span>
+    </button>
+    <button type="button"
+            class="btn btn-primary"
+            ng-click="saveFacade()"
+            ng-if="hasSave && _showSave"
+            ng-disabled="form.$invalid || isLoading() || (form.$pristine && executeDefaultCancel)">
+      <span mw-icon="rln-icon check"></span>
+      <span class="action-text save">
+        {{ 'common.save' | i18n }}
+      </span>
+    </button>
+  </div>
+
+</div>

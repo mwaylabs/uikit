@@ -1,0 +1,21 @@
+<div class="row mw-filterable-search" ng-class="{'has-value':hasValue()}">
+  <div class="input-holder input-group">
+    <span class="input-group-addon clickable" ng-click="focus()">
+      <span mw-icon="fa-search"
+            ng-class="{searching:searching}"
+            class="search-icon"></span>
+      <span ng-click="reset()"
+            mw-prevent-default="click"
+            mw-stop-propagation="click"
+            mw-icon="rln-icon close_cross"
+            class="reset-icon red clickable"></span>
+    </span>
+    <input type="text"
+           placeholder="{{placeholder || ('common.search' | i18n)}}"
+           ng-keyup="keyUp($event)"
+           ng-model="viewModel.searchVal"
+           ng-change="search($event)"
+           ng-model-options="{ debounce: 500 }"
+           ng-disabled="mwDisabled">
+  </div>
+</div>

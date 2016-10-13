@@ -1,0 +1,13 @@
+<select class="form-control mw-form-select"
+        mw-custom-select
+        ng-model="viewModel.val"
+        ng-change="mwChange({selectedModel:getSelectedModel(viewModel.val)})"
+        ng-options="getKey(option) as getLabel(option) for option in mwOptionsCollection.models"
+        ng-disabled="mwDisabled"
+        ng-required="mwRequired"
+        name="{{name}}">
+
+  <option ng-if="mwPlaceholder" value=""  disabled>{{mwPlaceholder}}</option>
+
+</select>
+

@@ -1,0 +1,24 @@
+<div ng-form>
+  <div ng-class="{'has-error': showRequiredMessage()}">
+
+    <div class="checkbox" ng-repeat="(key,value) in filter(options)">
+      <label>
+        <input type="checkbox"
+               name="selectOption"
+               ng-checked="model.indexOf(key) >= 0"
+               ng-click="toggleKeyIntoModelArray(key); setDirty()"> {{ value }}
+      </label>
+    </div>
+
+    <div mw-form-input>
+      <input type="hidden" name="requireChecker" ng-model="model[0]" ng-required="mwRequired">
+    </div>
+
+    <!--<div ng-class="col-sm-12">-->
+      <!--<span class="help-block" ng-show="showRequiredMessage()">{{'errors.isRequired' | i18n}}</span>-->
+    <!--</div>-->
+
+    <div ng-show="getObjectSize(filter(options)) == 0" ng-transclude></div>
+
+  </div>
+</div>

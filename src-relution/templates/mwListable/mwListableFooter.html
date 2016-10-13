@@ -1,0 +1,18 @@
+<tr>
+  <td colspan="{{ columns.length + 4 }}">
+    <div ng-if=" (!filterable.items() && filterable) || (filterable.items().length < filterable.total() && Loading.isLoading()) ">
+      <div rln-spinner></div>
+    </div>
+
+    <div ng-if="filterable.items().length < 1"
+        class="text-center">
+      <p class="lead">{{ 'common.noneFound' | i18n }}</p>
+    </div>
+
+    <button ng-if="filterable.items().length < filterable.total() && !Loading.isLoading()"
+            class="btn btn-default btn-lg col-md-12"
+            ng-click="filterable.loadMore()">
+      {{ 'common.loadMore' | i18n }}
+    </button>
+  </td>
+</tr>

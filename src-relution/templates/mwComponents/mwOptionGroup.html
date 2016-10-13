@@ -1,0 +1,23 @@
+<div class="mw-option-group panel panel-default">
+  <fieldset ng-disabled="mwDisabled">
+    <div class="panel-body">
+      <span ng-transclude></span>
+
+      <label class="options-container display-inline clickable" ng-class="{'with-icon':icon}" for="{{randomId}}">
+        <div class="clearfix">
+
+          <div ng-if="icon"
+               class="col-md-1 icon-holder">
+            <span mw-icon="{{icon}}"></span>
+          </div>
+          <div class="description" ng-class="{'col-md-11': icon, 'col-md-12': !icon}">
+            <h4>{{title}}</h4>
+
+            <p>{{description}}</p>
+          </div>
+        </div>
+      </label>
+    </div>
+  </fieldset>
+</div>
+

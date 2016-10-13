@@ -1,0 +1,116 @@
+<fieldset>
+
+  <div mw-input-wrapper
+       label="Name"
+       tooltip="Extended information if you want to explain more. This tooltip is optional"
+       hide-errors="false">
+    <input type="text"
+           ng-model="SFCtrl.name"
+           mw-model="SFCtrl.model"
+           ng-minlength="10"
+           ng-maxlength="12"
+           required>
+    <div mw-alert="info">This is just a simple info text. This is optional you can transclude it if you want</div>
+  </div>
+
+  <div mw-input-wrapper
+       label="Url"
+       tooltip="This input is validated if it is a valid url. The validation error is displayed"
+       hide-errors="false">
+    <input type="url"
+           ng-model="SFCtrl.url"
+           mw-model="SFCtrl.model"
+           required>
+  </div>
+
+  <div mw-input-wrapper
+       label="Url"
+       tooltip="This input is validated if it is a valid url. The validation error is displayed"
+       hide-errors="false">
+    <button ng-click="SFCtrl.url2='ABCDEF'">Click</button>
+    <input type="text"
+           ng-model="SFCtrl.url2"
+           mw-model="SFCtrl.model"
+           minlength="30"
+           required>
+  </div>
+
+  <div mw-input-wrapper
+       label="Number">
+    <input type="number"
+           min="5"
+           max="6"
+           ng-model="number"
+           mw-model="SFCtrl.model"
+           required>
+    <span mw-badge="primary">Optional Badge</span>
+  </div>
+
+  <div mw-input-wrapper
+       label="Selectbox">
+    <select ng-options="item as item.label for item in SFCtrl.viewModel.selectOptions track by item.id"
+            ng-model="select"
+            mw-model="SFCtrl.model"></select>
+  </div>
+
+  <div mw-input-wrapper
+       label="Checkbox">
+    <input type="checkbox"
+           ng-model="checkbox"
+           mw-model="SFCtrl.model">
+    <span mw-badge="primary">Badge</span>
+  </div>
+
+  <div mw-input-wrapper
+       label="Radio Group">
+    <label>
+      <input type="radio" ng-model="radio" mw-model="SFCtrl.model" value="val_a" required>
+      Value A
+    </label><br/>
+    <label>
+      <input type="radio" ng-model="radio" mw-model="SFCtrl.model" value="val_b" required>
+      Value B
+    </label><br/>
+    <label>
+      <input type="radio" ng-model="radio" mw-model="SFCtrl.model" value="val_c" required>
+      Value C
+    </label><br/>
+  </div>
+
+  <div mw-input-wrapper
+       label="Multi Checkboxes">
+    <div mw-checkbox-group
+         mw-options-collection="SFCtrl.viewModel.checkboxGroupOptionsCollection"
+         mw-options-label-key="label"
+         mw-collection="SFCtrl.model.get('checkboxGroup')"
+         mw-required="true"></div>
+  </div>
+
+  <div mw-input-wrapper
+       label="Multi Checkboxes">
+    <div mw-radio-group
+         mw-model="SFCtrl.model"
+         mw-model-attr="radioOption"
+         mw-options-collection="SFCtrl.viewModel.checkboxGroupOptionsCollection"
+         mw-options-key="id"
+         mw-options-label-key="label"
+         mw-required="true"></div>
+
+    {{SFCtrl.model}}
+  </div>
+
+  <div mw-input-wrapper
+       label="Multi Checkboxes">
+    <div mw-radio-group
+         mw-options-collection="SFCtrl.viewModel.checkboxGroupOptionsCollection"
+         mw-options-label-key="label"
+         mw-model="SFCtrl.model.get('selectedRadio')"
+         mw-required="true"></div>
+
+    {{SFCtrl.model}}
+  </div>
+
+</fieldset>
+
+<button ng-click="SFCtrl.model.save()" ng-disabled="startForm.$invalid">Save</button>
+

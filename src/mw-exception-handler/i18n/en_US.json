@@ -1,0 +1,12 @@
+{
+  "ExceptionHandler": {
+    "mwExceptionModal": {
+      "title": "Something went wrong",
+      "unknownError": "Unfortunatly something went wrong. You can report this error so we can fix it. Thank you.",
+      "userMessage": "You can leave some additional information to make it easier for us to reproduce the error",
+      "userMessagePlaceholder": "(Optional)",
+      "report": "Report error",
+      "thanks": "Thanks for your feedback. We will have a look at this error as soon as possible."
+    }
+  }
+}
