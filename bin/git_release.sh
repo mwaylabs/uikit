@@ -1,3 +1,5 @@
+set -e
+
 # Check if VERSION_NUMBER env variable is set. The version number will be set by grunt because
 # it is a combination of the version number of the package json, build number and commit hash
 if [ -z "$VERSION_NUMBER" ]
