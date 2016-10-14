@@ -42,6 +42,10 @@ CURRENT_GIT_USERMAIL=`git config user.email`
 git config user.name "Bob Builder"
 git config user.email "info@mwaysolutions.com"
 
+# We deactivate the gitignore for the release process because we have to commit the dist folder
+# that is actually ignored
+mv .gitignore .ignore_gitignore
+
 # We are switching branches soon so we remember the current branch
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ `git branch --list release` ]
