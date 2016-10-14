@@ -47,8 +47,8 @@ then
   mkdir -p /tmp/releases/uikit
   mv dist /tmp/releases/uikit
 
-  git checkout release;
-  git reset --hard origin_gh/release
+  git checkout origin_gh/release
+  git pull origin_gh release
 
   # The temp branch is selected after wards
   mv /tmp/releases/uikit ./dist
@@ -60,7 +60,6 @@ fi
 
 git add dist/* -f
 git commit -m "release version ${VERSION_NUMBER}"
-git pull origin_gh release
 git push origin_gh release --no-verify
 
 git tag v${VERSION_NUMBER}
