@@ -13,9 +13,21 @@ then
   exit -1
 fi
 
-echo Releasing version ${VERSION_NUMBER}...
+# Set or add the remote url for the github repo with the GH_TOKEN
+# The GH_TOKEN is a github personal access token https://github.com/settings/tokens
+# It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
+if git remote | grep origin_gh > /dev/null
+then
+  git remote set-url origin_gh ${GH_TOKEN}@${GH_REF}
+else
+  git remote add origin_gh ${GH_TOKEN}@${GH_REF}
+fi
 
-git remote set-url origin_gh ${GH_TOKEN}@${GH_REF}
+echo "##########################################"
+echo "#                                        #"
+echo "# Releasing version ${VERSION_NUMBER}... #"
+echo "#                                        #"
+echo "##########################################"
 
 # This replaces the current commiter for the release
 # The current commiter is saved so we can set it correctly after the process
@@ -54,10 +66,10 @@ else
   git commit -m 'release version ${VERSION_NUMBER}'
 fi
 
-git push origin_gh release
+#git push origin_gh release
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER}
+#git push origin_gh v${VERSION_NUMBER}
 
 # Setting everything back to the beginning
 
@@ -69,4 +81,3 @@ git config user.name "$CURRENT_GIT_USER"
 git config user.email "$CURRENT_GIT_USERMAIL"
 
 unset VERSION_NUMBER
-
