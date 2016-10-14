@@ -49,6 +49,7 @@ then
 
   git checkout release;
   git pull origin_gh release;
+  git reset --hard origin_gh/release
 
   # The temp branch is selected after wards
   mv /tmp/releases/uikit ./dist
@@ -60,10 +61,10 @@ fi
 
 git add dist/* -f
 git commit -m "release version ${VERSION_NUMBER}"
-git push origin_gh HEAD:release > /dev/null 2>&1
+git push origin_gh release
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER} > /dev/null 2>&1
+git push origin_gh v${VERSION_NUMBER}
 
 # Setting everything back to the beginning
 git checkout $CURRENT_BRANCH
