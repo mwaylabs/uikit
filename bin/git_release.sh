@@ -24,7 +24,7 @@ then
 else
   git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
 fi
-git pull origin_gh release
+git fetch
 
 echo "##########################################"
 echo "#                                        #"
@@ -59,6 +59,7 @@ then
   # We are checking out our release branch and do a cherry pick of our tmp release branch with a merge strategy
   # Every merge conflict is replaced with the state of our latest release from the temp branch
   git checkout release;
+  git pull origin release;
   git cherry-pick -X theirs $RELEASE_COMMIT_HASH
 
   # The temp branch is seleted after wards
