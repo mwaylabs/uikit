@@ -5,14 +5,14 @@ set -e
 if [ -z "$VERSION_NUMBER" ]
 then
   echo In order to release the env variable VERSION_NUMBER has to bet set!
-  exit -1
+  exit 1
 fi
 
 # Check if GH_REF, $GH_USER and GH_TOKEN env variables are set. They are configured in .travis.yml
 if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ] || [ -z "$GH_USER" ]
 then
   echo In order to release the env variable GH_REF, $GH_USER and GH_TOKEN has to be set!
-  exit -1
+  exit 1
 fi
 
 git init
@@ -74,10 +74,10 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push origin_gh HEAD:release > /dev/null 2>&1 || echo "Failed to push to release branch" && exit -1
+git push origin_gh HEAD:release > /dev/null 2>&1 || $(echo "Failed to push to release branch" && exit 1)
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || echo "Failed to push tag" && exit -1
+git push origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || $(echo "Failed to push tag" && exit 1)
 
 # Setting everything back to the beginning
 
