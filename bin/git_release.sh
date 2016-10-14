@@ -24,7 +24,7 @@ then
 else
   git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
 fi
-git fetch origin_gh && git reset origin_gh/release
+git pull origin_gh release
 
 echo "##########################################"
 echo "#                                        #"
@@ -70,10 +70,10 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push origin_gh release > /dev/null
+git push --quiet origin_gh release > /dev/null
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER} > /dev/null
+git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null
 
 # Setting everything back to the beginning
 
