@@ -1,3 +1,5 @@
+set -e
+
 # Check if VERSION_NUMBER env variable is set. The version number will be set by grunt because
 # it is a combination of the version number of the package json, build number and commit hash
 if [ -z "$VERSION_NUMBER" ]
@@ -59,7 +61,7 @@ then
   # We are checking out our release branch and do a cherry pick of our tmp release branch with a merge strategy
   # Every merge conflict is replaced with the state of our latest release from the temp branch
   git checkout release;
-  git pull origin release;
+  git pull origin_gh release;
   git cherry-pick -X theirs $RELEASE_COMMIT_HASH
 
   # The temp branch is seleted after wards
@@ -71,10 +73,10 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push --quiet origin_gh release > /dev/null
+git push --quiet origin_gh release > /dev/null 2>&1
 
 git tag v${VERSION_NUMBER}
-git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null
+git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null 2>&1
 
 # Setting everything back to the beginning
 
