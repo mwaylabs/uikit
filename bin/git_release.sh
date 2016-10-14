@@ -73,10 +73,20 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push --quiet origin_gh HEAD:release > /dev/null 2>&1 || echo "\e[31m Failed to push to release branch"
+PUSH_ERROR=$( git push --quiet origin_gh HEAD:release 2>&1 )
+if [ "$PUSH_ERROR" ]
+then
+ echo "Failed to push to release branch"
+ exit -1
+fi
 
 git tag v${VERSION_NUMBER}
-git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || echo "\e[31m Failed to push tag"
+TAG_ERROR=$( git push --quiet origin_gh v${VERSION_NUMBER} 2>&1 )
+if [ "$TAG_ERROR" ]
+then
+ echo "Failed to push tag v$VERSION_NUMBER"
+ exit -1
+fi
 
 # Setting everything back to the beginning
 
@@ -86,8 +96,6 @@ mv .ignore_gitignore .gitignore
 
 git config user.name "$CURRENT_GIT_USER"
 git config user.email "$CURRENT_GIT_USERMAIL"
-
-unset VERSION_NUMBER
 
 echo "##########################################"
 echo "#                                        #"
