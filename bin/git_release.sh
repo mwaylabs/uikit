@@ -62,6 +62,7 @@ then
   # Every merge conflict is replaced with the state of our latest release from the temp branch
   git checkout release;
   git pull origin_gh release;
+  git reset --hard origin_gh/release
   git cherry-pick -X theirs $RELEASE_COMMIT_HASH
 
   # The temp branch is seleted after wards
@@ -73,7 +74,7 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-PUSH_ERROR=$( git push --quiet origin_gh HEAD:release 2>&1 )
+PUSH_ERROR=$( git push origin_gh HEAD:release /dev/null 2>&1 )
 if [ "$PUSH_ERROR" ]
 then
  echo "Failed to push to release branch"
@@ -81,7 +82,7 @@ then
 fi
 
 git tag v${VERSION_NUMBER}
-TAG_ERROR=$( git push --quiet origin_gh v${VERSION_NUMBER} 2>&1 )
+TAG_ERROR=$( git push origin_gh v${VERSION_NUMBER} /dev/null 2>&1 )
 if [ "$TAG_ERROR" ]
 then
  echo "Failed to push tag v$VERSION_NUMBER"
