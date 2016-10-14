@@ -74,10 +74,10 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push origin_gh HEAD:release > /dev/null 2>&1 || $(echo "Failed to push to release branch" && exit 1)
+git push origin_gh HEAD:release > /dev/null 2>&1 || echo "Failed to push to release branch" && exit 1
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || $(echo "Failed to push tag" && exit 1)
+git push origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || echo "Failed to push tag" && exit 1
 
 # Setting everything back to the beginning
 
