@@ -48,7 +48,7 @@ then
   mv dist /tmp/releases/uikit
 
   git checkout origin_gh/release
-  git pull origin_gh release
+  git pull origin_gh/release
 
   # The temp branch is selected after wards
   mv /tmp/releases/uikit ./dist
