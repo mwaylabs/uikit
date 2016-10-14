@@ -18,9 +18,9 @@ fi
 # It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
 if git remote | grep origin_gh > /dev/null
 then
-  git remote set-url origin_gh https://${GH_USER}:${GH_TOKEN}@${GH_REF}
+  git remote set-url origin_gh https://${GH_TOKEN}@${GH_REF}
 else
-  git remote add origin_gh https://${GH_USER}:${GH_TOKEN}@${GH_REF}
+  git remote add origin_gh https://${GH_TOKEN}@${GH_REF}
 fi
 
 echo "##########################################"
@@ -48,6 +48,7 @@ then
   # We create a new temp branch where we are commiting the current dist state
   # The commit hash is rembered so we can cherry pick it later in our actual release branch
   git checkout --orphan __tmp_release
+  git reset
   git add dist/*
   git commit -m "release version ${VERSION_NUMBER}"
   RELEASE_COMMIT_HASH=`git rev-parse HEAD`
