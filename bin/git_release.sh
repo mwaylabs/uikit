@@ -42,38 +42,27 @@ CURRENT_GIT_USERMAIL=`git config user.email`
 git config user.name "Bob Builder"
 git config user.email "info@mwaysolutions.com"
 
-# We deactivate the gitignore for the release process because we have to commit the dist folder
-# that is actually ignored
-mv .gitignore .ignore_gitignore
-
 # We are switching branches soon so we remember the current branch
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ `git branch --list release` ]
 then
-  # We create a new temp branch where we are commiting the current dist state
-  # The commit hash is rembered so we can cherry pick it later in our actual release branch
-  git checkout --orphan __tmp_release
-  git reset
-  git add dist/*
-  git commit -m "release version ${VERSION_NUMBER}"
-  RELEASE_COMMIT_HASH=`git rev-parse HEAD`
+  mkdir -p /tmp/releases/uikit
+  mv dist /tmp/releases/uikit
 
   # We are checking out our release branch and do a cherry pick of our tmp release branch with a merge strategy
   # Every merge conflict is replaced with the state of our latest release from the temp branch
   git checkout release;
-  git pull origin_gh release;
-  git reset --hard origin_gh/release
-  git cherry-pick -X theirs $RELEASE_COMMIT_HASH
 
   # The temp branch is seleted after wards
-  git branch -D __tmp_release
+  mv /tmp/releases/uikit ./dist
+  rm -rf /tmp/releases/uikit
 else
   git checkout --orphan release
   git reset
-  git add dist/*
-  git commit -m "release version ${VERSION_NUMBER}"
 fi
 
+git add dist/*
+  git commit -m "release version ${VERSION_NUMBER}"
 git push origin_gh HEAD:release > /dev/null 2>&1 || echo "Failed to push to release branch" && exit 1
 
 git tag v${VERSION_NUMBER}
