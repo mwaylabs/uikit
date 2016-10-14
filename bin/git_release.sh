@@ -22,6 +22,7 @@ then
 else
   git remote add origin_gh https://${GH_TOKEN}@${GH_REF}
 fi
+git fetch origin_gh && git reset origin_gh/release
 
 echo "##########################################"
 echo "#                                        #"
