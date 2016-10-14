@@ -1,13 +1,33 @@
-# Check if version number is set. The version number will be set by grunt because
+# Check if VERSION_NUMBER env variable is set. The version number will be set by grunt because
 # it is a combination of the version number of the package json, build number and commit hash
-# grunt sets the version number as environment variable
 if [ -z "$VERSION_NUMBER" ]
 then
-  echo In order to release a version number has to bet set!
+  echo In order to release the env variable VERSION_NUMBER has to bet set!
   exit -1
-else
-  echo Releasing version ${VERSION_NUMBER}...
 fi
+
+# Check if GH_REF, $GH_USER and GH_TOKEN env variables are set. They are configured in .travis.yml
+if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ] || [ -z "$GH_USER" ]
+then
+  echo In order to release the env variable GH_REF, $GH_USER and GH_TOKEN has to be set!
+  exit -1
+fi
+
+# Set or add the remote url for the github repo with the GH_TOKEN
+# The GH_TOKEN is a github personal access token https://github.com/settings/tokens
+# It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
+if git remote | grep origin_gh > /dev/null
+then
+  git remote set-url origin_gh https://${GH_USER}:${GH_TOKEN}@${GH_REF}
+else
+  git remote add origin_gh https://${GH_USER}:${GH_TOKEN}@${GH_REF}
+fi
+
+echo "##########################################"
+echo "#                                        #"
+echo "# Releasing version ${VERSION_NUMBER}... #"
+echo "#                                        #"
+echo "##########################################"
 
 # This replaces the current commiter for the release
 # The current commiter is saved so we can set it correctly after the process
@@ -21,7 +41,7 @@ git config user.email "info@mwaysolutions.com"
 # that is actually ignored
 mv .gitignore .ignore_gitignore
 
-# We are switching branches soon so we remeber the current branch
+# We are switching branches soon so we remember the current branch
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ `git branch --list release` ]
 then
@@ -43,13 +63,13 @@ else
   git checkout --orphan release
   git reset
   git add dist/*
-  git commit -m 'release version ${VERSION_NUMBER}'
+  git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push --quiet "https://${GH_TOKEN}@${GH_REF}" release  > /dev/null 2>&1
+git push origin_gh release > /dev/null
 
 git tag v${VERSION_NUMBER}
-git push --quiet "https://${GH_TOKEN}@${GH_REF}" v${VERSION_NUMBER} > /dev/null 2>&1
+git push origin_gh v${VERSION_NUMBER} > /dev/null
 
 # Setting everything back to the beginning
 
@@ -61,4 +81,3 @@ git config user.name "$CURRENT_GIT_USER"
 git config user.email "$CURRENT_GIT_USERMAIL"
 
 unset VERSION_NUMBER
-
