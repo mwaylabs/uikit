@@ -77,6 +77,7 @@ git push --quiet origin_gh HEAD:release > /dev/null 2>&1 || echo "\e[31m Failed 
 
 git tag v${VERSION_NUMBER}
 git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || echo "\e[31m Failed to push tag"
+git reset --hard origin_gh
 
 # Setting everything back to the beginning
 
