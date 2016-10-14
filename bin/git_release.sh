@@ -6,10 +6,10 @@ then
   exit -1
 fi
 
-# Check if GH_REF and GH_TOKEN env variables are set. They are configured in .travis.yml
-if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ]
+# Check if GH_REF, $GH_USER and GH_TOKEN env variables are set. They are configured in .travis.yml
+if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ] || [ -z "$GH_USER" ]
 then
-  echo In order to release the env variable GH_REF and GH_TOKEN has to be set!
+  echo In order to release the env variable GH_REF, $GH_USER and GH_TOKEN has to be set!
   exit -1
 fi
 
@@ -18,9 +18,9 @@ fi
 # It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
 if git remote | grep origin_gh > /dev/null
 then
-  git remote set-url origin_gh ${GH_TOKEN}@${GH_REF}
+  git remote set-url origin_gh https://${GH_USER}:${GH_TOKEN}@${GH_REF}
 else
-  git remote add origin_gh ${GH_TOKEN}@${GH_REF}
+  git remote add origin_gh https://${GH_USER}:${GH_TOKEN}@${GH_REF}
 fi
 
 echo "##########################################"
@@ -66,10 +66,10 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push origin_gh release
+git push origin_gh release > /dev/null
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER}
+git push origin_gh v${VERSION_NUMBER} > /dev/null
 
 # Setting everything back to the beginning
 
