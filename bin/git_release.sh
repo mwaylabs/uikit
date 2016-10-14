@@ -66,7 +66,8 @@ else
 fi
 
 git add dist/*
-  git commit -m "release version ${VERSION_NUMBER}"
+git commit -m "release version ${VERSION_NUMBER}"
+git status
 git push origin_gh HEAD:release > /dev/null 2>&1 || echo "Failed to push to release branch" && exit 1
 
 git tag v${VERSION_NUMBER}
