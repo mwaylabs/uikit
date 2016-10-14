@@ -63,13 +63,13 @@ else
   git checkout --orphan release
   git reset
   git add dist/*
-  git commit -m 'release version ${VERSION_NUMBER}'
+  git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-#git push origin_gh release
+git push origin_gh release
 
 git tag v${VERSION_NUMBER}
-#git push origin_gh v${VERSION_NUMBER}
+git push origin_gh v${VERSION_NUMBER}
 
 # Setting everything back to the beginning
 
