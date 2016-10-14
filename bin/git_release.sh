@@ -29,7 +29,7 @@ then
   # The commit hash is rembered so we can cherry pick it later in our actual release branch
   git checkout --orphan __tmp_release
   git add dist/*
-  git commit -m 'release version ${VERSION_NUMBER}'
+  git commit -m "release version ${VERSION_NUMBER}"
   RELEASE_COMMIT_HASH=`git rev-parse HEAD`
 
   # We are checking out our release branch and do a cherry pick of our tmp release branch with a merge strategy
