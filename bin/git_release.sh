@@ -71,10 +71,10 @@ else
   git commit -m "release version ${VERSION_NUMBER}"
 fi
 
-git push --quiet origin_gh HEAD:release > 2>&1 || echo "\e[31m Failed to push to release branch"
+git push --quiet origin_gh HEAD:release > /dev/null 2>&1 || echo "\e[31m Failed to push to release branch"
 
 git tag v${VERSION_NUMBER}
-git push --quiet origin_gh v${VERSION_NUMBER} > 2>&1 || echo "\e[31m Failed to push tag"
+git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || echo "\e[31m Failed to push tag"
 
 # Setting everything back to the beginning
 
