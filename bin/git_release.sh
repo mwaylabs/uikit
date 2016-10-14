@@ -77,7 +77,6 @@ git push --quiet origin_gh HEAD:release > /dev/null 2>&1 || echo "\e[31m Failed 
 
 git tag v${VERSION_NUMBER}
 git push --quiet origin_gh v${VERSION_NUMBER} > /dev/null 2>&1 || echo "\e[31m Failed to push tag"
-git reset --hard origin_gh/release
 
 # Setting everything back to the beginning
 
@@ -89,3 +88,9 @@ git config user.name "$CURRENT_GIT_USER"
 git config user.email "$CURRENT_GIT_USERMAIL"
 
 unset VERSION_NUMBER
+
+echo "##########################################"
+echo "#                                        #"
+echo "# Version ${VERSION_NUMBER} is released! #"
+echo "#                                        #"
+echo "##########################################"
