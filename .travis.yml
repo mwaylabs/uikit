@@ -24,10 +24,10 @@ deploy:
     skip_cleanup: true 
     file_glob: true 
     on: 
-      tags: true
+      repo: mwaylabs/uikit 
   - provider: npm
     email: a.zarges@mwaysolutions.com
     api_key:
       secure: RmhcogeQ5XJ5LCG7v9LRd3WOB6BJW0b+7YE3+dk5UkfMgYVIu3sKccWfvv2+O0RV0+5VG8qyuJ5AK07AzVWIW+UIA/slaI9dU7rcl2/+sUT2tmQ0CTF44wvrbfB5e921zfxZTM7iqG4UxRea2RHtjQDi1nHRs9GsMicv/IN8lFFK7NZQv3QeOT23sewE7STXg6cbhSzQh1In3l+wOzv7+e8PjK9NFCOCXmSSKp2keTgFu9sdH8rLUQAo3ervSzgQW0Qtreey7IloD7vKgZP6WpI5Xj4+m6ck+D5z6QZ8+ht3u+7y8IHLJAmswyJcha0j8e18dMeZxa5qZuwzWu1r1Jr5wNKY6UuJ91hB0dedYfp5Kmq7+a2tIvQKOyO4UNfTCZAMa+Gou2RTDzhbCRph3gCkPmp/EAh68qsbdrdODvvfeL0w51eAukIWtbl7VL3vexpMNPuZcdf1liEmF0x80iLk5WqHlY56sFnjHyFLoBL5F73jHGXTQDF+SzHkJMA8O/Ohd1XJmIt6RFxDASlp/Sz5ebG2b3qTEgde10UtRuC6GXqnCXVnusdxBrRS6zNQeSjdTnWGqo1ugUQL+NEb9OwIR4SuL3V6PfR59sZXrQD0f7JoRhoEnODVBZLBdXrRbveIMo0g2PCdyBcmn0PRwWxLUJkbEW1KHduUeD2VqDQ=
     on:
-      tags: true
+      repo: mwaylabs/uikit 
