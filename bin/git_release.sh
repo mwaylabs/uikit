@@ -20,10 +20,11 @@ fi
 # It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
 if git remote | grep origin_gh > /dev/null
 then
-  git remote set-url origin_gh https://$GH_TOKEN@$GH_REF.git
+#  git remote set-url origin_gh https://$GH_TOKEN@$GH_REF.git
 else
-  git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
+#  git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
 fi
+git remote set-url origin https://$GH_TOKEN@$GH_REF.git
 git fetch
 
 echo "##########################################"
@@ -47,8 +48,8 @@ then
   mkdir -p /tmp/releases/uikit
   mv dist /tmp/releases/uikit
 
-  git checkout origin_gh release
-  git pull origin_gh release
+  git checkout release
+  git pull release
 
   # The temp branch is selected after wards
   mv /tmp/releases/uikit ./dist
@@ -60,10 +61,10 @@ fi
 
 git add dist/* -f
 git commit -m "release version ${VERSION_NUMBER}"
-git push origin_gh release --no-verify
+git push origin release --no-verify
 
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER} --no-verify
+git push origin v${VERSION_NUMBER} --no-verify
 
 # Setting everything back to the beginning
 git checkout $CURRENT_BRANCH
