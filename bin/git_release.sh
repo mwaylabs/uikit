@@ -18,12 +18,12 @@ fi
 # Set or add the remote url for the github repo with the GH_TOKEN
 # The GH_TOKEN is a github personal access token https://github.com/settings/tokens
 # It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
-if git remote | grep origin_gh > /dev/null
-then
+# if git remote | grep origin_gh > /dev/null
+# then
 #  git remote set-url origin_gh https://$GH_TOKEN@$GH_REF.git
-else
+# else
 #  git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
-fi
+# fi
 git remote set-url origin https://$GH_TOKEN@$GH_REF.git
 git fetch
 
@@ -49,7 +49,7 @@ then
   mv dist /tmp/releases/uikit
 
   git checkout release
-  git pull release
+  git pull origin release
 
   # The temp branch is selected after wards
   mv /tmp/releases/uikit ./dist
