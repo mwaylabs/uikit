@@ -13,14 +13,16 @@ then
   exit -1
 fi
 
+git init
+
 # Set or add the remote url for the github repo with the GH_TOKEN
 # The GH_TOKEN is a github personal access token https://github.com/settings/tokens
 # It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
 if git remote | grep origin_gh > /dev/null
 then
-  git remote set-url origin_gh https://${GH_TOKEN}@${GH_REF}
+  git remote set-url origin_gh https://$GH_TOKEN@$GH_REF.git
 else
-  git remote add origin_gh https://${GH_TOKEN}@${GH_REF}
+  git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
 fi
 git fetch origin_gh && git reset origin_gh/release
 
