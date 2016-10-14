@@ -1,13 +1,21 @@
-# Check if version number is set. The version number will be set by grunt because
+# Check if VERSION_NUMBER env variable is set. The version number will be set by grunt because
 # it is a combination of the version number of the package json, build number and commit hash
-# grunt sets the version number as environment variable
 if [ -z "$VERSION_NUMBER" ]
 then
-  echo In order to release a version number has to bet set!
+  echo In order to release the env variable VERSION_NUMBER has to bet set!
   exit -1
-else
-  echo Releasing version ${VERSION_NUMBER}...
 fi
+
+# Check if GH_REF and GH_TOKEN env variables are set. They are configured in .travis.yml
+if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ]
+then
+  echo In order to release the env variable GH_REF and GH_TOKEN has to be set!
+  exit -1
+fi
+
+echo Releasing version ${VERSION_NUMBER}...
+
+git remote set-url origin_gh ${GH_TOKEN}@${GH_REF}
 
 # This replaces the current commiter for the release
 # The current commiter is saved so we can set it correctly after the process
@@ -21,7 +29,7 @@ git config user.email "info@mwaysolutions.com"
 # that is actually ignored
 mv .gitignore .ignore_gitignore
 
-# We are switching branches soon so we remeber the current branch
+# We are switching branches soon so we remember the current branch
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ `git branch --list release` ]
 then
@@ -46,10 +54,10 @@ else
   git commit -m 'release version ${VERSION_NUMBER}'
 fi
 
-git push --quiet "https://${GH_TOKEN}@${GH_REF}" release  > /dev/null 2>&1
+git push origin_gh release
 
 git tag v${VERSION_NUMBER}
-git push --quiet "https://${GH_TOKEN}@${GH_REF}" v${VERSION_NUMBER} > /dev/null 2>&1
+git push origin_gh v${VERSION_NUMBER}
 
 # Setting everything back to the beginning
 
