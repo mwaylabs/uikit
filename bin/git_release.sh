@@ -6,7 +6,7 @@ RELEASE_BRANCH_NAME=release
 RELEASE_GIT_NAME="Bob Builder"
 RELEASE_GIT_MAIL="info@mwaysolutions.com"
 
-function exit_with_error {
+exit_with_error () {
     echo $1
     exit 1
 }
