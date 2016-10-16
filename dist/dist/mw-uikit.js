@@ -1,4 +1,3 @@
-// test
 (function (root, angular) {
   'use strict';
 
@@ -42,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b12345';
+  root.mwUI.VERSION = '1.0.1-b123456';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
