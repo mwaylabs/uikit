@@ -64,7 +64,7 @@ then
   # We switch to our release branch'
   git branch $RELEASE_BRANCH_NAME origin_gh/$RELEASE_BRANCH_NAME
   git checkout $RELEASE_BRANCH_NAME
-  git pull origin_gh $RELEASE_BRANCH_NAME -X ours
+  git pull origin_gh $RELEASE_BRANCH_NAME
 
   # We replace the files of our relase folder with the files from our tmp folder
   # the tmp folder is removed afterwards
