@@ -81,7 +81,8 @@ git add $RELEASE_FOLDER -f
 if [ "$(git diff --cached --exit-code)" ]
 then
   git commit -m "release version ${VERSION_NUMBER}"
-  git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
+  git push origin_gh $RELEASE_BRANCH_NAME --no-verify
+  #git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
 
   git tag v${VERSION_NUMBER}
   git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
