@@ -216,7 +216,8 @@ module.exports = function (grunt) {
       },
       gitRelease: {
         options: {
-          stdout: true
+          stdout: true,
+          failOnError: true
         },
         command: function(){
           return [
