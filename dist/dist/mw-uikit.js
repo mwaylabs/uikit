@@ -1,4 +1,3 @@
-// test
 (function (root, angular) {
   'use strict';
 
