@@ -1,0 +1,8 @@
+.mw-header{
+  height: $headerHeight;
+
+  .fixed-content{
+    position: fixed;
+    height: $headerHeight + 6;
+  }
+}
