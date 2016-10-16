@@ -35,7 +35,7 @@ then
 else
   git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
 fi
-git fetch
+git fetch origin_gh
 
 echo "##########################################"
 echo "#                                        #"
@@ -53,7 +53,7 @@ git config user.email "$RELEASE_GIT_MAIL"
 
 # We are switching branches soon so we remember the current branch
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-if [ `git branch --list release` ]
+if [ `git branch -r --list origin_gh/release  ` ]
 then
   # We have to move the current release into a tmp folder because otherwise we get a merge error and can not
   # switch the branches
@@ -62,6 +62,7 @@ then
   mv $RELEASE_FOLDER /tmp/releases/ui-kit/$RELEASE_ID
 
   # We switch to our release branch'
+  git branch $RELEASE_BRANCH_NAME origin_gh/$RELEASE_BRANCH_NAME
   git checkout $RELEASE_BRANCH_NAME
   git pull origin_gh $RELEASE_BRANCH_NAME -X ours
 
