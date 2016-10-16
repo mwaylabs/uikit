@@ -76,10 +76,10 @@ git add $RELEASE_FOLDER -f
 if [ "$(git diff --cached --exit-code)" ]
 then
   git commit -m "release version ${VERSION_NUMBER}"
-  git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || echo "Failed to push to release branch"
+  git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || echo "Failed to push to release branch" && exit 1
 
   git tag v${VERSION_NUMBER}
-  git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || echo "Failed to release the tag v${VERSION_NUMBER}"
+  git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || echo "Failed to release the tag v${VERSION_NUMBER}" && exit 1
 else
   echo "${VERSION_NUMBER} did not contain any changes so the release is skipped"
 fi
