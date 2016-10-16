@@ -1,0 +1,14 @@
+.mw-sub-nav {
+  margin-top: -8px;
+
+  .nav-pills {
+    margin-bottom: 14px;
+
+    &.nav-justified {
+      background: $sub-nav-background;
+      border-radius: $nav-pills-border-radius;
+      z-index: 2;
+      position: relative;
+    }
+  }
+}

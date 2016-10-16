@@ -1,0 +1,34 @@
+.mw-select {
+  position: relative;
+  display: inline-block;
+
+  &:after {
+    font-family: FontAwesome;
+    content: "\f0dc";
+    position: absolute;
+    right: 10px;
+    top: 25%;
+    pointer-events: none;
+  }
+
+  select.custom {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    text-indent: 0.01px;
+    text-overflow: '';
+    position: relative;
+    padding: 6px 22px 6px 12px;
+  }
+
+  select::-ms-expand {
+    display: none;
+  }
+
+  select:invalid {
+    border-left: 3px solid #bbb;
+    font-weight: bold;
+  }
+
+}
