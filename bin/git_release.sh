@@ -6,6 +6,11 @@ RELEASE_BRANCH_NAME=release
 RELEASE_GIT_NAME="Bob Builder"
 RELEASE_GIT_MAIL="info@mwaysolutions.com"
 
+function exit_with_error {
+    echo $1
+    exit 1
+}
+
 # Check if VERSION_NUMBER env variable is set. The version number will be set by grunt because
 # it is a combination of the version number of the package json, build number and commit hash
 if [ -z "$VERSION_NUMBER" ]
@@ -76,10 +81,10 @@ git add $RELEASE_FOLDER -f
 if [ "$(git diff --cached --exit-code)" ]
 then
   git commit -m "release version ${VERSION_NUMBER}"
-  git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || echo "Failed to push to release branch" && exit 1
+  git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
 
   git tag v${VERSION_NUMBER}
-  git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || echo "Failed to release the tag v${VERSION_NUMBER}" && exit 1
+  git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 else
   echo "${VERSION_NUMBER} did not contain any changes so the release is skipped"
 fi
