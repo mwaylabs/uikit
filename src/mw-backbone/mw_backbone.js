@@ -2,6 +2,7 @@
  * Created by zarges on 15/02/16.
  */
 window.mwUI.Backbone = {
+  hostname: '',
   baseUrl: '',
   Selectable: {},
   use$http: true
