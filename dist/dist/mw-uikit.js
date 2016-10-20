@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b96';
+  root.mwUI.VERSION = '1.0.1-b99';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
