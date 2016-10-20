@@ -74,9 +74,7 @@ module.exports = function (grunt) {
           'libs/showdown/dist/showdown.js',
           'libs/jquery-ui/ui/jquery.ui.widget.js',
           'libs/blueimp-file-upload/js/jquery.fileupload.js',
-          'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
-          'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
-          'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
+          'libs/blueimp-file-upload/js/jquery.iframe-transport.js'
         ],
         dest: '<%= uikit.dist %>/<%= uikit.fileNameRelution %>.js'
       }
