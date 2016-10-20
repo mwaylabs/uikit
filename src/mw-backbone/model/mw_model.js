@@ -31,7 +31,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   request: function (url, method, options) {
     options = options || {};
     var requestOptions = {
-      url: mwUI.Backbone.hostname + url,
+      url: mwUI.Backbone.hostName + url,
       type: method,
       instance: this
     };
