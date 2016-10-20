@@ -74,9 +74,7 @@ module.exports = function (grunt) {
           'libs/showdown/dist/showdown.js',
           'libs/jquery-ui/ui/jquery.ui.widget.js',
           'libs/blueimp-file-upload/js/jquery.fileupload.js',
-          'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
-          'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
-          'libs/bootstrap-sass-datepicker/js/locales/bootstrap-datepicker.de.js'
+          'libs/blueimp-file-upload/js/jquery.iframe-transport.js'
         ],
         dest: '<%= uikit.dist %>/<%= uikit.fileNameRelution %>.js'
       }
@@ -199,6 +197,13 @@ module.exports = function (grunt) {
       }
     },
     shell: {
+      addFontsToDistFolder: {
+        options: {
+          stdout: true,
+          failOnError: true
+        },
+        command: 'cp -r src-relution/fonts dist/styles'
+      },
       zipUiKit: {
         options: {
           stdout: true,
@@ -236,5 +241,5 @@ module.exports = function (grunt) {
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('build', ['jshint', 'process', 'process-old']);
-  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit', 'shell:gitRelease']);
+  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:addFontsToDistFolder', 'shell:zipUiKit', 'shell:gitRelease']);
 };
