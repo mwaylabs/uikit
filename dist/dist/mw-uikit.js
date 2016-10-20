@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b88';
+  root.mwUI.VERSION = '1.0.1-b93';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -824,6 +824,7 @@ angular.module('mwUI.Utils').config(['i18nProvider', function(i18nProvider){
  * Created by zarges on 15/02/16.
  */
 window.mwUI.Backbone = {
+  hostName: '',
   baseUrl: '',
   Selectable: {},
   use$http: true
@@ -1117,7 +1118,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   request: function (url, method, options) {
     options = options || {};
     var requestOptions = {
-      url: url,
+      url: mwUI.Backbone.hostName + url,
       type: method,
       instance: this
     };
