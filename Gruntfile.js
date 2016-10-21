@@ -197,13 +197,6 @@ module.exports = function (grunt) {
       }
     },
     shell: {
-      addFontsToDistFolder: {
-        options: {
-          stdout: true,
-          failOnError: true
-        },
-        command: 'cp -r src-relution/fonts dist/styles'
-      },
       zipUiKit: {
         options: {
           stdout: true,
@@ -241,5 +234,5 @@ module.exports = function (grunt) {
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('build', ['jshint', 'process', 'process-old']);
-  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:addFontsToDistFolder', 'shell:zipUiKit', 'shell:gitRelease']);
+  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit', 'shell:gitRelease']);
 };
