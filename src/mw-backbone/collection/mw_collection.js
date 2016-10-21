@@ -32,5 +32,8 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   },
   fetch: function () {
     return mwUI.Backbone.FilterableCollection.prototype.fetch.apply(this, arguments);
+  },
+  request: function (url, method, options) {
+    return window.mwUI.Backbone.Utils.request(url, method, options, this);
   }
 });

@@ -27,12 +27,6 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
     return mwUI.Backbone.NestedModel.prototype.sync.call(this, method, model, options);
   },
   request: function (url, method, options) {
-    options = options || {};
-    var requestOptions = {
-      url: mwUI.Backbone.hostName + url,
-      type: method,
-      instance: this
-    };
-    return Backbone.ajax(_.extend(requestOptions, options));
+    return mwUI.Backbone.Utils.request(url, method, options, this);
   }
 });
