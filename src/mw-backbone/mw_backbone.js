@@ -1,14 +1,17 @@
-/**
- * Created by zarges on 15/02/16.
- */
 window.mwUI.Backbone = {
   hostName: '',
-  baseUrl: '',
+  basePath: '',
   Selectable: {},
+  Utils: {},
   use$http: true
 };
 
 angular.module('mwUI.Backbone', []);
+
+// @include ./utils/concat_url_parts.js
+// @include ./utils/get_url.js
+// @include ./utils/get_url_with_endpoint.js
+// @include ./utils/request.js
 
 // @include ./model/nested_model.js
 // @include ./model/selectable.js
