@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b117';
+  root.mwUI.VERSION = '1.0.1-b118';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -765,18 +765,6 @@ angular.module('mwUI.Utils')
     };
   }]);
 
-/**
- * Created by zarges on 17/02/16.
- */
-window.mwUI.Utils.shims.concatUrlParts = function(){
-  var concatUrl = '';
-  _.forEach(arguments,function(url){
-    url = url.replace(/^\//,'');
-    url = url.replace(/\/$/,'');
-    concatUrl += ( url +('/') );
-  });
-  return concatUrl;
-};
 'use strict';
 window.mwUI.Utils.shims.domObserver = function (el, callback, config) {
 
@@ -820,17 +808,82 @@ angular.module('mwUI.Utils').config(['i18nProvider', function(i18nProvider){
   i18nProvider.addResource('uikit/mw-utils/i18n');
 }]);
 
-/**
- * Created by zarges on 15/02/16.
- */
 window.mwUI.Backbone = {
   hostName: '',
-  baseUrl: '',
+  basePath: '',
   Selectable: {},
+  Utils: {},
   use$http: true
 };
 
 angular.module('mwUI.Backbone', []);
+
+mwUI.Backbone.Utils.concatUrlParts = function () {
+  var urlParts = _.toArray(arguments),
+    trimmedUrlParts = [];
+
+  _.forEach(urlParts, function (url, index) {
+    if (!_.isString(url) || url === '') {
+      return;
+    } else if (index !== 0 || url === '/') {
+      //Removes slash at the beginning of the string except when it is the first argument or it is only a slash
+      url = url.replace(/^\//, '');
+    }
+
+    // Removes trailing slash
+    url = url.replace(/\/$/, '');
+
+    trimmedUrlParts.push(url);
+  });
+
+  return trimmedUrlParts.join('/');
+};
+mwUI.Backbone.Utils.getUrl = function(instance){
+  var hostName, basePath;
+
+  if(instance instanceof window.mwUI.Backbone.Model || instance instanceof window.mwUI.Backbone.Collection){
+    hostName = _.result(instance, 'hostName');
+    basePath = _.result(instance, 'basePath');
+  } else {
+    hostName = _.result(window.mwUI.Backbone, 'hostName');
+    basePath = _.result(window.mwUI.Backbone, 'basePath');
+  }
+
+  hostName = hostName || '';
+  basePath = basePath || '';
+
+  return window.mwUI.Backbone.Utils.concatUrlParts(hostName, basePath);
+};
+mwUI.Backbone.Utils.getUrlWithEndpoint = function(instance){
+  if(instance instanceof window.mwUI.Backbone.Model || instance instanceof window.mwUI.Backbone.Collection){
+    var endpoint = _.result(instance, 'endpoint');
+
+    if (endpoint && endpoint.length > 0) {
+      return window.mwUI.Backbone.Utils.concatUrlParts(window.mwUI.Backbone.Utils.getUrl(instance),endpoint);
+    } else {
+      throw new Error('An endpoint has to be specified');
+    }
+  } else {
+    throw new Error('Instance is not a Backbone model or collection');
+  }
+};
+mwUI.Backbone.Utils.request = function (url, method, options, instance) {
+  options = options || {};
+  var requestOptions = {
+    url: url,
+    type: method
+  };
+
+  if (instance) {
+    requestOptions.instance = instance;
+  }
+
+  if (url && !url.match(/\/\//)) {
+    requestOptions.url = mwUI.Backbone.Utils.concatUrlParts(mwUI.Backbone.Utils.getUrl(instance), url);
+  }
+
+  return Backbone.ajax(_.extend(requestOptions, options));
+};
 
 mwUI.Backbone.NestedModel = Backbone.NestedModel = Backbone.Model.extend({
 
@@ -1087,18 +1140,16 @@ mwUI.Backbone.SelectableModel = Backbone.SelectableModel = Backbone.Model.extend
 });
 mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   selectable: true,
-  basePath: '',
+  hostName: function(){
+    return mwUI.Backbone.hostName;
+  },
+  basePath: function(){
+    return mwUI.Backbone.basePath;
+  },
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableModel.prototype.selectableOptions,
   urlRoot: function () {
-    var basePath = _.result(this, 'basePath'),
-      endpoint = _.result(this, 'endpoint');
-
-    if (endpoint) {
-      return window.mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
-    } else {
-      throw new Error('An endpoint has to be specified');
-    }
+   return mwUI.Backbone.Utils.getUrlWithEndpoint(this);
   },
   constructor: function () {
     var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this, arguments);
@@ -1116,13 +1167,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
     return mwUI.Backbone.NestedModel.prototype.sync.call(this, method, model, options);
   },
   request: function (url, method, options) {
-    options = options || {};
-    var requestOptions = {
-      url: mwUI.Backbone.hostName + url,
-      type: method,
-      instance: this
-    };
-    return Backbone.ajax(_.extend(requestOptions, options));
+    return mwUI.Backbone.Utils.request(url, method, options, this);
   }
 });
 
@@ -1703,20 +1748,18 @@ mwUI.Backbone.SelectableCollection = Backbone.SelectableCollection = Backbone.Co
 mwUI.Backbone.Collection = Backbone.Collection.extend({
   selectable: true,
   filterable: true,
-  basePath: '',
+  hostName: function(){
+    return mwUI.Backbone.hostName;
+  },
+  basePath: function(){
+    return mwUI.Backbone.basePath;
+  },
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableCollection.prototype.selectableOptions,
   filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
   model: mwUI.Backbone.Model,
   url: function () {
-    var basePath = _.result(this, 'basePath'),
-      endpoint = _.result(this, 'endpoint');
-
-    if (endpoint) {
-      return mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
-    } else {
-      throw new Error('An endpoint has to be specified');
-    }
+    return window.mwUI.Backbone.Utils.getUrlWithEndpoint(this);
   },
   getEndpoint: function () {
     return this.url();
@@ -1736,6 +1779,9 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   },
   fetch: function () {
     return mwUI.Backbone.FilterableCollection.prototype.fetch.apply(this, arguments);
+  },
+  request: function (url, method, options) {
+    return window.mwUI.Backbone.Utils.request(url, method, options, this);
   }
 });
 
