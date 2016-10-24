@@ -1,17 +1,15 @@
 mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   selectable: true,
-  basePath: '',
+  hostName: function(){
+    return mwUI.Backbone.hostName;
+  },
+  basePath: function(){
+    return mwUI.Backbone.basePath;
+  },
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableModel.prototype.selectableOptions,
   urlRoot: function () {
-    var basePath = _.result(this, 'basePath'),
-      endpoint = _.result(this, 'endpoint');
-
-    if (endpoint) {
-      return window.mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl,basePath,endpoint);
-    } else {
-      throw new Error('An endpoint has to be specified');
-    }
+   return mwUI.Backbone.Utils.getUrlWithEndpoint(this);
   },
   constructor: function () {
     var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this, arguments);
@@ -29,12 +27,6 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
     return mwUI.Backbone.NestedModel.prototype.sync.call(this, method, model, options);
   },
   request: function (url, method, options) {
-    options = options || {};
-    var requestOptions = {
-      url: mwUI.Backbone.hostName + url,
-      type: method,
-      instance: this
-    };
-    return Backbone.ajax(_.extend(requestOptions, options));
+    return mwUI.Backbone.Utils.request(url, method, options, this);
   }
 });

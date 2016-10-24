@@ -1,20 +1,18 @@
 mwUI.Backbone.Collection = Backbone.Collection.extend({
   selectable: true,
   filterable: true,
-  basePath: '',
+  hostName: function(){
+    return mwUI.Backbone.hostName;
+  },
+  basePath: function(){
+    return mwUI.Backbone.basePath;
+  },
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableCollection.prototype.selectableOptions,
   filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
   model: mwUI.Backbone.Model,
   url: function () {
-    var basePath = _.result(this, 'basePath'),
-      endpoint = _.result(this, 'endpoint');
-
-    if (endpoint) {
-      return mwUI.Utils.shims.concatUrlParts(mwUI.Backbone.baseUrl, basePath, endpoint);
-    } else {
-      throw new Error('An endpoint has to be specified');
-    }
+    return window.mwUI.Backbone.Utils.getUrlWithEndpoint(this);
   },
   getEndpoint: function () {
     return this.url();
@@ -34,5 +32,8 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   },
   fetch: function () {
     return mwUI.Backbone.FilterableCollection.prototype.fetch.apply(this, arguments);
+  },
+  request: function (url, method, options) {
+    return window.mwUI.Backbone.Utils.request(url, method, options, this);
   }
 });
