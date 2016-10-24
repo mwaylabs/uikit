@@ -1,0 +1,11 @@
+.mw-panel{
+  .panel-heading{
+    display: flex;
+    display: -webkit-flex;
+
+    h3{
+      flex-grow: 1;
+      -webkit-flex-grow: 1;
+    }
+  }
+}

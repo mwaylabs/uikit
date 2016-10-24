@@ -12,11 +12,11 @@ CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 # Sets everything back to the beginning, before the release process has been started
 reset () {
-    git checkout $CURRENT_BRANCH -f
-    git reset --hard $LATEST_COMMIT_HASH_BEFORE_RELEASE
+    # git checkout $CURRENT_BRANCH -f
+    # git reset --hard $LATEST_COMMIT_HASH_BEFORE_RELEASE
     git config user.name "$CURRENT_GIT_USER"
     git config user.email "$CURRENT_GIT_USERMAIL"
-    git remote remove origin_gh
+    # git remote remove origin_gh
 }
 
 # Shows error message and exits with statuscode 1
