@@ -93,6 +93,9 @@ then
   git branch $RELEASE_BRANCH_NAME origin_gh/$RELEASE_BRANCH_NAME
   git checkout $RELEASE_BRANCH_NAME
   git pull origin_gh $RELEASE_BRANCH_NAME
+
+  # Cherry pick the release commit from the master branch
+  git cherry-pick $RELEASE_COMMIT_HASH -X theirs
 elif [ `git branch --list $RELEASE_BRANCH_NAME` ]
 then
   # branch exists only locally
@@ -101,9 +104,6 @@ else
   # branch does not exist so it is created
   git checkout -b $RELEASE_BRANCH_NAME
 fi
-
-# Cherry pick the release commit from the master branch
-git cherry-pick $RELEASE_COMMIT_HASH -X theirs
 
 # Push cherry-pick to release branch
 git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
