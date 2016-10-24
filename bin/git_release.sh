@@ -36,7 +36,7 @@ then
   exit 1
 fi
 
-# Check if GH_REF, $GH_USER and GH_TOKEN env variables are set. They are configured in .travis.yml
+# Check if GH_REF and GH_TOKEN env variables are set. They are configured in .travis.yml
 if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ]
 then
   echo In order to release the env variable GH_REF and GH_TOKEN has to be set!
