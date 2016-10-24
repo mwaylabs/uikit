@@ -51,48 +51,51 @@ CURRENT_GIT_USERMAIL=`git config user.email`
 git config user.name "$RELEASE_GIT_NAME"
 git config user.email "$RELEASE_GIT_MAIL"
 
-# We are switching branches soon so we remember the current branch
+# Save the latest commit hash so we can reset to it later
+LATEST_COMMIT_HASH_BEFORE_RELEASE=git rev-parse --verify HEAD
+
+# The .releaseignore becomes the gitignore for the release so that files that are actually ignored can be released (e.g. the dist folder)
+# After the commit the actual .gitignore will be set
+mv ./.gitignore ./.ignore_tmp
+mv ./.releaseignore ./.gitignore
+
+git add -A
+git commit -m "release version ${VERSION_NUMBER}"
+
+mv ./.gitignore ./.releaseignore
+mv ./.ignore_tmp ./.gitignore
+
+# The release commit hash is saved as var for the cherry-pcik
+RELEASE_COMMIT_HASH=git rev-parse --verify HEAD
+
+# The current branch is saved as var so we can switch back to that branch later
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+
+# Check if the release branch already exists
 if [ `git branch -r --list origin_gh/release  ` ]
 then
-  # We have to move the current release into a tmp folder because otherwise we get a merge error and can not
-  # switch the branches
-  RELEASE_ID=$(date +%s)
-  mkdir -p /tmp/releases/ui-kit/$RELEASE_ID
-  mv $RELEASE_FOLDER /tmp/releases/ui-kit/$RELEASE_ID
-
-  # We switch to our release branch'
+  # branch already exists so we get the current remote version
   git branch $RELEASE_BRANCH_NAME origin_gh/$RELEASE_BRANCH_NAME
   git checkout $RELEASE_BRANCH_NAME
   git pull origin_gh $RELEASE_BRANCH_NAME
-
-  # We replace the files of our relase folder with the files from our tmp folder
-  # the tmp folder is removed afterwards
-  rm -rf $RELEASE_FOLDER
-  mv -f /tmp/releases/ui-kit/$RELEASE_ID $RELEASE_FOLDER
-  rm -rf /tmp/releases/ui-kit/$RELEASE_ID
 else
-  git checkout --orphan $RELEASE_BRANCH_NAME
-  git reset
+  # branch does not exist so it is created
+  git checkout -b $RELEASE_BRANCH_NAME
 fi
 
-# We add our release folder. By setting -f the .gitignore is ignored so the folder can be added even when it is on .gitignore
-git add $RELEASE_FOLDER -f
+# Cherry pick the release commit from the master branch
+git cherry-pick RELEASE_COMMIT -X theirs
 
-if [ "$(git diff --cached --exit-code)" ]
-then
-  git commit -m "release version ${VERSION_NUMBER}"
-  git push origin_gh $RELEASE_BRANCH_NAME --no-verify
-  #git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
+# Push cherry-pick to release branch
+#git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
 
-  git tag v${VERSION_NUMBER}
-  git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
-else
-  echo "${VERSION_NUMBER} did not contain any changes so the release is skipped"
-fi
+# Create tag and push it
+git tag v${VERSION_NUMBER}
+#git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 
 # Setting everything back to the beginning
 git checkout $CURRENT_BRANCH -f
+git reset --hard LATEST_COMMIT_HASH_BEFORE_RELEASE
 git config user.name "$CURRENT_GIT_USER"
 git config user.email "$CURRENT_GIT_USERMAIL"
 git remote remove origin_gh
