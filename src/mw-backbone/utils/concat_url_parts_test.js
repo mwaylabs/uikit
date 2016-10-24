@@ -44,7 +44,7 @@ describe('Concat url parts', function () {
     expect(result).toMatch('/abc/def');
   });
 
-  it('does not two slashes to the first position', function(){
+  it('does not add two slashes to the first position', function(){
     var str1 = '/',
       str2 = '/def',
       result = concatUrlParts(str1, str2);

@@ -25,7 +25,7 @@ describe('Get url', function () {
     expect(result).toBe('/api/v1');
   });
 
-  it('returns relative url when neither hostName nor basPath are defined', function(){
+  it('returns relative url when neither hostName nor basePath are defined', function(){
     window.mwUI.Backbone.hostName = null;
     window.mwUI.Backbone.basePath = null;
     var result = getUrl();
@@ -45,7 +45,7 @@ describe('Get url', function () {
       expect(getUrl(this.model)).toBe('http://host-name/api/v1');
     });
 
-    it('return url with hostName and basePath that are defined in the model', function(){
+    it('returns url with hostName and basePath that are defined in the model', function(){
       this.model.hostName = 'http://other-host';
       this.model.basePath = 'api';
 
