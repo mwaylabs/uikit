@@ -66,8 +66,8 @@ git config user.email "$RELEASE_GIT_MAIL"
 
 # The .releaseignore becomes the gitignore for the release so that files that are actually ignored can be released (e.g. the dist folder)
 # After the commit the actual .gitignore will be set
-mv ./.gitignore ./.ignore_tmp
-cp ./.releaseignore ./.gitignore
+mv .gitignore .ignore_tmp
+cp .releaseignore .gitignore
 
 git add -A
 git reset .gitignore
@@ -78,13 +78,13 @@ then
   git commit -m "release version ${VERSION_NUMBER}"
   RELEASE_COMMIT_HASH=`git rev-parse --verify HEAD`
 else
-  mv ./.gitignore ./.releaseignore
-  mv ./.ignore_tmp ./.gitignore
+  mv .gitignore .releaseignore
+  mv .ignore_tmp .gitignore
   exit_with_error "${VERSION_NUMBER} did not contain any changes so the release is aborted"
 fi
 
-mv ./.gitignore ./.releaseignore
-mv ./.ignore_tmp ./.gitignore
+mv .gitignore .releaseignore
+mv .ignore_tmp .gitignore
 
 # Check if the release branch already exists
 if [ `git branch -r --list origin_gh/$RELEASE_BRANCH_NAME` ]
