@@ -52,7 +52,7 @@ git config user.name "$RELEASE_GIT_NAME"
 git config user.email "$RELEASE_GIT_MAIL"
 
 # Save the latest commit hash so we can reset to it later
-LATEST_COMMIT_HASH_BEFORE_RELEASE=git rev-parse --verify HEAD
+LATEST_COMMIT_HASH_BEFORE_RELEASE=`git rev-parse --verify HEAD`
 
 # The .releaseignore becomes the gitignore for the release so that files that are actually ignored can be released (e.g. the dist folder)
 # After the commit the actual .gitignore will be set
@@ -66,7 +66,7 @@ mv ./.gitignore ./.releaseignore
 mv ./.ignore_tmp ./.gitignore
 
 # The release commit hash is saved as var for the cherry-pcik
-RELEASE_COMMIT_HASH=git rev-parse --verify HEAD
+RELEASE_COMMIT_HASH=`git rev-parse --verify HEAD`
 
 # The current branch is saved as var so we can switch back to that branch later
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
@@ -84,7 +84,7 @@ else
 fi
 
 # Cherry pick the release commit from the master branch
-git cherry-pick RELEASE_COMMIT -X theirs
+git cherry-pick $RELEASE_COMMIT -X theirs
 
 # Push cherry-pick to release branch
 #git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
@@ -95,7 +95,7 @@ git tag v${VERSION_NUMBER}
 
 # Setting everything back to the beginning
 git checkout $CURRENT_BRANCH -f
-git reset --hard LATEST_COMMIT_HASH_BEFORE_RELEASE
+git reset --hard $LATEST_COMMIT_HASH_BEFORE_RELEASE
 git config user.name "$CURRENT_GIT_USER"
 git config user.email "$CURRENT_GIT_USERMAIL"
 git remote remove origin_gh
