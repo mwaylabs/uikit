@@ -2,7 +2,7 @@
 set -e
 
 RELEASE_FOLDER=./dist
-RELEASE_BRANCH_NAME=release
+RELEASE_BRANCH_NAME=testRelease
 RELEASE_GIT_NAME="Bob Builder"
 RELEASE_GIT_MAIL="info@mwaysolutions.com"
 
