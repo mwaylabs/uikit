@@ -72,12 +72,16 @@ RELEASE_COMMIT_HASH=`git rev-parse --verify HEAD`
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 # Check if the release branch already exists
-if [ `git branch -r --list origin_gh/release  ` ]
+if [ `git branch -r --list origin_gh/$RELEASE_BRANCH_NAME` ]
 then
   # branch already exists so we get the current remote version
   git branch $RELEASE_BRANCH_NAME origin_gh/$RELEASE_BRANCH_NAME
   git checkout $RELEASE_BRANCH_NAME
   git pull origin_gh $RELEASE_BRANCH_NAME
+elif [ `git branch --list $RELEASE_BRANCH_NAME` ]
+then
+  # branch exists only locally
+  git checkout $RELEASE_BRANCH_NAME
 else
   # branch does not exist so it is created
   git checkout -b $RELEASE_BRANCH_NAME
