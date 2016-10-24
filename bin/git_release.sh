@@ -117,5 +117,3 @@ echo "#                                        #"
 echo "# Version ${VERSION_NUMBER} is released! #"
 echo "#                                        #"
 echo "##########################################"
-
-exit 0
