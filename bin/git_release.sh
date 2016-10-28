@@ -110,7 +110,7 @@ git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_wit
 
 # Create tag and push it
 git tag v${VERSION_NUMBER}
-git push origin_gh v${VERSION_NUMBER} --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
+git push origin_gh --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 
 echo "##########################################"
 echo "#                                        #"
