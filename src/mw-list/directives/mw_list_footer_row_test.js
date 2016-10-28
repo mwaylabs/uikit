@@ -52,7 +52,7 @@ describe('mwListHeader', function () {
     this.$httpBackend.flush();
   });
 
-  it('shows removes spinner when the loading of the collection is done', function(){
+  it('removes spinner when the loading of the collection is done', function(){
     this.collectionHasNextPage = true;
     this.scope.collection.fetch();
     this.$httpBackend.expectGET(/\/test.*/).respond(200);
