@@ -9,15 +9,15 @@ angular.module('mwUI.List')
         scope.columns = mwListCtrl.getColumns();
 
         scope.collection.on('request', function(){
-          scope.isSyncronising = true;
+          scope.isSynchronising = true;
         });
 
         scope.collection.on('sync error', function(){
-          scope.isSyncronising = false;
+          scope.isSynchronising = false;
         });
 
         scope.showSpinner = function(){
-          return scope.isSyncronising && scope.collection.filterable.hasNextPage();
+          return scope.isSynchronising && scope.collection.filterable.hasNextPage();
         };
       }
     };
