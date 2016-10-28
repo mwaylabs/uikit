@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b120';
+  root.mwUI.VERSION = '1.0.1-b129';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -1462,7 +1462,7 @@ mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Co
     }
   },
   constructor: function (attributes, options) {
-    var superConstructor = Backbone.Model.prototype.constructor.call(this, attributes, options);
+    var superConstructor = Backbone.Collection.prototype.constructor.call(this, attributes, options);
     this.filterableCollectionConstructor(options);
     return superConstructor;
   },
@@ -3282,7 +3282,7 @@ angular.module('mwUI.Layout')
       }
     };
   }]);
-angular.module('mwUI.List', ['mwUI.i18n', 'mwUI.Backbone']);
+angular.module('mwUI.List', ['mwUI.i18n', 'mwUI.Backbone', 'mwUI.UiComponents']);
 
 angular.module('mwUI.List')
 
@@ -3440,8 +3440,16 @@ angular.module('mwUI.List')
         scope.collection = mwListCtrl.getCollection();
         scope.columns = mwListCtrl.getColumns();
 
+        scope.collection.on('request', function(){
+          scope.isSynchronising = true;
+        });
+
+        scope.collection.on('sync error', function(){
+          scope.isSynchronising = false;
+        });
+
         scope.showSpinner = function(){
-          return /*Loading.isLoading() &&*/ scope.collection.filterable.hasNextPage();
+          return scope.isSynchronising && scope.collection.filterable.hasNextPage();
         };
       }
     };
