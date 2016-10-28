@@ -8,8 +8,16 @@ angular.module('mwUI.List')
         scope.collection = mwListCtrl.getCollection();
         scope.columns = mwListCtrl.getColumns();
 
+        scope.collection.on('request', function(){
+          scope.isSynchronising = true;
+        });
+
+        scope.collection.on('sync error', function(){
+          scope.isSynchronising = false;
+        });
+
         scope.showSpinner = function(){
-          return /*Loading.isLoading() &&*/ scope.collection.filterable.hasNextPage();
+          return scope.isSynchronising && scope.collection.filterable.hasNextPage();
         };
       }
     };

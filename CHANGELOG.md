@@ -1,4 +1,9 @@
 # 1.0.2
+## Bugfixes
+### List module
+- The loading spinner of `mw-list-footer` will be only displayed when the collection is fetching data
+and has a next page (#19)
+
 ## Features
 ### Backbone Module
 - Collection got a request method that works as the request method of the model. 

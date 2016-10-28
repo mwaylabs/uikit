@@ -5,6 +5,7 @@ describe('mwListHeader', function () {
   beforeEach(module('mwUI.List'));
 
   window.mockI18nFilter();
+  window.mockIconService();
 
   beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
 

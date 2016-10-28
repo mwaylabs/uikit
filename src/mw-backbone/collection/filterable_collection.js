@@ -19,7 +19,7 @@ mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Co
     }
   },
   constructor: function (attributes, options) {
-    var superConstructor = Backbone.Model.prototype.constructor.call(this, attributes, options);
+    var superConstructor = Backbone.Collection.prototype.constructor.call(this, attributes, options);
     this.filterableCollectionConstructor(options);
     return superConstructor;
   },
