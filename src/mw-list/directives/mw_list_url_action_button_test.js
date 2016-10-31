@@ -10,12 +10,22 @@ describe('mwListUrlActionButton', function() {
     this.scope = $rootScope.$new();
   }));
 
-  it('contains the link', function() {
-    var element = this.$compile('<mw-listable-bb><span mw-listable-link-show-bb="http://blog.mwaysolutions.com/"></span></mw-listable-bb>')(this.scope);
+  describe('default behaviour', function() {
+    var compiledElement;
+    beforeEach(function() {
+      compiledElement = this.$compile('<mw-listable-bb><span mw-listable-link-show-bb="http://blog.mwaysolutions.com/"></span></mw-listable-bb>')(this.scope);
+    });
 
-    this.scope.$digest();
+    it('contains the link', function() {
+      this.scope.$digest();
 
-    expect(element.html()).toContain('href="http://blog.mwaysolutions.com/"');
+      expect(compiledElement.html()).toContain('href="http://blog.mwaysolutions.com/"');
+    });
+
+    it('does not open the link in a new tab', function() {
+      this.scope.$digest();
+
+      expect(compiledElement.html()).not.toContain('target="_blank"');
+    });
   });
-
 });
