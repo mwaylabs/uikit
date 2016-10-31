@@ -28,4 +28,15 @@ describe('mwListUrlActionButton', function() {
       expect(compiledElement.html()).not.toContain('target="_blank"');
     });
   });
+
+  it('will open the link in a new tab if configured', function() {
+    var compiledElement = this.$compile('<mw-listable-bb>' +
+      '<span mw-listable-link-show-bb="http://blog.mwaysolutions.com/"' +
+      '      target="_blank"></span>' +
+      '</mw-listable-bb>')(this.scope);
+
+    this.scope.$digest();
+
+    expect(compiledElement.html()).toContain('target="_blank"');
+  });
 });

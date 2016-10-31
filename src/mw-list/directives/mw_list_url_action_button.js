@@ -5,9 +5,10 @@ angular.module('mwUI.List')
       restrict: 'A',
       require: '^mwListableBb',
       scope: {
-        link: '@mwListableLinkShowBb'
+        link: '@mwListableLinkShowBb',
+        target: '@?'
       },
-      template: '<span mw-link-show="{{link}}"></span>',
+      template: '<span mw-link-show="{{link}}" target="{{target}}"></span>',
       link: function (scope, elm, attr, mwListableCtrl) {
         mwListableCtrl.actionColumns.push(scope.link);
       }

@@ -5,7 +5,8 @@ angular.module('mwUI.UiComponents')
     return {
       restrict: 'A',
       scope: {
-        link: '@mwLinkShow'
+        link: '@mwLinkShow',
+        target: '@?'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_arrow_link.html'
     };
