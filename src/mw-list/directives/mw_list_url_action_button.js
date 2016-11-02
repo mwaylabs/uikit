@@ -8,7 +8,7 @@ angular.module('mwUI.List')
         link: '@mwListableLinkShowBb',
         target: '@?'
       },
-      template: '<span mw-link-show="{{link}}" target="{{target}}"></span>',
+      template: '<span mw-link-show="{{link}}" link-target="{{target}}"></span>',
       link: function (scope, elm, attr, mwListableCtrl) {
         mwListableCtrl.actionColumns.push(scope.link);
       }

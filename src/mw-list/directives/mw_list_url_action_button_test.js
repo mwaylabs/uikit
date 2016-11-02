@@ -25,14 +25,14 @@ describe('mwListUrlActionButton', function() {
     it('does not open the link in a new tab', function() {
       this.scope.$digest();
 
-      expect(compiledElement.html()).not.toContain('target="_blank"');
+      expect(compiledElement.html()).not.toContain(' target=');
     });
   });
 
   it('will open the link in a new tab if configured', function() {
     var compiledElement = this.$compile('<mw-listable-bb>' +
       '<span mw-listable-link-show-bb="http://blog.mwaysolutions.com/"' +
-      '      target="_blank"></span>' +
+      '      link-target="_blank"></span>' +
       '</mw-listable-bb>')(this.scope);
 
     this.scope.$digest();

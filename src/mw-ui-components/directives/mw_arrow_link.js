@@ -6,8 +6,13 @@ angular.module('mwUI.UiComponents')
       restrict: 'A',
       scope: {
         link: '@mwLinkShow',
-        target: '@?'
+        linkTarget: '@?'
       },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_arrow_link.html'
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_arrow_link.html',
+      link: function (scope, elm) {
+        if (scope.linkTarget) {
+          elm.attr('target', scope.linkTarget);
+        }
+      }
     };
   });
