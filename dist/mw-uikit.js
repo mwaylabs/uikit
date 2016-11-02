@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b150';
+  root.mwUI.VERSION = '1.0.1-b157';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -3824,9 +3824,10 @@ angular.module('mwUI.List')
       restrict: 'A',
       require: '^mwListableBb',
       scope: {
-        link: '@mwListableLinkShowBb'
+        link: '@mwListableLinkShowBb',
+        target: '@?'
       },
-      template: '<span mw-link-show="{{link}}"></span>',
+      template: '<span mw-link-show="{{link}}" link-target="{{target}}"></span>',
       link: function (scope, elm, attr, mwListableCtrl) {
         mwListableCtrl.actionColumns.push(scope.link);
       }
@@ -5172,9 +5173,15 @@ angular.module('mwUI.UiComponents')
     return {
       restrict: 'A',
       scope: {
-        link: '@mwLinkShow'
+        link: '@mwLinkShow',
+        linkTarget: '@?'
       },
-      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_arrow_link.html'
+      templateUrl: 'uikit/mw-ui-components/directives/templates/mw_arrow_link.html',
+      link: function (scope, elm) {
+        if (scope.linkTarget) {
+          elm.attr('target', scope.linkTarget);
+        }
+      }
     };
   });
 
