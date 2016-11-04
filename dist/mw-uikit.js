@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.1-b164';
+  root.mwUI.VERSION = '1.0.1-b169';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -839,47 +839,40 @@ mwUI.Backbone.Utils.concatUrlParts = function () {
   return trimmedUrlParts.join('/');
 };
 mwUI.Backbone.Utils.getUrl = function(instance){
-  var hostName, basePath;
+  var hostName, basePath, endpoint;
 
-  if(instance instanceof window.mwUI.Backbone.Model || instance instanceof window.mwUI.Backbone.Collection){
-    hostName = _.result(instance, 'hostName');
-    basePath = _.result(instance, 'basePath');
+  if(instance instanceof mwUI.Backbone.Model || instance instanceof mwUI.Backbone.Collection){
+    hostName = _.result(instance, 'hostName') || '';
+    basePath = _.result(instance, 'basePath') || '';
+    endpoint = _.result(instance, 'endpoint');
   } else {
-    hostName = _.result(window.mwUI.Backbone, 'hostName');
-    basePath = _.result(window.mwUI.Backbone, 'basePath');
+    throw new Error('An instance of a collection or a model has to be passed as argument to the function');
   }
 
-  hostName = hostName || '';
-  basePath = basePath || '';
-
-  return window.mwUI.Backbone.Utils.concatUrlParts(hostName, basePath);
-};
-mwUI.Backbone.Utils.getUrlWithEndpoint = function(instance){
-  if(instance instanceof window.mwUI.Backbone.Model || instance instanceof window.mwUI.Backbone.Collection){
-    var endpoint = _.result(instance, 'endpoint');
-
-    if (endpoint && endpoint.length > 0) {
-      return window.mwUI.Backbone.Utils.concatUrlParts(window.mwUI.Backbone.Utils.getUrl(instance),endpoint);
-    } else {
-      throw new Error('An endpoint has to be specified');
-    }
-  } else {
-    throw new Error('Instance is not a Backbone model or collection');
+  if (!endpoint || endpoint.length === 0) {
+    throw new Error('An endpoint has to be specified');
   }
+
+  return window.mwUI.Backbone.Utils.concatUrlParts(hostName, basePath, endpoint);
 };
 mwUI.Backbone.Utils.request = function (url, method, options, instance) {
   options = options || {};
   var requestOptions = {
     url: url,
     type: method
-  };
+  }, hostName;
 
   if (instance) {
     requestOptions.instance = instance;
   }
 
   if (url && !url.match(/\/\//)) {
-    requestOptions.url = mwUI.Backbone.Utils.concatUrlParts(mwUI.Backbone.Utils.getUrl(instance), url);
+    if (instance instanceof mwUI.Backbone.Model || instance instanceof mwUI.Backbone.Collection) {
+      hostName = _.result(instance, 'hostName');
+    } else {
+      hostName = mwUI.Backbone.hostName || '';
+    }
+    requestOptions.url = mwUI.Backbone.Utils.concatUrlParts(hostName, url);
   }
 
   return Backbone.ajax(_.extend(requestOptions, options));
@@ -1149,7 +1142,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableModel.prototype.selectableOptions,
   urlRoot: function () {
-   return mwUI.Backbone.Utils.getUrlWithEndpoint(this);
+   return mwUI.Backbone.Utils.getUrl(this);
   },
   constructor: function () {
     var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this, arguments);
@@ -1759,7 +1752,7 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
   model: mwUI.Backbone.Model,
   url: function () {
-    return window.mwUI.Backbone.Utils.getUrlWithEndpoint(this);
+    return window.mwUI.Backbone.Utils.getUrl(this);
   },
   getEndpoint: function () {
     return this.url();
