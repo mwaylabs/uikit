@@ -1,68 +1,77 @@
 describe('Get url', function () {
   var getUrl = window.mwUI.Backbone.Utils.getUrl;
 
-  it('returns url with the defined hostName and basePath', function(){
-    window.mwUI.Backbone.hostName = 'http://host-name';
-    window.mwUI.Backbone.basePath ='api/v1/';
-    var result = getUrl();
+  beforeEach(function(){
+    this.Model = mwUI.Backbone.Model.extend({
+      endpoint: 'test'
+    });
+    this.model = new this.Model();
+  });
 
-    expect(result).toBe('http://host-name/api/v1');
+  it('throws error when first argument is neither model nor collection', function(){
+    expect(getUrl).toThrow();
+  });
+
+  it('accepts model as argument', function(){
+    var getUrlWithModelArg = function(){
+      getUrl(this.model);
+    }.bind(this);
+
+    expect(getUrlWithModelArg).not.toThrow();
+  });
+
+  it('accepts collection as argument', function(){
+    var Collection = window.mwUI.Backbone.Collection.extend({
+      endpoint: 'test'
+    });
+    var getUrlWithCollectionArg = function(){
+      getUrl(new Collection());
+    }.bind(this);
+
+    expect(getUrlWithCollectionArg).not.toThrow();
+  });
+
+  it('throws error when no endpoint is defined', function(){
+    var getUrlWithCollectionArg = function(){
+      getUrl(new window.mwUI.Backbone.Collection());
+    }.bind(this),
+    getUrlWithModelArg = function(){
+      getUrl(new window.mwUI.Backbone.Model());
+    }.bind(this);
+
+    expect(getUrlWithCollectionArg).toThrow();
+    expect(getUrlWithModelArg).toThrow();
+  });
+
+  it('returns url with the defined hostName and basePath', function(){
+    this.model.hostName = 'http://host-name';
+    this.model.basePath ='api/v1/';
+    var result = getUrl(this.model);
+
+    expect(result).toBe('http://host-name/api/v1/test');
   });
 
   it('returns relative url when hostName is defined as empty string', function(){
-    window.mwUI.Backbone.hostName = '';
-    window.mwUI.Backbone.basePath ='api/v1/';
-    var result = getUrl();
+    this.model.hostName = '';
+    this.model.basePath ='api/v1/';
+    var result = getUrl(this.model);
 
-    expect(result).toBe('api/v1');
+    expect(result).toBe('api/v1/test');
   });
 
   it('returns absolute url when hostName is defined as slash', function(){
-    window.mwUI.Backbone.hostName = '/';
-    window.mwUI.Backbone.basePath ='api/v1/';
-    var result = getUrl();
+    this.model.hostName = '/';
+    this.model.basePath ='api/v1/';
+    var result = getUrl(this.model);
 
-    expect(result).toBe('/api/v1');
+    expect(result).toBe('/api/v1/test');
   });
 
   it('returns relative url when neither hostName nor basePath are defined', function(){
-    window.mwUI.Backbone.hostName = null;
-    window.mwUI.Backbone.basePath = null;
-    var result = getUrl();
+    this.model.hostName = null;
+    this.model.basePath = null;
+    var result = getUrl(this.model);
 
-    expect(result).toBe('');
+    expect(result).toBe('test');
   });
-
-  describe('of a model', function(){
-    beforeEach(function () {
-      window.mwUI.Backbone.hostName = 'http://host-name';
-      window.mwUI.Backbone.basePath ='api/v1/';
-      this.model = new window.mwUI.Backbone.Model();
-      this.collection = new window.mwUI.Backbone.Collection();
-    });
-
-    it('returns url for a model with the global hostName and basePath when model did not define them', function(){
-      expect(getUrl(this.model)).toBe('http://host-name/api/v1');
-    });
-
-    it('returns url with hostName and basePath that are defined in the model', function(){
-      this.model.hostName = 'http://other-host';
-      this.model.basePath = 'api';
-
-      expect(getUrl(this.model)).toBe('http://other-host/api');
-    });
-
-    it('returns url for a collection with the global hostName and basePath when collection did not define them', function(){
-      expect(getUrl(this.collection)).toBe('http://host-name/api/v1');
-    });
-
-    it('returns url with hostName and basePath that are defined in the collection', function(){
-      this.collection.hostName = 'http://other-host';
-      this.collection.basePath = 'api';
-
-      expect(getUrl(this.collection)).toBe('http://other-host/api');
-    });
-
-  });
-
 });

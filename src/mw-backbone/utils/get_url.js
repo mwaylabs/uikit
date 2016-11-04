@@ -1,16 +1,17 @@
 mwUI.Backbone.Utils.getUrl = function(instance){
-  var hostName, basePath;
+  var hostName, basePath, endpoint;
 
-  if(instance instanceof window.mwUI.Backbone.Model || instance instanceof window.mwUI.Backbone.Collection){
-    hostName = _.result(instance, 'hostName');
-    basePath = _.result(instance, 'basePath');
+  if(instance instanceof mwUI.Backbone.Model || instance instanceof mwUI.Backbone.Collection){
+    hostName = _.result(instance, 'hostName') || '';
+    basePath = _.result(instance, 'basePath') || '';
+    endpoint = _.result(instance, 'endpoint')
   } else {
-    hostName = _.result(window.mwUI.Backbone, 'hostName');
-    basePath = _.result(window.mwUI.Backbone, 'basePath');
+    throw new Error('An instance of a collection or a model has to be passed as argument to the function');
   }
 
-  hostName = hostName || '';
-  basePath = basePath || '';
+  if (!endpoint || endpoint.length === 0) {
+    throw new Error('An endpoint has to be specified');
+  }
 
-  return window.mwUI.Backbone.Utils.concatUrlParts(hostName, basePath);
+  return window.mwUI.Backbone.Utils.concatUrlParts(hostName, basePath, endpoint);
 };
