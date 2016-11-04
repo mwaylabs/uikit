@@ -12,7 +12,7 @@ mwUI.Backbone.Collection = Backbone.Collection.extend({
   filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
   model: mwUI.Backbone.Model,
   url: function () {
-    return window.mwUI.Backbone.Utils.getUrlWithEndpoint(this);
+    return window.mwUI.Backbone.Utils.getUrl(this);
   },
   getEndpoint: function () {
     return this.url();

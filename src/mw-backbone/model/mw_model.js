@@ -9,7 +9,7 @@ mwUI.Backbone.Model = mwUI.Backbone.NestedModel.extend({
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableModel.prototype.selectableOptions,
   urlRoot: function () {
-   return mwUI.Backbone.Utils.getUrlWithEndpoint(this);
+   return mwUI.Backbone.Utils.getUrl(this);
   },
   constructor: function () {
     var superConstructor = mwUI.Backbone.NestedModel.prototype.constructor.apply(this, arguments);
