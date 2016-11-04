@@ -44,6 +44,23 @@ describe('Concat url parts', function () {
     expect(result).toMatch('/abc/def');
   });
 
+  it('does not remove slashes in string arguments', function(){
+    var str1 = '/abc',
+      str2 = '/def/ghi/jkl',
+      result = concatUrlParts(str1, str2);
+
+    expect(result).toMatch('/abc/def/ghi/jkl');
+  });
+
+  it('does not remove slash when the arguments before are empty strings', function(){
+    var str1 = '',
+      str2 = '',
+      str3 = '/test',
+      result = concatUrlParts(str1, str2, str3);
+
+    expect(result).toBe('/test');
+  });
+
   it('does not add two slashes to the first position', function(){
     var str1 = '/',
       str2 = '/def',
