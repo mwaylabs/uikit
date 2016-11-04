@@ -9,6 +9,7 @@ angular.module('mwUI.Modal')
       var _id = modalOptions.templateUrl,
         _scope = modalOptions.scope || $rootScope,
         _scopeAttributes = modalOptions.scopeAttributes || {},
+        _controllerAs = modalOptions.controllerAs || '$ctrl',
         _controller = modalOptions.controller,
         _class = modalOptions.class || '',
         _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
@@ -17,6 +18,7 @@ angular.module('mwUI.Modal')
         _self = this,
         _modal,
         _usedScope,
+        _usedController,
         _bootstrapModal,
         _previousFocusedEl;
 
@@ -55,7 +57,7 @@ angular.module('mwUI.Modal')
         _.extend(_usedScope, _scopeAttributes);
 
         if (_controller) {
-          $controller(_controller, {$scope: _usedScope, modalId: _id});
+          _usedController = $controller(_controller, {$scope: _usedScope, modalId: _id}, false, _controllerAs);
         }
 
         _scope.hideModal = function () {
@@ -130,10 +132,23 @@ angular.module('mwUI.Modal')
         }.bind(this));
       };
 
-
       this.setScopeAttributes = function (obj) {
         if (_.isObject(obj)) {
-          _.extend(_scopeAttributes, obj);
+          for (var key in obj){
+            var value = obj[key];
+
+            _scopeAttributes[key] = value;
+
+            $timeout(function(){
+              if(_usedScope){
+                _usedScope[key] = value;
+              }
+
+              if(_usedController){
+                _usedController[key] = value;
+              }
+            });
+          }
         }
       };
 
@@ -239,10 +254,7 @@ angular.module('mwUI.Modal')
     };
 
     this.prepare = function (modalOptions, bootstrapModalOptions) {
-      var ModalDefinition = function () {
-        return new Modal(modalOptions, bootstrapModalOptions);
-      };
-      return ModalDefinition;
+      return Modal.bind(this, modalOptions, bootstrapModalOptions);
     };
 
     this.getOpenedModals = function () {
