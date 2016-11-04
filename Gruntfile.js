@@ -228,11 +228,12 @@ module.exports = function (grunt) {
     clean: ['dist', 'zip']
   });
 
-  grunt.registerTask('test', ['build', 'karma']);
-  grunt.registerTask('test:codequality', ['jshint', 'test']);
-  grunt.registerTask('watch', ['process', 'regarde']);
+  grunt.registerTask('test', ['jshint', 'process', 'process-old', 'karma']);
+
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
   grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
-  grunt.registerTask('build', ['jshint', 'process', 'process-old']);
-  grunt.registerTask('release', ['clean', 'build', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit', 'shell:gitRelease']);
+
+  grunt.registerTask('build', ['clean', 'process', 'process-old', 'replace:setBuildNumber', 'uglify', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder', 'shell:zipUiKit']);
+
+  grunt.registerTask('watch', ['process', 'regarde']);
 };
