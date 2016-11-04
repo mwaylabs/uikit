@@ -1,19 +1,16 @@
 #/bin/sh
 set -e
 
-RELEASE_BRANCH_NAME=release
 RELEASE_GIT_NAME="Bob Builder"
 RELEASE_GIT_MAIL="info@mwaysolutions.com"
 
 CURRENT_GIT_USER=`git config user.name`
 CURRENT_GIT_USERMAIL=`git config user.email`
-LATEST_COMMIT_HASH_BEFORE_RELEASE=`git rev-parse --verify HEAD`
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 # Sets everything back to the beginning, before the release process has been started
 reset () {
-    git checkout $CURRENT_BRANCH -f
-    git reset --hard $LATEST_COMMIT_HASH_BEFORE_RELEASE
+    git reset --hard origin/$CURRENT_BRANCH
     git config user.name "$CURRENT_GIT_USER"
     git config user.email "$CURRENT_GIT_USERMAIL"
     git remote remove origin_gh
@@ -85,28 +82,6 @@ fi
 
 mv .gitignore .releaseignore
 mv .ignore_tmp .gitignore
-
-# Check if the release branch already exists
-if [ `git branch -r --list origin_gh/$RELEASE_BRANCH_NAME` ]
-then
-  # branch already exists so we get the current remote version
-  git branch $RELEASE_BRANCH_NAME origin_gh/$RELEASE_BRANCH_NAME
-  git checkout $RELEASE_BRANCH_NAME
-  git pull origin_gh $RELEASE_BRANCH_NAME
-
-  # Cherry pick the release commit from the master branch
-  git cherry-pick $RELEASE_COMMIT_HASH -X theirs
-elif [ `git branch --list $RELEASE_BRANCH_NAME` ]
-then
-  # branch exists only locally
-  git checkout $RELEASE_BRANCH_NAME
-else
-  # branch does not exist so it is created
-  git checkout -b $RELEASE_BRANCH_NAME
-fi
-
-# Push cherry-pick to release branch
-git push origin_gh $RELEASE_BRANCH_NAME --no-verify > /dev/null 2>&1 || exit_with_error "Could not push to branch release"
 
 # Create tag and push it
 git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER}"

@@ -25,7 +25,6 @@ deploy:
     skip_cleanup: true 
     file_glob: true 
     on: 
-      all_branches: true
       tags: true
   - provider: npm
     email: a.zarges@mwaysolutions.com
@@ -33,5 +32,4 @@ deploy:
       secure: zlB6m4IT0R3ta46jmh6K2EJp2cySvQeXUawLIbbuKWdxLLYb2FS3DEtW9SrwjkTNzmQ8Xk2DzrPj2yCkK2vQ6IPJHARx07sFZHb6DRF8ILkiMycMdffetgYGJ9UApnJ3ysrw0J4rMhI0uXtg4UVeil2dO69WlZYFIsNxF3TrdO5mKdMBiVlxLAh2xQYQya5/Y9It489O0deKEmQfmIBGfcujmLLpQZe15NSaD4mt9QqOV7rcEMm+4RaUDQn+1APhQWLvTkABHsz9NuNHYziu3t6nRimQcuxwOnLk9oyz1qNMo5K8Ajy/rw3xqI173rkbiJK5Lb6n/lBiXQ9h5Rp8syKrKjLX8utIejdjuuW5F/hUal2IC9lXIt3GOmIhNvgGNpSYz2tN2O0TIOQ13+jYM8SR6i6tijrfQnfaJZAQJ82OJvijkmKfDK1zgd3hIrUbSHMHgP+MGWjGX16ZATqnTGi0spRK0740TsxNfmt9Rb7xAnuESX6mTZZgyCH++ugqP4mloAORRONAIHFrILdivyRVaU9qxVhhOWpyFvbp+TiOSZy9awlgugLd262pkJ7/olzqVfJ2/jYOMDs6mC4C1m6oPs02tBn7n1CKriFQAo6Z/QJu6Me5YmSVTSmN53qmZKnU9McvP0PvbtKuDEBpoUDVkBb1HwZGPWkaRxQkDT0=
     skip_cleanup: true 
     on:
-      all_branches: true
       tags: true
