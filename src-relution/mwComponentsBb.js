@@ -92,34 +92,6 @@ angular.module('mwComponentsBb', [])
     };
   })
 
-
-  .directive('mwEmptyStateBb', function () {
-    return {
-      restrict: 'A',
-      replace: true,
-      scope: {
-        collection: '=',
-        text: '@mwEmptyStateBb',
-        button: '&',
-        buttonText: '@'
-      },
-      transclude: true,
-      templateUrl: 'uikit/templates/mwComponentsBb/mwEmptyStateBb.html',
-      link: function (scope) {
-
-        if (scope.collection) {
-          scope.showEmptyState = function () {
-            return (scope.collection.length === 0 && !scope.collection.filterable.filterIsSet);
-          };
-        } else {
-          scope.showEmptyState = function () {
-            return true;
-          };
-        }
-      }
-    };
-  })
-
   .directive('mwVersionSelector', function () {
     return {
       restrict: 'A',
