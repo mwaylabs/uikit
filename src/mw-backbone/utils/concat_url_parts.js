@@ -1,20 +1,19 @@
 mwUI.Backbone.Utils.concatUrlParts = function () {
-  var urlParts = _.toArray(arguments),
-    trimmedUrlParts = [];
+  var urlParts = _.toArray(arguments), cleanedUrlParts = [];
+
+  //remove empty strings
+  urlParts = _.compact(urlParts);
 
   _.forEach(urlParts, function (url, index) {
-    if (!_.isString(url) || url === '') {
-      return;
-    } else if (index !== 0 || url === '/') {
-      //Removes slash at the beginning of the string except when it is the first argument or it is only a slash
-      url = url.replace(/^\//, '');
+    if (index === 0) {
+      //remove only trailing slash
+      url = url.replace(/\/$/g, '');
+    } else {
+      //Removing leading and trailing slash
+      url = url.replace(/^\/|\/$/g, '');
     }
-
-    // Removes trailing slash
-    url = url.replace(/\/$/, '');
-
-    trimmedUrlParts.push(url);
+    cleanedUrlParts.push(url);
   });
 
-  return trimmedUrlParts.join('/');
+  return cleanedUrlParts.join('/');
 };
