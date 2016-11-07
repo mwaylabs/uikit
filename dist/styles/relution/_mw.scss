@@ -1,0 +1,52 @@
+//Framework specific variables
+
+//SubNavigation
+$sub-nav-background: #eee !default;
+$sub-nav-pill-divider: "1px solid #ccc";
+
+//List
+$list-hover-color: #f3f3f3 !default;
+$list-active-color: #eaeaea !default;
+
+//Star Rating
+$star-rating-color: #ffa602 !default;
+
+@import "src/animations";
+@import "src/mw-empty-state";
+@import "src/mw-form";
+@import "src/mw-full-screen-height";
+@import "src/mw-markdown-preview";
+@import "src/mw-sidebar";
+@import "src/mw-sidebar-filters";
+@import "src/mw-version-selector";
+@import "src/mw-file-upload";
+@import "src/mw-header";
+
+.mw-star-rating {
+  color: $star-rating-color;
+}
+
+/* force line breaks in tooltips */
+.popover {
+  .popover-content {
+    word-wrap: break-word;
+  }
+}
+
+// Change the color of the eye button of the password fields to show the
+// password in clear text.
+.mw-password-toggler {
+  .toggler-btn:hover i{
+    color: $brand-primary
+  }
+}
+
+.navigation + .notifications .messages-list ul {
+  margin-top: $navbar-height + 7px;
+}
+
+body{
+  overflow: inherit !important;
+  height: inherit !important;
+}
+
