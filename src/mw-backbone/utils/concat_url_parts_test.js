@@ -12,7 +12,7 @@ describe('Concat url parts', function () {
     expect(result).toMatch(str3);
   });
 
-  it('appends a slash between the strings', function(){
+  it('inserts a slash between strings', function(){
     var str1 = 'abc',
       str2 = 'def',
       result = concatUrlParts(str1, str2);
