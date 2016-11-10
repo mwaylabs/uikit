@@ -75,7 +75,7 @@ describe('Concat url parts', function () {
       str2 = 'def',
       result = concatUrlParts(str1, str2);
 
-    expect(result[result.length]).not.toBe('/');
+    expect(_.last(result)).not.toBe('/');
   });
 
 });
