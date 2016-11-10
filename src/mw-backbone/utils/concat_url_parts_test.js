@@ -20,7 +20,7 @@ describe('Concat url parts', function () {
     expect(result).toMatch(str1+'/'+str2);
   });
 
-  it('cut unnecessary slashes so that it is a valid url', function(){
+  it('cuts unnecessary slashes', function(){
     var str1 = 'abc/',
       str2 = '/def',
       result = concatUrlParts(str1, str2);
