@@ -1,0 +1,68 @@
+%mw-radio-checkbox-mixin {
+  width: 18px;
+  height: 18px;
+  background: none;
+  display: inline-block;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+  position: relative;
+  left: -2px;
+  padding: 3px;
+
+  .state-indicator {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    z-index: 0;
+
+    width: 0;
+    height: 0;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+    background: $brand-primary;
+
+    @include single-transition(all, 0.2s, cubic-bezier(0, .33, .79, 1.46));
+  }
+
+  input[type=checkbox],
+  input[type=radio] {
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    z-index: 1;
+
+    &:disabled + .state-indicator{
+      background: #ccc;
+      left: -4px;
+      top: -4px;
+      height: 170%;
+      width: 170%;
+      opacity: 0.5;
+    }
+
+    &:checked + .state-indicator,
+    &:checked:disabled + .state-indicator{
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      opacity: 1;
+    }
+
+    &:focus ~ .state-focus-indicator{
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+
+      $color-rgba: rgba(red($input-border-focus), green($input-border-focus), blue($input-border-focus), .6);
+      @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px $color-rgba);
+    }
+  }
+}
