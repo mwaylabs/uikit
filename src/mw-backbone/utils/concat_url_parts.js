@@ -4,7 +4,7 @@ mwUI.Backbone.Utils.concatUrlParts = function () {
   //remove empty strings
   urlParts = _.compact(urlParts);
 
-  _.forEach(urlParts, function (url, index) {
+  _.each(urlParts, function (url, index) {
     if (index === 0) {
       //remove only trailing slash
       url = url.replace(/\/$/g, '');
