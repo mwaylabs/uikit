@@ -1,4 +1,4 @@
-angular.module('mwUI.Modal', ['mwUI.i18n']);
+angular.module('mwUI.Modal', ['mwUI.i18n', 'mwUI.Toast']);
 
 // @include ./directives/mw_modal.js
 // @include ./directives/mw_modal_body.js

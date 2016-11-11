@@ -1,6 +1,6 @@
 angular.module('mwUI.Modal')
 
-  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $q, $templateRequest, $timeout, Toast) {
+  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $injector, $q, $templateRequest, $timeout, Toast) {
 
     var _openedModals = [];
 
@@ -9,6 +9,8 @@ angular.module('mwUI.Modal')
       var _id = modalOptions.templateUrl,
         _scope = modalOptions.scope || $rootScope,
         _scopeAttributes = modalOptions.scopeAttributes || {},
+        _resolve = modalOptions.resolve || {},
+        _controllerAs = modalOptions.controllerAs || '$ctrl',
         _controller = modalOptions.controller,
         _class = modalOptions.class || '',
         _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
@@ -17,6 +19,7 @@ angular.module('mwUI.Modal')
         _self = this,
         _modal,
         _usedScope,
+        _usedController,
         _bootstrapModal,
         _previousFocusedEl;
 
@@ -47,23 +50,40 @@ angular.module('mwUI.Modal')
         });
       };
 
+      var resolveLocals = function () {
+        var locals = angular.extend({}, _resolve);
+        angular.forEach(locals, function (value, key) {
+          locals[key] = angular.isString(value) ?
+            $injector.get(value) :
+            $injector.invoke(value, null, null, key);
+        });
+        locals.$template = _getTemplate();
+        return $q.all(locals);
+      };
+
+      var compileTemplate = function(locals){
+        _usedScope = _scope.$new();
+        if (_controller) {
+          locals.$scope = _usedScope;
+          locals.modalId = _id;
+          _usedController = $controller(_controller, locals, false, _controllerAs);
+        }
+        return $compile(locals.$template)(_usedScope);
+      };
+
       var _buildModal = function () {
+
         var dfd = $q.defer();
 
-        _usedScope = _scope.$new();
+        resolveLocals().then(function (locals) {
+          _modal = compileTemplate(locals);
 
-        _.extend(_usedScope, _scopeAttributes);
+          this.setScopeAttributes(_scopeAttributes);
 
-        if (_controller) {
-          $controller(_controller, {$scope: _usedScope, modalId: _id});
-        }
+          _usedScope.hideModal = function () {
+            return _self.hide();
+          };
 
-        _scope.hideModal = function () {
-          return _self.hide();
-        };
-
-        _getTemplate().then(function (template) {
-          _modal = $compile(template.trim())(_usedScope);
           _usedScope.$on('COMPILE:FINISHED', function () {
             _modal.addClass('mw-modal');
             _modal.addClass(_class);
@@ -90,6 +110,9 @@ angular.module('mwUI.Modal')
             _destroyOnRouteChange();
             dfd.resolve();
           });
+
+        }.bind(this), function(err){
+          dfd.reject(err);
         });
 
         return dfd.promise;
@@ -98,7 +121,7 @@ angular.module('mwUI.Modal')
       this.id = _id;
 
       this.getScope = function () {
-        return _scope;
+        return _usedScope;
       };
 
       /**
@@ -110,16 +133,21 @@ angular.module('mwUI.Modal')
        * @description Shows the modal
        */
       this.show = function () {
+        var dfd = $q.defer();
         Toast.clear();
         _previousFocusedEl = angular.element(document.activeElement);
-
-        _buildModal().then(function () {
+        $rootScope.$broadcast('$modalOpenStart');
+        $rootScope.$broadcast('$modalResolveDependenciesStart');
+        _buildModal.call(this).then(function () {
+          $rootScope.$broadcast('$modalResolveDependenciesSuccess');
           angular.element(_holderEl).append(_modal);
           _bootstrapModal.modal('show');
           _modalOpened = true;
           _openedModals.push(this);
           _bootstrapModal.on('shown.bs.modal', function () {
             angular.element(this).find('input:text:visible:first').focus();
+            $rootScope.$broadcast('$modalOpenSuccess');
+            dfd.resolve();
           });
           if (_previousFocusedEl) {
             _bootstrapModal.on('hidden.bs.modal', function () {
@@ -127,13 +155,31 @@ angular.module('mwUI.Modal')
             });
           }
 
-        }.bind(this));
-      };
+        }.bind(this), function(err){
+          $rootScope.$broadcast('$modalOpenError', err);
+          dfd.reject(err);
+        });
 
+        return dfd.promise;
+      };
 
       this.setScopeAttributes = function (obj) {
         if (_.isObject(obj)) {
-          _.extend(_scopeAttributes, obj);
+          for (var key in obj) {
+            var value = obj[key];
+
+            _scopeAttributes[key] = value;
+
+            $timeout(function () {
+              if (_usedScope) {
+                _usedScope[key] = value;
+              }
+
+              if (_usedController) {
+                _usedController[key] = value;
+              }
+            });
+          }
         }
       };
 
@@ -149,12 +195,13 @@ angular.module('mwUI.Modal')
       this.hide = function () {
         var dfd = $q.defer();
 
-
+        $rootScope.$broadcast('$modalCloseStart');
         if (_bootstrapModal && _modalOpened) {
           _bootstrapModal.one('hidden.bs.modal', function () {
             _bootstrapModal.off();
             _self.destroy();
             _modalOpened = false;
+            $rootScope.$broadcast('$modalCloseSuccess');
             dfd.resolve();
           });
           _bootstrapModal.modal('hide');
@@ -234,15 +281,12 @@ angular.module('mwUI.Modal')
      * @param {Object} modalOptions The options of the modal which are used to instantiate it
      * @returns {Object} Modal
      */
-    this.create = function (modalOptions) {
-      return new Modal(modalOptions);
+    this.create = function (modalOptions, bootstrapModalOptions) {
+      return new Modal(modalOptions, bootstrapModalOptions);
     };
 
     this.prepare = function (modalOptions, bootstrapModalOptions) {
-      var ModalDefinition = function () {
-        return new Modal(modalOptions, bootstrapModalOptions);
-      };
-      return ModalDefinition;
+      return this.create.bind(this, modalOptions, bootstrapModalOptions);
     };
 
     this.getOpenedModals = function () {
