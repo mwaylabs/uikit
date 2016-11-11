@@ -252,7 +252,7 @@ describe('mwUi Modal service', function () {
       expect(modalResolveSpy).toHaveBeenCalled();
     });
 
-    it('triggers $modalResolvDependenciesSuccess when all dependencies are resolved', function(){
+    it('triggers $modalResolveDependenciesSuccess when all dependencies are resolved', function(){
       var modalResolvedSpy = jasmine.createSpy('$modalResolveDependencies');
       this.$rootScope.$on('$modalResolveDependenciesSuccess', modalResolvedSpy);
       this.myModal.show();
@@ -296,7 +296,7 @@ describe('mwUi Modal service', function () {
       expect(modalCloseSpy).toHaveBeenCalled();
     });
 
-    it('triggers $modalCloseSuccess when modal is bootstrap hidden event is triggered', function(){
+    it('triggers $modalCloseSuccess when bootstrap hidden event is triggered', function(){
       var modalCloseSpy = jasmine.createSpy('$modalCloseSuccess');
       this.$rootScope.$on('$modalCloseSuccess', modalCloseSpy);
       this.myModal.show();
