@@ -14,6 +14,18 @@ The `hostName` and `basePath` can be defined globally by setting
 `mwUI.Backbone.hostName` and `mwUI.Backbone.basePath` and the attribute 
 can be overwritten per `Model` and `Collection`
 
+### Modal Module
+- Modal can be configured with controllerAs that is exposed to the modal template
+- Modal can be configured with preresolvers. All preresolvers will be resolved and injected into the controller
+before the modal is opened
+- Modal triggers the following events: 
+    - $modalOpenStart
+    - $modalResolveDependenciesStart
+    - $modalResolveDependenciesSuccess
+    - $modalOpenSuccess / $modalOpenError
+    - $modalCloseStart
+    - $modalCloseSuccess
+
 ## Breaking Changes
 ### Backbone Module
 - The attribute `baseUrl` is replaced by the new attributes `hostName` and `basePath`
