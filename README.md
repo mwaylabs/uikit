@@ -6,7 +6,7 @@ We started with the uikit in our product http://relution.io. As our codebase was
 The Uikit itself is split into several submodules so you can also just use parts from it, in case you don't want to use the whole package.
 
 ## Whats in the box
-- We combined the power of AngularJS with the power of BackboneJS. BackboneJS is used for the data layer. Its models and collections are used to communicate with a RESTful API. AngularJS is extended to work with BackboneJS (More information: http://blog.mwaysolutions.com/2015/05/07/backbonejs-meets-angularjs/)
+- We combined the power of AngularJS with the power of BackboneJS in the [mwUI.Backbone module](./src/mw-backbone/mw_backbone_doc.md)
 - A lot of useful ui components like a history timeline, wizard, tab bar, ...
 - Paginated list view that supports selecting, sorting and filtering of items
 - Easy to use i18n service for internationalized content
