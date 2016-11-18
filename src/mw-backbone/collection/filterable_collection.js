@@ -25,11 +25,19 @@ mwUI.Backbone.FilterableCollection = Backbone.FilterableCollection = Backbone.Co
   },
   fetch: function (options) {
     options = options || {};
-    options.params = options.params || {};
 
     if (this.filterable) {
       var filterableParams = this.filterable.getRequestParams(options);
-      _.extend(options.params, filterableParams);
+
+      if(window.mwUI.Backbone.use$http){
+        //$http is using options.params to generate GET query params
+        options.params = options.params || {};
+        _.extend(options.params, filterableParams);
+      } else {
+        //jquery ajax does not have a params a params option attribute for query params
+        options.data = options.data || {};
+        _.extend(options.data, filterableParams);
+      }
     }
 
     return Backbone.Collection.prototype.fetch.call(this, options);
