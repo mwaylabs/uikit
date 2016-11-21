@@ -210,6 +210,7 @@ angular.module('mwUI.i18n')
          */
         setLocale: function (localeid) {
           var loadTasks = [];
+          $rootScope.$broadcast('i18n:loadResourcesStart');
           _isLoadingresources = true;
           _oldLocale = this.getActiveLocale();
           _setActiveLocale(localeid);
@@ -218,6 +219,7 @@ angular.module('mwUI.i18n')
           }, this);
           return $q.all(loadTasks).then(function () {
             _isLoadingresources = false;
+            $rootScope.$broadcast('i18n:loadResourcesSuccess');
             _oldLocale = null;
             $rootScope.$broadcast('i18n:localeChanged', localeid);
             return localeid;
