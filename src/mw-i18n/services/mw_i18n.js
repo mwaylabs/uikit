@@ -38,7 +38,7 @@ angular.module('mwUI.i18n')
     var _getTranslationForKey = function (key) {
       var activeLocale = _oldLocale || _getActiveLocale();
 
-      if(activeLocale && _dictionary && _dictionary[activeLocale.id]){
+      if (activeLocale && _dictionary && _dictionary[activeLocale.id]) {
         var translation = _dictionary[activeLocale.id];
         angular.forEach(key.split('.'), function (k) {
           translation = translation ? translation[k] : null;
@@ -62,7 +62,7 @@ angular.module('mwUI.i18n')
           result = property[locale.id];
         }
       });
-      if(!result){
+      if (!result) {
         result = _.values(property)[0];
       }
       return result;
@@ -74,7 +74,7 @@ angular.module('mwUI.i18n')
      * @returns {String}
      * @private
      */
-    var _getUsedPlaceholdersInTranslationStr = function(str){
+    var _getUsedPlaceholdersInTranslationStr = function (str) {
 
       var re = /{{\s*([a-zA-Z0-9$_]+)\s*}}/g,
         usedPlaceHolders = [],
@@ -98,11 +98,11 @@ angular.module('mwUI.i18n')
      * @private
      */
     var _replacePlaceholders = function (str, placeholders) {
-      if(placeholders){
+      if (placeholders) {
         var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
-        usedPlaceHolders.forEach(function(usedPlaceholder){
-          var escapedPlaceholder = usedPlaceholder.replace(/[$_]/g,'\\$&'),
-            replaceRegex = new RegExp('{{\\s*'+escapedPlaceholder+'\\s*}}');
+        usedPlaceHolders.forEach(function (usedPlaceholder) {
+          var escapedPlaceholder = usedPlaceholder.replace(/[$_]/g, '\\$&'),
+            replaceRegex = new RegExp('{{\\s*' + escapedPlaceholder + '\\s*}}');
 
           str = str.replace(replaceRegex, placeholders[usedPlaceholder]);
         });
@@ -143,7 +143,7 @@ angular.module('mwUI.i18n')
 
     this.setDefaultLocale = function (locale) {
       _defaultLocale = locale;
-      if(_.findWhere(_locales, {id: locale})){
+      if (_.findWhere(_locales, {id: locale})) {
         _setActiveLocale(locale);
       }
     };
@@ -176,7 +176,7 @@ angular.module('mwUI.i18n')
          * Returns all registered locales
          * @returns {Array}
          */
-        getLocales: function(){
+        getLocales: function () {
           return _locales;
         },
 
@@ -197,7 +197,7 @@ angular.module('mwUI.i18n')
           var translation = _getTranslationForKey(key);
           if (translation) {
             return _replacePlaceholders(translation, placeholder);
-          } else if(_isLoadingresources){
+          } else if (_isLoadingresources) {
             return '...';
           } else {
             return 'MISSING TRANSLATION ' + this.getActiveLocale().id + ': ' + key;
@@ -229,7 +229,7 @@ angular.module('mwUI.i18n')
          * @param key {String}
          * @returns {boolean}
          */
-        translationIsAvailable: function(key){
+        translationIsAvailable: function (key) {
           return !!_getTranslationForKey(key);
         },
         /**
