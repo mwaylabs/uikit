@@ -19,6 +19,7 @@ window.mwUI.Utils.shims = {};
 
 // @include ./services/mw_callback_handler.js
 
+// @include ./shims/deep_extend_object.js
 // @include ./shims/dom_observer.js
 // @include ./shims/route_to_regex.js
 
