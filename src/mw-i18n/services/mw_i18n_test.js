@@ -335,8 +335,8 @@ describe('mwUi i18n Service', function () {
 
       it('extends translations for multiple locales', function (done) {
         i18n.extend({
-          de_DE: {c2: {c22: {c221: 'DE:REPLACED'}}},
-          en_US: {c2: {c22: {c221: 'EN:REPLACED'}}}
+          'de_DE': {c2: {c22: {c221: 'DE:REPLACED'}}},
+          'en_US': {c2: {c22: {c221: 'EN:REPLACED'}}}
         });
 
         i18n.setLocale('en_US').then(function () {
@@ -391,8 +391,7 @@ describe('mwUi i18n Service', function () {
 
           expect(throwFn).toThrow();
         });
-      })
-    })
-
+      });
+    });
   });
 });
