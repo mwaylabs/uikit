@@ -25,6 +25,15 @@ before the modal is opened
     - $modalOpenSuccess / $modalOpenError
     - $modalCloseStart
     - $modalCloseSuccess
+    
+### i18n Module
+- Translations can be added during run time. Previously it was only possible to 
+define translations in the angular config phase.
+Already existing translations for keys will be overwritten.  
+    ```
+    i18n.extendForLocale('de_DE', {common: {helloWord: 'Hallo Welt'}});
+    i18n.extend({de_DE: {common: {helloWord: 'Hallo Welt'}}, en_US: {common: {helloWord: 'Hello World'}}};
+    ```
 
 ## Breaking Changes
 ### Backbone Module
