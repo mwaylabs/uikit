@@ -94,6 +94,20 @@ describe('mwUi i18n Service', function () {
 
     });
 
+    it('should return replaced translation', function (done) {
+
+      i18n.extendForLocale('de_DE', {common: {a1: 'DE:REPLACED'}});
+      i18n.setLocale('de_DE').then(function () {
+        var translation = $filter('i18n')('common.a1');
+
+        expect(translation).toEqual('DE:REPLACED');
+        done();
+      });
+
+      $rootScope.$digest();
+
+    });
+
 
   });
 

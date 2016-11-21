@@ -250,6 +250,34 @@ angular.module('mwUI.i18n')
           } else {
             return property[_defaultLocale] || _getContentOfOtherLocale(property);
           }
+        },
+
+        extendForLocale: function (locale, translations) {
+          if (!locale) {
+            throw new Error('Locale is a require argument!');
+          }
+          if (!_.isObject(translations)) {
+            throw new Error('The translations argument is from type ' + typeof translations + ' but it has to be an object!');
+          }
+          if (!_.findWhere(_locales, {id: locale})) {
+            throw new Error('The locale ' + locale + ' does not exist! Make sure you have registerd it first');
+          }
+          if (!_isLoadingresources) {
+            mwUI.Utils.shims.deepExtendObject(_dictionary[locale], translations);
+          }
+          $rootScope.$on('i18n:loadResourcesSuccess', function () {
+            mwUI.Utils.shims.deepExtendObject(_dictionary[locale], translations);
+          });
+        },
+
+        extend: function (localesWithTranslations) {
+          if (!_.isObject(localesWithTranslations)) {
+            throw new Error('The localesWithTranslations argument is from type ' + typeof localesWithTranslations + ' but it has to be an object!');
+          }
+
+          for (var locale in localesWithTranslations) {
+            this.extendForLocale(locale, localesWithTranslations[locale]);
+          }
         }
       };
     }];
