@@ -13,7 +13,7 @@ describe('mwUi Modal service', function () {
     this.Modal = Modal;
     this.$timeout = $timeout;
     this.$templateCache = $templateCache;
-    this.asyncPromiseFn = function($timeout, $q){
+    this.asyncPromiseFn = function ($timeout, $q) {
       var dfd = $q.defer();
       $timeout(function () {
         dfd.resolve('resolved');
@@ -89,28 +89,31 @@ describe('mwUi Modal service', function () {
     });
 
     it('sets the scope attributes of the modal when it is called before modal was opened', function () {
-      this.myModal.setScopeAttributes({test: 'abc'});
+      this.myModal.setScopeAttributes({test: 'abc', test2: 'xyz'});
+
       this.myModal.show();
       this.$rootScope.$digest();
       this.$timeout.flush();
 
       expect(this.myModal.getScope().test).toBe('abc');
+      expect(this.myModal.getScope().test2).toBe('xyz');
     });
 
     it('updates the scope attributes of the modal when it is called after the modal was opened', function () {
       this.myModal.show();
       this.$rootScope.$digest();
 
-      this.myModal.setScopeAttributes({test2: 'xxx'});
+      this.myModal.setScopeAttributes({test: 'abc', test2: 'xyz'});
       this.$timeout.flush();
       this.$rootScope.$digest();
 
-      expect(this.myModal.getScope().test2).toBe('xxx');
+      expect(this.myModal.getScope().test).toBe('abc');
+      expect(this.myModal.getScope().test2).toBe('xyz');
     });
   });
 
-  describe('testing advanced modal configurations', function(){
-    afterEach(function(){
+  describe('testing advanced modal configurations', function () {
+    afterEach(function () {
       this.$timeout.flush();
       this.$rootScope.$digest();
     });
@@ -169,7 +172,8 @@ describe('mwUi Modal service', function () {
       var modal = this.Modal.create({
         el: 'body',
         templateUrl: 'test/xxx.html',
-        controller: function(){},
+        controller: function () {
+        },
         resolve: {
           test: this.asyncPromiseFn
         }
@@ -186,7 +190,8 @@ describe('mwUi Modal service', function () {
       var modal = this.Modal.create({
         el: 'body',
         templateUrl: 'test/xxx.html',
-        controller: function(){},
+        controller: function () {
+        },
         resolve: {
           test: this.asyncPromiseFn
         }
@@ -205,8 +210,8 @@ describe('mwUi Modal service', function () {
       var modal = this.Modal.create({
         el: 'body',
         templateUrl: 'test/xxx.html',
-        controller: function(test){
-          controllerSpy.call(this,test);
+        controller: function (test) {
+          controllerSpy.call(this, test);
         },
         resolve: {
           test: this.asyncPromiseFn
@@ -222,13 +227,14 @@ describe('mwUi Modal service', function () {
     });
   });
 
-  describe('testing events', function(){
+  describe('testing events', function () {
     beforeEach(function () {
       this.myModal = this.Modal.create({
         templateUrl: 'test/xxx.html',
         el: 'body',
-        controller: function(){},
-        resolve:{
+        controller: function () {
+        },
+        resolve: {
           test: this.asyncPromiseFn
         }
       });
@@ -240,7 +246,7 @@ describe('mwUi Modal service', function () {
       this.$rootScope.$digest();
     });
 
-    it('triggers $modalOpenStart and $modalResolveDependenciesStart event when show is called', function(){
+    it('triggers $modalOpenStart and $modalResolveDependenciesStart event when show is called', function () {
       var modalOpenSpy = jasmine.createSpy('$modalOpenStart'),
         modalResolveSpy = jasmine.createSpy('$modalResolveDependenciesStart');
       this.$rootScope.$on('$modalOpenStart', modalOpenSpy);
@@ -252,7 +258,7 @@ describe('mwUi Modal service', function () {
       expect(modalResolveSpy).toHaveBeenCalled();
     });
 
-    it('triggers $modalResolveDependenciesSuccess when all dependencies are resolved', function(){
+    it('triggers $modalResolveDependenciesSuccess when all dependencies are resolved', function () {
       var modalResolvedSpy = jasmine.createSpy('$modalResolveDependencies');
       this.$rootScope.$on('$modalResolveDependenciesSuccess', modalResolvedSpy);
       this.myModal.show();
@@ -262,7 +268,7 @@ describe('mwUi Modal service', function () {
       expect(modalResolvedSpy).toHaveBeenCalled();
     });
 
-    it('triggers not $modalOpenSuccess when all dependencies are resolved', function(){
+    it('triggers not $modalOpenSuccess when all dependencies are resolved', function () {
       var modalOpenedSpy = jasmine.createSpy('$modalOpenSuccess');
       this.$rootScope.$on('$modalOpenSuccess', modalOpenedSpy);
       this.myModal.show();
@@ -272,7 +278,7 @@ describe('mwUi Modal service', function () {
       expect(modalOpenedSpy).not.toHaveBeenCalled();
     });
 
-    it('triggers $modalOpenSuccess when bootstrap shown event is triggered', function(){
+    it('triggers $modalOpenSuccess when bootstrap shown event is triggered', function () {
       var modalOpenedSpy = jasmine.createSpy('$modalOpenSuccess');
       this.$rootScope.$on('$modalOpenSuccess', modalOpenedSpy);
       this.myModal.show();
@@ -284,7 +290,7 @@ describe('mwUi Modal service', function () {
       expect(modalOpenedSpy).toHaveBeenCalled();
     });
 
-    it('triggers $modalCloseStart when modal is hidden', function(){
+    it('triggers $modalCloseStart when modal is hidden', function () {
       var modalCloseSpy = jasmine.createSpy('$modalCloseSpy');
       this.$rootScope.$on('$modalCloseStart', modalCloseSpy);
       this.myModal.show();
@@ -296,7 +302,7 @@ describe('mwUi Modal service', function () {
       expect(modalCloseSpy).toHaveBeenCalled();
     });
 
-    it('triggers $modalCloseSuccess when bootstrap hidden event is triggered', function(){
+    it('triggers $modalCloseSuccess when bootstrap hidden event is triggered', function () {
       var modalCloseSpy = jasmine.createSpy('$modalCloseSuccess');
       this.$rootScope.$on('$modalCloseSuccess', modalCloseSpy);
       this.myModal.show();
