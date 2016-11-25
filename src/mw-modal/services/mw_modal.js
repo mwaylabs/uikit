@@ -61,13 +61,25 @@ angular.module('mwUI.Modal')
         return $q.all(locals);
       };
 
-      var compileTemplate = function(locals){
+      var setAttributes = function (target, attributes) {
+        if (_.isObject(attributes) && _.isObject(target)) {
+          for (var key in attributes) {
+            target[key] = attributes[key];
+          }
+        }
+      };
+
+      var compileTemplate = function (locals) {
         _usedScope = _scope.$new();
+        setAttributes(_usedScope, _scopeAttributes);
+
         if (_controller) {
           locals.$scope = _usedScope;
           locals.modalId = _id;
+          setAttributes(_controller, _scopeAttributes);
           _usedController = $controller(_controller, locals, false, _controllerAs);
         }
+
         return $compile(locals.$template)(_usedScope);
       };
 
@@ -77,8 +89,6 @@ angular.module('mwUI.Modal')
 
         resolveLocals().then(function (locals) {
           _modal = compileTemplate(locals);
-
-          this.setScopeAttributes(_scopeAttributes);
 
           _usedScope.hideModal = function () {
             return _self.hide();
@@ -111,7 +121,7 @@ angular.module('mwUI.Modal')
             dfd.resolve();
           });
 
-        }.bind(this), function(err){
+        }.bind(this), function (err) {
           dfd.reject(err);
         });
 
@@ -155,7 +165,7 @@ angular.module('mwUI.Modal')
             });
           }
 
-        }.bind(this), function(err){
+        }.bind(this), function (err) {
           $rootScope.$broadcast('$modalOpenError', err);
           dfd.reject(err);
         });
@@ -164,23 +174,17 @@ angular.module('mwUI.Modal')
       };
 
       this.setScopeAttributes = function (obj) {
-        if (_.isObject(obj)) {
-          for (var key in obj) {
-            var value = obj[key];
+        setAttributes(_scopeAttributes, obj);
 
-            _scopeAttributes[key] = value;
-
-            $timeout(function () {
-              if (_usedScope) {
-                _usedScope[key] = value;
-              }
-
-              if (_usedController) {
-                _usedController[key] = value;
-              }
-            });
+        $timeout(function () {
+          if (_usedScope) {
+            setAttributes(_usedScope, obj);
           }
-        }
+
+          if (_usedController) {
+            setAttributes(_usedController, obj);
+          }
+        });
       };
 
       /**
@@ -251,6 +255,8 @@ angular.module('mwUI.Modal')
           if (_usedScope) {
             _usedScope.$destroy();
           }
+
+          _scopeAttributes = modalOptions.scopeAttributes || {};
         }.bind(this));
       };
 
