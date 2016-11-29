@@ -74,7 +74,7 @@ describe('mwCollapsable', function () {
         expect(isolateScope.viewModel.collapsed).toBe(false);
       });
 
-    it('should update its toggle state when scope attribute changes',
+    it('should update its toggle state when scope attribute changes with initial state closed',
       function () {
         scope.closed = true;
         el = $compile(collapsable)(scope);
@@ -85,6 +85,19 @@ describe('mwCollapsable', function () {
         scope.$digest();
 
         expect(isolateScope.viewModel.collapsed).toBe(true);
+      });
+
+    it('should update its toggle state when scope attribute changes with initial state opened',
+      function () {
+        scope.closed = false;
+        el = $compile(collapsable)(scope);
+        scope.$digest();
+        isolateScope = el.isolateScope();
+
+        scope.closed = true;
+        scope.$digest();
+
+        expect(isolateScope.viewModel.collapsed).toBe(false);
       });
 
   });

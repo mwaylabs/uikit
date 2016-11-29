@@ -20,6 +20,8 @@ angular.module('mwUI.UiComponents')
         scope.$watch('mwCollapsable', function(){
           if (scope.mwCollapsable === false) {
             scope.viewModel.collapsed = true;
+          } else {
+            scope.viewModel.collapsed = false;
           }
         });
       }
