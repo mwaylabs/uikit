@@ -46,4 +46,47 @@ describe('mwCollapsable', function () {
       expect(isolateScope.viewModel.collapsed).toBe(true);
     });
 
+  describe('define toggle state', function(){
+    beforeEach(function(){
+      scope = $rootScope.$new();
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
+    });
+
+    it('should be opened when mw-collapsable="false"',
+      function () {
+        scope.closed = false;
+
+        el = $compile(collapsable)(scope);
+        scope.$digest();
+        isolateScope = el.isolateScope();
+
+        expect(isolateScope.viewModel.collapsed).toBe(true);
+      });
+
+    it('should be closed when mw-collapsable="true"',
+      function () {
+        scope.closed = true;
+
+        el = $compile(collapsable)(scope);
+        scope.$digest();
+        isolateScope = el.isolateScope();
+
+        expect(isolateScope.viewModel.collapsed).toBe(false);
+      });
+
+    it('should update its toggle state when scope attribute changes',
+      function () {
+        scope.closed = true;
+        el = $compile(collapsable)(scope);
+        scope.$digest();
+        isolateScope = el.isolateScope();
+
+        scope.closed = false;
+        scope.$digest();
+
+        expect(isolateScope.viewModel.collapsed).toBe(true);
+      });
+
+  });
+
 });
