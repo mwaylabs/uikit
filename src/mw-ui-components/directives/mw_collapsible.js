@@ -17,9 +17,11 @@ angular.module('mwUI.UiComponents')
           scope.viewModel.collapsed = !scope.viewModel.collapsed;
         };
 
-        if (scope.mwCollapsable === false) {
-          scope.viewModel.collapsed = true;
-        }
+        scope.$watch('mwCollapsable', function(){
+          if (scope.mwCollapsable === false) {
+            scope.viewModel.collapsed = true;
+          }
+        });
       }
     };
   });
