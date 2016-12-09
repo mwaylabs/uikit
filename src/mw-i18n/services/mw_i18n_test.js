@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 29/05/15.
- */
 describe('mwUi i18n Service', function () {
   var $templateRequest,
     $rootScope,
@@ -38,6 +35,10 @@ describe('mwUi i18n Service', function () {
           dfd.resolve(JSON.stringify({b1: 'DE:B1', b2: 'DE:B2'}));
         } else if (path === 'i18n/b/en_US.json') {
           dfd.resolve(JSON.stringify({b1: 'EN:B1', b2: 'EN:B2'}));
+        } else if (path === 'i18n/c/de_DE.json') {
+          dfd.resolve(JSON.stringify({c1: 'DE:C1', c2: {c21: 'DE:C21', c22: {c221: 'DE:C221'}}}));
+        } else if (path === 'i18n/c/en_US.json') {
+          dfd.resolve(JSON.stringify({c1: 'EN:C1', c2: {c21: 'EN:C21', c22: {c221: 'EN:C221'}}}));
         } else {
           dfd.resolve(JSON.stringify({a: 'A', b: 'B'}));
         }
@@ -150,7 +151,7 @@ describe('mwUi i18n Service', function () {
       $rootScope.$digest();
     });
 
-    describe('testing placeholders', function(){
+    describe('testing placeholders', function () {
       it('replaces normal placeholders with value', function (done) {
         i18n.setLocale('de_DE').then(function () {
           expect(i18n.get('a3', {
@@ -269,5 +270,133 @@ describe('mwUi i18n Service', function () {
       expect(i18n.localize(i18nObject)).toEqual('SE:A');
     });
 
+    describe('extend translations', function () {
+      beforeEach(function () {
+        i18nProvider.addResource('i18n/c');
+      });
+
+      it('extends translations with new ones when resources are already loaded', function (done) {
+        i18n.setLocale('de_DE').then(function () {
+          i18n.extendForLocale('de_DE', {c3: 'DE:C3'});
+
+          expect(i18n.get('c3')).toBe('DE:C3');
+          done();
+        });
+        $rootScope.$digest();
+      });
+
+      it('extends translations with new ones when resources are not loaded yet', function (done) {
+        i18n.extendForLocale('de_DE', {c3: 'DE:C3'});
+
+        i18n.setLocale('de_DE').then(function () {
+
+          expect(i18n.get('c3')).toBe('DE:C3');
+          done();
+        });
+        $rootScope.$digest();
+      });
+
+      it('replaces translations when resources are already loaded', function (done) {
+        i18n.setLocale('de_DE').then(function () {
+          i18n.extendForLocale('de_DE', {c2: {c22: {c221: 'DE:REPLACED'}}});
+
+          expect(i18n.get('c2.c22.c221')).toBe('DE:REPLACED');
+          done();
+        });
+        $rootScope.$digest();
+      });
+
+      it('replaces translations when resources are not loaded yet', function (done) {
+        i18n.extendForLocale('de_DE', {c2: {c22: {c221: 'DE:REPLACED'}}});
+
+        i18n.setLocale('de_DE').then(function () {
+
+          expect(i18n.get('c2.c22.c221')).toBe('DE:REPLACED');
+          done();
+        });
+        $rootScope.$digest();
+      });
+
+      it('keeps replaced translations when changing the locale', function (done) {
+        i18n.extendForLocale('de_DE', {c2: {c22: {c221: 'DE:REPLACED'}}});
+        i18n.extendForLocale('en_US', {c2: {c22: {c221: 'EN:REPLACED'}}});
+        i18n.setLocale('en_US').then(function () {
+
+          i18n.setLocale('de_DE').then(function () {
+            expect(i18n.get('c2.c22.c221')).toBe('DE:REPLACED');
+            done();
+          });
+        });
+        $rootScope.$digest();
+      });
+
+      it('extends translations for multiple locales', function (done) {
+        i18n.extend({
+          'de_DE': {c2: {c22: {c221: 'DE:REPLACED'}}},
+          'en_US': {c2: {c22: {c221: 'EN:REPLACED'}}}
+        });
+
+        i18n.setLocale('en_US').then(function () {
+          expect(i18n.get('c2.c22.c221')).toBe('EN:REPLACED');
+
+          i18n.setLocale('de_DE').then(function () {
+
+            expect(i18n.get('c2.c22.c221')).toBe('DE:REPLACED');
+            done();
+          });
+        });
+        $rootScope.$digest();
+      });
+
+      describe('error handling', function () {
+        it('throws error when locale is not available', function () {
+          var throwFn = function () {
+            i18n.extendForLocale('x_X', {c3: 'abc'});
+          };
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when locale is invalid', function () {
+          var throwFn = function () {
+            i18n.extendForLocale();
+          };
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when translations argument is missing', function () {
+          var throwFn = function () {
+            i18n.extendForLocale('de_DE');
+          };
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when translations argument is not an object', function () {
+          var throwFn = function () {
+            i18n.extendForLocale('de_DE', 'TEST');
+          };
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when localesWithTranslations argument is not an object', function () {
+          var throwFn = function () {
+            i18n.extend();
+          };
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when localesWithTranslations argument an invalid object', function () {
+          var throwFn = function () {
+            i18n.extend({a: 'b'});
+          };
+
+          expect(throwFn).toThrow();
+        });
+      });
+    });
   });
 });

@@ -72,7 +72,7 @@ angular.module('mwUI.UiComponents')
           if (alreadyRegistered.length > 0 && !replace) {
             throw new Error('The icons ' + alreadyRegistered.join(',') + ' already exists. If you want to replace them use the method replaceIcons');
           } else {
-            _.extend(this.get('icons'), icons);
+            window.mwUI.Utils.shims.deepExtendObject(this.get('icons'), icons);
             if(alreadyRegistered.length>0){
               this.trigger('icons:replace');
             } else {

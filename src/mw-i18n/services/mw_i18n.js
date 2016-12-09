@@ -38,7 +38,7 @@ angular.module('mwUI.i18n')
     var _getTranslationForKey = function (key) {
       var activeLocale = _oldLocale || _getActiveLocale();
 
-      if(activeLocale && _dictionary && _dictionary[activeLocale.id]){
+      if (activeLocale && _dictionary && _dictionary[activeLocale.id]) {
         var translation = _dictionary[activeLocale.id];
         angular.forEach(key.split('.'), function (k) {
           translation = translation ? translation[k] : null;
@@ -62,7 +62,7 @@ angular.module('mwUI.i18n')
           result = property[locale.id];
         }
       });
-      if(!result){
+      if (!result) {
         result = _.values(property)[0];
       }
       return result;
@@ -74,7 +74,7 @@ angular.module('mwUI.i18n')
      * @returns {String}
      * @private
      */
-    var _getUsedPlaceholdersInTranslationStr = function(str){
+    var _getUsedPlaceholdersInTranslationStr = function (str) {
 
       var re = /{{\s*([a-zA-Z0-9$_]+)\s*}}/g,
         usedPlaceHolders = [],
@@ -98,11 +98,11 @@ angular.module('mwUI.i18n')
      * @private
      */
     var _replacePlaceholders = function (str, placeholders) {
-      if(placeholders){
+      if (placeholders) {
         var usedPlaceHolders = _getUsedPlaceholdersInTranslationStr(str);
-        usedPlaceHolders.forEach(function(usedPlaceholder){
-          var escapedPlaceholder = usedPlaceholder.replace(/[$_]/g,'\\$&'),
-            replaceRegex = new RegExp('{{\\s*'+escapedPlaceholder+'\\s*}}');
+        usedPlaceHolders.forEach(function (usedPlaceholder) {
+          var escapedPlaceholder = usedPlaceholder.replace(/[$_]/g, '\\$&'),
+            replaceRegex = new RegExp('{{\\s*' + escapedPlaceholder + '\\s*}}');
 
           str = str.replace(replaceRegex, placeholders[usedPlaceholder]);
         });
@@ -143,7 +143,7 @@ angular.module('mwUI.i18n')
 
     this.setDefaultLocale = function (locale) {
       _defaultLocale = locale;
-      if(_.findWhere(_locales, {id: locale})){
+      if (_.findWhere(_locales, {id: locale})) {
         _setActiveLocale(locale);
       }
     };
@@ -176,7 +176,7 @@ angular.module('mwUI.i18n')
          * Returns all registered locales
          * @returns {Array}
          */
-        getLocales: function(){
+        getLocales: function () {
           return _locales;
         },
 
@@ -197,7 +197,7 @@ angular.module('mwUI.i18n')
           var translation = _getTranslationForKey(key);
           if (translation) {
             return _replacePlaceholders(translation, placeholder);
-          } else if(_isLoadingresources){
+          } else if (_isLoadingresources) {
             return '...';
           } else {
             return 'MISSING TRANSLATION ' + this.getActiveLocale().id + ': ' + key;
@@ -210,6 +210,7 @@ angular.module('mwUI.i18n')
          */
         setLocale: function (localeid) {
           var loadTasks = [];
+          $rootScope.$broadcast('i18n:loadResourcesStart');
           _isLoadingresources = true;
           _oldLocale = this.getActiveLocale();
           _setActiveLocale(localeid);
@@ -218,6 +219,7 @@ angular.module('mwUI.i18n')
           }, this);
           return $q.all(loadTasks).then(function () {
             _isLoadingresources = false;
+            $rootScope.$broadcast('i18n:loadResourcesSuccess');
             _oldLocale = null;
             $rootScope.$broadcast('i18n:localeChanged', localeid);
             return localeid;
@@ -229,7 +231,7 @@ angular.module('mwUI.i18n')
          * @param key {String}
          * @returns {boolean}
          */
-        translationIsAvailable: function(key){
+        translationIsAvailable: function (key) {
           return !!_getTranslationForKey(key);
         },
         /**
@@ -247,6 +249,34 @@ angular.module('mwUI.i18n')
             return p;
           } else {
             return property[_defaultLocale] || _getContentOfOtherLocale(property);
+          }
+        },
+
+        extendForLocale: function (locale, translations) {
+          if (!locale) {
+            throw new Error('Locale is a required argument!');
+          }
+          if (!_.isObject(translations)) {
+            throw new Error('The translations argument is of type ' + typeof translations + ' but it has to be an object!');
+          }
+          if (!_.findWhere(_locales, {id: locale})) {
+            throw new Error('The locale ' + locale + ' does not exist! Make sure you have registered it.');
+          }
+          if (!_isLoadingresources) {
+            mwUI.Utils.shims.deepExtendObject(_dictionary[locale], translations);
+          }
+          $rootScope.$on('i18n:loadResourcesSuccess', function () {
+            mwUI.Utils.shims.deepExtendObject(_dictionary[locale], translations);
+          });
+        },
+
+        extend: function (localesWithTranslations) {
+          if (!_.isObject(localesWithTranslations)) {
+            throw new Error('The localesWithTranslations argument is from type ' + typeof localesWithTranslations + ' but it has to be an object!');
+          }
+
+          for (var locale in localesWithTranslations) {
+            this.extendForLocale(locale, localesWithTranslations[locale]);
           }
         }
       };
