@@ -18,10 +18,29 @@ angular.module('mwUI.Modal')
         _modalOpened = false,
         _self = this,
         _modal,
-        _usedScope,
+        _usedScope = _scope.$new(),
         _usedController,
         _bootstrapModal,
         _previousFocusedEl;
+
+      var _setAttributes = function (target, attributes) {
+        if (_.isObject(attributes) && _.isObject(target)) {
+          for (var key in attributes) {
+            target[key] = attributes[key];
+          }
+        }
+      };
+
+      var _prepareController = function(locals){
+        _setAttributes(_usedScope, _scopeAttributes);
+
+        if (_controller) {
+          locals.$scope = _usedScope;
+          locals.modalId = _id;
+          _setAttributes(_controller, _scopeAttributes);
+          _usedController = $controller(_controller, locals, false, _controllerAs);
+        }
+      };
 
       var _getTemplate = function () {
         if (!_id) {
@@ -50,7 +69,7 @@ angular.module('mwUI.Modal')
         });
       };
 
-      var resolveLocals = function () {
+      var _resolveLocals = function () {
         var locals = angular.extend({}, _resolve);
         angular.forEach(locals, function (value, key) {
           locals[key] = angular.isString(value) ?
@@ -61,25 +80,8 @@ angular.module('mwUI.Modal')
         return $q.all(locals);
       };
 
-      var setAttributes = function (target, attributes) {
-        if (_.isObject(attributes) && _.isObject(target)) {
-          for (var key in attributes) {
-            target[key] = attributes[key];
-          }
-        }
-      };
-
-      var compileTemplate = function (locals) {
-        _usedScope = _scope.$new();
-        setAttributes(_usedScope, _scopeAttributes);
-
-        if (_controller) {
-          locals.$scope = _usedScope;
-          locals.modalId = _id;
-          setAttributes(_controller, _scopeAttributes);
-          _usedController = $controller(_controller, locals, false, _controllerAs);
-        }
-
+      var _compileTemplate = function (locals) {
+        _prepareController(locals);
         return $compile(locals.$template)(_usedScope);
       };
 
@@ -87,8 +89,8 @@ angular.module('mwUI.Modal')
 
         var dfd = $q.defer();
 
-        resolveLocals().then(function (locals) {
-          _modal = compileTemplate(locals);
+        _resolveLocals().then(function (locals) {
+          _modal = _compileTemplate(locals);
 
           _usedScope.hideModal = function () {
             return _self.hide();
@@ -174,15 +176,15 @@ angular.module('mwUI.Modal')
       };
 
       this.setScopeAttributes = function (obj) {
-        setAttributes(_scopeAttributes, obj);
+        _setAttributes(_scopeAttributes, obj);
 
         $timeout(function () {
           if (_usedScope) {
-            setAttributes(_usedScope, obj);
+            _setAttributes(_usedScope, obj);
           }
 
           if (_usedController) {
-            setAttributes(_usedController, obj);
+            _setAttributes(_usedController, obj);
           }
         });
       };
