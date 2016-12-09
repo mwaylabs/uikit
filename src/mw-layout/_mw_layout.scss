@@ -7,9 +7,3 @@ $sub-nav-pill-divider: "1px solid #ccc";
 @import "styles/mw_row_layout";
 @import "styles/mw_sub_nav";
 @import "styles/mw_sub_nav_pill";
-
-body{
-  height: 100vh !important;
-  width: 100vw !important;
-  overflow: hidden !important;
-}
