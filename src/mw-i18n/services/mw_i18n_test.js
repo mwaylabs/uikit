@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 29/05/15.
- */
 describe('mwUi i18n Service', function () {
   var $templateRequest,
     $rootScope,
@@ -278,7 +275,7 @@ describe('mwUi i18n Service', function () {
         i18nProvider.addResource('i18n/c');
       });
 
-      it('extends translations with new ones when ressources are already loaded', function (done) {
+      it('extends translations with new ones when resources are already loaded', function (done) {
         i18n.setLocale('de_DE').then(function () {
           i18n.extendForLocale('de_DE', {c3: 'DE:C3'});
 
@@ -288,7 +285,7 @@ describe('mwUi i18n Service', function () {
         $rootScope.$digest();
       });
 
-      it('extends translations with new ones when ressources are not loaded yet', function (done) {
+      it('extends translations with new ones when resources are not loaded yet', function (done) {
         i18n.extendForLocale('de_DE', {c3: 'DE:C3'});
 
         i18n.setLocale('de_DE').then(function () {
@@ -299,7 +296,7 @@ describe('mwUi i18n Service', function () {
         $rootScope.$digest();
       });
 
-      it('replaces translations when ressources are already loaded', function (done) {
+      it('replaces translations when resources are already loaded', function (done) {
         i18n.setLocale('de_DE').then(function () {
           i18n.extendForLocale('de_DE', {c2: {c22: {c221: 'DE:REPLACED'}}});
 
@@ -309,7 +306,7 @@ describe('mwUi i18n Service', function () {
         $rootScope.$digest();
       });
 
-      it('replaces translations when ressources are not loaded yet', function (done) {
+      it('replaces translations when resources are not loaded yet', function (done) {
         i18n.extendForLocale('de_DE', {c2: {c22: {c221: 'DE:REPLACED'}}});
 
         i18n.setLocale('de_DE').then(function () {

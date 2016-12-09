@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 29/05/15.
- */
 describe('mwUI utils deep extend object', function () {
 
   beforeEach(module('mwUI.Utils'));

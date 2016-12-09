@@ -254,13 +254,13 @@ angular.module('mwUI.i18n')
 
         extendForLocale: function (locale, translations) {
           if (!locale) {
-            throw new Error('Locale is a require argument!');
+            throw new Error('Locale is a required argument!');
           }
           if (!_.isObject(translations)) {
-            throw new Error('The translations argument is from type ' + typeof translations + ' but it has to be an object!');
+            throw new Error('The translations argument is of type ' + typeof translations + ' but it has to be an object!');
           }
           if (!_.findWhere(_locales, {id: locale})) {
-            throw new Error('The locale ' + locale + ' does not exist! Make sure you have registerd it first');
+            throw new Error('The locale ' + locale + ' does not exist! Make sure you have registered it.');
           }
           if (!_isLoadingresources) {
             mwUI.Utils.shims.deepExtendObject(_dictionary[locale], translations);
