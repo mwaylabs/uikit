@@ -4,6 +4,22 @@ mwUI.Backbone.Filter = function () {
     return (_.isUndefined(value) || value === null || value === '' || value.length===0 || (_.isArray(value) && _.compact(value).length===0)) ? null : object;
   };
 
+  var returnNullOrObjectForMultipleValues = function (values, object) {
+    var hasValue = false;
+    if(!_.isObject(values)){
+      console.log(values);
+      throw new Error('The argument values has to be an object');
+    }
+    for(var key in values){
+      if(returnNullOrObjectFor(values[key], true)){
+        hasValue = true;
+      } else {
+        delete object[key];
+      }
+    }
+    return hasValue ? object : null;
+  };
+
   return {
     containsString: function (fieldName, value) {
       return returnNullOrObjectFor(value, {
@@ -95,12 +111,21 @@ mwUI.Backbone.Filter = function () {
     },
 
     dateRange: function(fieldName, min, max){
-      return returnNullOrObjectFor(max, returnNullOrObjectFor(min, {
+      return returnNullOrObjectForMultipleValues({min: min, max: max}, {
         type: 'dateRange',
         fieldName: fieldName,
         min: min,
         max: max
-      }));
+      });
+    },
+
+    longRange: function(fieldName, min, max){
+      return returnNullOrObjectForMultipleValues({min: min, max: max}, {
+        type: 'longRange',
+        fieldName: fieldName,
+        min: min,
+        max: max
+      });
     }
   };
 
