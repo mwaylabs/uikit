@@ -88,6 +88,15 @@ describe('mwUi Modal service', function () {
       expect(tmplScope).toBe(modalScope);
     });
 
+    it('returns the scope that is used in the modal before the modal was shown', function () {
+      var modalScope = this.myModal.getScope();
+
+      this.myModal.show();
+      this.$rootScope.$digest();
+
+      expect(modalScope.$id).toBe(this.myModal.getScope().$id);
+    });
+
     it('sets the scope attributes of the modal when it is called before modal was opened', function () {
       this.myModal.setScopeAttributes({test: 'abc', test2: 'xyz'});
 
