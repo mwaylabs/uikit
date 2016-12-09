@@ -352,28 +352,36 @@ describe('mwUi i18n Service', function () {
       });
 
       describe('error handling', function () {
-        it('throws error when locale is not available or invalid', function () {
+        it('throws error when locale is not available', function () {
           var throwFn = function () {
             i18n.extendForLocale('x_X', {c3: 'abc'});
           };
-          var throwFn2 = function () {
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when locale is invalid', function () {
+          var throwFn = function () {
             i18n.extendForLocale();
           };
 
           expect(throwFn).toThrow();
-          expect(throwFn2).toThrow();
         });
 
-        it('throws error when translations argument is missing or not an object', function () {
+        it('throws error when translations argument is missing', function () {
           var throwFn = function () {
             i18n.extendForLocale('de_DE');
           };
-          var throwFn2 = function () {
+
+          expect(throwFn).toThrow();
+        });
+
+        it('throws error when translations argument is not an object', function () {
+          var throwFn = function () {
             i18n.extendForLocale('de_DE', 'TEST');
           };
 
           expect(throwFn).toThrow();
-          expect(throwFn2).toThrow();
         });
 
         it('throws error when localesWithTranslations argument is not an object', function () {
