@@ -1,4 +1,4 @@
-angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils']);
+angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils', 'mwUI.Backbone']);
 
 // @include ./directives/mw_alert.js
 // @include ./directives/mw_arrow_link.js
@@ -8,6 +8,7 @@ angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils']);
 // @include ./directives/mw_button_help.js
 // @include ./directives/mw_button_help_condition.js
 // @include ./directives/mw_collapsible.js
+// @include ./directives/mw_hide_on_request.js
 // @include ./directives/mw_indefinite_loading.js
 // @include ./directives/mw_icon.js
 // @include ./directives/mw_option_group.js

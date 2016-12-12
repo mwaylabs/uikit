@@ -1,0 +1,8 @@
+<div class="mw-hide-on-request">
+  <div ng-if="modelCollectionIsRequesting"
+       class="spinner-holder"
+       mw-indefinite-loading></div>
+  <div ng-if="!modelCollectionIsRequesting"
+       class="content-holder"
+       ng-transclude></div>
+</div>
