@@ -1,4 +1,4 @@
-fdescribe('mwHideOnRequest', function () {
+describe('mwHideOnRequest', function () {
   beforeEach(module('karmaDirectiveTemplates'));
 
   beforeEach(module('mwUI.UiComponents'));
