@@ -10,7 +10,7 @@ describe('Filterable', function () {
         test: null
       },
       filterDefinition: function () {
-        return ( new mwUI.Backbone.Filter() ).string('test', this.filterValues.test)
+        return ( new mwUI.Backbone.Filter() ).string('test', this.filterValues.test);
       }
     };
     this.Filterable = mwUI.Backbone.Filterable;
@@ -73,7 +73,7 @@ describe('Filterable', function () {
       };
       this.filterable.setInitialFilterValues(newInitialFilterValues);
 
-      expect(this.filterable.getInitialFilterValues()).toEqual(newInitialFilterValues)
+      expect(this.filterable.getInitialFilterValues()).toEqual(newInitialFilterValues);
     });
 
     it('does not overwriting other initial filters', function () {
