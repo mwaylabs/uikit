@@ -1,7 +1,7 @@
 # v1.0.2
 ## Features
 ### Ui Module
-- The directive `mw-on-request` was added to hide the transcluded content and show a spinner as long
+- The directive `mw-hide-on-request` was added to hide the transcluded content and show a spinner as long
 as the backbone model or collection is syncing
     ```html
     <div mw-hide-on-reqeust="backboneModel">
