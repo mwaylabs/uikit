@@ -1,4 +1,15 @@
-# 1.0.2
+# v1.0.2
+## Features
+### Ui Module
+- mw-on-request directive to hide the transcluded content and show a spinner as long
+as the backbone model or collection is syncing
+    ```html
+    <div mw-hide-on-reqeust="backboneModel">
+      Content that sould be hidden while the model is beeing synched
+     </div>
+    ``` 
+
+# v1.0.1
 ## Bugfixes
 ### List module
 - The loading spinner of `mw-list-footer` will be only displayed when the collection is fetching data
