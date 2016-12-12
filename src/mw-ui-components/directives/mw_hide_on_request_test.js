@@ -3,7 +3,7 @@ fdescribe('mwHideOnRequest', function () {
 
   beforeEach(module('mwUI.UiComponents'));
 
-  mockI18nFilter();
+  window.mockI18nFilter();
 
   beforeEach(inject(function ($compile, $rootScope, $httpBackend) {
     this.$compile = $compile;
@@ -156,7 +156,7 @@ fdescribe('mwHideOnRequest', function () {
 
   it('throws error when the value is neither a collection nor a model', function(){
     var errorFn = function(){
-      this.scope.value = "String";
+      this.scope.value = 'String';
       this.el = '<div mw-hide-on-request="value">IRRELEVANT</div>';
       this.$el = this.$compile(this.el)(this.scope);
       this.scope.$digest();
