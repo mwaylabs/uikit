@@ -8,7 +8,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     _offset = _limit ? options.offset : false,
     _page = options.page || 1,
     _perPage = options.perPage || 30,
-    _initialFilterValues = options.filterValues ? JSON.parse(JSON.stringify(options.filterValues)) : options.filterValues,
+    _initialFilterValues = {},
     _initialCustomUrlParams = _.clone(options.customUrlParams),
     _filterDefinition = options.filterDefinition,
     _sortOrder = options.sortOrder,
@@ -20,13 +20,13 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   this.fields = options.fields;
   this.filterIsSet = false;
 
-  this.hasFilterChanged = function(filter){
+  this.hasFilterChanged = function (filter) {
     return JSON.stringify(filter) !== JSON.stringify(_lastFilter);
   };
 
   this.getRequestParams = function (options) {
     options.params = options.params || {};
-
+    this.filterValues = _.extend({}, this.getInitialFilterValues(), this.filterValues);
     // Filter functionality
     var filter = this.getFilters();
     if (filter) {
@@ -76,6 +76,14 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     _lastFilter = filter;
 
     return options.params;
+  };
+
+  this.getInitialFilterValues = function () {
+    return _initialFilterValues;
+  };
+
+  this.setInitialFilterValues = function (filterValues) {
+    _.extend(_initialFilterValues, filterValues);
   };
 
   this.setLimit = function (limit) {
@@ -147,7 +155,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   this.resetFilters = function () {
-    this.filterValues = _initialFilterValues ? JSON.parse(JSON.stringify(_initialFilterValues)) : _initialFilterValues;
+    this.filterValues = this.getInitialFilterValues();
     this.customUrlParams = _initialCustomUrlParams;
     this.filterIsSet = false;
   };
@@ -157,5 +165,11 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
       throw new Error('First parameter has to be the instance of a collection');
     }
 
-  }());
+    if (options.filterValues) {
+      //This makes a clone from the current fitlervalues otherwise the objects are referencing to the same
+      var filterValuesClone = JSON.parse(JSON.stringify(options.filterValues));
+      this.setInitialFilterValues(filterValuesClone);
+    }
+
+  }.bind(this)());
 };
