@@ -1,0 +1,8 @@
+.mw-full-screen-height {
+  overflow: auto;
+  min-height: 300px;
+
+  @media (max-width: $screen-md) {
+    overflow: inherit;
+  }
+}
