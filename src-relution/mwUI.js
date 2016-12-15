@@ -14,7 +14,6 @@ angular.module('mwUI.Relution', [
   'mwPopover',
   'mwHelper',
   'mwMap',
-  'mwFilters',
   'mwFileUpload'
 ]).config(function(mwIconProvider, mwValidationMessagesProvider){
   'use strict';
