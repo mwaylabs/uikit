@@ -170,11 +170,11 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     }
 
     if (options.filterValues) {
-      _initialFilterValues = _getClone(options.filterValues)
+      _initialFilterValues = _getClone(options.filterValues);
     }
 
     if (options.customUrlParams) {
-      _initialCustomUrlParams = _getClone(options.customUrlParams)
+      _initialCustomUrlParams = _getClone(options.customUrlParams);
     }
 
     this.resetFilters();
