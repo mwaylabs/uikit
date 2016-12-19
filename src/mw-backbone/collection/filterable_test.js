@@ -126,6 +126,39 @@ describe('Filterable', function () {
       });
     });
 
+    it('does not overwrite filter value with initial filter', function () {
+      this.filterable.setFilters({
+        test: '123'
+      });
+
+      this.filterable.setInitialFilterValues({
+        test: 'xxx'
+      });
+
+      expect(this.filterable.getFilters()).toEqual({
+        type: 'string',
+        fieldName: 'test',
+        value: '123'
+      });
+    });
+
+    it('uses updated initial filter value when calling reset', function () {
+      this.filterable.setFilters({
+        test: '123'
+      });
+      this.filterable.setInitialFilterValues({
+        test: 'xxx'
+      });
+
+      this.filterable.resetFilters();
+
+      expect(this.filterable.getFilters()).toEqual({
+        type: 'string',
+        fieldName: 'test',
+        value: 'xxx'
+      });
+    });
+
     it('resets filter values to updated initial filters', function () {
       this.filterable.setInitialFilterValues({
         test: '123'
