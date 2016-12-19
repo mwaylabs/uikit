@@ -1,0 +1,16 @@
+<div class="mw-menu-top-drop-down-item dropdown" ng-if="entry.get('isVisible')">
+  <a class="dropdown-toggle"
+     data-toggle="dropdown"
+     role="button"
+     aria-haspopup="true"
+     aria-expanded="false"
+     mw-menu-toggle-active-class="entry">
+    <span mw-icon="{{entry.get('icon')}}"></span>
+    <span>{{entry.get('label')}}</span>
+    <b class="caret"></b>
+  </a>
+  <ul class="dropdown-menu">
+    <li ng-repeat="subEntry in entry.get('subEntries').models"
+         mw-menu-top-item="subEntry"></li>
+  </ul>
+</div>
