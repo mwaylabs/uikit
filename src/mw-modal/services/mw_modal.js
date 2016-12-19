@@ -15,6 +15,7 @@ angular.module('mwUI.Modal')
         _class = modalOptions.class || '',
         _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
         _bootStrapModalOptions = bootStrapModalOptions || {},
+        _watchers = [],
         _modalOpened = false,
         _self = this,
         _modal,
@@ -69,6 +70,12 @@ angular.module('mwUI.Modal')
         });
       };
 
+      var _setScopeWatcher = function(){
+        _watchers.forEach(function(watcher){
+          _usedScope.$watch(watcher.expression,watcher.callback);
+        });
+      };
+
       var _resolveLocals = function () {
         var locals = angular.extend({}, _resolve);
         angular.forEach(locals, function (value, key) {
@@ -90,6 +97,7 @@ angular.module('mwUI.Modal')
         var dfd = $q.defer();
 
         _resolveLocals().then(function (locals) {
+          _setScopeWatcher();
           _modal = _compileTemplate(locals);
 
           _usedScope.hideModal = function () {
@@ -134,6 +142,13 @@ angular.module('mwUI.Modal')
 
       this.getScope = function () {
         return _usedScope;
+      };
+
+      this.watchScope = function(expression, callback){
+        _watchers.push({
+          expression: expression,
+          callback: callback
+        });
       };
 
       /**
