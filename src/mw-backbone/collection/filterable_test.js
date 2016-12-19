@@ -1,4 +1,4 @@
-describe('Filterable', function () {
+fdescribe('Filterable', function () {
 
   beforeEach(function () {
     var fetch = this.fetchSpy = jasmine.createSpy('fetch');
@@ -76,7 +76,7 @@ describe('Filterable', function () {
       expect(this.filterable.getInitialFilterValues()).toEqual(newInitialFilterValues);
     });
 
-    it('does not overwriting other initial filters', function () {
+    it('does not overwrite other initial filters', function () {
       this.filterable.setInitialFilterValues({
         xyz: 'blaa'
       });
@@ -85,6 +85,31 @@ describe('Filterable', function () {
         test: 'xxx',
         xyz: 'blaa'
       });
+    });
+
+    it('does not overwrite initial filters when filter is set', function () {
+      this.filterable.setInitialFilterValues({
+        xyz: 'blaa'
+      });
+
+      this.filterable.setFilters({
+        xyz: 'xxx'
+      });
+
+      expect(this.filterable.getInitialFilterValues().xyz).toMatch('blaa');
+    });
+
+    it('does not overwrite initial filters when filter is set and resetfilters is called', function () {
+      this.filterable.setInitialFilterValues({
+        xyz: 'blaa'
+      });
+      this.filterable.setFilters({
+        xyz: 'xxx'
+      });
+
+      this.filterable.resetFilters();
+
+      expect(this.filterable.getInitialFilterValues().xyz).toMatch('blaa');
     });
 
     it('uses updated initial filters', function () {
