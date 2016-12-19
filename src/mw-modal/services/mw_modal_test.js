@@ -121,6 +121,60 @@ describe('mwUi Modal service', function () {
     });
   });
 
+  describe('testing that modal is appended to dom', function(){
+    beforeEach(function(){
+      this.openSpy = jasmine.createSpy('openModal').and.callThrough();
+      window.$.fn.modal.Constructor.prototype.show = this.openSpy;
+      jasmine.clock().install();
+    });
+
+    afterEach(function(){
+      jasmine.clock().uninstall();
+    });
+
+    it('opens modal', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        el: 'body'
+      });
+
+      modal.show();
+      jasmine.clock().tick(101);
+      this.$rootScope.$digest();
+
+      expect(this.openSpy).toHaveBeenCalled();
+
+      modal.destroy();
+      jasmine.clock().tick(101);
+      this.$timeout.flush();
+    });
+
+    it('opens modal again after it had been closed', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        el: 'body'
+      });
+      modal.show();
+      jasmine.clock().tick(101);
+      this.$rootScope.$digest();
+      modal.destroy();
+      jasmine.clock().tick(101);
+      this.$timeout.flush();
+      this.$rootScope.$digest();
+
+      modal.show();
+      jasmine.clock().tick(101);
+      this.$rootScope.$digest();
+
+      expect(this.openSpy).toHaveBeenCalledTimes(2);
+
+      modal.destroy();
+      jasmine.clock().tick(101);
+      this.$timeout.flush();
+    });
+
+  });
+
   describe('testing advanced modal configurations', function () {
     afterEach(function () {
       this.$timeout.flush();
@@ -318,7 +372,7 @@ describe('mwUi Modal service', function () {
       this.$timeout.flush();
       this.myModal.hide();
 
-      angular.element('body').find('.mw-modal .modal').trigger('shown.bs.modal');
+      angular.element('body').find('.mw-modal .modal').trigger('hidden.bs.modal');
       this.$rootScope.$digest();
 
       expect(modalCloseSpy).toHaveBeenCalled();
