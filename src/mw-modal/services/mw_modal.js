@@ -256,6 +256,7 @@ angular.module('mwUI.Modal')
 
           if (_usedScope) {
             _usedScope.$destroy();
+            _usedScope = _scope.$new();
           }
 
           _scopeAttributes = modalOptions.scopeAttributes || {};
