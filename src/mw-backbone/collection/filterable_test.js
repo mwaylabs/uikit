@@ -1,4 +1,4 @@
-fdescribe('Filterable', function () {
+describe('Filterable', function () {
 
   beforeEach(function () {
     var fetch = this.fetchSpy = jasmine.createSpy('fetch');
@@ -16,7 +16,7 @@ fdescribe('Filterable', function () {
     this.Filterable = mwUI.Backbone.Filterable;
   });
 
-  describe('testing inital filtervalues', function () {
+  describe('testing initial filter values', function () {
     beforeEach(function () {
       this.opts = _.extend({}, this.filterableOptions, {
         filterValues: {
@@ -40,7 +40,7 @@ fdescribe('Filterable', function () {
       });
     });
 
-    it('updates filtervalues when calling set filters', function () {
+    it('updates filter values when calling set filters', function () {
       this.filterable.setFilters({
         test: 'abc'
       });
@@ -66,7 +66,7 @@ fdescribe('Filterable', function () {
       });
     });
 
-    it('updates intitial filter values', function () {
+    it('updates initial filter values', function () {
       var newInitialFilterValues = {
         test: '123',
         xyz: 'blaa'
@@ -99,7 +99,7 @@ fdescribe('Filterable', function () {
       expect(this.filterable.getInitialFilterValues().xyz).toMatch('blaa');
     });
 
-    it('does not overwrite initial filters when filter is set and resetfilters is called', function () {
+    it('does not overwrite initial filters when filter is set and resetFilters is called', function () {
       this.filterable.setInitialFilterValues({
         xyz: 'blaa'
       });
@@ -126,7 +126,7 @@ fdescribe('Filterable', function () {
       });
     });
 
-    it('resets filtervalues to updated initial filters', function () {
+    it('resets filter values to updated initial filters', function () {
       this.filterable.setInitialFilterValues({
         test: '123'
       });
