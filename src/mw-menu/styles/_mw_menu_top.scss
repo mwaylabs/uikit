@@ -1,0 +1,113 @@
+$navbar-height: 50px;
+$activebar-height: 4px;
+$progressbar-height: $activebar-height;
+$min-width: 300px;
+
+*[mw-menu-top-bar] {
+  min-height: $navbar-height;
+}
+
+.mw-menu-top-bar {
+  min-width: $min-width;
+  @include box-shadow(rgba(0, 0, 0, 0.05) 0 ($activebar-height*-1) 0 0 inset);
+
+  .navbar-brand {
+    .portal-logo {
+      max-height: 35px;
+    }
+    overflow: visible;
+    padding-top: 8px;
+    padding-bottom: 0;
+  }
+
+  .divider {
+    position: relative;
+    margin: 11px 0;
+    overflow: visible;
+
+    &:after {
+      content: attr(title);
+      position: absolute;
+      text-transform: uppercase;
+      color: #ccc;
+      font-size: 10px;
+      background: #fff;
+      top: -7px;
+      left: 8px;
+      padding: 0 6px;
+    }
+  }
+
+  .dropdown-menu {
+    margin-top: 1px;
+    border-radius: 0;
+    border: none;
+
+    a {
+      display: block;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.42857;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .active {
+      a {
+        color: $brand-primary;
+        background: none;
+
+        .rln-icon {
+          color: $brand-primary;
+        }
+      }
+    }
+  }
+
+  @media (max-width: $screen-sm) {
+    .navbar-collapse .nav li.divider:after {
+      background: #f8f8f8;
+    }
+  }
+
+  @media (min-width: $screen-sm) {
+    .navbar-collapse {
+
+      .nav > li > a {
+        @include box-shadow(none 0px ($activebar-height*-1) 0 0px);
+        @include single-transition(box-shadow, 0.5s, ease);
+      }
+
+      .nav > li.active > a {
+        @include box-shadow($brand-primary 0px ($activebar-height*-1) 0 0px inset);
+        background: none;
+      }
+    }
+  }
+
+}
+
+.mw-menu-top-drop-down-item,
+.mw-menu-top-item {
+  cursor: pointer;
+
+  a {
+    line-height: 30px;
+    display: block;
+    position: relative;
+    padding: 10px 15px;
+    color: #777;
+
+    &.active {
+      @include box-shadow($brand-primary 0 -4px 0 0 inset);
+    }
+  }
+}
+
+.mw-menu-top-drop-down-item {
+  .caret {
+    border-top-color: #777;
+    border-bottom-color: #777;
+  }
+}

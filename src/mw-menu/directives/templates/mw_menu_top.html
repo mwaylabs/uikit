@@ -1,0 +1,14 @@
+<div class="mw-menu-top">
+  <div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav">
+      <li ng-repeat="entry in entries.models" class="entry">
+        <div ng-if="entry.hasSubEntries()"
+             mw-menu-top-drop-down-item="entry"></div>
+        <div ng-if="!entry.hasSubEntries()"
+             mw-menu-top-item="entry"></div>
+      </li>
+    </ul>
+  </div>
+
+  <div ng-transclude hidden></div>
+</div>
