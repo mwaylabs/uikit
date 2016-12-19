@@ -1,12 +1,1 @@
-<div class="mw-menu-entry" ng-class="{active:menuEntryCtrl.isActive}">
-  <div class="mw-icon">
-    <span class="fa fa-user"></span>
-  </div>
-  <div class="extended-content">
-    <span class="entry-label">{{menuEntryCtrl.entry.get('label')}}</span>
-    <div class="sub-entries"
-         ng-repeat="subEntry in menuEntryCtrl.entry.get('subEntries').models"
-         mw-menu-sub-entry="subEntry">
-    </div>
-  </div>
-</div>
+<div class="mw-menu-entry" ng-transclude></div>
