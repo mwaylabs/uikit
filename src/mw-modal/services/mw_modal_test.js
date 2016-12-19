@@ -120,7 +120,7 @@ describe('mwUi Modal service', function () {
       expect(this.myModal.getScope().test2).toBe('xyz');
     });
 
-    fit('watches scope attributes', function () {
+    it('watches scope attributes', function () {
       var changeSpy = jasmine.createSpy('changeSpy');
       this.myModal.watchScope('test', changeSpy);
       this.myModal.show();
@@ -133,7 +133,7 @@ describe('mwUi Modal service', function () {
       expect(changeSpy).toHaveBeenCalled();
     });
 
-    fit('still watches scope attributes when modal is reopened', function () {
+    it('still watches scope attributes when modal is reopened', function () {
       var changeSpy = jasmine.createSpy('changeSpy');
       this.myModal.watchScope('test', changeSpy);
       this.myModal.show();
