@@ -1,3 +1,11 @@
+# v1.0.3
+## Features
+### Modal Module
+- Modal got a function to watch its scope attributes. It is not recommended to call `modal.getScope()` and add a watcher 
+because the scope will be destroyed on hide so the watchers are gone. If you want to watch on scope attributes
+use the `modal.watchScope(expression, callback)`. It delegates to the angular `scope.$watch` and ensures that you will 
+always watch on the right scope.
+
 # v1.0.2
 ## Features
 ### Ui Module

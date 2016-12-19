@@ -119,6 +119,37 @@ describe('mwUi Modal service', function () {
       expect(this.myModal.getScope().test).toBe('abc');
       expect(this.myModal.getScope().test2).toBe('xyz');
     });
+
+    fit('watches scope attributes', function () {
+      var changeSpy = jasmine.createSpy('changeSpy');
+      this.myModal.watchScope('test', changeSpy);
+      this.myModal.show();
+      this.$rootScope.$digest();
+
+      this.myModal.setScopeAttributes({test: 'abc', test2: 'xyz'});
+      this.$timeout.flush();
+      this.$rootScope.$digest();
+
+      expect(changeSpy).toHaveBeenCalled();
+    });
+
+    fit('still watches scope attributes when modal is reopened', function () {
+      var changeSpy = jasmine.createSpy('changeSpy');
+      this.myModal.watchScope('test', changeSpy);
+      this.myModal.show();
+      this.$rootScope.$digest();
+      this.myModal.destroy();
+      this.$timeout.flush();
+      this.$rootScope.$digest();
+      this.myModal.show();
+      this.$rootScope.$digest();
+
+      this.myModal.setScopeAttributes({test: 'abc', test2: 'xyz'});
+      this.$timeout.flush();
+      this.$rootScope.$digest();
+
+      expect(changeSpy).toHaveBeenCalled();
+    });
   });
 
   describe('testing that modal is appended to dom', function(){
