@@ -124,7 +124,7 @@ describe('mwUi Modal service', function () {
   describe('testing that modal is appended to dom', function(){
     beforeEach(function(){
       this.openSpy = jasmine.createSpy('openModal').and.callThrough();
-      $.fn.modal.Constructor.prototype.show = this.openSpy;
+      window.$.fn.modal.Constructor.prototype.show = this.openSpy;
       jasmine.clock().install();
     });
 
