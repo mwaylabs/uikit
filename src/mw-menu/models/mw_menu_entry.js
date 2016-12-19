@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 15/02/16.
- */
 var routeToRegex = mwUI.Utils.shims.routeToRegExp;
 
 var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
@@ -11,7 +8,8 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       label: null,
       icon: null,
       activeUrls: [],
-      order: null
+      order: null,
+      isVisible: true
     };
   },
   nested: function(){
@@ -41,22 +39,31 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
 
     return entry;
   },
-  _missingUrl: function(entry){
-    return entry.type === 'ENTRY' && !entry.url && (!entry.subEntries || entry.subEntries.length === 0);
-  },
   _missingLabel: function(entry){
-    return entry.type === 'ENTRY' && !entry.label && !entry.icon;
+    return entry.type === 'ENTRY' && !(entry.label || !entry.icon);
+  },
+  _urlsAreMatching: function(url, matchUrl){
+    if(matchUrl.match('#')){
+      matchUrl = matchUrl.split('#')[1];
+    }
+    return url.match(routeToRegex(matchUrl));
+  },
+  show: function(){
+    this.set('isVisible',true);
+  },
+  hide: function(){
+    this.set('isVisible',false);
   },
   isValidEntry: function(entry){
     if(entry.type){
-      return !this._missingUrl(entry) && !this._missingLabel(entry);
+      return !this._missingLabel(entry);
     } else {
       return false;
     }
   },
   ownUrlIsActiveForUrl: function(url){
     if(this.get('url')){
-      return url.match(routeToRegex(this.get('url')));
+      return this._urlsAreMatching(url, this.get('url'));
     } else {
       return false;
     }
@@ -65,10 +72,19 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
     var isActive = false;
     this.get('activeUrls').forEach(function(activeUrl){
       if(!isActive){
-        isActive = url.match(routeToRegex(activeUrl));
+        isActive = this._urlsAreMatching(url,activeUrl);
       }
     });
     return isActive;
+  },
+  isSubEntry: function(){
+    if(this.collection && this.collection.parent){
+      return true;
+    }
+    return false;
+  },
+  hasSubEntries: function(){
+    return this.get('subEntries').length>0;
   },
   isActiveForUrl: function(url){
     return this.ownUrlIsActiveForUrl(url) || this.activeUrlIsActiveForUrl(url);
@@ -85,7 +101,7 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       this._throwMissingIdError();
     }
     if(!this.isValidEntry(entry)){
-      this._throwNotValidEntryError();
+      this._throwNotValidEntryError(entry);
     }
     return window.mwUI.Backbone.NestedModel.prototype.constructor.call(this, entry, options);
   }
