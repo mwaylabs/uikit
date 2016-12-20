@@ -8,8 +8,8 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     _offset = _limit ? options.offset : false,
     _page = options.page || 1,
     _perPage = options.perPage || 30,
-    _initialFilterValues = {},
-    _initialCustomUrlParams = {},
+    _customUrlParams = options.customUrlParams || {},
+    _initialFilterValues = options.filterValues || {},
     _filterDefinition = options.filterDefinition,
     _sortOrder = options.sortOrder,
     _totalAmount,
@@ -160,7 +160,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
   this.resetFilters = function () {
     this.filterValues = _getClone(_initialFilterValues);
-    this.customUrlParams = _getClone(_initialCustomUrlParams);
+    this.customUrlParams = _customUrlParams;
     this.filterIsSet = false;
   };
 
@@ -171,10 +171,6 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
     if (options.filterValues) {
       _initialFilterValues = _getClone(options.filterValues);
-    }
-
-    if (options.customUrlParams) {
-      _initialCustomUrlParams = _getClone(options.customUrlParams);
     }
 
     this.resetFilters();
