@@ -16,7 +16,7 @@ describe('Filterable', function () {
     this.Filterable = mwUI.Backbone.Filterable;
   });
 
-  describe('testing inital filtervalues', function () {
+  describe('testing initial filter values', function () {
     beforeEach(function () {
       this.opts = _.extend({}, this.filterableOptions, {
         filterValues: {
@@ -40,7 +40,7 @@ describe('Filterable', function () {
       });
     });
 
-    it('updates filtervalues when calling set filters', function () {
+    it('updates filter values when calling set filters', function () {
       this.filterable.setFilters({
         test: 'abc'
       });
@@ -66,7 +66,7 @@ describe('Filterable', function () {
       });
     });
 
-    it('updates intitial filter values', function () {
+    it('updates initial filter values', function () {
       var newInitialFilterValues = {
         test: '123',
         xyz: 'blaa'
@@ -76,7 +76,7 @@ describe('Filterable', function () {
       expect(this.filterable.getInitialFilterValues()).toEqual(newInitialFilterValues);
     });
 
-    it('does not overwriting other initial filters', function () {
+    it('does not overwrite other initial filters', function () {
       this.filterable.setInitialFilterValues({
         xyz: 'blaa'
       });
@@ -85,6 +85,31 @@ describe('Filterable', function () {
         test: 'xxx',
         xyz: 'blaa'
       });
+    });
+
+    it('does not overwrite initial filters when filter is set', function () {
+      this.filterable.setInitialFilterValues({
+        xyz: 'blaa'
+      });
+
+      this.filterable.setFilters({
+        xyz: 'xxx'
+      });
+
+      expect(this.filterable.getInitialFilterValues().xyz).toMatch('blaa');
+    });
+
+    it('does not overwrite initial filters when filter is set and resetFilters is called', function () {
+      this.filterable.setInitialFilterValues({
+        xyz: 'blaa'
+      });
+      this.filterable.setFilters({
+        xyz: 'xxx'
+      });
+
+      this.filterable.resetFilters();
+
+      expect(this.filterable.getInitialFilterValues().xyz).toMatch('blaa');
     });
 
     it('uses updated initial filters', function () {
@@ -101,7 +126,40 @@ describe('Filterable', function () {
       });
     });
 
-    it('resets filtervalues to updated initial filters', function () {
+    it('does not overwrite filter value with initial filter', function () {
+      this.filterable.setFilters({
+        test: '123'
+      });
+
+      this.filterable.setInitialFilterValues({
+        test: 'xxx'
+      });
+
+      expect(this.filterable.getFilters()).toEqual({
+        type: 'string',
+        fieldName: 'test',
+        value: '123'
+      });
+    });
+
+    it('uses updated initial filter value when calling reset', function () {
+      this.filterable.setFilters({
+        test: '123'
+      });
+      this.filterable.setInitialFilterValues({
+        test: 'xxx'
+      });
+
+      this.filterable.resetFilters();
+
+      expect(this.filterable.getFilters()).toEqual({
+        type: 'string',
+        fieldName: 'test',
+        value: 'xxx'
+      });
+    });
+
+    it('resets filter values to updated initial filters', function () {
       this.filterable.setInitialFilterValues({
         test: '123'
       });

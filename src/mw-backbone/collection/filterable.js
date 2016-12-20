@@ -9,14 +9,18 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     _page = options.page || 1,
     _perPage = options.perPage || 30,
     _initialFilterValues = {},
-    _initialCustomUrlParams = _.clone(options.customUrlParams),
+    _initialCustomUrlParams = {},
     _filterDefinition = options.filterDefinition,
     _sortOrder = options.sortOrder,
     _totalAmount,
     _lastFilter;
 
-  this.filterValues = options.filterValues || {};
-  this.customUrlParams = options.customUrlParams || {};
+  var _getClone = function (obj) {
+    return JSON.parse(JSON.stringify(obj));
+  };
+
+  this.filterValues = {};
+  this.customUrlParams = {};
   this.fields = options.fields;
   this.filterIsSet = false;
 
@@ -26,7 +30,6 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
   this.getRequestParams = function (options) {
     options.params = options.params || {};
-    this.filterValues = _.extend({}, this.getInitialFilterValues(), this.filterValues);
     // Filter functionality
     var filter = this.getFilters();
     if (filter) {
@@ -84,6 +87,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
   this.setInitialFilterValues = function (filterValues) {
     _.extend(_initialFilterValues, filterValues);
+    this.filterValues = _.extend({}, _initialFilterValues, this.filterValues);
   };
 
   this.setLimit = function (limit) {
@@ -155,8 +159,8 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   this.resetFilters = function () {
-    this.filterValues = this.getInitialFilterValues();
-    this.customUrlParams = _initialCustomUrlParams;
+    this.filterValues = _getClone(_initialFilterValues);
+    this.customUrlParams = _getClone(_initialCustomUrlParams);
     this.filterIsSet = false;
   };
 
@@ -166,10 +170,13 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     }
 
     if (options.filterValues) {
-      //This makes a clone from the current fitlervalues otherwise the objects are referencing to the same
-      var filterValuesClone = JSON.parse(JSON.stringify(options.filterValues));
-      this.setInitialFilterValues(filterValuesClone);
+      _initialFilterValues = _getClone(options.filterValues);
     }
 
+    if (options.customUrlParams) {
+      _initialCustomUrlParams = _getClone(options.customUrlParams);
+    }
+
+    this.resetFilters();
   }.bind(this)());
 };
