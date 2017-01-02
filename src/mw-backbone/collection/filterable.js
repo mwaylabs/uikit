@@ -86,7 +86,15 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   this.setInitialFilterValues = function (filterValues) {
+    for(var key in filterValues){
+      // Make sure to overwrite the current filter value when it is an initial filter value
+      if(this.filterValues[key] === _initialFilterValues[key]){
+        this.filterValues[key] = filterValues[key];
+      }
+    }
     _.extend(_initialFilterValues, filterValues);
+    // when a filter is set it should use this value otherwise it should use the initial value so
+    // all properties of initial filter values that also exist in the current filter values will be overwritten
     this.filterValues = _.extend({}, _initialFilterValues, this.filterValues);
   };
 

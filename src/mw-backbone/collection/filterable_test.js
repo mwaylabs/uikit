@@ -76,6 +76,16 @@ describe('Filterable', function () {
       expect(this.filterable.getInitialFilterValues()).toEqual(newInitialFilterValues);
     });
 
+    it('uses updated initial filter value', function () {
+      this.filterable.setInitialFilterValues({test: '123'});
+
+      expect(this.filterable.getFilters()).toEqual({
+        type: 'string',
+        fieldName: 'test',
+        value: '123'
+      });
+    });
+
     it('does not overwrite other initial filters', function () {
       this.filterable.setInitialFilterValues({
         xyz: 'blaa'
