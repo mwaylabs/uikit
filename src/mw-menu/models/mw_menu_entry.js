@@ -74,7 +74,7 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       if(!isActive){
         isActive = this._urlsAreMatching(url,activeUrl);
       }
-    });
+    }.bind(this));
     return isActive;
   },
   isSubEntry: function(){
