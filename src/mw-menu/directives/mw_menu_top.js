@@ -1,6 +1,6 @@
 angular.module('mwUI.Menu')
 
-  .directive('mwMenuTop', function () {
+  .directive('mwMenuTop', function ($rootScope, $timeout) {
     return {
       scope: {
         menu: '=mwMenuTop'
@@ -24,10 +24,22 @@ angular.module('mwUI.Menu')
           }
         };
 
-        scope.$on('nav:uncollapse', function(){
-          console.log('UNCOLLAPSE');
+        $rootScope.$on('$locationChangeSuccess', function(){
           scope.unCollapse();
-        })
+        });
+
+        scope.$on('mw-menu:triggerReorder', _.throttle(function(){
+          $timeout(function(){
+            scope.$broadcast('mw-menu:reorder');
+          });
+        }));
+
+        scope.$on('mw-menu:triggerResort', _.throttle(function(){
+          $timeout(function(){
+            scope.$broadcast('mw-menu:resort');
+            scope.entries.sort();
+          });
+        }));
       }
     };
   });

@@ -10,7 +10,9 @@ angular.module('mwUI.Menu')
         url: '@',
         icon: '@',
         label: '@',
-        order: '='
+        type: '@',
+        order: '=',
+        activeUrls: '='
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
       controllerAs: 'menuEntryCtrl',
@@ -32,26 +34,42 @@ angular.module('mwUI.Menu')
           parentCtrl = ctrls[1],
           menuCtrl = ctrls[2],
           menuEntry = new mwUI.Menu.MwMenuEntry({
-            id: scope.id || scope.url || scope.$id,
+            id: scope.id || scope.url || scope.label || scope.$id,
             label: scope.label,
             url: scope.url,
             icon: scope.icon,
-            type: 'ENTRY',
-            order: scope.order || 0
+            type: scope.type || 'ENTRY',
+            order: scope.order,
+            activeUrls: scope.activeUrls || []
           }),
           entryHolder;
 
+        console.log(menuEntry.get('id'))
+
+        var getDomOrder = function () {
+          var orderDomEl = el;
+
+          while (true) {
+            if (orderDomEl.parent('.mw-menu-entry').length !== 0 || orderDomEl.parent('.mw-menu-entries').length !== 0) {
+              break;
+            }
+            orderDomEl = orderDomEl.parent();
+          }
+
+          return orderDomEl.index();
+        };
+
         scope.menuEntry = menuEntry;
 
-        $timeout(function(){
+        $timeout(function () {
           if (parentCtrl) {
             entryHolder = parentCtrl.getMenuEntry().get('subEntries');
           } else if (menuCtrl) {
             entryHolder = menuCtrl.getMenu();
           }
 
-          if(entryHolder){
-            if(entryHolder.get(menuEntry)){
+          if (entryHolder) {
+            if (entryHolder.get(menuEntry)) {
               menuEntry.show();
             } else {
               entryHolder.add(menuEntry);
@@ -61,8 +79,23 @@ angular.module('mwUI.Menu')
 
         ctrl.setMenuEntry(menuEntry);
 
-        scope.$on('$destroy', function(){
-          if(entryHolder){
+        menuEntry.get('subEntries').on('add remove reset', function(){
+          scope.$emit('mw-menu:triggerReorder');
+        });
+
+        scope.$on('mw-menu:reorder', function(){
+          if(!scope.order){
+            menuEntry.set('order', getDomOrder());
+            scope.$emit('mw-menu:triggerResort');
+          }
+        });
+
+        scope.$on('mw-menu:resort', function(){
+            menuEntry.get('subEntries').sort();
+        });
+
+        scope.$on('$destroy', function () {
+          if (entryHolder) {
             entryHolder.remove(menuEntry);
           }
         });
