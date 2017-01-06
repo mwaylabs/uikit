@@ -1,6 +1,3 @@
-///**
-// * Created by zarges on 15/02/16.
-// */
 describe('mwUi Menu', function () {
   var menu;
 
@@ -28,7 +25,7 @@ describe('mwUi Menu', function () {
         expect(menu.first().get('activeUrls').length === 2);
       });
 
-      it('registers an entry without an label but an icon', function () {
+      it('registers an entry without a label but an icon', function () {
         menu.addEntry('a', '/my/link', null, {
           icon: 'xyz',
           activeUrls: ['*/abc/*', '/my/link']
@@ -155,12 +152,6 @@ describe('mwUi Menu', function () {
   });
 
   describe('error handling for registration of entry and divider', function () {
-    it('should throw an error when neither a url nor subentries are specified', function () {
-      expect(function () {
-        menu.addEntry('a', null, 'abc');
-      }).toThrow();
-    });
-
     it('should throw an error when neither a label nor an icon are specified', function () {
       expect(function () {
         menu.addEntry('a', '/my/link', null, {});
