@@ -7,7 +7,6 @@ angular.module('mwUI.Menu')
         label: '@',
         order: '='
       },
-      templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_divider.html',
-      controllerAs: 'menuEntryCtrl'
+      templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_divider.html'
     };
   });
