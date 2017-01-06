@@ -12,7 +12,7 @@ angular.module('mwUI.Menu')
 
         this.getMenu = function(){
           return menu;
-        }
+        };
       },
       link: function(scope, el, attrs, ctrl){
         scope.entries = ctrl.getMenu();
