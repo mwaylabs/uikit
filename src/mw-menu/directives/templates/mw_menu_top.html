@@ -1,7 +1,7 @@
 <div class="mw-menu-top">
   <div class="navbar-collapse collapse">
     <ul class="nav navbar-nav">
-      <li ng-repeat="entry in entries.models" class="entry">
+      <li ng-repeat="entry in entries.models" class="entry {{entry.get('class')}}">
         <div ng-if="entry.hasSubEntries()"
              mw-menu-top-drop-down-item="entry"></div>
         <div ng-if="!entry.hasSubEntries()"
