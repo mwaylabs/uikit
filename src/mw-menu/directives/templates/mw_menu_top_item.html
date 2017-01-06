@@ -1,6 +1,15 @@
-<div class="mw-menu-top-item" mw-menu-toggle-active-class="entry" ng-if="entry.get('isVisible')">
-  <a ng-href="{{entry.get('url')}}">
-    <span mw-icon="{{entry.get('icon')}}"></span>
+<div ng-if="entry.get('isVisible')"
+     class="mw-menu-top-item">
+  <a ng-if="entry.get('type') === 'ENTRY'"
+     ng-href="{{entry.get('url')}}"
+     mw-menu-toggle-active-class="entry"
+     class="entry">
+    <span ng-if="entry.get('icon')"
+          mw-icon="{{entry.get('icon')}}"></span>
     <span>{{entry.get('label')}}</span>
   </a>
+  <div ng-if="entry.get('type') === 'DIVIDER'"
+       class="divider"
+       title="{{entry.get('label')}}">
+  </div>
 </div>

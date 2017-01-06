@@ -18,5 +18,6 @@ window.mwUI.Menu = {};
 // @include ./directives/mw_menu_top_drop_down_item.js
 // @include ./directives/mw_menu_top_item.js
 // @include ./directives/mw_menu_entry.js
+// @include ./directives/mw_menu_divider.js
 // @include ./directives/mw_menu_toggle_active_class.js
 // @include ./directives/mw_sidebar_menu.js
