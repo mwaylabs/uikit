@@ -40,7 +40,7 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
     return entry;
   },
   _missingLabel: function (entry) {
-    return entry.type === 'ENTRY' && !(entry.label || !entry.icon);
+    return entry.type === 'ENTRY' && !entry.label && !entry.icon;
   },
   _urlsAreMatching: function (url, matchUrl) {
     if (matchUrl.match('#')) {
