@@ -12,7 +12,8 @@ angular.module('mwUI.Menu')
         label: '@',
         type: '@',
         order: '=',
-        activeUrls: '='
+        activeUrls: '=',
+        action: '&'
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
       controllerAs: 'menuEntryCtrl',
@@ -40,11 +41,12 @@ angular.module('mwUI.Menu')
             icon: scope.icon,
             type: scope.type || 'ENTRY',
             order: scope.order,
-            activeUrls: scope.activeUrls || []
+            activeUrls: scope.activeUrls || [],
+            action: scope.action? function(){
+              scope.$eval(scope.action);
+            } : null
           }),
           entryHolder;
-
-        console.log(menuEntry.get('id'))
 
         var getDomOrder = function () {
           var orderDomEl = el;
