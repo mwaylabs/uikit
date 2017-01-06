@@ -11,12 +11,12 @@ angular.module('mwUI.Menu')
         icon: '@',
         label: '@',
         type: '@',
+        class: '@',
         order: '=',
         activeUrls: '=',
         action: '&'
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
-      controllerAs: 'menuEntryCtrl',
       require: ['mwMenuEntry', '?^^mwMenuEntry', '?^mwMenuTop'],
       transclude: true,
       controller: function () {
@@ -34,18 +34,7 @@ angular.module('mwUI.Menu')
         var ctrl = ctrls[0],
           parentCtrl = ctrls[1],
           menuCtrl = ctrls[2],
-          menuEntry = new mwUI.Menu.MwMenuEntry({
-            id: scope.id || scope.url || scope.label || scope.$id,
-            label: scope.label,
-            url: scope.url,
-            icon: scope.icon,
-            type: scope.type || 'ENTRY',
-            order: scope.order,
-            activeUrls: scope.activeUrls || [],
-            action: scope.action? function(){
-              scope.$eval(scope.action);
-            } : null
-          }),
+          menuEntry = new mwUI.Menu.MwMenuEntry(),
           entryHolder;
 
         var getDomOrder = function () {
@@ -58,13 +47,14 @@ angular.module('mwUI.Menu')
             orderDomEl = orderDomEl.parent();
           }
 
-          return orderDomEl.index();
+          return orderDomEl.index() + 1;
         };
 
-        scope.menuEntry = menuEntry;
-
-        $timeout(function () {
+        var tryToRegisterAtParent = function () {
           if (parentCtrl) {
+            if (!parentCtrl.getMenuEntry()) {
+              return $timeout(tryToRegisterAtParent);
+            }
             entryHolder = parentCtrl.getMenuEntry().get('subEntries');
           } else if (menuCtrl) {
             entryHolder = menuCtrl.getMenu();
@@ -77,23 +67,45 @@ angular.module('mwUI.Menu')
               entryHolder.add(menuEntry);
             }
           }
-        });
+        };
+
+        var setMenuEntry = function () {
+          menuEntry.set({
+            id: scope.id || scope.url || scope.label || scope.$id,
+            label: scope.label,
+            url: scope.url,
+            icon: scope.icon,
+            type: scope.type || 'ENTRY',
+            order: scope.order || getDomOrder(),
+            activeUrls: scope.activeUrls || [],
+            class: scope.class,
+            action: scope.action ? function () {
+                scope.$eval(scope.action);
+              } : null
+          });
+        };
+
+        setMenuEntry();
+
+        scope.menuEntry = menuEntry;
+
+        $timeout(tryToRegisterAtParent);
 
         ctrl.setMenuEntry(menuEntry);
 
-        menuEntry.get('subEntries').on('add remove reset', function(){
+        menuEntry.get('subEntries').on('add remove reset', function () {
           scope.$emit('mw-menu:triggerReorder');
         });
 
-        scope.$on('mw-menu:reorder', function(){
-          if(!scope.order){
+        scope.$on('mw-menu:reorder', function () {
+          if (!scope.order) {
             menuEntry.set('order', getDomOrder());
-            scope.$emit('mw-menu:triggerResort');
           }
+          scope.$emit('mw-menu:triggerResort');
         });
 
-        scope.$on('mw-menu:resort', function(){
-            menuEntry.get('subEntries').sort();
+        scope.$on('mw-menu:resort', function () {
+          menuEntry.get('subEntries').sort();
         });
 
         scope.$on('$destroy', function () {
@@ -101,6 +113,8 @@ angular.module('mwUI.Menu')
             entryHolder.remove(menuEntry);
           }
         });
+
+        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class'], setMenuEntry);
       }
     };
   });
