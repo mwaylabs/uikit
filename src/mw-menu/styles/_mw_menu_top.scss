@@ -20,47 +20,102 @@ $min-width: 300px;
     padding-bottom: 0;
   }
 
-  .divider {
-    position: relative;
-    margin: 11px 0;
-    overflow: visible;
+  .mw-menu-top-drop-down-item,
+  .mw-menu-top-item {
+    cursor: pointer;
 
-    &:after {
-      content: attr(title);
-      position: absolute;
-      text-transform: uppercase;
-      color: #ccc;
-      font-size: 10px;
-      background: #fff;
-      top: -7px;
-      left: 8px;
-      padding: 0 6px;
+    a {
+      line-height: 30px;
+      display: block;
+      position: relative;
+      padding: 10px 15px;
+      color: #777;
+      text-decoration: none;
+
+      @include box-shadow(transparent 0px ($activebar-height*-1) 0 0px);
+      @include single-transition(box-shadow, 0.5s, ease);
+
+      &.active{
+        @include box-shadow($brand-primary 0px ($activebar-height*-1) 0 0px inset);
+        color: $dropdown-link-hover-color;
+        outline: 0;
+      }
+
+      &:hover,
+      &:focus {
+        color: $dropdown-link-hover-color;
+      }
+    }
+
+    .caret {
+      border-top-color: #777;
+      border-bottom-color: #777;
     }
   }
 
-  .dropdown-menu {
+  .mw-menu-top-item{
+    .divider{
+      border-left: 1px solid rgba(0, 0, 0, 0.05);
+      height: $navbar-height + 5;
+      margin: -10px 5px 0 5px;
+      cursor: default;
+    }
+  }
+
+  .dropdown-menu{
     margin-top: 1px;
     border-radius: 0;
     border: none;
 
-    a {
+    a{
       display: block;
       padding: 3px 20px;
       clear: both;
       font-weight: 400;
-      line-height: 1.42857;
-      color: #333;
       white-space: nowrap;
-    }
+      line-height: $line-height-base;
+      color: $dropdown-link-color;
 
-    .active {
-      a {
+      &:hover,
+      &:focus {
+        text-decoration: none;
+
+        &:not(.active){
+          color: $dropdown-link-hover-color;
+          background-color: $dropdown-link-hover-bg;
+        }
+      }
+
+      &.active{
         color: $brand-primary;
         background: none;
+        @include box-shadow(transparent 0px ($activebar-height*-1) 0 0px inset);
 
-        .rln-icon {
+        .mw-icon,
+        .mw-icon i{
           color: $brand-primary;
         }
+      }
+    }
+
+    .divider {
+      position: relative;
+      margin: 11px 0;
+      overflow: visible;
+      height: 1px;
+      background-color: #e5e5e5;
+      border-left: none;
+
+      &:after {
+        content: attr(title);
+        position: absolute;
+        text-transform: uppercase;
+        color: #ccc;
+        font-size: 10px;
+        background: #fff;
+        top: -7px;
+        left: 8px;
+        padding: 0 6px;
       }
     }
   }
@@ -69,45 +124,22 @@ $min-width: 300px;
     .navbar-collapse .nav li.divider:after {
       background: #f8f8f8;
     }
-  }
 
-  @media (min-width: $screen-sm) {
-    .navbar-collapse {
-
-      .nav > li > a {
-        @include box-shadow(none 0px ($activebar-height*-1) 0 0px);
-        @include single-transition(box-shadow, 0.5s, ease);
-      }
-
-      .nav > li.active > a {
-        @include box-shadow($brand-primary 0px ($activebar-height*-1) 0 0px inset);
-        background: none;
+    .mw-menu-top-drop-down-item,
+    .mw-menu-top-item {
+      a{
+        &.active{
+          color: $brand-primary;
+          background-color: $navbar-default-link-active-bg;
+          @include box-shadow(transparent 0px ($activebar-height*-1) 0 0px);
+        }
       }
     }
-  }
 
-}
-
-.mw-menu-top-drop-down-item,
-.mw-menu-top-item {
-  cursor: pointer;
-
-  a {
-    line-height: 30px;
-    display: block;
-    position: relative;
-    padding: 10px 15px;
-    color: #777;
-
-    &.active {
-      @include box-shadow($brand-primary 0 -4px 0 0 inset);
+    .dropdown-menu{
+      a{
+        padding: 5px 15px 5px 25px;
+      }
     }
-  }
-}
-
-.mw-menu-top-drop-down-item {
-  .caret {
-    border-top-color: #777;
-    border-bottom-color: #777;
   }
 }
