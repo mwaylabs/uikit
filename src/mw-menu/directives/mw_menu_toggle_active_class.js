@@ -18,6 +18,7 @@ angular.module('mwUI.Menu')
 
         setIsActiveState();
         $rootScope.$on('$locationChangeSuccess', setIsActiveState);
+        $rootScope.$on('$routeChangeError', setIsActiveState);
       }
     };
   });
