@@ -24,7 +24,7 @@ angular.module('mwUI.List')
             var existingItem = _.findWhere(mwListableCtrl.actionColumns, {id:scope.$index});
             if(existingItem){
               var indexOfExistingItem = _.indexOf(mwListableCtrl.actionColumns, existingItem);
-              mwListableCtrl.actionColumns.splice(indexOfExistingItem, 1)
+              mwListableCtrl.actionColumns.splice(indexOfExistingItem, 1);
             }
           }
         };
