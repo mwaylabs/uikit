@@ -9,9 +9,9 @@ angular.module('mwUI.UiComponents')
         linkTarget: '@?'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_arrow_link.html',
-      link: function (scope, elm) {
+      link: function (scope, el) {
         if (scope.linkTarget) {
-          elm.attr('target', scope.linkTarget);
+          el.find('a').attr('target', scope.linkTarget);
         }
       }
     };

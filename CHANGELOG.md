@@ -1,3 +1,10 @@
+# v1.0.4
+## Bug Fixes
+### Mw List Module
+- Fixed bug that the wrong link was executed when double clicking on a row. 
+This happened when not every row had a mw-listable-link-show-bb` directive`
+Bug is fixed and a double click will execute the correct link. 
+
 # v1.0.3
 ## Features
 ### Modal Module

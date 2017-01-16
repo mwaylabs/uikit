@@ -3,7 +3,6 @@ angular.module('mwUI.List')
   //TODO rename to mwListBodyRow
   .directive('mwListableBodyRowBb', function ($timeout) {
     return {
-      restrict: 'A',
       require: '^mwListableBb',
       compile: function (elm) {
 
@@ -33,8 +32,11 @@ angular.module('mwUI.List')
           });
 
           elm.on('dblclick', function () {
-            if (mwListCtrl.actionColumns && angular.isNumber(scope.$index) && mwListCtrl.actionColumns[scope.$index]) {
-              document.location.href = mwListCtrl.actionColumns[scope.$index];
+            if (mwListCtrl.actionColumns && angular.isNumber(scope.$index)) {
+              var existingLink = _.findWhere(mwListCtrl.actionColumns,{id:scope.$index});
+              if(existingLink){
+                document.location.href = existingLink.link;
+              }
             }
           });
 
