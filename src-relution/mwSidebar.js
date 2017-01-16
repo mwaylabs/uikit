@@ -121,7 +121,10 @@ angular.module('mwSidebar', [])
   .directive('mwSidebarActions', function () {
     return {
       transclude: true,
-      template: '<div ng-transclude></div><hr>'
+      scope: {
+        title: '@mwTitle'
+      },
+      templateUrl: 'uikit/templates/mwSidebar/mwSidebarActions.html'
     };
   })
 
