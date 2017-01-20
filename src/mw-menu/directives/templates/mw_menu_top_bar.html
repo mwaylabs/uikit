@@ -6,11 +6,14 @@
       <span class="icon-bar"></span>
     </button>
     <a class="navbar-brand" href="#/">
-      <img class="portal-logo"
-           ng-src="https://live.relution.io/relution/portal/images/logo-header.png"/>
+      <div ng-transclude="brand"></div>
     </a>
   </div>
 
-  <div ng-transclude></div>
+  <div class="mw-menu-top">
+    <div class="navbar-collapse collapse">
+      <div ng-transclude="entries"></div>
+    </div>
+  </div>
 
 </nav>
