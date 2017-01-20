@@ -1,43 +1,50 @@
 angular.module('mwUI.Menu')
 
-  .directive('mwMenuTop', function ($rootScope, $timeout) {
+  .directive('mwMenuTopEntries', function ($rootScope, $timeout) {
     return {
       scope: {
-        menu: '=mwMenuTop'
+        menu: '=mwMenuTopEntries',
+        right: '='
       },
       transclude: true,
-      templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_top.html',
-      controller: function(){
-        var menu = new mwUI.Menu.MwMenu();
+      templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_top_entries.html',
+      controller: function ($scope) {
+        var menu = $scope.menu || new mwUI.Menu.MwMenu();
 
-        this.getMenu = function(){
+        this.getMenu = function () {
           return menu;
         };
       },
-      link: function(scope, el, attrs, ctrl){
+      link: function (scope, el, attrs, ctrl) {
         scope.entries = ctrl.getMenu();
 
-        scope.unCollapse = function() {
+        scope.unCollapse = function () {
           var collapseEl = el.find('.navbar-collapse');
-          if(collapseEl.hasClass('in')) {
+          if (collapseEl.hasClass('in')) {
             collapseEl.collapse('hide');
           }
         };
 
-        $rootScope.$on('$locationChangeSuccess', function(){
+        $rootScope.$on('$locationChangeSuccess', function () {
           scope.unCollapse();
         });
 
-        scope.$on('mw-menu:triggerReorder', _.throttle(function(){
-          $timeout(function(){
+        scope.$on('mw-menu:triggerReorder', _.throttle(function () {
+          $timeout(function () {
             scope.$broadcast('mw-menu:reorder');
           });
         }));
 
-        scope.$on('mw-menu:triggerResort', _.throttle(function(){
-          $timeout(function(){
+        scope.$on('mw-menu:triggerResort', _.throttle(function () {
+          $timeout(function () {
             scope.$broadcast('mw-menu:resort');
             scope.entries.sort();
+          });
+        }));
+
+        scope.entries.on('add remove reset', _.throttle(function () {
+          $timeout(function () {
+            scope.$broadcast('mw-menu:reorder');
           });
         }));
       }

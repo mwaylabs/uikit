@@ -1,14 +1,10 @@
-<div class="mw-menu-top">
-  <div class="navbar-collapse collapse">
-    <ul class="nav navbar-nav">
-      <li ng-repeat="entry in entries.models" class="entry {{entry.get('class')}}">
-        <div ng-if="entry.hasSubEntries()"
-             mw-menu-top-drop-down-item="entry"></div>
-        <div ng-if="!entry.hasSubEntries()"
-             mw-menu-top-item="entry"></div>
-      </li>
-    </ul>
-  </div>
+<ul class="mw-menu-top-entries nav navbar-nav" ng-class="{'navbar-right': right}">
+  <li ng-repeat="entry in entries.models" class="entry {{entry.get('class')}}">
+    <div ng-if="entry.hasSubEntries()"
+         mw-menu-top-drop-down-item="entry"></div>
+    <div ng-if="!entry.hasSubEntries()"
+         mw-menu-top-item="entry"></div>
+  </li>
+</ul>
 
-  <div ng-transclude hidden class="mw-menu-entries"></div>
-</div>
+<div ng-transclude hidden class="mw-menu-entries"></div>
