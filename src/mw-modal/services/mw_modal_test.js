@@ -204,11 +204,11 @@ describe('mwUi Modal service', function () {
       this.$timeout.flush();
     });
 
-    it('sets the correct boostrap modal options when dismissable is set to false', function(){
+    it('sets the correct boostrap modal options when dismissible is set to false', function(){
       var modal = this.Modal.create({
         templateUrl: 'test/xxx.html',
         el: 'body',
-        dismissable: false
+        dismissible: false
       });
 
       modal.show();
@@ -223,11 +223,11 @@ describe('mwUi Modal service', function () {
       this.$timeout.flush();
     });
 
-    it('sets the correct boostrap modal options when dismissable is set to true', function(){
+    it('sets the correct boostrap modal options when dismissible is set to true', function(){
       var modal = this.Modal.create({
         templateUrl: 'test/xxx.html',
         el: 'body',
-        dismissable: true
+        dismissible: true
       });
 
       modal.show();
@@ -242,11 +242,10 @@ describe('mwUi Modal service', function () {
       this.$timeout.flush();
     });
 
-    it('sets the correct boostrap modal options when the option dismissable is not defined', function(){
+    it('sets the correct boostrap modal options when the option dismissible is not defined', function(){
       var modal = this.Modal.create({
         templateUrl: 'test/xxx.html',
-        el: 'body',
-        dismissable: true
+        el: 'body'
       });
 
       modal.show();
