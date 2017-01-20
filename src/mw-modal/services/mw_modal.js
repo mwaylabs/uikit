@@ -15,6 +15,7 @@ angular.module('mwUI.Modal')
         _class = modalOptions.class || '',
         _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
         _bootStrapModalOptions = bootStrapModalOptions || {},
+        _dismissible = angular.isDefined(modalOptions.dismissible) ? modalOptions.dismissible : true,
         _watchers = [],
         _modalOpened = false,
         _self = this,
@@ -109,6 +110,12 @@ angular.module('mwUI.Modal')
             _modal.addClass(_class);
             _bootstrapModal = _modal.find('.modal');
             _bootStrapModalOptions.show = false;
+
+            if(!_dismissible){
+              _bootStrapModalOptions.backdrop =  'static';
+              _bootStrapModalOptions.keyboard =  false;
+            }
+
             _bootstrapModal.modal(_bootStrapModalOptions);
 
             // We need to overwrite the the original backdrop method with our own one

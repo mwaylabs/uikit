@@ -204,6 +204,62 @@ describe('mwUi Modal service', function () {
       this.$timeout.flush();
     });
 
+    it('sets the correct boostrap modal options when dismissible is set to false', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        el: 'body',
+        dismissible: false
+      });
+
+      modal.show();
+      jasmine.clock().tick(101);
+      this.$rootScope.$digest();
+
+      expect(this.openSpy.calls.first().object.options.backdrop).toBe('static');
+      expect(this.openSpy.calls.first().object.options.keyboard).toBe(false);
+
+      modal.destroy();
+      jasmine.clock().tick(101);
+      this.$timeout.flush();
+    });
+
+    it('sets the correct boostrap modal options when dismissible is set to true', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        el: 'body',
+        dismissible: true
+      });
+
+      modal.show();
+      jasmine.clock().tick(101);
+      this.$rootScope.$digest();
+
+      expect(this.openSpy.calls.first().object.options.backdrop).toBe(true);
+      expect(this.openSpy.calls.first().object.options.keyboard).toBe(true);
+
+      modal.destroy();
+      jasmine.clock().tick(101);
+      this.$timeout.flush();
+    });
+
+    it('sets the correct boostrap modal options when the option dismissible is not defined', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        el: 'body'
+      });
+
+      modal.show();
+      jasmine.clock().tick(101);
+      this.$rootScope.$digest();
+
+      expect(this.openSpy.calls.first().object.options.backdrop).toBe(true);
+      expect(this.openSpy.calls.first().object.options.keyboard).toBe(true);
+
+      modal.destroy();
+      jasmine.clock().tick(101);
+      this.$timeout.flush();
+    });
+
   });
 
   describe('testing advanced modal configurations', function () {
