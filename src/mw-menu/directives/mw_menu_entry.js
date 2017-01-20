@@ -1,6 +1,3 @@
-/**
- * Created by zarges on 23/02/16.
- */
 angular.module('mwUI.Menu')
 
   .directive('mwMenuEntry', function ($timeout) {
@@ -17,7 +14,7 @@ angular.module('mwUI.Menu')
         action: '&'
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
-      require: ['mwMenuEntry', '?^^mwMenuEntry', '?^mwMenuTop'],
+      require: ['mwMenuEntry', '?^^mwMenuEntry', '?^mwMenuTopEntries'],
       transclude: true,
       controller: function () {
         var _menuEntry;
@@ -53,19 +50,17 @@ angular.module('mwUI.Menu')
         var tryToRegisterAtParent = function () {
           if (parentCtrl) {
             if (!parentCtrl.getMenuEntry()) {
-              return $timeout(tryToRegisterAtParent);
+              // TODO could not produce that error. In case the following exception is thrown write a test case and comment line in
+              //return $timeout(tryToRegisterAtParent);
+              throw new Error('Menu entry is not available, so registration failed!')
             }
             entryHolder = parentCtrl.getMenuEntry().get('subEntries');
           } else if (menuCtrl) {
             entryHolder = menuCtrl.getMenu();
           }
 
-          if (entryHolder) {
-            if (entryHolder.get(menuEntry)) {
-              menuEntry.show();
-            } else {
-              entryHolder.add(menuEntry);
-            }
+          if (entryHolder && !entryHolder.get(menuEntry)) {
+            entryHolder.add(menuEntry);
           }
         };
 
@@ -114,7 +109,7 @@ angular.module('mwUI.Menu')
           }
         });
 
-        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class'], setMenuEntry);
+        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class', 'order'], setMenuEntry);
       }
     };
   });
