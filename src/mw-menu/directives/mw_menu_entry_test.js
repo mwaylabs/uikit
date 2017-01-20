@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('mwUi menu entry directive', function () {
+describe('mwUi menu entry directive', function () {
   beforeEach(module('mwUI.Menu'));
 
   beforeEach(module('karmaDirectiveTemplates'));
@@ -35,7 +35,7 @@ fdescribe('mwUi menu entry directive', function () {
       var $menuTopEntriesEl = angular.element('<div mw-menu-top-entries="menu"></div>');
       $menuTopEntriesEl.append(angular.element(menuEntryEl));
       return this.$compile($menuTopEntriesEl)(this.$scope);
-    }
+    };
   }));
 
   beforeEach(function(){

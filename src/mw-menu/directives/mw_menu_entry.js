@@ -52,7 +52,7 @@ angular.module('mwUI.Menu')
             if (!parentCtrl.getMenuEntry()) {
               // TODO could not produce that error. In case the following exception is thrown write a test case and comment line in
               //return $timeout(tryToRegisterAtParent);
-              throw new Error('Menu entry is not available, so registration failed!')
+              throw new Error('Menu entry is not available, so registration failed!');
             }
             entryHolder = parentCtrl.getMenuEntry().get('subEntries');
           } else if (menuCtrl) {
