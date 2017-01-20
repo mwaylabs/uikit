@@ -8,8 +8,7 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       label: null,
       icon: null,
       activeUrls: [],
-      order: null,
-      isVisible: true
+      order: null
     };
   },
   nested: function () {
@@ -65,12 +64,6 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       this.validate(entry);
     }
     return window.mwUI.Backbone.NestedModel.prototype.set.call(this, entry, options);
-  },
-  show: function () {
-    this.set('isVisible', true);
-  },
-  hide: function () {
-    this.set('isVisible', false);
   },
   isValidEntry: function (entry) {
     if (entry.type) {
