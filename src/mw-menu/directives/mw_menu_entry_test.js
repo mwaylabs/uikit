@@ -397,4 +397,96 @@ describe('mwUi menu entry directive', function () {
       expect(this.menu.findWhere({label: 'xxx1'}).get('subEntries').at(2).get('label')).toBe('xxx1_sub3');
     });
   });
+
+  describe('updating entry', function(){
+    it('updates id', function(){
+      this.$scope.id = 'ABC';
+      this.buildMenuEl('' +
+        '<div mw-menu-entry label="xxx1" url="xxx1", id="{{id}}"></div>'
+      );
+      this.$scope.$digest();
+      this.$timeout.flush();
+
+      this.$scope.id = 'XXX';
+      this.$scope.$digest();
+
+      expect(this.menu.first().get('id')).toBe('XXX');
+    });
+
+    it('updates label', function(){
+      this.$scope.label = 'ABC';
+      this.buildMenuEl('' +
+        '<div mw-menu-entry label="{{label}}" url="xxx1"></div>'
+      );
+      this.$scope.$digest();
+      this.$timeout.flush();
+
+      this.$scope.label = 'XXX';
+      this.$scope.$digest();
+
+      expect(this.menu.first().get('label')).toBe('XXX');
+    });
+
+    it('updates url', function(){
+      this.$scope.url = 'ABC';
+      this.buildMenuEl('' +
+        '<div mw-menu-entry label="xxx1" url="{{url}}"></div>'
+      );
+      this.$scope.$digest();
+      this.$timeout.flush();
+
+      this.$scope.url = 'XXX';
+      this.$scope.$digest();
+
+      expect(this.menu.first().get('url')).toBe('XXX');
+    });
+
+    it('updates icon', function(){
+      this.$scope.icon = 'ABC';
+      this.buildMenuEl('' +
+        '<div mw-menu-entry label="xxx1" url="xxx1" icon="{{icon}}"></div>'
+      );
+      this.$scope.$digest();
+      this.$timeout.flush();
+
+      this.$scope.icon = 'XXX';
+      this.$scope.$digest();
+
+      expect(this.menu.first().get('icon')).toBe('XXX');
+    });
+
+    it('updates class', function(){
+      this.$scope.class = 'ABC';
+      this.buildMenuEl('' +
+        '<div mw-menu-entry label="xxx1" url="xxx1" style-class="{{class}}"></div>'
+      );
+      this.$scope.$digest();
+      this.$timeout.flush();
+
+      this.$scope.class = 'XXX';
+      this.$scope.$digest();
+
+      expect(this.menu.first().get('class')).toBe('XXX');
+    });
+
+    it('updates order and reorders entries', function(){
+      this.$scope.order = 1;
+      this.buildMenuEl('' +
+        '<div mw-menu-entry label="xxx1" url="xxx1" order="order"></div>' +
+        '<div mw-menu-entry label="xxx2" url="xxx2" order="2"></div>' +
+        '<div mw-menu-entry label="xxx3" url="xxx3" order="3"></div>'
+      );
+      this.$scope.$digest();
+      this.$timeout.flush();
+
+      this.$scope.order = 4;
+      this.$scope.$digest();
+      jasmine.clock().tick(1);
+      this.$timeout.flush();
+
+      expect(this.menu.findWhere({url: 'xxx1'}).get('order')).toBe(4);
+      expect(this.menu.first().get('label')).toBe('xxx2');
+      expect(this.menu.last().get('label')).toBe('xxx1');
+    });
+  })
 });
