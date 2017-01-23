@@ -5,6 +5,7 @@ angular.module('mwUI.Menu')
       scope: {
         id: '@',
         label: '@',
+        icon: '@',
         order: '='
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_divider.html'
