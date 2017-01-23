@@ -88,15 +88,18 @@ angular.module('mwUI.Menu')
 
         ctrl.setMenuEntry(menuEntry);
 
-        menuEntry.get('subEntries').on('add remove reset', function () {
+        menuEntry.get('subEntries').on('add remove reset change:order', function () {
           scope.$emit('mw-menu:triggerReorder');
+        });
+
+        menuEntry.on('change:order', function () {
+          scope.$emit('mw-menu:triggerResort');
         });
 
         scope.$on('mw-menu:reorder', function () {
           if (!scope.order) {
             menuEntry.set('order', getDomOrder());
           }
-          scope.$emit('mw-menu:triggerResort');
         });
 
         scope.$on('mw-menu:resort', function () {
