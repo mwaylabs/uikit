@@ -5,29 +5,11 @@ describe('mwUi menu entry directive', function () {
 
   beforeEach(module('karmaDirectiveTemplates'));
 
-  beforeEach(function () {
-    module(function ($provide) {
-      var _url = '/';
-      $provide.service('$location', function ($rootScope) {
-        return {
-          url: function () {
-            return _url;
-          },
-          setUrl: function (url) {
-            _url = url;
-            $rootScope.$broadcast('$locationChangeSuccess');
-          }
-        };
-      });
-    });
-  });
-
-  beforeEach(inject(function ($rootScope, $timeout, $compile, $location) {
+  beforeEach(inject(function ($rootScope, $timeout, $compile) {
     this.$rootScope = $rootScope;
     this.$scope = $rootScope.$new();
     this.$timeout = $timeout;
     this.$compile = $compile;
-    this.$location = $location;
     this.menu = this.$scope.menu = new mwUI.Menu.MwMenu();
     this.$scope.$digest();
 
@@ -44,11 +26,10 @@ describe('mwUi menu entry directive', function () {
 
   afterEach(function () {
     jasmine.clock().uninstall();
-    this.$location.setUrl('/');
   });
 
   it('registers mw-menu-entry', function () {
-    this.buildMenuEl('<div mw-menu-entry label="xxx" url="xxx"></div></div>');
+    this.buildMenuEl('<div mw-menu-entry label="xxx" url="xxx"></div>');
     this.$scope.$digest();
     this.$timeout.flush();
 
@@ -57,7 +38,7 @@ describe('mwUi menu entry directive', function () {
   });
 
   it('unregisters mw-menu-entry when element is removed', function () {
-    this.buildMenuEl('<div ng-if="displayEntry" mw-menu-entry label="xxx" url="xxx"></div></div>');
+    this.buildMenuEl('<div ng-if="displayEntry" mw-menu-entry label="xxx" url="xxx"></div>');
     this.$scope.displayEntry = true;
     jasmine.clock().tick(1);
     this.$scope.$digest();
@@ -488,5 +469,5 @@ describe('mwUi menu entry directive', function () {
       expect(this.menu.first().get('label')).toBe('xxx2');
       expect(this.menu.last().get('label')).toBe('xxx1');
     });
-  })
+  });
 });
