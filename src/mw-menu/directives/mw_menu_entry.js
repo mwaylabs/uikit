@@ -8,7 +8,7 @@ angular.module('mwUI.Menu')
         icon: '@',
         label: '@',
         type: '@',
-        class: '@',
+        class: '@styleClass',
         order: '=',
         activeUrls: '=',
         action: '&'
