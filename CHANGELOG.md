@@ -1,3 +1,36 @@
+# v1.0.5
+## Features
+### i18n Module
+It is now possible to define a `basePath` for i18n locales and resources.
+This can be useful when you want to overwrite translations of the uikit or 
+add new translations for locales that are not supported by the uikit.
+To do so you can simply overwrite the resource path of an uikit translation.
+Each module has a i18n folder when it has directives that include a text.
+
+If you want to replace the translation e.g. of the `mw-list` module copy the 
+i18n folder into your directory of choice. After that you have to overwrite the
+existing resource with your new basePath. 
+
+To do so call the the method 
+`i18nProvider.addResource('mw-list/i18n', 'PATH_TO_YOUR_NEW_DIRECTORY')` 
+during the angular config phase.
+In the run phase it will fetch the translations for `mw-list` by making a 
+`$templateRequest` to the path `PATH_TO_YOUR_NEW_DIRECTORY/mw-list/i18n/{locale}.json`.
+
+If you want to replace all translations of the uikit you have to repeat the steps for all 
+uikit modules
+
+### Modal module
+The modal prepare method got a new option called `dismissible`. It is set to true by default.
+If it is set to false the modal can not be closed  by clicking on the backdrop or by hitting escape.
+```
+Modal.prepare({
+ templateUrl: 'PTH_TO_TEMPLATE.html',
+ controller: 'CONTROLLER_NAME',
+ dismissible: [true|false]     
+});
+```
+
 # v1.0.4
 ## Bug Fixes
 ### Mw List Module
