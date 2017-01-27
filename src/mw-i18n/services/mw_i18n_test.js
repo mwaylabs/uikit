@@ -399,4 +399,73 @@ describe('mwUi i18n Service', function () {
       });
     });
   });
+
+  describe('overwriting files of i18n', function () {
+    it('loads the resource with the basePath defined for a locale', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch', null, 'customLocalePath');
+
+      i18nProvider.addResource('folder');
+      i18n.setLocale('de_DE');
+
+      expect($templateRequest).toHaveBeenCalledWith('customLocalePath/folder/de_DE.json');
+    });
+
+    it('loads the resource without the basePath for all other locales', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch', null, 'customLocalePath');
+      i18nProvider.addLocale('en_US', 'English');
+
+      i18nProvider.addResource('folder');
+      i18n.setLocale('en_US');
+
+      expect($templateRequest).toHaveBeenCalledWith('folder/en_US.json');
+    });
+
+    it('loads the resource with the basePath defined for a resource', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch');
+      i18nProvider.addResource('folder', 'customResourcePath');
+      i18n.setLocale('de_DE');
+      expect($templateRequest).toHaveBeenCalledWith('customResourcePath/folder/de_DE.json');
+    });
+
+    it('loads the resource with the basePath defined for a resource for all locales', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch');
+      i18nProvider.addLocale('en_US', 'English');
+      i18nProvider.addResource('folder', 'customResourcePath');
+
+      i18n.setLocale('de_DE');
+      i18n.setLocale('en_US');
+
+      expect($templateRequest).toHaveBeenCalledWith('customResourcePath/folder/de_DE.json');
+      expect($templateRequest).toHaveBeenCalledWith('customResourcePath/folder/en_US.json');
+    });
+
+    it('loads the resource with the basePath defined for a locale and a resource', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch', null, 'customLocalePath');
+      i18nProvider.addResource('folder', 'customResourcePath');
+
+      i18n.setLocale('de_DE');
+
+      expect($templateRequest).toHaveBeenCalledWith('customLocalePath/customResourcePath/folder/de_DE.json');
+    });
+
+    it('overwrites the basePath for an existing locale', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch');
+      i18nProvider.addResource('folder');
+
+      i18nProvider.addLocale('de_DE', 'Deutsch', null, 'customLocalePath');
+      i18n.setLocale('de_DE');
+
+      expect($templateRequest).toHaveBeenCalledWith('customLocalePath/folder/de_DE.json');
+    });
+
+    it('overwrites the basePath for an existing resource', function () {
+      i18nProvider.addLocale('de_DE', 'Deutsch');
+      i18nProvider.addResource('folder', 'abc');
+
+      i18nProvider.addResource('folder', 'customResourcePath');
+      i18n.setLocale('de_DE');
+
+      expect($templateRequest).toHaveBeenCalledWith('customResourcePath/folder/de_DE.json');
+    });
+  });
 });
