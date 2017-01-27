@@ -186,4 +186,34 @@ describe('Filterable', function () {
       });
     });
   });
+
+  describe('pagination', function () {
+
+    it('initialises filterable with a max amount of 30', function () {
+      var filterable = new this.Filterable(this.collection);
+
+      expect(filterable.getRequestParams().limit).toBe(30);
+    });
+
+    it('initialises filterable with a offset of 0', function () {
+      var filterable = new this.Filterable(this.collection);
+
+      expect(filterable.getRequestParams().offset).toBe(0);
+    });
+
+    it('initialises filterable with the value passed as option', function () {
+      var filterable = new this.Filterable(this.collection, {perPage: 10, page: 2});
+
+      expect(filterable.getRequestParams().limit).toBe(10);
+      expect(filterable.getRequestParams().offset).toBe(10);
+    });
+
+    it('resets offset when calling setPage', function () {
+      var filterable = new this.Filterable(this.collection);
+
+      filterable.setPage(100);
+
+      expect(filterable.getRequestParams().offset).toBe((100 - 1) * 30);
+    });
+  });
 });
