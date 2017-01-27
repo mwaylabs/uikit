@@ -13,7 +13,7 @@ angular.module('mwUI.Form', ['mwUI.i18n','mwUI.Modal','mwUI.Utils']);
 angular.module('mwUI.Form')
 
   .config(function(i18nProvider, mwValidationMessagesProvider){
-    i18nProvider.addResource('uikit/mw-form/i18n');
+    i18nProvider.addResource('mw-form/i18n', 'uikit');
 
     mwValidationMessagesProvider.registerValidator('required','mwErrorMessages.required');
     mwValidationMessagesProvider.registerValidator('email','mwErrorMessages.hasToBeValidEmail');

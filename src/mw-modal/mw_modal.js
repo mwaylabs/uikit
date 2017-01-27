@@ -13,5 +13,5 @@ angular.module('mwUI.Modal', ['mwUI.i18n', 'mwUI.Toast']);
 angular.module('mwUI.Modal')
 
   .config(function(i18nProvider){
-    i18nProvider.addResource('uikit/mw-modal/i18n');
+    i18nProvider.addResource('mw-modal/i18n', 'uikit');
   });

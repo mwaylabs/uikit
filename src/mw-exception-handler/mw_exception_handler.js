@@ -5,7 +5,7 @@ angular.module('mwUI.ExceptionHandler', ['mwUI.Modal', 'mwUI.i18n', 'mwUI.UiComp
 // @include ./services/mw_exception_handler.js
 // @include ./services/mw_exception_handler_modal.js
 
-angular.module('mwUI.ExceptionHandler').config(function($exceptionHandlerProvider, i18nProvider){
+angular.module('mwUI.ExceptionHandler').config(function ($exceptionHandlerProvider, i18nProvider) {
   $exceptionHandlerProvider.registerHandler('exceptionHandlerModal');
-  i18nProvider.addResource('uikit/mw-exception-handler/i18n');
+  i18nProvider.addResource('mw-exception-handler/i18n', 'uikit');
 });

@@ -12,5 +12,5 @@ angular.module('mwUI.List', ['mwUI.i18n', 'mwUI.Backbone', 'mwUI.UiComponents'])
 angular.module('mwUI.List')
 
   .config(function(i18nProvider){
-    i18nProvider.addResource('uikit/mw-list/i18n');
+    i18nProvider.addResource('mw-list/i18n', 'uikit');
   });

@@ -1,4 +1,4 @@
-angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils', 'mwUI.Backbone']);
+angular.module('mwUI.UiComponents', ['mwUI.i18n', 'mwUI.Utils', 'mwUI.Backbone']);
 
 // @include ./directives/mw_alert.js
 // @include ./directives/mw_arrow_link.js
@@ -33,6 +33,6 @@ angular.module('mwUI.UiComponents', ['mwUI.i18n','mwUI.Utils', 'mwUI.Backbone'])
 
 angular.module('mwUI.UiComponents')
 
-  .config(function(i18nProvider){
-    i18nProvider.addResource('uikit/mw-ui-components/i18n');
+  .config(function (i18nProvider) {
+    i18nProvider.addResource('mw-ui-components/i18n', 'uikit');
   });

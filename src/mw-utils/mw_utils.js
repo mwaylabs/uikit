@@ -24,5 +24,5 @@ window.mwUI.Utils.shims = {};
 // @include ./shims/route_to_regex.js
 
 angular.module('mwUI.Utils').config(function(i18nProvider){
-  i18nProvider.addResource('uikit/mw-utils/i18n');
+  i18nProvider.addResource('mw-utils/i18n', 'uikit');
 });
