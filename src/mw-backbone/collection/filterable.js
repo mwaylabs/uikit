@@ -29,6 +29,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   this.getRequestParams = function (options) {
+    options = options || {};
     options.params = options.params || {};
     // Filter functionality
     var filter = this.getFilters();
@@ -86,9 +87,9 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   };
 
   this.setInitialFilterValues = function (filterValues) {
-    for(var key in filterValues){
+    for (var key in filterValues) {
       // Make sure to overwrite the current filter value when it is an initial filter value
-      if(this.filterValues[key] === _initialFilterValues[key]){
+      if (this.filterValues[key] === _initialFilterValues[key]) {
         this.filterValues[key] = filterValues[key];
       }
     }
@@ -131,6 +132,10 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
 
   this.getPage = function () {
     return _page;
+  };
+
+  this.setPage = function (page) {
+    _page = page;
   };
 
   this.getTotalPages = function () {
