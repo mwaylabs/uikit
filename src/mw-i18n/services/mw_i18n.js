@@ -116,15 +116,23 @@ angular.module('mwUI.i18n')
      * @param name
      * @param fileExtension
      */
-    this.addLocale = function (locale, name, fileExtension) {
-      if (!_.findWhere(_locales, {id: locale})) {
+    this.addLocale = function (locale, name, fileExtension, basePath) {
+      fileExtension = fileExtension || locale + '.json';
+
+      var existingLocale = _.findWhere(_locales, {id: locale});
+      if (!existingLocale) {
         _locales.push({
           id: locale,
           name: name,
           active: locale === _defaultLocale,
-          fileExtension: fileExtension || locale + '.json'
+          basePath: basePath || '',
+          fileExtension: fileExtension
         });
         _dictionary[locale] = {};
+      } else {
+        existingLocale.name = name;
+        existingLocale.fileExtension = fileExtension;
+        existingLocale.basePath = basePath;
       }
     };
 
@@ -133,11 +141,17 @@ angular.module('mwUI.i18n')
      * @param resourcePath {String}
      * @param fileNameForLocale {String}
      */
-    this.addResource = function (resourcePath) {
-      if (!_.findWhere(_resources, {path: resourcePath})) {
+    this.addResource = function (resourcePath, basePath) {
+      basePath = basePath || '';
+
+      var existingResource = _.findWhere(_resources, {path: resourcePath});
+      if (!existingResource) {
         _resources.push({
-          path: resourcePath
+          path: resourcePath,
+          basePath: basePath
         });
+      } else {
+        existingResource.basePath = basePath;
       }
     };
 
@@ -158,12 +172,12 @@ angular.module('mwUI.i18n')
         _loadResource: function (resourcePath) {
           var resource = _.findWhere(_resources, {path: resourcePath}),
             activeLocale = this.getActiveLocale(),
-            fileName = '';
+            filePath = '';
 
           if (resource && activeLocale) {
-            fileName = activeLocale.fileExtension;
+            filePath = mwUI.Backbone.Utils.concatUrlParts(activeLocale.basePath, resource.basePath, resource.path, activeLocale.fileExtension);
 
-            return $templateRequest(resource.path + '/' + fileName).then(function (content) {
+            return $templateRequest(filePath).then(function (content) {
               _.extend(_dictionary[activeLocale.id], JSON.parse(content));
               return content;
             });

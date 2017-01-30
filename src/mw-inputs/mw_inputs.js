@@ -11,5 +11,5 @@ angular.module('mwUI.Inputs', ['mwUI.i18n', 'mwUI.Backbone']);
 
 angular.module('mwUI.Inputs')
   .config(function(i18nProvider) {
-    i18nProvider.addResource('uikit/mw-inputs/i18n');
+    i18nProvider.addResource('mw-inputs/i18n', 'uikit');
   });
