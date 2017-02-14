@@ -91,6 +91,41 @@ describe('testing mwModel', function () {
     });
   });
 
+  describe('dirty check', function(){
+    it('is not dirty when it sets value from backbone model during initialization', function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      var $el = this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.$digest();
+
+      expect($el.hasClass('ng-pristine')).toBeTruthy();
+    });
+
+    it('is dirty when ng-model changes', function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      var $el = this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.$digest();
+
+      $el.val('XYZ').triggerHandler('input');
+      this.scope.$digest();
+
+      expect($el.hasClass('ng-pristine')).toBeFalsy();
+    });
+
+    it('is dirty when mw-model changes', function(){
+      var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
+      var $el = this.$compile(input)(this.scope);
+      this.scope.testModel = this.testModel;
+      this.scope.$digest();
+
+      this.scope.testModel.set('text','XYZ');
+      this.scope.$digest();
+
+      expect($el.hasClass('ng-pristine')).toBeFalsy();
+    });
+  });
+
   describe('updates ngModel when Backbone model changes', function () {
     it('for input type text', function () {
       var input = '<input type="text" ng-model="text" mw-model="testModel"/>';
