@@ -15,6 +15,14 @@ angular.module('mwUI.Form')
           return formCtrl.$dirty && isActive;
         };
 
+        elm.on('submit', function () {
+          isActive = false;
+        });
+
+        elm.on('input', function () {
+          isActive = true;
+        });
+
         elm.append(confirmation);
 
         scope.$on('$destroy', function () {
