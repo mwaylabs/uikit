@@ -20,20 +20,33 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
     }
   };
 
+  var _selectWhenModelIsSelected = function(model){
+    if(!_selected.get(model)){
+      this.select(model);
+    }
+  };
+
+  var _unSelectWhenModelIsUnSelected = function(model){
+    if(_selected.get(model)) {
+      this.unSelect(model);
+    }
+  };
+
+  var _unSelectWhenModelIsUnset = function(model, opts){
+    opts = opts || {};
+    if(opts.unset || !model.id || model.id.length<1){
+      this.unSelect(model);
+    }
+  };
+
   var _bindModelOnSelectListener = function(model){
-    this.listenTo(model.selectable, 'change:select', function(){
-      if(!_selected.get(model)){
-        this.select(model);
-      }
-    }.bind(this));
+    model.selectable.off('change:select', _selectWhenModelIsSelected);
+    model.selectable.on('change:select', _selectWhenModelIsSelected, this);
   };
 
   var _bindModelOnUnSelectListener = function(model){
-    this.listenTo(model.selectable, 'change:unselect', function(){
-      if(_selected.get(model)) {
-        this.unSelect(model);
-      }
-    }.bind(this));
+    model.selectable.off('change:unselect', _unSelectWhenModelIsUnSelected);
+    model.selectable.on('change:unselect', _unSelectWhenModelIsUnSelected, this);
   };
 
   var _setModelSelectableOptions = function (model, options) {
@@ -116,12 +129,8 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
         this.unSelectAll();
       }
 
-      model.on('change', function(model, opts){
-        opts = opts || {};
-        if(opts.unset || !model.id || model.id.length<1){
-          this.unSelect(model);
-        }
-      }, this);
+      model.off('change', _unSelectWhenModelIsUnset);
+      model.on('change', _unSelectWhenModelIsUnset, this);
 
       _selected.add(model);
       _setModelSelectableOptions.call(this, model, options);
