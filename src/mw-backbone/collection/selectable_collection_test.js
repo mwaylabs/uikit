@@ -785,7 +785,7 @@ describe('Collection Selectable', function () {
 
     it('does not add a new change listener on a model when model is selected again', function(){
       collection.first().selectable.select();
-      collection.first().unset('id');
+      collection.first().selectable.unSelect();
 
       collection.first().selectable.select();
 
