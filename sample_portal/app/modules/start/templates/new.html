@@ -1,19 +1,14 @@
-<div mw-row-layout
-     class="container">
+<div class="container">
 
   <div mw-header
        title="{{'start.index.title' | i18n }}"
        mw-title-icon="rln-icon apps"
-       mw-bread-crumbs="[{title:'Start',url:'#/start'}]"
-       mw-row></div>
+       mw-bread-crumbs="[{title:'Start',url:'#/start'}]"></div>
 
-  <div mw-row mw-body style="flex-grow: 1">
-
-    <div class="row">
-      <form class="col-md-12"
-            name="startForm"
-            ng-include="'modules/start/templates/_form.html'"></form>
-    </div>
-
+  <div class="row">
+    <form class="col-md-12"
+          name="startForm"
+          ng-include="'modules/start/templates/_form.html'"></form>
   </div>
+
 </div>
