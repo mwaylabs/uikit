@@ -34,7 +34,7 @@ angular.module('SampleApp.Start')
 
       $timeout(function(){
         dfd.resolve(collection);
-      },1000);
+      },50);
 
       return dfd.promise;
     }
