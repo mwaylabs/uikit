@@ -31,12 +31,13 @@
 
 <!--[if lt IE 10]>
 <script>
-  function hideChromeFrame(){
-    document.getElementById('chromeframe').style.display='none';
+  function hideChromeFrame() {
+    document.getElementById('chromeframe').style.display = 'none';
   }
 </script>
 
-<p class="chromeframe alert alert-danger col-xs-12 text-center" style="z-index:9999; position: fixed" id="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser
+<p class="chromeframe alert alert-danger col-xs-12 text-center" style="z-index:9999; position: fixed" id="chromeframe">
+  You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser
   today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better
   experience this site.
   <span class="pull-right clickable" onclick="hideChromeFrame()">Hide</span>
@@ -46,26 +47,172 @@
 
 <div ng-controller="MainController as ctrl">
 
-  <div class="app" mw-row-layout>
+  <div class="app">
 
-    <header mw-row>
+    <header>
       <div mw-toasts class="notifications"></div>
     </header>
 
-    <div mw-row>
-      <div mw-column-layout>
+    <div mw-menu-top-bar>
 
-        <div mw-sidebar-menu mw-column></div>
+      <img src="https://live.relution.io/relution/portal/images/logo-header.png">
 
-        <div rln-append-class-according-to-route mw-column class="module-page">
-          <div ng-view class="height-inherit" autoscroll="true"></div>
-          <div mw-view-change-loader></div>
+      <div mw-menu-top-entries>
+        <div mw-menu-entry
+             url="#/start2"
+             label="Start2">
+        </div>
+
+        <div mw-menu-entry
+             icon="fa-user"
+             label="Start 1"
+             class="abc">
+          <div mw-menu-entry
+               url="#/start"
+               icon="fa-group"
+               label="Sub 1"
+               active-urls="['#/start/*']"></div>
+          <div mw-menu-entry
+               url="#/start/details"
+               icon="fa-group"
+               label="Sub 2"></div>
+
+          <div>
+            <div mw-menu-entry
+                 url="#/start3"
+                 icon="fa-group"
+                 label="Sub 3"></div>
+
+            <div mw-menu-entry
+                 url="#/start4"
+                 icon="fa-group"
+                 label="Sub 4"></div>
+
+            <div mw-menu-entry
+                 url="#/start5"
+                 icon="fa-group"
+                 label="Sub 5"></div>
+          </div>
+
+          <div mw-menu-entry
+               url="#/start6"
+               icon="fa-group"
+               label="Sub 6"></div>
+        </div>
+
+        <div mw-menu-entry
+             icon="fa-user"
+             label="Start 2"
+             action="ctrl.test()">
+        </div>
+
+        <div mw-menu-divider
+             label="Sub 1"></div>
+
+        <div>
+
+          <div mw-menu-entry
+               icon="fa-user"
+               label="Start 3">
+            <div mw-menu-entry
+                 url="#/start"
+                 icon="fa-group"
+                 label="Sub 1"></div>
+            <div mw-menu-divider
+                 label="Sub 1"></div>
+            <div mw-menu-entry
+                 url="#/start2"
+                 icon="fa-group"
+                 label="Sub 2"></div>
+
+            <div mw-menu-divider
+                 label="Sub 2"></div>
+
+            <div ng-if="ctrl.isVisible">
+              <div>
+
+                <div>
+                  <div mw-menu-entry
+                       url="#/start3"
+                       icon="fa-group"
+                       label="Sub 3"></div>
+                </div>
+
+                <div mw-menu-entry
+                     url="#/start4"
+                     icon="fa-group"
+                     label="Sub 4"></div>
+
+              </div>
+
+              <div mw-menu-entry
+                   url="#/start5"
+                   icon="fa-group"
+                   label="Sub 5"></div>
+
+              <div mw-menu-divider
+                   label="Sub 3"></div>
+            </div>
+
+            <div mw-menu-entry
+                 url="#/start6"
+                 icon="fa-group"
+                 label="Sub 6"></div>
+          </div>
+
         </div>
 
       </div>
+
+      <div mw-menu-top-entries right="true">
+
+        <div mw-menu-entry
+             icon="fa-user"
+             class="abc">
+          <div mw-menu-entry
+               url="#/start"
+               icon="fa-group"
+               label="Sub 1"
+               active-urls="['#/start/*']"></div>
+          <div mw-menu-entry
+               url="#/start/details"
+               icon="fa-group"
+               label="Sub 2"></div>
+
+          <div>
+            <div mw-menu-entry
+                 url="#/start3"
+                 icon="fa-group"
+                 label="Sub 3"></div>
+
+            <div mw-menu-entry
+                 url="#/start4"
+                 icon="fa-group"
+                 label="Sub 4"></div>
+
+            <div mw-menu-entry
+                 url="#/start5"
+                 icon="fa-group"
+                 label="Sub 5"></div>
+          </div>
+
+          <div mw-menu-entry
+               url="#/start6"
+               icon="fa-group"
+               label="Sub 6"></div>
+        </div>
+
+      </div>
+
     </div>
 
-    <footer mw-row></footer>
+
+    <div rln-append-class-according-to-route class="module-page">
+      <div ng-view class="height-inherit" autoscroll="true"></div>
+      <div mw-view-change-loader></div>
+    </div>
+
+    <footer></footer>
 
   </div>
 
@@ -83,6 +230,8 @@
 <script src="components/sass-bootstrap/js/popover.js"></script>
 <script src="components/sass-bootstrap/js/modal.js"></script>
 <script src="components/sass-bootstrap/js/transition.js"></script>
+<script src="components/sass-bootstrap/js/collapse.js"></script>
+<script src="components/sass-bootstrap/js/dropdown.js"></script>
 
 <script src="components/underscore/underscore-min.js"></script>
 <script src="components/backbone/backbone.js"></script>

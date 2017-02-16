@@ -5,7 +5,7 @@
 
 angular.module('SampleApp.Start', [])
 
-  .config(function($routeProvider, $injector, i18nProvider, mwSidebarMenuProvider, ResponseHandlerProvider, ResponseToastHandlerProvider){
+  .config(function($routeProvider, $injector, i18nProvider, ResponseHandlerProvider, ResponseToastHandlerProvider){
 
     i18nProvider.addResource('modules/start/i18n');
 
@@ -41,32 +41,6 @@ angular.module('SampleApp.Start', [])
       onSuccess: true
     });
 
-    ResponseToastHandlerProvider.registerToast('*/start/i18n/*',{singular:'start.index.title', plural:'start.index.plur'},{
-      methods: ['GET'],
-      onSuccess: true
-    });
-
     i18nProvider.addResource('modules/start/i18n');
-
-    mwSidebarMenuProvider.getMenu().add({
-      id: 'entry_1',
-      label: 'JO',
-      subEntries: [
-        {
-          id: 'entry_deep_1',
-          url: '/start/entry',
-          label: 'JO Deep',
-          activeUrls: ['/start']
-        },
-        {
-          id: 'entry_deep_2',
-          url: '/start/entry_2',
-          label: 'JO Deep 2'
-        }
-      ]
-    });
-
-    mwSidebarMenuProvider.getMenu().addEntry('xyz','/xyz','xyz');
-    mwSidebarMenuProvider.setLogoUrl('/modules/main/assets/logo.png');
 
   });
