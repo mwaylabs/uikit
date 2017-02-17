@@ -627,6 +627,57 @@ describe('Collection Selectable', function () {
       mainCollection.selectable.reset();
       expect(mainCollection.selectable.getSelected().length).toBe(2);
     });
+
+    it('preselects models when calling preSelectCollection and updates the reference for models that are already added', function(){
+      var mainCollection = new mwUI.Backbone.Collection(),
+        preSelectCollection = new mwUI.Backbone.Collection();
+      mainCollection.add([
+        new TestModel({id: 1, name: 'Eins'}),
+        new TestModel({id: 2, name: 'Zwei'}),
+        new TestModel({id: 3, name: 'Drei'})
+      ]);
+      preSelectCollection.add([
+        {id: 1},
+        {id: 3}
+      ]);
+
+      mainCollection.selectable.preSelectCollection(preSelectCollection);
+
+      expect(mainCollection.selectable.getSelected().first().cid).toBe(mainCollection.first().cid);
+    });
+
+    it('preselects models when calling preSelectCollection and updates the reference for models that are added afterwards', function(){
+      var mainCollection = new mwUI.Backbone.Collection(),
+        preSelectCollection = new mwUI.Backbone.Collection();
+      preSelectCollection.add([
+        {id: 1},
+        {id: 2}
+      ]);
+      mainCollection.selectable.preSelectCollection(preSelectCollection);
+
+      mainCollection.add([
+        new TestModel({id: 1, name: 'Eins'}),
+        new TestModel({id: 2, name: 'Zwei'})
+      ]);
+
+      expect(mainCollection.selectable.getSelected().first().cid).toBe(mainCollection.first().cid);
+    });
+
+    it('preselects models when calling preSelectCollection and removes them from selection when they are cleared', function(){
+      var mainCollection = new mwUI.Backbone.Collection(),
+        preSelectCollection = new mwUI.Backbone.Collection();
+      preSelectCollection.add([
+        {id: 1}
+      ]);
+      mainCollection.selectable.preSelectCollection(preSelectCollection);
+      mainCollection.add([
+        new TestModel({id: 1, name: 'Eins'})
+      ]);
+
+      mainCollection.first().clear();
+
+      expect(mainCollection.selectable.getSelected().length).toBe(0);
+    });
   });
 
   describe('testing that selectable of model is working', function () {

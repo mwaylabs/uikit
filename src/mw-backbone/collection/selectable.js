@@ -6,6 +6,7 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
     _addPreSelectedToCollection = _options.addPreSelectedToCollection || false,
     _unSelectOnRemove = _options.unSelectOnRemove,
     _preSelected = options.preSelected,
+    _hasPreSelectedItems = !!options.preSelected,
     _selected = new Backbone.Collection();
 
   var _preselect = function () {
@@ -54,14 +55,14 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
         model.selectable.unSelect(options);
       }
 
-      _bindModelOnSelectListener.call(this,model);
-      _bindModelOnUnSelectListener.call(this,model);
+      _bindModelOnSelectListener.call(this, model);
+      _bindModelOnUnSelectListener.call(this, model);
     }
   };
 
-  var _updatePreSelectedModel = function(preSelectedModel, model){
-    if(_preSelected){
-      if(this.isSingleSelection()){
+  var _updatePreSelectedModel = function (preSelectedModel, model) {
+    if (_hasPreSelectedItems) {
+      if (this.isSingleSelection()) {
         _preSelected = model;
       } else {
         _preSelected.remove(preSelectedModel, {silent: true});
@@ -70,13 +71,13 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
     }
   };
 
-  var _updateSelectedModel = function(model){
+  var _updateSelectedModel = function (model) {
     var selectedModel = this.getSelected().get(model);
-    if(selectedModel){
-      _selected.remove(selectedModel, {silent: true});
-      _selected.add(model, {silent: true});
-      _updatePreSelectedModel.call(this,selectedModel, model);
-      _setModelSelectableOptions.call(this,model,{silent: true});
+    if (selectedModel) {
+      this.unSelect(selectedModel, {silent: true});
+      this.select(model, {silent: true});
+      _updatePreSelectedModel.call(this, selectedModel, model);
+      _setModelSelectableOptions.call(this, selectedModel, {silent: true});
     }
   };
 
@@ -116,16 +117,18 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
         this.unSelectAll();
       }
 
-      model.on('change', function(model, opts){
+      model.on('change', function (model, opts) {
         opts = opts || {};
-        if(opts.unset || !model.id || model.id.length<1){
+        if (opts.unset || !model.id || model.id.length < 1) {
           this.unSelect(model);
         }
       }, this);
 
-      _selected.add(model);
+      _selected.add(model, options);
       _setModelSelectableOptions.call(this, model, options);
-      this.trigger('change change:add', model, this);
+      if (!options.silent) {
+        this.trigger('change change:add', model, this);
+      }
     } else {
       throw new Error('The first argument has to be a Backbone Model');
     }
@@ -139,16 +142,18 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
 
   this.unSelect = function (model, options) {
     options = options || {};
-    _selected.remove(model);
+    _selected.remove(model, options);
     _setModelSelectableOptions.call(this, model, options);
-    this.trigger('change change:remove', model, this);
+    if (!options.silent) {
+      this.trigger('change change:remove', model, this);
+    }
   };
 
   this.unSelectAll = function () {
     var selection = this.getSelected().clone();
     selection.each(function (model) {
       this.unSelect(model);
-    },this);
+    }, this);
   };
 
   this.toggleSelectAll = function () {
@@ -181,8 +186,12 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   this.preSelectModel = function (model) {
     if (model.id) {
 
+      _hasPreSelectedItems = true;
+
       if (!_collection.get(model) && _addPreSelectedToCollection) {
         _collection.add(model);
+      } else if (_collection.get(model)) {
+        model = _collection.get(model);
       }
 
       this.select(model, {force: true, silent: true});
@@ -228,13 +237,13 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
       if (_unSelectOnRemove) {
         this.unSelectAll();
       } else {
-        this.getSelected().each(function(model){
-          _setModelSelectableOptions.call(this,model);
+        this.getSelected().each(function (model) {
+          _setModelSelectableOptions.call(this, model);
         }, this);
       }
     }, this);
 
-    if (_preSelected) {
+    if (_hasPreSelectedItems) {
       _preselect.call(this);
     }
   };
