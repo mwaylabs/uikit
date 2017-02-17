@@ -367,7 +367,7 @@ describe('Collection Selectable', function () {
 
     it('should return a model which is an instance of the the main collections model type when calling getSelected when single selection mode is on', function () {
       var MainCollection = mwUI.Backbone.Collection.extend({
-        selectableOptions: function(){
+        selectableOptions: function () {
           return {
             isSingleSelection: true
           };
@@ -382,7 +382,7 @@ describe('Collection Selectable', function () {
 
     it('should remove the model from the selection when model is cleared', function () {
       var MainCollection = mwUI.Backbone.Collection.extend({
-        selectableOptions: function(){
+        selectableOptions: function () {
           return {
             isSingleSelection: true
           };
@@ -419,7 +419,7 @@ describe('Collection Selectable', function () {
 
     it('should remove the model from the selection when the id of the model is set to null or emptystring', function () {
       var MainCollection = mwUI.Backbone.Collection.extend({
-        selectableOptions: function(){
+        selectableOptions: function () {
           return {
             isSingleSelection: true
           };
@@ -443,7 +443,7 @@ describe('Collection Selectable', function () {
 
     it('should always only have one selected model when in single selection mode and model is selected through the collection', function () {
       var RadioCollection = mwUI.Backbone.Collection.extend({
-        selectableOptions: function(){
+        selectableOptions: function () {
           return {
             isSingleSelection: true
           };
@@ -464,7 +464,7 @@ describe('Collection Selectable', function () {
 
     it('should always only have one selected model when in single selection mode and model is selected through the model', function () {
       var RadioCollection = mwUI.Backbone.Collection.extend({
-        selectableOptions: function(){
+        selectableOptions: function () {
           return {
             isSingleSelection: true
           };
@@ -602,7 +602,7 @@ describe('Collection Selectable', function () {
     it('should reset all models to the preselected collection', function () {
       var preselect = new mwUI.Backbone.Collection([new TestModel({id: 1}), new TestModel({id: 2})]);
       var MainCollection = mwUI.Backbone.Collection.extend({
-        selectableOptions: function(){
+        selectableOptions: function () {
           return {
             preSelected: preselect
           };

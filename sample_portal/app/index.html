@@ -31,12 +31,13 @@
 
 <!--[if lt IE 10]>
 <script>
-  function hideChromeFrame(){
-    document.getElementById('chromeframe').style.display='none';
+  function hideChromeFrame() {
+    document.getElementById('chromeframe').style.display = 'none';
   }
 </script>
 
-<p class="chromeframe alert alert-danger col-xs-12 text-center" style="z-index:9999; position: fixed" id="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser
+<p class="chromeframe alert alert-danger col-xs-12 text-center" style="z-index:9999; position: fixed" id="chromeframe">
+  You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser
   today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better
   experience this site.
   <span class="pull-right clickable" onclick="hideChromeFrame()">Hide</span>
@@ -46,26 +47,48 @@
 
 <div ng-controller="MainController as ctrl">
 
-  <div class="app" mw-row-layout>
+  <div class="app">
 
-    <header mw-row>
+    <header>
       <div mw-toasts class="notifications"></div>
     </header>
 
-    <div mw-row>
-      <div mw-column-layout>
+    <div mw-menu-top-bar>
 
-        <div mw-sidebar-menu mw-column></div>
+      <img src="https://live.relution.io/relution/portal/images/logo-header.png">
 
-        <div rln-append-class-according-to-route mw-column class="module-page">
-          <div ng-view class="height-inherit" autoscroll="true"></div>
-          <div mw-view-change-loader></div>
+      <div mw-menu-top-entries>
+        <div mw-menu-entry
+             label="Start">
+
+          <div mw-menu-entry
+               url="#/start"
+               label="Index">
+          </div>
+
+          <div mw-menu-entry
+               url="#/start/details"
+               label="Details">
+          </div>
+
+        </div>
+
+        <div mw-menu-entry
+             url="#/start/new"
+             label="New">
         </div>
 
       </div>
+
     </div>
 
-    <footer mw-row></footer>
+
+    <div rln-append-class-according-to-route class="module-page">
+      <div ng-view class="height-inherit" autoscroll="true"></div>
+      <div mw-view-change-loader></div>
+    </div>
+
+    <footer></footer>
 
   </div>
 
@@ -83,11 +106,13 @@
 <script src="components/sass-bootstrap/js/popover.js"></script>
 <script src="components/sass-bootstrap/js/modal.js"></script>
 <script src="components/sass-bootstrap/js/transition.js"></script>
+<script src="components/sass-bootstrap/js/collapse.js"></script>
+<script src="components/sass-bootstrap/js/dropdown.js"></script>
 
 <script src="components/underscore/underscore-min.js"></script>
 <script src="components/backbone/backbone.js"></script>
 
-<script src="components/mw-ui/uikit.js"></script>
+<script src="components/mw-ui/mw-uikit.js"></script>
 <!-- endbuild -->
 
 <!-- build:js modules/sample-app.min.js -->

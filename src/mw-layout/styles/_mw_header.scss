@@ -1,4 +1,4 @@
-$headerHeight: 61px !default;
+$headerHeight: 56px !default;
 
 div[mw-header] {
 
@@ -7,10 +7,12 @@ div[mw-header] {
 .mw-header {
   position: relative;
   margin-bottom: 25px;
+  height: $headerHeight - 5;
 
   .fixed-content {
+    position: fixed;
     height: $headerHeight;
-    //position: fixed;
+    padding: 0 1.5em;
     width: 100%;
     left: 0;
     z-index: 100;

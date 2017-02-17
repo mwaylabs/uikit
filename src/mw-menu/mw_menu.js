@@ -11,9 +11,10 @@ window.mwUI.Menu = {};
 // @include ./collections/mw_menu_sub_entries.js
 // @include ./collections/mw_menu.js
 
-// @include ./services/mw_sidebar_menu.js
-
-// @include ./directives/mw_menu.js
+// @include ./directives/mw_menu_top_bar.js
+// @include ./directives/mw_menu_top_entries.js
+// @include ./directives/mw_menu_top_drop_down_item.js
+// @include ./directives/mw_menu_top_item.js
 // @include ./directives/mw_menu_entry.js
-// @include ./directives/mw_menu_sub_entry.js
-// @include ./directives/mw_sidebar_menu.js
+// @include ./directives/mw_menu_divider.js
+// @include ./directives/mw_menu_toggle_active_class.js

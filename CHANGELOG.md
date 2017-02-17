@@ -1,4 +1,30 @@
 # v1.0.6
+## Features
+### Menu Module
+Added directives to create a top menu bar. It provides an easy markup to create the [Bootstrap navbar](http://getbootstrap.com/components/#navbar)
+```html
+<div mw-menu-top-bar>
+  <img src="PATH_TO_LOGO_IMG"> <!-- header image -->
+  <div mw-menu-top-entries>
+    <div mw-menu-entry <!-- dropdown entry with sub entries -->
+         label="Start">
+      <div mw-menu-entry <!-- dropdown sub entry -->
+           url="#/start"
+           label="Index">
+      </div>
+      <div mw-menu-entry
+           url="#/start/details"
+           label="Details">
+      </div>
+    </div>
+    <div mw-menu-entry <!-- normal entry without sub entries-->
+         url="#/start/new"
+         label="New">
+    </div>
+  </div>
+</div>
+```
+
 ## Bug Fixes
 ### Form Module
 Fixed missing leave confirmation for form. The leave confirmation should be displayed when the user made changes in a form
@@ -8,6 +34,14 @@ on form elements
 ```html
 <form mw-form-leave-confirmation></form>
 ```
+
+### Backbone Module 
+- Fixed collection selectable performance issue. Internal change listeners on the selection state of the model where registered multiple times.
+- Fixed collection selectable wrong reference issue when calling preSelectCollection. The reference was not updated to the model in the actual collection.
+
+### Input Module
+- Fixed mw-select-box directive to also work in Firefox. Previously it was not possible to select an item in Firefox
+ 
 
 # v1.0.5
 ## Features
