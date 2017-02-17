@@ -1,0 +1,62 @@
+.mw-input-wrapper{
+  &.input-inline {
+    width: inherit;
+    display: inline-block;
+  }
+
+  label {
+    font-weight: normal;
+  }
+
+  .input-holder{
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    > * {
+      margin-top: 5px 0;
+    }
+  }
+
+  .mw-checkbox,
+  .mw-radio{
+    left: 0;
+  }
+
+  input,
+  textarea,
+  select,
+  .mw-select{
+    width: 100%;
+  }
+
+  .mw-error-messages{
+    ul{
+      padding: 0;
+    }
+    .error-message{
+      @extend .help-block;
+    }
+  }
+
+  &.is-required {
+    label {
+      font-weight: bold;
+    }
+  }
+
+  &.is-required-error {
+    @include required-input-highlighter(#bbb);
+  }
+
+  &.has-error {
+    @include required-input-highlighter($brand-danger);
+
+    .mw-error-messages{
+      .error-message{
+        color:$state-danger-text;
+      }
+    }
+  }
+}
