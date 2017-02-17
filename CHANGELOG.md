@@ -6,20 +6,20 @@ Added directives to create a top menu bar. It provides an easy markup to create 
 <div mw-menu-top-bar>
   <img src="PATH_TO_LOGO_IMG"> <!-- header image -->
   <div mw-menu-top-entries>
-    <div mw-menu-entry <!-- dropdown entry with sub entries -->
-         label="Start">
-      <div mw-menu-entry <!-- dropdown sub entry -->
+    <div mw-menu-entry 
+         label="Start"> <!-- dropdown entry with sub entries -->
+      <div mw-menu-entry 
            url="#/start"
-           label="Index">
+           label="Index"> <!-- dropdown sub entry -->
       </div>
       <div mw-menu-entry
            url="#/start/details"
            label="Details">
       </div>
     </div>
-    <div mw-menu-entry <!-- normal entry without sub entries-->
+    <div mw-menu-entry 
          url="#/start/new"
-         label="New">
+         label="New"> <!-- normal entry without sub entries-->
     </div>
   </div>
 </div>
