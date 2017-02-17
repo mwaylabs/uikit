@@ -798,4 +798,45 @@ describe('Collection Selectable', function () {
     });
   });
 
+  describe('event registration', function(){
+    it('adds a change:select listener on every model.selectable in the selectable collection', function(){
+      expect(collection.first().selectable._events['change:select']).not.toBeUndefined();
+      expect(collection.first().selectable._events['change:select'].length).toBe(1);
+    });
+
+    it('does not add a new change:select listener on a model.selectable when model is selected', function(){
+      collection.first().selectable.select();
+
+      expect(collection.first().selectable._events['change:select'].length).toBe(1);
+    });
+
+    it('adds a change:unselect listener on every model.selectable in the selectable collection', function(){
+      expect(collection.first().selectable._events['change:unselect']).not.toBeUndefined();
+      expect(collection.first().selectable._events['change:unselect'].length).toBe(1);
+    });
+
+    it('does not add a new change:unselect listener on a model.selectable when model is selected', function(){
+      collection.first().selectable.select();
+
+      collection.first().selectable.unSelect();
+
+      expect(collection.first().selectable._events['change:unselect'].length).toBe(1);
+    });
+
+    it('adds a change listener on every model in the selectable collection when model is selected', function(){
+      collection.first().selectable.select();
+
+      expect(collection.first()._events.change).not.toBeUndefined();
+      expect(collection.first()._events.change.length).toBe(1);
+    });
+
+    it('does not add a new change listener on a model when model is selected again', function(){
+      collection.first().selectable.select();
+      collection.first().selectable.unSelect();
+
+      collection.first().selectable.select();
+
+      expect(collection.first()._events.change.length).toBe(1);
+    });
+  });
 });
