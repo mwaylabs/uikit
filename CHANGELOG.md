@@ -1,3 +1,14 @@
+# v1.0.6
+## Bug Fixes
+### Form Module
+Fixed missing leave confirmation for form. The leave confirmation should be displayed when the user made changes in a form
+and tries to leave the form (e.g. by navigting to a different page) without submitting the changes.
+The form leave confirmation is available as a directive called mw-form-leave-confirmation that can be applied
+on form elements
+```html
+<form mw-form-leave-confirmation></form>
+```
+
 # v1.0.5
 ## Features
 ### i18n Module

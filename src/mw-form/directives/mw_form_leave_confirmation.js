@@ -1,19 +1,27 @@
 angular.module('mwUI.Form')
 
-  .directive('mwFormLeaveConfirmation', function ($window, $document, $location, i18n, Modal, $compile) {
+  .directive('mwFormLeaveConfirmation', function ($compile) {
     return {
       require: '^form',
       link: function (scope, elm, attr, formCtrl) {
 
         var confirmation = $compile('' +
-            '<div mw-leave-confirmation="form.$dirty" ' +
-            'text="{{\'Form.mwFormLeaveConfirmation.isDirty\' | i18n}}">' +
+            '<div mw-leave-confirmation="showConfirmation()" ' +
+            'text="{{\'Form.leaveConfirmation\' | i18n}}">' +
             '</div>')(scope),
           isActive = true;
 
         scope.showConfirmation = function () {
           return formCtrl.$dirty && isActive;
         };
+
+        elm.on('submit', function () {
+          isActive = false;
+        });
+
+        elm.on('input', function () {
+          isActive = true;
+        });
 
         elm.append(confirmation);
 

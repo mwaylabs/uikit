@@ -1,4 +1,7 @@
 {
+  "Form": {
+    "leaveConfirmation": "Your changes haven't been saved yet. If you leave this page all changes will be discarded!"
+  },
   "mwErrorMessages": {
     "required": "is required",
     "hasToBeValidEmail": "has to be a valid e-mail",

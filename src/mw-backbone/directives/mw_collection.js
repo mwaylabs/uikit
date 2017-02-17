@@ -2,17 +2,24 @@ angular.module('mwUI.Backbone')
 
   .directive('mwCollection', function () {
     return {
-      require: '?ngModel',
-      link: function (scope, el, attrs, ngModel) {
-        var collection;
+      require: ['?ngModel', '?^form'],
+      link: function (scope, el, attrs, ctrls) {
+        var collection, ngModelCtrl, formCtrl;
+
+        if(ctrls.length>0){
+          ngModelCtrl = ctrls[0];
+        }
+        if(ctrls.length>1){
+          formCtrl = ctrls[1];
+        }
 
         var updateNgModel = function () {
           if(collection.length>0){
-            ngModel.$setViewValue(collection);
-            ngModel.$render();
+            ngModelCtrl.$setViewValue(collection);
+            ngModelCtrl.$render();
           } else {
-            ngModel.$setViewValue(null);
-            ngModel.$render();
+            ngModelCtrl.$setViewValue(null);
+            ngModelCtrl.$render();
           }
         };
 
@@ -23,10 +30,14 @@ angular.module('mwUI.Backbone')
           if (collection) {
             updateNgModel();
             collection.on('add remove reset', updateNgModel);
+            ngModelCtrl.$setPristine();
+            if(formCtrl){
+              formCtrl.$setPristine(ngModelCtrl);
+            }
           }
         };
 
-        if (ngModel) {
+        if (ngModelCtrl) {
           if (scope.mwModel) {
             init();
           } else {

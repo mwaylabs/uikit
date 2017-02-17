@@ -1,4 +1,7 @@
 {
+  "Form": {
+    "leaveConfirmation": "Ihre Änderungen wurden noch nicht gespeichert. Wenn Sie diese Seite verlassen gehen diese verloren!"
+  },
   "mwErrorMessages": {
     "required": "ist ein Pflichtfeld",
     "hasToBeValidEmail": "muss eine valide E-Mail Adresse sein",
