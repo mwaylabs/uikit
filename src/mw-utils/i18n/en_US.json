@@ -1,11 +1,11 @@
 {
   "Utils": {
     "ok": "Ok",
-    "cancel": "Cancel"
-  },
-  "mwLeaveConfirmationModal": {
-    "title": "Do you really want to leave the current page?",
-    "continue": "Continue",
-    "stay": "Stay on this page"
+    "cancel": "Cancel",
+    "mwLeaveConfirmationModal": {
+      "title": "Do you really want to leave the current page?",
+      "continue": "Continue",
+      "stay": "Stay on this page"
+    }
   }
 }
