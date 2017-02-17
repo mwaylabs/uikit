@@ -2,9 +2,16 @@ angular.module('mwUI.Backbone')
 
   .directive('mwModel', function () {
     return {
-      require: '?ngModel',
-      link: function (scope, el, attrs, ngModelCtrl) {
-        var model, modelAttr;
+      require: ['?ngModel', '?^form'],
+      link: function (scope, el, attrs, ctrls) {
+        var model, modelAttr, ngModelCtrl, formCtrl;
+
+        if(ctrls.length>0){
+          ngModelCtrl = ctrls[0];
+        }
+        if(ctrls.length>1){
+          formCtrl = ctrls[1];
+        }
 
         var updateNgModel = function () {
           var val = model.get(modelAttr);
@@ -57,6 +64,10 @@ angular.module('mwUI.Backbone')
               throw new Error('The ng-model and the backbone model can not have different values during initialization!');
             } else if (model.get(modelAttr)) {
               updateNgModel();
+              ngModelCtrl.$setPristine();
+              if(formCtrl){
+                formCtrl.$setPristine(ngModelCtrl);
+              }
             } else if (ngModelCtrl.$modelValue) {
               updateBackboneModel();
             }

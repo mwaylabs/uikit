@@ -552,16 +552,12 @@ describe('Collection Selectable', function () {
 
     it('should always have the correct reference', function () {
       var modelA = new mwUI.Backbone.Model({id: 1});
-      var modelB = new mwUI.Backbone.Model({id: 1});
       var mainCollection = new mwUI.Backbone.Collection();
 
       mainCollection.add(modelA);
       modelA.selectable.select();
-      mainCollection.reset();
-      mainCollection.add(modelB);
-      expect(modelB.selectable.isSelected()).toBeTruthy();
-      mainCollection.selectable.unSelectAll();
-      expect(modelB.selectable.isSelected()).toBeFalsy();
+
+      expect(mainCollection.selectable.getSelected().first().cid).toBe(mainCollection.first().cid);
     });
 
     it('should select all models which are in the preselected collection, add them to collection when addPreSelectedToCollection is set to true and set attribute in model selectable isInCollection to true', function () {
@@ -626,6 +622,57 @@ describe('Collection Selectable', function () {
 
       mainCollection.selectable.reset();
       expect(mainCollection.selectable.getSelected().length).toBe(2);
+    });
+
+    it('preselects models when calling preSelectCollection and updates the reference for models that are already added', function(){
+      var mainCollection = new mwUI.Backbone.Collection(),
+        preSelectCollection = new mwUI.Backbone.Collection();
+      mainCollection.add([
+        new TestModel({id: 1, name: 'Eins'}),
+        new TestModel({id: 2, name: 'Zwei'}),
+        new TestModel({id: 3, name: 'Drei'})
+      ]);
+      preSelectCollection.add([
+        {id: 1},
+        {id: 3}
+      ]);
+
+      mainCollection.selectable.preSelectCollection(preSelectCollection);
+
+      expect(mainCollection.selectable.getSelected().first().cid).toBe(mainCollection.first().cid);
+    });
+
+    it('preselects models when calling preSelectCollection and updates the reference for models that are added afterwards', function(){
+      var mainCollection = new mwUI.Backbone.Collection(),
+        preSelectCollection = new mwUI.Backbone.Collection();
+      preSelectCollection.add([
+        {id: 1},
+        {id: 2}
+      ]);
+      mainCollection.selectable.preSelectCollection(preSelectCollection);
+
+      mainCollection.add([
+        new TestModel({id: 1, name: 'Eins'}),
+        new TestModel({id: 2, name: 'Zwei'})
+      ]);
+
+      expect(mainCollection.selectable.getSelected().first().cid).toBe(mainCollection.first().cid);
+    });
+
+    it('preselects models when calling preSelectCollection and removes them from selection when they are cleared', function(){
+      var mainCollection = new mwUI.Backbone.Collection(),
+        preSelectCollection = new mwUI.Backbone.Collection();
+      preSelectCollection.add([
+        {id: 1}
+      ]);
+      mainCollection.selectable.preSelectCollection(preSelectCollection);
+      mainCollection.add([
+        new TestModel({id: 1, name: 'Eins'})
+      ]);
+
+      mainCollection.first().clear();
+
+      expect(mainCollection.selectable.getSelected().length).toBe(0);
     });
   });
 

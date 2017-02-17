@@ -1,22 +1,22 @@
 .mw-filterable-search {
 
-  .input-holder{
+  .input-holder {
     position: relative;
     border-bottom: 1px solid #aaa;
     margin: 0 15px;
     width: inherit;
 
-    .input-group-addon{
+    .input-group-addon {
       background: none;
       border: none;
       padding: 6px 8px;
 
-      .reset-icon{
+      .reset-icon {
         display: none;
         margin: 0 -4px;
       }
 
-      .search-icon{
+      .search-icon {
         display: block;
       }
     }
@@ -32,19 +32,19 @@
     }
   }
 
-  &:not(.is-focused){
-    .search-icon i{
+  &:not(.is-focused) {
+    .search-icon i {
       color: $brand-primary;
     }
   }
 
-  &.has-value{
-    .input-group-addon{
-      .reset-icon{
+  &.has-value {
+    .input-group-addon {
+      .reset-icon {
         display: block;
       }
 
-      .search-icon{
+      .search-icon {
         display: none;
 
         &.searching i {
@@ -77,7 +77,6 @@
   -webkit-animation: searching 1.3s ease infinite; /* Safari and Chrome */
 }
 
-
 .sidebar {
 
   width: inherit;
@@ -91,7 +90,7 @@
     padding-top: 35px;
     background: white;
     z-index: 1;
-    width:inherit;
+    width: inherit;
     overflow: auto;
     margin-left: -3px;
     padding-left: 3px;
@@ -102,18 +101,18 @@
       content: "";
       position: absolute;
       right: 16px;
-      width:1px;
+      width: 1px;
       background: #ccc;
-      background:linear-gradient(color-stops(#efefef 0%,#cccccc 25%,#cccccc 75%,#ffffff 100%));
+      background: linear-gradient(color-stops(#efefef 0%, #cccccc 25%, #cccccc 75%, #ffffff 100%));
       top: 35px;
     }
 
-    hr{
+    hr {
       margin: 15px 0;
     }
 
-    *[mw-sidebar-actions] > *[ng-transclude] > *:not(:first-child) {
-        margin-top: 5px;
+    .mw-sidebar-actions > *[ng-transclude] > *:not(:first-child) {
+      margin-top: 5px;
     }
 
     @import "mw-sidebar-filters";
@@ -133,7 +132,7 @@
     &:before {
       border-right: 0px;
     }
-    .content-container{
+    .content-container {
       padding-right: 0;
 
       &:after {
@@ -152,5 +151,36 @@
 
   .row {
     margin-top: 10px;
+  }
+}
+
+.mw-sidebar-actions {
+  .section-title {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    text-transform: uppercase;
+    color: #555555;
+    margin: 8px 0px;
+
+    &:before{
+      content: "";
+      flex-grow: 0.02;
+      background: #eeeeee;
+      height: 1px;
+      font-size: 0px;
+      line-height: 0px;
+      margin: 0px 8px;
+    }
+
+    &:after{
+      content: "";
+      flex-grow: 1;
+      background: #eeeeee;
+      height: 1px;
+      font-size: 0px;
+      line-height: 0px;
+      margin: 0px 8px;
+    }
   }
 }

@@ -19,26 +19,40 @@ angular.module('mwUI.Inputs')
 
         scope.viewModel = {};
 
-        var setBackboneModel = function(model){
-          if(scope.mwModelAttr){
+        var setBackboneModel = function (model) {
+          if (scope.mwModelAttr) {
             scope.mwModel.set(scope.mwModelAttr, model.get(scope.mwOptionsKey));
           } else {
             scope.mwModel.set(model.toJSON());
           }
         };
 
-        var unSetBackboneModel = function(){
-          if(scope.mwModelAttr){
+        var unSetBackboneModel = function () {
+          if (scope.mwModelAttr) {
             scope.mwModel.unset(scope.mwModelAttr);
           } else {
             scope.mwModel.clear();
           }
         };
 
-        var setSelectedVal = function(){
-          if(scope.mwModel.id){
+        var setSelectedVal = function () {
+
+          if (scope.mwModel.id) {
             scope.viewModel.selected = scope.mwModel.id.toString();
           }
+        };
+
+        var checkIfOptionModelHasId = function () {
+          scope.mwOptionsCollection.each(function (model) {
+            if (!model.id) {
+              throw new Error('[mwSelectBox] Each model of the options collection must have an id. Make sure you set the correct model and modelId attribute!');
+            }
+          });
+        };
+
+        var unset = function () {
+          unSetBackboneModel();
+          scope.viewModel.selected = null;
         };
 
         scope.getLabel = function (model) {
@@ -53,14 +67,14 @@ angular.module('mwUI.Inputs')
           }
         };
 
-        scope.hasPlaceholder = function(){
+        scope.hasPlaceholder = function () {
           return scope.mwPlaceholder || scope.mwRequired;
         };
 
-        scope.getPlaceholder = function(){
-          if(scope.mwPlaceholder){
+        scope.getPlaceholder = function () {
+          if (scope.mwPlaceholder) {
             return scope.mwPlaceholder;
-          } else if(scope.mwRequired){
+          } else if (scope.mwRequired) {
             return i18n.get('mwSelectBox.pleaseSelect');
           }
         };
@@ -69,42 +83,57 @@ angular.module('mwUI.Inputs')
           return model.selectable.isDisabled();
         };
 
-        scope.getModelAttribute = function(){
+        scope.getModelAttribute = function () {
           return scope.mwModelAttr || scope.mwModel.idAttribute;
         };
 
         scope.isChecked = function (model) {
-          if(scope.mwModelAttr){
+          if (scope.mwModelAttr && scope.mwModel instanceof Backbone.Model) {
             return model.get(scope.mwOptionsKey) === scope.mwModel.get(scope.mwModelAttr);
           } else {
             return model.id === scope.mwModel.id;
           }
         };
 
-        scope.select = function(id){
-          if(id){
+        scope.select = function (id) {
+          if (id) {
             scope.selectOption(scope.mwOptionsCollection.get(id));
           } else {
-            unSetBackboneModel();
+            unset();
           }
         };
 
         scope.selectOption = function (model) {
           if (!scope.isChecked(model)) {
             setBackboneModel(model);
-          } else {
-            unSetBackboneModel();
           }
         };
 
-        if(scope.mwModel){
-          scope.mwModel.on('change:'+scope.mwModel.idAttribute, setSelectedVal);
+        if (scope.mwModel) {
+          if(!(scope.mwModel instanceof Backbone.Model)){
+            throw new Error('[mwSelectBox] The attribute mw-model is from type '+typeof scope.mwModel+' but has to be a Backbone Model!');
+          }
+
+          scope.mwModel.on('change:' + scope.mwModel.idAttribute, setSelectedVal);
           setSelectedVal();
+
+          scope.mwModel.on('change', function (model) {
+            if ((scope.mwModelAttr && !model.get(scope.mwModelAttr)) || (!scope.mwModelAttr && !model.id)) {
+              unset();
+            }
+          });
         }
 
-        if(scope.mwModelAttr && !scope.mwOptionsKey){
-          throw new Error('[mwRadioGroup] When using mwModelAttr the attribute mwOptionsKey is required!');
+        if (scope.mwModelAttr && !scope.mwOptionsKey) {
+          throw new Error('[mwSelectBox] When using mwModelAttr the attribute mwOptionsKey is required!');
         }
+
+        if (!scope.mwOptionsCollection || !(scope.mwOptionsCollection instanceof Backbone.Collection)) {
+          throw new Error('[mwSelectBox] An options collection is required. Make sure you set the attribute mw-options-collection and that it is a backbone collection!');
+        }
+
+        checkIfOptionModelHasId();
+        scope.mwOptionsCollection.on('add', checkIfOptionModelHasId);
       }
     };
   });
