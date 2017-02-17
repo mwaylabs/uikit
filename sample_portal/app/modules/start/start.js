@@ -5,7 +5,7 @@
 
 angular.module('SampleApp.Start', [])
 
-  .config(function($routeProvider, $injector, i18nProvider, ResponseHandlerProvider, ResponseToastHandlerProvider){
+  .config(function($routeProvider, $injector, i18nProvider, ResponseHandlerProvider){
 
     i18nProvider.addResource('modules/start/i18n');
 
