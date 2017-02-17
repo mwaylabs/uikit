@@ -552,16 +552,12 @@ describe('Collection Selectable', function () {
 
     it('should always have the correct reference', function () {
       var modelA = new mwUI.Backbone.Model({id: 1});
-      var modelB = new mwUI.Backbone.Model({id: 1});
       var mainCollection = new mwUI.Backbone.Collection();
 
       mainCollection.add(modelA);
       modelA.selectable.select();
-      mainCollection.reset();
-      mainCollection.add(modelB);
-      expect(modelB.selectable.isSelected()).toBeTruthy();
-      mainCollection.selectable.unSelectAll();
-      expect(modelB.selectable.isSelected()).toBeFalsy();
+
+      expect(mainCollection.selectable.getSelected().first().cid).toBe(mainCollection.first().cid);
     });
 
     it('should select all models which are in the preselected collection, add them to collection when addPreSelectedToCollection is set to true and set attribute in model selectable isInCollection to true', function () {
