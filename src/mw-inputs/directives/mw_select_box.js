@@ -121,7 +121,7 @@ angular.module('mwUI.Inputs')
             if ((scope.mwModelAttr && !model.get(scope.mwModelAttr)) || (!scope.mwModelAttr && !model.id)) {
               unset();
             }
-          })
+          });
         }
 
         if (scope.mwModelAttr && !scope.mwOptionsKey) {
