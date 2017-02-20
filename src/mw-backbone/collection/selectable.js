@@ -7,7 +7,10 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
     _unSelectOnRemove = _options.unSelectOnRemove,
     _preSelected = options.preSelected,
     _hasPreSelectedItems = !!options.preSelected,
-    _selected = new Backbone.Collection();
+    _selected = new (mwUI.Backbone.Collection.extend({
+      selectable: false,
+      filterable: false
+    }))();
 
   var _preselect = function () {
     if (_preSelected instanceof Backbone.Model) {
@@ -41,12 +44,12 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   };
 
   var _bindModelOnSelectListener = function (model) {
-    model.selectable.off('change:select', _selectWhenModelIsSelected);
+    model.selectable.off('change:select', _selectWhenModelIsSelected, this);
     model.selectable.on('change:select', _selectWhenModelIsSelected, this);
   };
 
   var _bindModelOnUnSelectListener = function (model) {
-    model.selectable.off('change:unselect', _unSelectWhenModelIsUnSelected);
+    model.selectable.off('change:unselect', _unSelectWhenModelIsUnSelected, this);
     model.selectable.on('change:unselect', _unSelectWhenModelIsUnSelected, this);
   };
 
@@ -130,7 +133,10 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
         this.unSelectAll();
       }
 
-      model.off('change', _unSelectWhenModelIsUnset);
+      if (_collection.get(model)) {
+        model = _collection.get(model);
+      }
+
       model.on('change', _unSelectWhenModelIsUnset, this);
 
       _selected.add(model, options);
@@ -151,6 +157,7 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
 
   this.unSelect = function (model, options) {
     options = options || {};
+    model.off('change', _unSelectWhenModelIsUnset, this);
     _selected.remove(model, options);
     _setModelSelectableOptions.call(this, model, options);
     if (!options.silent) {
@@ -159,8 +166,7 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   };
 
   this.unSelectAll = function () {
-    var selection = this.getSelected().clone();
-    selection.each(function (model) {
+    this.getSelected().secureEach(function(model){
       this.unSelect(model);
     }, this);
   };
