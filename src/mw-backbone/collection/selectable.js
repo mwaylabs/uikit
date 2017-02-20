@@ -162,8 +162,7 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   };
 
   this.unSelectAll = function () {
-    var selection = this.getSelected().clone();
-    selection.each(function (model) {
+    this.getSelected().secureEach(function(model){
       this.unSelect(model);
     }, this);
   };
