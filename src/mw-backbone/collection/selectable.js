@@ -7,7 +7,10 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
     _unSelectOnRemove = _options.unSelectOnRemove,
     _preSelected = options.preSelected,
     _hasPreSelectedItems = !!options.preSelected,
-    _selected = new Backbone.Collection();
+    _selected = new (mwUI.Backbone.Collection.extend({
+      selectable: false,
+      filterable: false
+    }))();
 
   var _preselect = function () {
     if (_preSelected instanceof Backbone.Model) {
