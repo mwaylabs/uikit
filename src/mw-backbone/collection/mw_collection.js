@@ -1,16 +1,25 @@
 mwUI.Backbone.Collection = Backbone.Collection.extend({
   selectable: true,
   filterable: true,
-  hostName: function(){
+  hostName: function () {
     return mwUI.Backbone.hostName;
   },
-  basePath: function(){
+  basePath: function () {
     return mwUI.Backbone.basePath;
   },
   endpoint: null,
   selectableOptions: mwUI.Backbone.SelectableCollection.prototype.selectableOptions,
   filterableOptions: mwUI.Backbone.FilterableCollection.prototype.filterableOptions,
   model: mwUI.Backbone.Model,
+  secureEach: function (callback, ctx) {
+    // This method can be used when items are removed from the collection during the each loop
+    // When doing this in the normal each method you will get referencing issues—in java terms you
+    // would get a ConcurrentModificationException
+    _.pluck(this.models, 'cid').forEach(function (cid, index) {
+      var model = this.get(cid, index);
+      callback.call(ctx, model, index, this.models);
+    }.bind(this));
+  },
   url: function () {
     return window.mwUI.Backbone.Utils.getUrl(this);
   },
