@@ -133,7 +133,10 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
         this.unSelectAll();
       }
 
-      model.off('change', _unSelectWhenModelIsUnset);
+      if (_collection.get(model)) {
+        model = _collection.get(model);
+      }
+
       model.on('change', _unSelectWhenModelIsUnset, this);
 
       _selected.add(model, options);
@@ -154,6 +157,7 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
 
   this.unSelect = function (model, options) {
     options = options || {};
+    model.off('change', _unSelectWhenModelIsUnset);
     _selected.remove(model, options);
     _setModelSelectableOptions.call(this, model, options);
     if (!options.silent) {
