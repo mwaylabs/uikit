@@ -44,12 +44,12 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
   };
 
   var _bindModelOnSelectListener = function (model) {
-    model.selectable.off('change:select', _selectWhenModelIsSelected);
+    model.selectable.off('change:select', _selectWhenModelIsSelected, this);
     model.selectable.on('change:select', _selectWhenModelIsSelected, this);
   };
 
   var _bindModelOnUnSelectListener = function (model) {
-    model.selectable.off('change:unselect', _unSelectWhenModelIsUnSelected);
+    model.selectable.off('change:unselect', _unSelectWhenModelIsUnSelected, this);
     model.selectable.on('change:unselect', _unSelectWhenModelIsUnSelected, this);
   };
 
@@ -157,7 +157,7 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
 
   this.unSelect = function (model, options) {
     options = options || {};
-    model.off('change', _unSelectWhenModelIsUnset);
+    model.off('change', _unSelectWhenModelIsUnset, this);
     _selected.remove(model, options);
     _setModelSelectableOptions.call(this, model, options);
     if (!options.silent) {
