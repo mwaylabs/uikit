@@ -1,0 +1,8 @@
+.mw-alert{
+  display: flex;
+  justify-content: center;
+
+  .alert-content{
+    flex-grow: 1;
+  }
+}
