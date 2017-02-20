@@ -830,13 +830,31 @@ describe('Collection Selectable', function () {
       expect(collection.first()._events.change.length).toBe(1);
     });
 
-    it('does not add a new change listener on a model when model is selected again', function(){
+    it('removes change listener from a model when model is unselected ', function(){
       collection.first().selectable.select();
       collection.first().selectable.unSelect();
 
+      expect(collection.first()._events.change).toBeUndefined();
+    });
+
+    it('add all listener on select', function(){
       collection.first().selectable.select();
 
-      expect(collection.first()._events.change.length).toBe(1);
+      expect(collection.first()._events.all.length).toBe(2);
+    });
+
+    it('removes all listener on unSelect', function(){
+      collection.first().selectable.select();
+      collection.first().selectable.unSelect();
+
+      expect(collection.first()._events.all.length).toBe(1);
+    });
+
+    it('removes all listener on unSelectAll()', function(){
+      collection.selectable.selectAll();
+      collection.selectable.unSelectAll();
+
+      expect(collection.first()._events.all.length).toBe(1);
     });
   });
 });
