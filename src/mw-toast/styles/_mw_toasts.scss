@@ -43,13 +43,14 @@
         display: flex;
         -webkit-align-self: flex-end;
         align-self: flex-end;
+        min-height: 70px;
 
         @include box-shadow(0 0 6px 0 rgba(200,200,200,0.8));
 
         .status-indicator {
-          min-width: 84px;
+          min-width: 70px;
           background: black;
-          font-size: 25px;
+          font-size: 17px;
           position: relative;
           z-index: 1;
           border-radius: $border-radius-base 0 0 $border-radius-base;
@@ -63,14 +64,16 @@
 
           .mw-icon {
             position: relative;
-
+            .check {
+              color: $brand-success;
+            }
             * {
               color: white;
             }
           }
 
           &.success{
-            background: $brand-success;
+            background: white;
           }
 
           &.danger{
@@ -95,7 +98,9 @@
             margin-top: 0;
           }
 
-          padding: 14px 24px;
+          padding-right: 14px;
+          padding-top: 14px;
+          padding-bottom: 14px;
           position: relative;
           display: -webkit-flex;
           display: flex;
@@ -118,7 +123,8 @@
 
         .closer {
           position: relative;
-          top: 3px;
+          top: -10px;
+          left: 5px;
           width: 30px;
           text-align: center;
           margin-left: 5px;
