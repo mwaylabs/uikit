@@ -119,6 +119,30 @@
             font-weight: normal;
             text-decoration: underline;
           }
+
+          &.success{
+            background: white;
+          }
+
+          &.danger{
+            background: $brand-danger;
+            color: white;
+          }
+
+          &.warning{
+            background: $brand-warning;
+            color: white;
+          }
+
+          &.info{
+            background: $brand-info;
+            color: white;
+          }
+
+          &.primary{
+            background: $brand-primary;
+            color: white;
+          }
         }
 
         .closer {
@@ -129,6 +153,15 @@
           text-align: center;
           margin-left: 5px;
           cursor: pointer;
+
+          &.mw-icon {
+            &.success {
+              color: #585858;
+            }
+            * {
+              color: white;
+            }
+          }
         }
 
         @include single-transition(all, 0.8s, cubic-bezier(.41,-0.44,.33,.98));
