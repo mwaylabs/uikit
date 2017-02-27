@@ -1,4 +1,4 @@
-angular.module('mwUI.Layout', ['mwUI.Utils', 'mwUI.i18n']);
+angular.module('mwUI.Layout', ['mwUI.Utils']);
 
 // @include ./directives/mw_ui.js
 // @include ./directives/mw_header.js
