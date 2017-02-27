@@ -59,6 +59,7 @@ angular.module('SampleApp.Start')
   .constant('StartFormControllerResolver', {
     model: function(){
       return new ( mwUI.Backbone.Model.extend({
+        endpoint: '/abc',
         nested: function(){
           return {
             checkboxGroup: mwUI.Backbone.Collection,
