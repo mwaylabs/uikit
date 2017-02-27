@@ -6,6 +6,7 @@ angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
 window.mwUI.Utils = {};
 window.mwUI.Utils.shims = {};
 
+// @include ./directives/mw_append_route_class.js
 // @include ./directives/mw_draggable.js
 // @include ./directives/mw_droppable.js
 // @include ./directives/mw_infinite_scroll.js
