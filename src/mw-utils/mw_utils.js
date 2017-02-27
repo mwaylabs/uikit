@@ -18,6 +18,7 @@ window.mwUI.Utils.shims = {};
 
 // @include ./modals/mw_leave_confirmation_modal.js
 
+// @include ./services/mw_browser_title_handler.js
 // @include ./services/mw_callback_handler.js
 
 // @include ./shims/deep_extend_object.js
