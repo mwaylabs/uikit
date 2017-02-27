@@ -35,7 +35,6 @@ angular.module('mwUI.Layout')
         scope.back = function () {
           $location.path(scope.url);
         };
-
       }
     };
   });

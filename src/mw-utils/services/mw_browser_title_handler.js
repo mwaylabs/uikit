@@ -31,8 +31,7 @@ angular.module('mwUI.Utils')
 
     var provider = this;
 
-    this.$get = function ($timeout) {
-
+    this.$get = function () {
       return {
         getOriginalTitle: function () {
           if (!_originalTitle) {

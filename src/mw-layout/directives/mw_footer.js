@@ -6,7 +6,6 @@ angular.module('mwUI.Layout')
       scope: {
         type: '@mwFooter'
       },
-      templateUrl: 'uikit/mw-layout/directives/templates/mw_footer.html',
-      link: function (scope, el) {}
+      templateUrl: 'uikit/mw-layout/directives/templates/mw_footer.html'
     };
   });

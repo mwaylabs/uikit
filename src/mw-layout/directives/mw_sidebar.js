@@ -1,6 +1,6 @@
 angular.module('mwUI.Layout')
 
-  .directive('mwSidebar', function ($timeout) {
+  .directive('mwSidebar', function () {
     return {
       transclude: true,
       templateUrl: 'uikit/mw-layout/directives/templates/mw_sidebar.html',

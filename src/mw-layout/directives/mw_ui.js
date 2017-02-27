@@ -7,7 +7,7 @@ angular.module('mwUI.Layout')
       link: function (scope) {
         scope.displayToasts = function(){
           return Modal.getOpenedModals().length === 0;
-        }
+        };
       }
     };
   });

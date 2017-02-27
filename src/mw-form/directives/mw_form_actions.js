@@ -1,6 +1,6 @@
 angular.module('mwUI.Form')
 
-  .directive('mwFormActions', function ($route, $timeout, $parse) {
+  .directive('mwFormActions', function ($route) {
     return {
       scope: {
         save: '&',
@@ -36,9 +36,7 @@ angular.module('mwUI.Form')
         };
 
         var hideLoadingSpinner = function () {
-          $timeout(function () {
-            scope.viewModel.isLoading = false;
-          }, 500);
+          scope.viewModel.isLoading = false;
         };
 
         var setFormPristineAndEvaluate = function (exec) {
