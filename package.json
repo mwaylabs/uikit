@@ -8,6 +8,7 @@
     "angular": "1.5.7",
     "angular-mocks": "1.5.7",
     "angular-route": "1.5.7",
+    "angular-sanitize": "1.5.7",
     "backbone": "1.2.1",
     "bootstrap": "3.1.1",
     "grunt": "0.4.5",
