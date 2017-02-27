@@ -2,7 +2,7 @@
 
 angular.module('mwUI.Toast')
 
-  .directive('mwToasts', function (Toast) {
+  .directive('mwToasts', function ($sce, Toast) {
     return {
       templateUrl: 'uikit/mw-toast/directives/templates/mw_toasts.html',
       link: function (scope) {
@@ -16,6 +16,10 @@ angular.module('mwUI.Toast')
 
         scope.hideToast = function (toastId) {
           Toast.removeToast(toastId);
+        };
+
+        scope.getHtmlMessage = function(msg){
+          return $sce.trustAsHtml(msg);
         };
       }
     };
