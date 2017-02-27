@@ -1,7 +1,7 @@
 angular.module('mwUI.List')
 
-  // TODO:  rename to something else
-  // TODO: extract functionalities into smaller directives
+// TODO:  rename to something else
+// TODO: extract functionalities into smaller directives
   .directive('mwListableHead2', function ($window, $document, i18n) {
     return {
       scope: {
@@ -22,6 +22,9 @@ angular.module('mwUI.List')
         var scrollEl,
           bodyEl = angular.element('body'),
           modalEl = el.parents('.modal .modal-body'),
+          modalHeaderEl = angular.element('.modal-header'),
+          mwHeaderEl = angular.element('*[mw-header]'),
+          mwMenuEl = angular.element('.mw-menu-top-bar'),
           canShowSelected = false,
           _affix = angular.isDefined(scope.affix) ? scope.affix : true,
           windowEl = angular.element($window);
@@ -35,7 +38,6 @@ angular.module('mwUI.List')
         scope.isLoadingModelsNotInCollection = false;
         scope.hasFetchedModelsNotInCollection = false;
 
-
         var newOffset;
 
         var throttledScrollFn = _.throttle(function () {
@@ -46,14 +48,18 @@ angular.module('mwUI.List')
               listHeaderOffset,
               spacer;
 
-            if (scope.isModal) {
-              headerOffset = angular.element('.modal-header').offset().top;
-              headerHeight = angular.element('.modal-header').innerHeight();
+            if (scope.isModal && modalHeaderEl.length) {
+              headerOffset = modalHeaderEl.offset().top;
+              headerHeight = modalHeaderEl.innerHeight();
               spacer = -3;
-            } else {
-              headerOffset = angular.element('[mw-header]').offset().top;
-              headerHeight = angular.element('[mw-header]').innerHeight();
+            } else if (mwHeaderEl.length) {
+              headerOffset = mwHeaderEl.offset().top;
+              headerHeight = mwHeaderEl.innerHeight();
               spacer = 5;
+            } else if (mwMenuEl.length) {
+              headerOffset = 0;
+              headerHeight = mwMenuEl.innerHeight();
+              spacer = 0;
             }
 
             headerBottomOffset = headerOffset + headerHeight;
