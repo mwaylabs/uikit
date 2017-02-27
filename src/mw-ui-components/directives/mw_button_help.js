@@ -49,7 +49,7 @@ angular.module('mwUI.UiComponents')
         $scope.hintsToShow = [];
         $scope.helpText = i18n.get('UiComponents.mwButtonHelp.isDisabledBecause');
         $scope.$on('i18n:localeChanged', function () {
-          $scope.helpText = i18n.get('common.buttonHelp');
+          $scope.helpText = i18n.get('UiComponents.mwButtonHelp.isDisabledBecause');
         });
 
         var showHelp = function () {
