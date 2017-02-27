@@ -1,6 +1,6 @@
 angular.module('mwUI.Layout')
 
-  .directive('mwHeader', function ($rootScope, $route, $location) {
+  .directive('mwHeader', function ($rootScope, $route, $location, BrowserTitleHandler) {
     return {
       transclude: true,
       scope: {
@@ -13,6 +13,7 @@ angular.module('mwUI.Layout')
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
       link: function (scope, el, attrs, ctrl, $transclude) {
         $rootScope.siteTitleDetails = scope.title;
+        BrowserTitleHandler.setTitle(scope.title);
 
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
