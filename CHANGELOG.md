@@ -1,3 +1,42 @@
+# v1.0.7
+## Features
+### Form Module
+Added directive `mw-form-actions` that can be used in the `mw-header` directive to save the form or to cancel the changes.
+Save button is disabled when form is invalid. `save` and `cancel` functions can be defined that should be executed on button click.
+When the function is returning a promise a loading spinner is displayed until the promise is resolved.
+### Layout Module
+- Added `mw-ui` directive that shall be used as top directive. It applies basic styles and sets up the `toasts` holder
+  ```html
+  <html>
+  <body>
+    <div mw-ui>
+      <!-- Your app -->
+      <div ng-view></div>
+    </div> 
+  </body>
+  </html>
+  ```
+- Added `mw-sidebar` directive.  
+- Added `mw-footer` directive.
+- `mw-header` directive is now setting the browser title
+### Ui Components Module
+- An optional icon and tooltip can be defined for `mw-tabs-pane` directive
+### Utils Module
+- Added service to get and set browser title
+- Added `mw-append-route-class` directive to append css classes that were defined for a route in the `$routeProvider`
+## Bug Fixes
+### Modal module
+- fixed style of toasts that are displayed in the modal
+- fixed default selector where the modal should be appended. Is now `body`
+### List Module
+- fixed style of unselect button in the list header
+- fixed affix bug of list header when no header element could be found
+### Toast module
+- sanitize message when option `isHtmlMessage` is set to `true`
+### Ui Components Module 
+- fix style of mw-button-help
+- fix missing translation of mw-button-help when changing the locale
+
 # v1.0.6
 ## Features
 ### Menu Module
