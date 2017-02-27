@@ -1,0 +1,12 @@
+<div class="mw-ui"
+     ng-cloak>
+
+  <header>
+    <div ng-if="displayToasts()"
+         mw-toasts
+         class="notifications"></div>
+  </header>
+
+  <div ng-transclude class="app-content"></div>
+
+</div>

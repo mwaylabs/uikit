@@ -1,0 +1,50 @@
+.mw-ui{
+  margin: 0 $portalMarginX;
+
+  .btn{
+    &.btn-block{
+      .mw-icon{
+        display: inline-block;
+        left: 12px;
+        position: relative;
+        float: left;
+        top: 1px;
+      }
+    }
+
+    &.btn-danger.light:not([disabled]) {
+      @include single-transition(background-color, 0.2s, cubic-bezier(0, .33, .79, 1.46));
+      @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+    }
+
+    &.btn-danger.light:hover {
+      @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border);
+
+      .rln-icon,
+      .fa {
+        color: white;
+      }
+    }
+
+    &:not(.btn-default):not(.btn-danger){
+      .mw-icon i{
+        color: white;
+      }
+    }
+
+    &[disabled] {
+      background: #f0f0f0;
+      border-color: #e3e3e3;
+      color: #999;
+
+      .rln-icon,
+      .fa {
+        color: #999 !important;
+      }
+    }
+  }
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
