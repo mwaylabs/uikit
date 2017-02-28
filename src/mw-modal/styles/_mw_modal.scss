@@ -65,6 +65,10 @@
     .mw-toasts{
       .content{
         position: absolute;
+
+        ul{
+          margin-top: 20px;
+        }
       }
     }
 

@@ -3,18 +3,19 @@
   "description": "A toolbox to build portals with AngularJS 1.5.x that have a lot of forms and list views for example admin portals to manage data.",
   "author": "Alexander Zarges <a.zarges@mwaysolutions.com> (http://relution.io)",
   "dependencies": {
+    "angular": "1.5.7",
     "angular-markdown-directive": "^0.3.1",
-    "angular-sanitize": "1.5.7",
-    "showdown": "1.2.3",
-    "jquery-ui": "1.10.3",
-    "blueimp-file-upload": "9.11.2"
-  },
-  "resolutions": {
-    "showdown": "1.2.3"
+    "showdown": "^1.2.3",
+    "jquery-ui": "^1.12.1",
+    "blueimp-file-upload": "^9.17.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/mwaylabs/uikit.git"
   },
-  "bugs": "https://github.com/mwaylabs/uikit/issues"
+  "bugs": "https://github.com/mwaylabs/uikit/issues",
+  "resolutions": {
+    "angular": "1.5.7",
+    "showdown": "^1.2.3"
+  }
 }

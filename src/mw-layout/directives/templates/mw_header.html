@@ -1,20 +1,17 @@
 <div class="mw-header row">
-
   <div class="fixed-content col-md-12">
 
     <div ng-if="showBackButton"
          class="back-btn clickable"
-         data-text="{{'common.back' | i18n}}"
          ng-click="back()">
-          <span mw-icon="mwUI.angleLeft">
-          </span>
+          <span mw-icon="mwUI.angleLeft"></span>
     </div>
 
     <div class="title-holder">
-    <span mw-icon="{{mwTitleIcon}}"
-          class="header-icon"
-          ng-if="mwTitleIcon">
-    </span>
+      <span mw-icon="{{mwTitleIcon}}"
+            class="header-icon"
+            ng-if="mwTitleIcon">
+      </span>
 
       <div ng-if="mwBreadCrumbs"
            mw-bread-crumbs-holder>
@@ -32,20 +29,9 @@
       </h1>
     </div>
 
-    <div ng-if="warningCondition"
-         class="warnin-content"
-         mw-tooltip="{{ warningText }}">
-          <span class="text-warning"
-                mw-icon="mwUI.warning">
-          </span>
-          <span class="popover-container">
-          </span>
-    </div>
-
     <div class="additional-content-holder"
          ng-transclude>
     </div>
 
   </div>
-
 </div>

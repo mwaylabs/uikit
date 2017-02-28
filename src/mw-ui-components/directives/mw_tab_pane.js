@@ -4,6 +4,8 @@ angular.module('mwUI.UiComponents')
     return {
       scope: {
         title: '@mwTabsPane',
+        icon: '@',
+        tooltip: '@',
         isInvalid: '='
       },
       transclude: true,

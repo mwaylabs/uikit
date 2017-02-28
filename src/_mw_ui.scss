@@ -6,3 +6,7 @@
 @import "mw-modal/mw_modal";
 @import "mw-toast/mw_toast";
 @import "mw-ui-components/mw_ui_components";
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}

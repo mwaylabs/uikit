@@ -5,7 +5,7 @@
 
 angular.module('SampleApp.Start')
 
-  .controller('StartIndexController', function (Toast, TestModal, collection) {
+  .controller('StartIndexController', function ($timeout, Toast, TestModal, collection) {
     var testModal = new TestModal();
     this.collection = collection;
 

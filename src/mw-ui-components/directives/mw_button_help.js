@@ -7,7 +7,7 @@ angular.module('mwUI.UiComponents')
       link: function (scope, elm) {
         var popup;
         var helpIcon =
-          $compile(angular.element('<div mw-icon="mwUI.question">'))(scope)
+          $compile(angular.element('<div mw-icon="mwUI.questionCircle">'))(scope)
           .addClass('help-icon hidden-sm hidden-xs');
 
         elm.addClass('mw-button-help');
@@ -49,7 +49,7 @@ angular.module('mwUI.UiComponents')
         $scope.hintsToShow = [];
         $scope.helpText = i18n.get('UiComponents.mwButtonHelp.isDisabledBecause');
         $scope.$on('i18n:localeChanged', function () {
-          $scope.helpText = i18n.get('common.buttonHelp');
+          $scope.helpText = i18n.get('UiComponents.mwButtonHelp.isDisabledBecause');
         });
 
         var showHelp = function () {

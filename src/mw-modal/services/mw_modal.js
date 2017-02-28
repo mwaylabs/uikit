@@ -13,7 +13,7 @@ angular.module('mwUI.Modal')
         _controllerAs = modalOptions.controllerAs || '$ctrl',
         _controller = modalOptions.controller,
         _class = modalOptions.class || '',
-        _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
+        _holderEl = modalOptions.el ? modalOptions.el : 'body',
         _bootStrapModalOptions = bootStrapModalOptions || {},
         _dismissible = angular.isDefined(modalOptions.dismissible) ? modalOptions.dismissible : true,
         _watchers = [],

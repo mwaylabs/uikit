@@ -10,15 +10,6 @@
   }
 }
 
-.mw-form.mw-actions {
-
-  @media (max-width: $screen-sm) {
-    .action-text {
-      display: none;
-    }
-  }
-}
-
 @mixin required-input-highlighter($color) {
   textarea,
   input {

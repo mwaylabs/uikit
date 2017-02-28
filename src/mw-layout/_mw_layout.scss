@@ -1,9 +1,10 @@
 $sub-nav-background: #eee !default;
-$sub-nav-pill-divider: "1px solid #ccc";
+$sub-nav-pill-divider: "1px solid #ccc" !default;
+$portalMarginX: 1.5em !default;
 
-@import "styles/mw_column_layout";
+@import "styles/mw_ui";
 @import "styles/mw_header";
-@import "styles/mw_row";
-@import "styles/mw_row_layout";
+@import "styles/mw_sidebar";
+@import "styles/mw_footer";
 @import "styles/mw_sub_nav";
 @import "styles/mw_sub_nav_pill";

@@ -1,14 +1,17 @@
-<div class="container">
+<form name="startForm" class="container">
 
   <div mw-header
-       title="{{'start.index.title' | i18n }}"
+       title="{{'start.index.title' | i18n }} New Item"
        mw-title-icon="rln-icon apps"
-       mw-bread-crumbs="[{title:'Start',url:'#/start'}]"></div>
-
-  <div class="row">
-    <form class="col-md-12"
-          name="startForm"
-          ng-include="'modules/start/templates/_form.html'"></form>
+       mw-bread-crumbs="[{title:'Start',url:'#/start'}]">
+    <div mw-form-actions save="SFCtrl.model.save()"></div>
   </div>
 
-</div>
+  <div class="row">
+
+    <div class="col-md-12"
+          name="startForm"
+          ng-include="'modules/start/templates/_form.html'"></div>
+  </div>
+
+</form>
