@@ -25,10 +25,9 @@ module.exports = function(config){
       'libs/angular-sanitize/angular-sanitize.min.js',
       'libs/angular-markdown-directive/markdown.js',
       'libs/showdown/dist/showdown.js',
-      'libs/jquery-ui/ui/jquery.ui.widget.js',
+      'libs/jquery-ui/ui/widget.js',
       'libs/blueimp-file-upload/js/jquery.fileupload.js',
       'libs/blueimp-file-upload/js/jquery.iframe-transport.js',
-      'libs/bootstrap-sass-datepicker/js/bootstrap-sass-datepicker.js',
 
       'src/test/**/*.js',
       'src/**/*.html',
