@@ -1,0 +1,10 @@
+.mw-radio{
+  @extend %mw-radio-checkbox-mixin;
+
+  border-radius: 50%;
+
+  .state-indicator,
+  .state-focus-indicator{
+    border-radius: 50%;
+  }
+}
