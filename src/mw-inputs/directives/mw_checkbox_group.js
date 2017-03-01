@@ -37,6 +37,14 @@ angular.module('mwUI.Inputs')
             scope.mwCollection.add(model.toJSON());
           }
         };
+
+        if (! (scope.mwCollection instanceof Backbone.Collection) ) {
+          throw new Error('[mwCheckboxGroup] The attribute mwCollection is required and has to be an instanceof Backbone Collection')
+        }
+
+        if ( !(scope.mwOptionsCollection instanceof Backbone.Collection) ) {
+          throw new Error('[mwCheckboxGroup] The attribute mwOptionsCollection is required and has to be an instanceof Backbone Collection')
+        }
       }
     };
   });
