@@ -7,7 +7,7 @@ angular.module('mwUI.Form')
 
         var confirmation = $compile('' +
             '<div mw-leave-confirmation="showConfirmation()" ' +
-            'text="{{\'form.leaveConfirmation\' | i18n}}">' +
+            'text="{{\'mwForm.leaveConfirmation\' | i18n}}">' +
             '</div>')(scope),
           isActive = true;
 
