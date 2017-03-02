@@ -21,10 +21,8 @@ angular.module('mwUI.List')
       link: function (scope, el, attrs, ctrl, $transclude) {
         var scrollEl,
           bodyEl = angular.element('body'),
-          modalEl = el.parents('.modal .modal-body'),
-          modalHeaderEl = angular.element('.modal-header'),
+          modalEl = el.parents('*[mw-modal-body]'),
           mwHeaderEl = angular.element('*[mw-header]'),
-          mwMenuEl = angular.element('.mw-menu-top-bar'),
           canShowSelected = false,
           _affix = angular.isDefined(scope.affix) ? scope.affix : true,
           windowEl = angular.element($window);
@@ -48,18 +46,17 @@ angular.module('mwUI.List')
               listHeaderOffset,
               spacer;
 
-            if (scope.isModal && modalHeaderEl.length) {
+            if (scope.isModal) {
+              var modalHeaderEl = el.parents('.modal-content').find('.modal-header');
               headerOffset = modalHeaderEl.offset().top;
               headerHeight = modalHeaderEl.innerHeight();
-              spacer = -3;
-            } else if (mwHeaderEl.length) {
-              headerOffset = mwHeaderEl.offset().top;
-              headerHeight = mwHeaderEl.innerHeight();
-              spacer = 5;
-            } else if (mwMenuEl.length) {
-              headerOffset = 0;
-              headerHeight = mwMenuEl.innerHeight();
               spacer = 0;
+            } else if (mwHeaderEl.length) {
+              headerOffset = mwHeaderEl.last().offset().top;
+              headerHeight = mwHeaderEl.last().innerHeight();
+              spacer = 5;
+            } else {
+              return;
             }
 
             headerBottomOffset = headerOffset + headerHeight;
