@@ -1,0 +1,105 @@
+.timeline-entry {
+  width: 48%;
+  background: #fff;
+  margin: 0 1px 30px 1px;
+  position: relative;
+  min-height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 10px;
+
+  &:nth-child(even),
+  &:nth-child(odd) {
+
+    &:before,
+    &:after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      border: 6px solid;
+    }
+
+    &:before {
+      border: 7px solid;
+      top: 9px;
+    }
+
+    > .bubble {
+      background: #aaa;
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      border-radius: 50%;
+      top: 10px;
+      border: 2px solid white;
+    }
+  }
+
+  &:nth-child(odd) {
+    float: left;
+    clear: left;
+    margin-top: -14px;
+
+    //Arrow to overlay border of the timeline entry
+    &:after {
+      border-color: transparent transparent transparent #fff;
+      right: -12px;
+    }
+
+    //Border of the arrow (new arrow sitting below the white arrow)
+    &:before {
+      border-color: transparent transparent transparent #ccc;
+      right: -14px;
+    }
+
+    //Dot on the timeline vertical stroke
+    > .bubble {
+      margin-right: -5px;
+      right: -4.4%;
+    }
+  }
+
+  &:nth-child(even) {
+    float: right;
+    clear: right;
+
+    &:after {
+      border-color: transparent #fff transparent transparent;
+      left: -12px;
+    }
+
+    &:before {
+      border-color: transparent #ccc transparent transparent;
+      left: -14px;
+    }
+
+    > .bubble {
+      margin-left: -5px;
+      left: -4%;
+    }
+  }
+}
+
+@media (max-width: $screen-sm) {
+
+  .timeline-entry {
+    width: 100%;
+
+    &:nth-child(even),
+    &:nth-child(odd) {
+      float: none;
+
+      &:before,
+      &:after {
+        display: none;
+      }
+
+      > .bubble {
+        display: none;
+      }
+
+      margin: 10px 0;
+    }
+  }
+
+}
