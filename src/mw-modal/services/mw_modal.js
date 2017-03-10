@@ -39,8 +39,9 @@ angular.module('mwUI.Modal')
         if (_controller) {
           locals.$scope = _usedScope;
           locals.modalId = _id;
-          _setAttributes(_controller, _scopeAttributes);
-          _usedController = $controller(_controller, locals, false, _controllerAs);
+          var ctrl = $controller(_controller, locals, true, _controllerAs);
+          _setAttributes(ctrl.instance, _scopeAttributes);
+          _usedController = ctrl();
         }
       };
 
