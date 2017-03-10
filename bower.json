@@ -4,7 +4,8 @@
   "author": "Alexander Zarges <a.zarges@mwaysolutions.com> (http://relution.io)",
   "dependencies": {
     "angular": "1.5.7",
-    "angular-markdown-directive": "^0.3.1",
+    "angular-sanitize": "1.5.7",
+    "angular-markdown-directive": "0.3.1",
     "showdown": "^1.2.3",
     "jquery-ui": "^1.12.1",
     "blueimp-file-upload": "^9.17.0"
@@ -15,7 +16,6 @@
   },
   "bugs": "https://github.com/mwaylabs/uikit/issues",
   "resolutions": {
-    "angular": "1.5.7",
     "showdown": "^1.2.3"
   }
 }
