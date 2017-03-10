@@ -1,0 +1,39 @@
+$badge-android: #a4c639;
+$badge-ios: #111111;
+$badge-knox: #5bc0de;
+$badge-multi: #aaaaaa;
+
+.mw-badge {
+  position: relative;
+  top: -1px;
+
+  & ~ .mw-badge {
+    margin-left: 3px;
+  }
+
+  &.label-android {
+    background-color: $badge-android;
+  }
+  &.label-ios {
+    background-color: $badge-ios;
+  }
+  &.label-knox {
+    background-color: $badge-knox;
+  }
+  &.label-multi {
+    background-color: $badge-multi;
+  }
+  &.label-notsafe {
+    background-color: $brand-danger;
+    text-decoration: line-through;
+  }
+}
+
+.badge-light{
+  background: none;
+  border: 1px solid #808080;
+  font-size: 9px;
+  padding: 3px 8px;
+  color: #808080;
+  margin-left: 2px;
+}
