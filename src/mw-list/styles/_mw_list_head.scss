@@ -370,10 +370,6 @@ div[mw-listable-head-2] {
 
 @media (max-width: $screen-md) {
   @include small-listable-header();
-
-  .mw-listable-header{
-    position: initial !important;
-  }
 }
 
 .modal {
