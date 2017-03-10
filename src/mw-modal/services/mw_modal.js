@@ -100,11 +100,11 @@ angular.module('mwUI.Modal')
 
         _resolveLocals().then(function (locals) {
           _setScopeWatcher();
-          _modal = _compileTemplate(locals);
-
-          _usedScope.hideModal = function () {
+          _scopeAttributes.hideModal = function(){
             return _self.hide();
           };
+
+          _modal = _compileTemplate(locals);
 
           _usedScope.$on('COMPILE:FINISHED', function () {
             _modal.addClass('mw-modal');
