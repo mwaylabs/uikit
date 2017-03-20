@@ -72,7 +72,7 @@ module.exports = function (grunt) {
           '.tmp/templates-relution.js',
           'libs/angular-sanitize/angular-sanitize.js',
           'libs/showdown/dist/showdown.js',
-          'libs/jquery-ui/ui/jquery.ui.widget.js',
+          'libs/jquery-ui/ui/widget.js',
           'libs/blueimp-file-upload/js/jquery.fileupload.js',
           'libs/blueimp-file-upload/js/jquery.iframe-transport.js'
         ],

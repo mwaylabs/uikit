@@ -27,7 +27,7 @@
   <link rel="stylesheet" href="main.css">
   <!-- endbuild -->
 </head>
-<body ng-cloak class="loading">
+<body>
 
 <!--[if lt IE 10]>
 <script>
@@ -45,52 +45,49 @@
 <![endif]-->
 
 
-<div ng-controller="MainController as ctrl">
+<div ng-controller="MainController as ctrl"
+     ng-cloak
+     mw-ui>
 
-  <div class="app">
+  <div mw-menu-top-bar>
 
-    <header>
-      <div mw-toasts class="notifications"></div>
-    </header>
+    <img src="https://live.relution.io/relution/portal/images/logo-header.png">
 
-    <div mw-menu-top-bar>
+    <div mw-menu-top-entries>
+      <div mw-menu-entry
+           label="Start">
 
-      <img src="https://live.relution.io/relution/portal/images/logo-header.png">
-
-      <div mw-menu-top-entries>
         <div mw-menu-entry
-             label="Start">
-
-          <div mw-menu-entry
-               url="#/start"
-               label="Index">
-          </div>
-
-          <div mw-menu-entry
-               url="#/start/details"
-               label="Details">
-          </div>
-
+             url="#/start"
+             label="Index">
         </div>
 
         <div mw-menu-entry
-             url="#/start/new"
-             label="New">
+             url="#/start/details"
+             label="Details">
         </div>
 
       </div>
 
+      <div mw-menu-entry
+           url="#/start/new"
+           label="New">
+      </div>
+
     </div>
-
-
-    <div rln-append-class-according-to-route class="module-page">
-      <div ng-view class="height-inherit" autoscroll="true"></div>
-      <div mw-view-change-loader></div>
-    </div>
-
-    <footer></footer>
 
   </div>
+
+
+  <div mw-append-route-class class="module-page">
+    <div ng-view class="height-inherit" autoscroll="true"></div>
+    <div mw-view-change-loader></div>
+  </div>
+
+  <footer mw-footer="primary">
+    (C) by ABC
+  </footer>
+
 
 </div>
 
@@ -101,6 +98,7 @@
 <script src="components/angular/angular.js"></script>
 <script src="components/angular-route/angular-route.js"></script>
 <script src="components/angular-animate/angular-animate.js"></script>
+<script src="components/angular-sanitize/angular-sanitize.js"></script>
 
 <script src="components/sass-bootstrap/js/tooltip.js"></script>
 <script src="components/sass-bootstrap/js/popover.js"></script>

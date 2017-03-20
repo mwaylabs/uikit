@@ -6,7 +6,14 @@
     <li ng-repeat="pane in panes"
         ng-class="{ active: pane.selected }">
       <a ng-class="{ 'has-error': pane.isInvalid }"
-         ng-click="select(pane)">{{ pane.title }}</a>
+         ng-click="select(pane)">
+        <span ng-if="pane.icon"
+              mw-icon="{{pane.icon}}"></span>
+        {{ pane.title }}
+        <span ng-if="pane.tooltip"
+              mw-icon="mwUI.questionCircle"
+              tooltip="{{pane.tooltip}}"></span>
+      </a>
     </li>
   </ul>
 

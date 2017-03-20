@@ -16,6 +16,12 @@
   }
 }
 
+.btn-block + .mw-button-help,
+.mw-button-help + .mw-button-help,
+.mw-button-help + .btn-block{
+  margin-top: 5px;
+}
+
 .mw-button-help:first-child{
   margin-top: 0;
 }

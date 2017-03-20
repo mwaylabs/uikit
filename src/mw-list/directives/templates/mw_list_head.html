@@ -1,5 +1,5 @@
 <div class="mw-listable-header clearfix"
-     ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0}">
+     ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0,'has-search-bar':searchAttribute}">
 
   <div class="selection-controller">
     <div ng-if="selectable" class="holder">

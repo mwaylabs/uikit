@@ -1,5 +1,6 @@
 angular.module('mwUI.Form', ['mwUI.i18n','mwUI.Modal','mwUI.Utils']);
 
+// @include ./directives/mw_form_actions.js
 // @include ./directives/mw_error_messages.js
 // @include ./directives/mw_form_defaults.js
 // @include ./directives/mw_form_leave_confirmation.js

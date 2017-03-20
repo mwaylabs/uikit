@@ -1,6 +1,10 @@
 {
-  "Form": {
-    "leaveConfirmation": "Ihre Änderungen wurden noch nicht gespeichert. Wenn Sie diese Seite verlassen gehen diese verloren!"
+  "mwForm": {
+    "leaveConfirmation": "Ihre Änderungen wurden noch nicht gespeichert. Wenn Sie diese Seite verlassen gehen diese verloren!",
+    "formActions": {
+      "save": "Speichern",
+      "cancel": "Abbrechen"
+    }
   },
   "mwErrorMessages": {
     "required": "ist ein Pflichtfeld",

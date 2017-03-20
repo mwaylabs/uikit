@@ -3,7 +3,7 @@
     <label>
       <input type="checkbox"
              ng-disabled="isOptionDisabled(model)"
-             ng-checked="mwCollection.findWhere(model.toJSON())"
+             ng-checked="isSelected(model)"
              ng-click="toggleModel(model); setDirty()">
       <span class="checkbox-label">{{getLabel(model)}}</span>
     </label>

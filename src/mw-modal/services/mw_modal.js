@@ -13,7 +13,7 @@ angular.module('mwUI.Modal')
         _controllerAs = modalOptions.controllerAs || '$ctrl',
         _controller = modalOptions.controller,
         _class = modalOptions.class || '',
-        _holderEl = modalOptions.el ? modalOptions.el : 'body .module-page',
+        _holderEl = modalOptions.el ? modalOptions.el : 'body',
         _bootStrapModalOptions = bootStrapModalOptions || {},
         _dismissible = angular.isDefined(modalOptions.dismissible) ? modalOptions.dismissible : true,
         _watchers = [],
@@ -39,8 +39,9 @@ angular.module('mwUI.Modal')
         if (_controller) {
           locals.$scope = _usedScope;
           locals.modalId = _id;
-          _setAttributes(_controller, _scopeAttributes);
-          _usedController = $controller(_controller, locals, false, _controllerAs);
+          var ctrl = $controller(_controller, locals, true, _controllerAs);
+          _setAttributes(ctrl.instance, _scopeAttributes);
+          _usedController = ctrl();
         }
       };
 
@@ -99,11 +100,11 @@ angular.module('mwUI.Modal')
 
         _resolveLocals().then(function (locals) {
           _setScopeWatcher();
-          _modal = _compileTemplate(locals);
-
-          _usedScope.hideModal = function () {
+          _scopeAttributes.hideModal = function(){
             return _self.hide();
           };
+
+          _modal = _compileTemplate(locals);
 
           _usedScope.$on('COMPILE:FINISHED', function () {
             _modal.addClass('mw-modal');

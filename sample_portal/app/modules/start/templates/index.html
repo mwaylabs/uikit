@@ -6,29 +6,31 @@
 
   <div class="row">
     <div class="col-md-3">
-      <a href="#/start/new" class="btn btn-primary btn-block"
-         ng-click="SICtrl.openTestModal()">
-        New
-      </a>
+      <div mw-sidebar>
+        <a href="#/start/new" class="btn btn-primary btn-block"
+           ng-click="SICtrl.openTestModal()">
+          <span mw-icon="fa-plus"></span>
+          New
+        </a>
 
-      <button class="btn btn-default btn-block"
-              ng-click="SICtrl.openTestModal()">
-        Open Modal
-      </button>
-
-      <button class="btn btn-default btn-block"
-              ng-click="SICtrl.showToast()">
-        Show Toast
-      </button>
-
-      <div mw-button-help>
-        <button class="btn btn-default btn-block" ng-disabled="SICtrl.collection.selectable.getSelected().length<1">
-          Execute action on selection
+        <button class="btn btn-default btn-block"
+                ng-click="SICtrl.openTestModal()">
+          Open Modal
         </button>
-        <span mw-button-help-condition="SICtrl.collection.selectable.getSelected().length < 1"
-              mw-button-help-text="No item is selected"></span>
-      </div>
 
+        <button class="btn btn-default btn-block"
+                ng-click="SICtrl.showToast()">
+          Show Toast
+        </button>
+
+        <div mw-button-help>
+          <button class="btn btn-default btn-block" ng-disabled="SICtrl.collection.selectable.getSelected().length<1">
+            Execute action on selection
+          </button>
+          <span mw-button-help-condition="SICtrl.collection.selectable.getSelected().length < 1"
+                mw-button-help-text="No item is selected"></span>
+        </div>
+      </div>
     </div>
 
     <div class="col-md-9">
@@ -64,7 +66,9 @@
             <a href="#/start/details">{{ item.attributes.name }}</a>
           </td>
           <td class="truncated hidden-xs">{{ item.attributes.description }}</td>
-          <td ng-if="item.id === 3" mw-listable-link-show-bb="#/start/details/{{item.id}}" link-target="_blank"></td>
+          <td>
+            <div ng-if="item.id === 3" mw-listable-link-show-bb="#/start/details/{{item.id}}" link-target="_blank"></div>
+          </td>
         </tr>
         </tbody>
       </table>

@@ -1,6 +1,10 @@
 {
-  "Form": {
-    "leaveConfirmation": "Your changes haven't been saved yet. If you leave this page all changes will be discarded!"
+  "mwForm": {
+    "leaveConfirmation": "Your changes haven't been saved yet. If you leave this page all changes will be discarded!",
+    "formActions": {
+      "save": "Save",
+      "cancel": "Cancel"
+    }
   },
   "mwErrorMessages": {
     "required": "is required",
