@@ -5,6 +5,8 @@ angular.module('mwUI.Inputs')
       scope: {
         mwModel: '=',
         mwDisabled: '=',
+        mwIconOn: '@',
+        mwIconOff: '@',
         mwChange: '&'
       },
       replace: true,

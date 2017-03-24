@@ -3,13 +3,15 @@
   <button class="no toggle btn btn-link"
           ng-click="toggle(true)"
           ng-disabled="mwDisabled">
-    <span>{{ 'UiComponents.mwToggle.on' | i18n }}</span>
+    <span ng-if="!mwIconOn">{{ 'UiComponents.mwToggle.on' | i18n }}</span>
+    <span ng-if="mwIconOn" mw-icon="{{mwIconOn}}"></span>
   </button>
 
   <button class="yes toggle btn btn-link"
           ng-click="toggle(false)"
           ng-disabled="mwDisabled">
-    <span>{{ 'UiComponents.mwToggle.off' | i18n }}</span>
+    <span ng-if="!mwIconOff">{{ 'UiComponents.mwToggle.off' | i18n }}</span>
+    <span ng-if="mwIconOff" mw-icon="{{mwIconOff}}"></span>
   </button>
 
   <span class="label indicator"
