@@ -111,6 +111,8 @@ mwUI.Backbone.Filter = function () {
     },
 
     dateRange: function(fieldName, min, max){
+      min = min ? +new Date(min) : null;
+      max = max ? +new Date(max) : null;
       return returnNullOrObjectForMultipleValues({min: min, max: max}, {
         type: 'dateRange',
         fieldName: fieldName,
