@@ -14,6 +14,25 @@
   .filter-dropdown{
     position: relative;
   }
+
+  .mw-sidebar-date-range{
+    display: flex;
+    -webkit-display: flex;
+
+    .mw-date-picker .datepicker{
+      width: calc(200% + 10px);
+    }
+
+    .from-date{
+      margin-right: 10px;
+    }
+
+    .to-date{
+      .mw-date-picker .datepicker{
+        left: calc(-100% - 10px) !important;
+      }
+    }
+  }
 }
 
 @media (max-width: $screen-sm-max) {
