@@ -36,7 +36,7 @@
         position: relative;
         padding: 0;
         margin-bottom: 13px;
-        border-radius: $border-radius-base;
+        border-radius: $border-radius-base;        
         background: white;
 
         display: -webkit-flex;
@@ -45,7 +45,7 @@
         align-self: flex-end;
         min-height: 70px;
 
-        @include box-shadow(0 0 6px 0 rgba(200,200,200,0.8));
+        @include box-shadow(2px 2px 12px 0 rgba(90, 90, 90, 0.59));
 
         .status-indicator {
           min-width: 70px;
@@ -61,17 +61,18 @@
           align-items: center;
           -webkit-justify-content: center;
           justify-content: center;
-
+          &.success {
+            color: $brand-success !important;
+          }
+          color: white;
           .mw-icon {
             position: relative;
-            .check {
-              color: $brand-success;
-            }
-            * {
-              color: white;
-            }
           }
 
+          &.default {
+            background: black;
+          }
+          
           &.success{
             background: white;
           }
@@ -100,11 +101,12 @@
 
           padding-right: 14px;
           padding-top: 14px;
-          padding-bottom: 14px;
+          padding-bottom: 12px;
           position: relative;
           display: -webkit-flex;
           display: flex;
           align-items: center;
+          min-width: 300px;
 
           .holder {
             -webkit-flex-basis: 100%;
@@ -153,6 +155,7 @@
           text-align: center;
           margin-left: 5px;
           cursor: pointer;
+          opacity: 0.51;
 
           &.mw-icon {
             &.success {
