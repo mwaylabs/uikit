@@ -20,6 +20,7 @@ $star-rating-color: #ffa602 !default;
 @import "src/mw-version-selector";
 @import "src/mw-file-upload";
 @import "src/mw-header";
+@import "src/mw-date-picker";
 
 .mw-star-rating {
   color: $star-rating-color;

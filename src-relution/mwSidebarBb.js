@@ -36,7 +36,6 @@ angular.module('mwSidebarBb', [])
           }
 
           $scope.collection.fetch();
-
         };
       },
       link: function (scope, el, attr) {
@@ -358,6 +357,37 @@ angular.module('mwSidebarBb', [])
         scope.changed = function () {
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
           ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+        };
+      }
+    };
+  })
+
+  .directive('mwSidebarDateRangeBb', function () {
+    return {
+      require: '^mwSidebarFiltersBb',
+      scope: {
+        fromProperty: '@',
+        toProperty: '@',
+        mwDisabled: '=',
+        customUrlParameter: '@',
+        min: '@',
+        max: '@'
+      },
+      templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarDateRange.html',
+      link: function (scope, elm, attr, ctrl) {
+
+        scope.viewModel = {};
+
+        scope.isValid = function () {
+          return elm.find('input').first().hasClass('ng-valid');
+        };
+
+        scope.setFromDate = function(val){
+          ctrl.changeFilter(scope.fromProperty, val);
+        };
+
+        scope.setToDate = function(val){
+          ctrl.changeFilter(scope.toProperty, val);
         };
       }
     };
