@@ -96,7 +96,11 @@ angular.module('mwCollection')
           return $q.when(_appliedFilter);
         } else {
           return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
-            return this._setAppliedFilter(appliedFilter);
+            if(appliedFilter){
+              return this._setAppliedFilter(appliedFilter);
+            } else {
+              return _appliedFilter;
+            }
           }.bind(this));
         }
       };
