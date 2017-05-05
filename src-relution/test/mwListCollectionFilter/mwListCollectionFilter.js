@@ -3,10 +3,11 @@
 describe('MwListCollectionFilter', function() {
   var MwListCollectionFilter,
     filterInLocalStorage,
-    currentUserUuid = 'userUuid',
+    currentUserUuid,
     FilterHolderProviderSpy,
     FilterHolderSpy,
-    AuthenticatedUserSpy;
+    AuthenticatedUserSpy,
+    $rootScope;
 
   beforeEach(module('mwCollection'));
 
@@ -35,7 +36,18 @@ describe('MwListCollectionFilter', function() {
     };
 
     AuthenticatedUserSpy = {
-      get: function() {}
+      get: function() {},
+      set: function(attr, val){
+        if(attr === 'uuid'){
+          currentUserUuid = val;
+          if(this.callback){
+            this.callback();
+          }
+        }
+      },
+      once: function(evName, callback){
+        this.callback = callback
+      }
     };
 
     //redirect calls-to-this-external-methods to the stubs / spies
@@ -47,11 +59,19 @@ describe('MwListCollectionFilter', function() {
     //spy on these methods to see if they get called
     spyOn(FilterHolderProviderSpy, 'createFilterHolder').and.returnValue(FilterHolderSpy);
     spyOn(FilterHolderSpy, 'set');
-    spyOn(AuthenticatedUserSpy, 'get').and.returnValue(currentUserUuid);
+    spyOn(AuthenticatedUserSpy, 'get').and.callFake(function(attr){
+      if(attr === 'authenticated'){
+        return !!currentUserUuid;
+      }
+      return currentUserUuid;
+    });
+
+    currentUserUuid = null;
   }));
 
 
-  beforeEach(inject(function(_MwListCollectionFilter_) {
+  beforeEach(inject(function(_$rootScope_, _MwListCollectionFilter_) {
+    $rootScope = _$rootScope_;
     MwListCollectionFilter = _MwListCollectionFilter_;
   }));
 
@@ -80,28 +100,45 @@ describe('MwListCollectionFilter', function() {
       expect(appliedFilter).not.toBeNull();
     });
 
-    it('does not set filter if the one in localstorage does not contain current users id', function() {
+    it('waits until the user is authenticated before setting appliedfilter', function(done) {
       var filterInLocalStorage = {
-        acl: '172FB965-64B2-4B6A-BF8C-679B02460B7B:rw'
+        aclEntries: ['USER1:rw']
       };
-      currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
+      listCollectionFilter._setAppliedFilter(filterInLocalStorage).then(function(){
+        done();
+      });
 
-      var appliedFilter = listCollectionFilter._setAppliedFilter(filterInLocalStorage);
-
-      expect(appliedFilter).not.toBeNull();
-      expect(FilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
+      AuthenticatedUserSpy.set('uuid', 'USER1');
+      $rootScope.$digest();
     });
 
-    it('sets appliedfilter if current user uuid matches with the filter owner', function() {
-      currentUserUuid = 'DFD04C8B-519A-4D0A-BE60-F47EB4D563E8';
+    it('sets applied filter when current user is the filter owner', function(done) {
       var filterInLocalStorage = {
-        acl: currentUserUuid + ':rw'
+        aclEntries: ['USER1:rw']
       };
 
-      var appliedFilter = listCollectionFilter._setAppliedFilter(filterInLocalStorage);
+      listCollectionFilter._setAppliedFilter(filterInLocalStorage).then(function(appliedFilter){
+        expect(appliedFilter).not.toBeNull();
+        expect(FilterHolderSpy.set).toHaveBeenCalledWith(filterInLocalStorage);
+        done();
+      });
 
-      expect(appliedFilter).not.toBeNull();
-      expect(FilterHolderSpy.set).toHaveBeenCalledWith(filterInLocalStorage);
+      AuthenticatedUserSpy.set('uuid', 'USER1');
+      $rootScope.$digest();
+    });
+
+    it('does not set applied filter when current user is not the filter owner', function(done) {
+      var filterInLocalStorage = {
+        aclEntries: ['USER1:rw']
+      };
+      listCollectionFilter._setAppliedFilter(filterInLocalStorage).then(function(appliedFilter){
+        expect(appliedFilter).not.toBeNull();
+        expect(FilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
+        done();
+      });
+
+      AuthenticatedUserSpy.set('uuid', 'USER2');
+      $rootScope.$digest();
     });
   });
 
