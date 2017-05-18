@@ -1,3 +1,18 @@
+# v1.0.9
+## Bug Fixes
+### Src-Relution Module
+- Fixed filter owner check on page reload #80. Waits until user is authenticated before checking if authenticated user 
+is the filter owner
+- Fixed sass datepicker dependencies file import #79. Removed those files from sass import. You have to make sure that
+you have imported `bootstrap-sass-datepicker/sass/datepicker` in your `main.scss` before including the uikit sass file. 
+The other file `bootstrap-sass-official/assets/stylesheets/bootstrap/variables` is already imported there
+
+# v1.0.8
+## Features
+### Src-Relution Module
+Added public filter functionality for src-relution. This lets the user create a public filter that can be seen by all
+users of the organisation
+
 # v1.0.7
 ## Features
 ### Form Module
