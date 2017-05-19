@@ -312,10 +312,12 @@ angular.module('mwUI.Modal')
     this.create = function (modalOptions, bootstrapModalOptions) {
       if(modalOptions && modalOptions.el){
         modalOptions.holderEl = modalOptions.el;
+        window.mwUI.Utils.shims.deprecationWarning('[Modal] The modal options property el was renamed to holderEl');
       }
 
       if(modalOptions && modalOptions.class){
         modalOptions.styleClass = modalOptions.class;
+        window.mwUI.Utils.shims.deprecationWarning('[Modal] The modal options property class was renamed to styleClass');
       }
 
       return new Modal(modalOptions, bootstrapModalOptions);
