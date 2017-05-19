@@ -1,21 +1,17 @@
 angular.module('mwUI.Modal')
 
-  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $injector, $q, $templateRequest, $timeout, Toast) {
+  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $injector, $q, $templateRequest, $timeout, mwModalOptions, Toast) {
 
     var _openedModals = [];
 
     var Modal = function (modalOptions, bootStrapModalOptions) {
-
       var _id = modalOptions.templateUrl,
         _scope = modalOptions.scope || $rootScope,
         _scopeAttributes = modalOptions.scopeAttributes || {},
         _resolve = modalOptions.resolve || {},
-        _controllerAs = modalOptions.controllerAs || '$ctrl',
         _controller = modalOptions.controller,
-        _class = modalOptions.class || '',
-        _holderEl = modalOptions.el ? modalOptions.el : 'body',
-        _bootStrapModalOptions = bootStrapModalOptions || {},
-        _dismissible = angular.isDefined(modalOptions.dismissible) ? modalOptions.dismissible : true,
+        _modalOptions = _.extend(mwModalOptions.getOptions(), modalOptions),
+        _bootStrapModalOptions = _.extend(_modalOptions.bootStrapModalOptions, bootStrapModalOptions),
         _watchers = [],
         _modalOpened = false,
         _self = this,
@@ -39,7 +35,7 @@ angular.module('mwUI.Modal')
         if (_controller) {
           locals.$scope = _usedScope;
           locals.modalId = _id;
-          var ctrl = $controller(_controller, locals, true, _controllerAs);
+          var ctrl = $controller(_controller, locals, true, _modalOptions.controllerAs);
           _setAttributes(ctrl.instance, _scopeAttributes);
           _usedController = ctrl();
         }
@@ -108,11 +104,11 @@ angular.module('mwUI.Modal')
 
           _usedScope.$on('COMPILE:FINISHED', function () {
             _modal.addClass('mw-modal');
-            _modal.addClass(_class);
+            _modal.addClass(_modalOptions.styleClass);
             _bootstrapModal = _modal.find('.modal');
             _bootStrapModalOptions.show = false;
 
-            if(!_dismissible){
+            if(!_modalOptions.dismissible){
               _bootStrapModalOptions.backdrop =  'static';
               _bootStrapModalOptions.keyboard =  false;
             }
@@ -129,7 +125,7 @@ angular.module('mwUI.Modal')
                 $bootstrapBackdrop = bootstrapModal.backdrop;
 
               bootstrapModal.backdrop = function (callback) {
-                $bootstrapBackdrop.call(bootstrapModal, callback, $(_holderEl).find('.modal'));
+                $bootstrapBackdrop.call(bootstrapModal, callback, $(_modalOptions.holderEl).find('.modal'));
               };
             }
             /* jshint ignore:end */
@@ -175,7 +171,7 @@ angular.module('mwUI.Modal')
         $rootScope.$broadcast('$modalResolveDependenciesStart');
         _buildModal.call(this).then(function () {
           $rootScope.$broadcast('$modalResolveDependenciesSuccess');
-          angular.element(_holderEl).append(_modal);
+          angular.element(_modalOptions.holderEl).append(_modal);
           _bootstrapModal.modal('show');
           _modalOpened = true;
           _openedModals.push(this);
@@ -314,6 +310,14 @@ angular.module('mwUI.Modal')
      * @returns {Object} Modal
      */
     this.create = function (modalOptions, bootstrapModalOptions) {
+      if(modalOptions && modalOptions.el){
+        modalOptions.holderEl = modalOptions.el;
+      }
+
+      if(modalOptions && modalOptions.class){
+        modalOptions.styleClass = modalOptions.class;
+      }
+
       return new Modal(modalOptions, bootstrapModalOptions);
     };
 

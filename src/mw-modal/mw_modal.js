@@ -6,6 +6,7 @@ angular.module('mwUI.Modal', ['mwUI.i18n', 'mwUI.Toast']);
 // @include ./directives/mw_modal_footer.js
 
 // @include ./services/mw_modal.js
+// @include ./services/mw_modal_options.js
 // @include ./services/mw_modal_template.js
 
 // @include ./shims/bootstrap_modal.js
