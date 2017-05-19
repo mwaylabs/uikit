@@ -165,6 +165,10 @@ angular.module('mwUI.Modal')
        */
       this.show = function () {
         var dfd = $q.defer();
+        var $holderEl = angular.element(_modalOptions.holderEl);
+        if(!$holderEl || $holderEl.length === 0){
+          throw new Error('[Modal] no element could be found for the selector string '+_modalOptions.holderEl+'. Make sure that the element exists')
+        }
         Toast.clear();
         _previousFocusedEl = angular.element(document.activeElement);
         $rootScope.$broadcast('$modalOpenStart');

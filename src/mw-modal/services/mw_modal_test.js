@@ -212,6 +212,15 @@ describe('mwUi Modal service', function () {
       this.$timeout.flush();
     });
 
+    it('throws error when holderEl does not exist', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        holderEl: 'not-existing'
+      });
+
+      expect(modal.show).toThrow();
+    });
+
     it('sets the correct boostrap modal options when dismissible is set to false', function(){
       var modal = this.Modal.create({
         templateUrl: 'test/xxx.html',
