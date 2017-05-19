@@ -46,11 +46,3 @@ angular.module('mwUI.Relution', [
     }
   })();
 });
-
-var shownDeprecationWarnings = [];
-window.uiDeprecationWarning = function(message){
-  if(shownDeprecationWarnings.indexOf(message) === -1){
-    console.warn(message);
-    shownDeprecationWarnings.push(message);
-  }
-};
