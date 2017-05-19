@@ -558,7 +558,7 @@ describe('mwUi Modal service', function () {
       });
 
       it('can be configured globally for all modals', function(){
-        mwModalOptionsProvider.config({holderEl: '.custom-el', dismissible: false});
+        mwModalOptionsProvider.config({dismissible: false});
         var modal = this.Modal.create({
           templateUrl: 'test/xxx.html'
         });
@@ -573,7 +573,7 @@ describe('mwUi Modal service', function () {
       });
 
       it('can be configured per modal', function(){
-        mwModalOptionsProvider.config({holderEl: '.custom-el', dismissible: false});
+        mwModalOptionsProvider.config({dismissible: false});
         var modal = this.Modal.create({
           templateUrl: 'test/xxx.html',
           dismissible: true
