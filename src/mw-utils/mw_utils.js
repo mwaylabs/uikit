@@ -24,6 +24,7 @@ window.mwUI.Utils.shims = {};
 // @include ./shims/deep_extend_object.js
 // @include ./shims/dom_observer.js
 // @include ./shims/route_to_regex.js
+// @include ./shims/deprecation_warning.js
 
 angular.module('mwUI.Utils').config(function(i18nProvider){
   i18nProvider.addResource('mw-utils/i18n', 'uikit');
