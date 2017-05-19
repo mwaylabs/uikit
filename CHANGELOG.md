@@ -1,3 +1,20 @@
+#v1.0.10
+## Features
+### Modal Module
+The service mwModalOptions was added to configure global modal options. Those options will be used for all modals except
+the modal configures it differently.
+```js
+angular.module('App')
+
+.config(function (mwModalOptionsProvider) {
+    mwModalOptionsProvider.config({
+      holderEl: '.module-page', // Element where modal should be appended to (default is body)
+      styleClass: 'my-modal-class', // Css class that should be set on the modal when appended to DOM
+      dismissible: false // Whether the user should be able to close modal by clicking on backdrop (default true)
+    });
+  });
+```
+
 # v1.0.9
 ## Bug Fixes
 ### Src-Relution Module
