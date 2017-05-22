@@ -1,4 +1,9 @@
-#v1.0.10
+# v1.0.11
+## Features
+### Src-Relution Module
+Sort order of listviews will be persisted in local storage
+
+# v1.0.10
 ## Features
 ### Modal Module
 The service mwModalOptions was added to configure global modal options. Those options will be used for all modals except
