@@ -136,12 +136,14 @@ angular.module('mwCollection')
       };
 
       this.applySortOrder = function (sortOrderObj) {
-        if(_.isString(sortOrderObj) && sortOrderObj.match(/[+-]\w+/)){
-          var sortString = sortOrderObj;
+        if (_.isString(sortOrderObj)) {
+          var sortString = sortOrderObj.match(/([+-])(\w+)/);
 
-          sortOrderObj = {
-            order: sortString[0],
-            property: sortString.replace(/[+-]/g,'')
+          if (sortString && sortString.length === 3) {
+            sortOrderObj = {
+              order: sortString[1],
+              property: sortString[2]
+            }
           }
         }
 
