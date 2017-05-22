@@ -136,6 +136,14 @@ angular.module('mwCollection')
       };
 
       this.applySortOrder = function (sortOrderObj) {
+        if(_.isString(sortOrderObj)){
+          var sortString = sortOrderObj;
+
+          sortOrderObj = {
+            order: sortString[0],
+            property: sortString.replace(/[+-]/g,'')
+          }
+        }
 
         _appliedFilter.set(sortOrderObj);
         return LocalForage.setItem(_localSortOrderIdentifier, sortOrderObj);
