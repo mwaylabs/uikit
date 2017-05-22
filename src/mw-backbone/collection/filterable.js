@@ -145,6 +145,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   this.setSortOrder = function (sortOrder) {
     _page = 1;
     _sortOrder = sortOrder;
+    collectionInstance.trigger('change:sortOrder', sortOrder);
   };
 
   this.getSortOrder = function () {
