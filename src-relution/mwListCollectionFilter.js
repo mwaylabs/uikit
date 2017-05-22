@@ -70,13 +70,15 @@ angular.module('mwCollection')
       this._localFilterWasSetByUser = function (localFilter) {
         return this._waitForAuthenticatedUser().then(function () {
           var wasSetByUser = false;
-          localFilter.aclEntries.forEach(function (aclEntry) {
-            if (!wasSetByUser) {
-              var aclUuid = aclEntry.split(':')[0],
-                userUuid = AuthenticatedUser.get('uuid');
-              wasSetByUser = (aclUuid === userUuid);
-            }
-          });
+          if(_.isArray(localFilter.aclEntries)){
+            localFilter.aclEntries.forEach(function (aclEntry) {
+              if (!wasSetByUser) {
+                var aclUuid = aclEntry.split(':')[0],
+                  userUuid = AuthenticatedUser.get('uuid');
+                wasSetByUser = (aclUuid === userUuid);
+              }
+            });
+          }
           return wasSetByUser;
         });
       };
