@@ -70,7 +70,7 @@ angular.module('mwCollection')
       this._localFilterWasSetByUser = function (localFilter) {
         return this._waitForAuthenticatedUser().then(function () {
           var wasSetByUser = false;
-          if(_.isArray(localFilter.aclEntries)){
+          if (_.isArray(localFilter.aclEntries)) {
             localFilter.aclEntries.forEach(function (aclEntry) {
               if (!wasSetByUser) {
                 var aclUuid = aclEntry.split(':')[0],
@@ -98,7 +98,7 @@ angular.module('mwCollection')
           return $q.when(_appliedFilter);
         } else {
           return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
-            if(appliedFilter){
+            if (appliedFilter) {
               return this._setAppliedFilter(appliedFilter);
             } else {
               return _appliedFilter;
