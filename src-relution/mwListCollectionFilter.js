@@ -70,13 +70,15 @@ angular.module('mwCollection')
       this._localFilterWasSetByUser = function (localFilter) {
         return this._waitForAuthenticatedUser().then(function () {
           var wasSetByUser = false;
-          localFilter.aclEntries.forEach(function (aclEntry) {
-            if (!wasSetByUser) {
-              var aclUuid = aclEntry.split(':')[0],
-                userUuid = AuthenticatedUser.get('uuid');
-              wasSetByUser = (aclUuid === userUuid);
-            }
-          });
+          if (_.isArray(localFilter.aclEntries)) {
+            localFilter.aclEntries.forEach(function (aclEntry) {
+              if (!wasSetByUser) {
+                var aclUuid = aclEntry.split(':')[0],
+                  userUuid = AuthenticatedUser.get('uuid');
+                wasSetByUser = (aclUuid === userUuid);
+              }
+            });
+          }
           return wasSetByUser;
         });
       };
@@ -96,7 +98,7 @@ angular.module('mwCollection')
           return $q.when(_appliedFilter);
         } else {
           return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
-            if(appliedFilter){
+            if (appliedFilter) {
               return this._setAppliedFilter(appliedFilter);
             } else {
               return _appliedFilter;
@@ -134,6 +136,16 @@ angular.module('mwCollection')
       };
 
       this.applySortOrder = function (sortOrderObj) {
+        if (_.isString(sortOrderObj)) {
+          var sortString = sortOrderObj.match(/([+-])(\w+)/);
+
+          if (sortString && sortString.length === 3) {
+            sortOrderObj = {
+              order: sortString[1],
+              property: sortString[2]
+            }
+          }
+        }
 
         _appliedFilter.set(sortOrderObj);
         return LocalForage.setItem(_localSortOrderIdentifier, sortOrderObj);

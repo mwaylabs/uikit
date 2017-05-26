@@ -44,6 +44,10 @@ angular.module('mwCollection', [])
           }.bind(this));
         }.bind(this));
       };
+
+      collection.on('change:sortOrder', function(sortOrder){
+        this.getMwListCollectionFilter().applySortOrder(sortOrder);
+      }, this);
     };
 
     return MwListCollection;

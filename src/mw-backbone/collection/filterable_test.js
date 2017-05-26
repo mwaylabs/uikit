@@ -216,4 +216,20 @@ describe('Filterable', function () {
       expect(filterable.getRequestParams().offset).toBe((100 - 1) * 30);
     });
   });
+
+  describe('sorting', function () {
+
+    it('triggers event when sort order has been changed', function () {
+      var filterable = new this.Filterable(this.collection),
+          changeSortOrderSpy = jasmine.createSpy('sortOrderChangeSpy');
+      this.collection.on('change:sortOrder', changeSortOrderSpy);
+
+      filterable.setSortOrder('+abc');
+
+      expect(changeSortOrderSpy).toHaveBeenCalled();
+
+      this.collection.off('change:sortOrder', changeSortOrderSpy);
+    });
+
+  });
 });
