@@ -99,9 +99,7 @@
             margin-top: 0;
           }
 
-          padding-right: 14px;
-          padding-top: 14px;
-          padding-bottom: 12px;
+          padding: 14px 14px 12px 0;
           position: relative;
           display: -webkit-flex;
           display: flex;
@@ -122,26 +120,31 @@
             text-decoration: underline;
           }
 
-          &.success{
+          &.default {
+            background: black;
+            color: white;
+          }
+          
+          &.success {
             background: white;
           }
 
-          &.danger{
+          &.danger {
             background: $brand-danger;
             color: white;
           }
 
-          &.warning{
+          &.warning {
             background: $brand-warning;
             color: white;
           }
 
-          &.info{
+          &.info {
             background: $brand-info;
             color: white;
           }
 
-          &.primary{
+          &.primary {
             background: $brand-primary;
             color: white;
           }
