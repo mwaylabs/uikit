@@ -1,12 +1,19 @@
 'use strict';
-
 describe('mwUi Modal service', function () {
+  var mwModalOptionsProvider;
+
   beforeEach(module('karmaDirectiveTemplates'));
 
   beforeEach(module('mwUI.Modal'));
   beforeEach(module('ngMock'));
 
   window.mockIconService();
+
+  beforeEach(function () {
+    module('mwUI.Modal', function (_mwModalOptionsProvider_) {
+      mwModalOptionsProvider = _mwModalOptionsProvider_;
+    });
+  });
 
   beforeEach(inject(function ($rootScope, $templateCache, Modal, $timeout) {
     this.$rootScope = $rootScope;
@@ -203,6 +210,15 @@ describe('mwUi Modal service', function () {
       modal.destroy();
       jasmine.clock().tick(101);
       this.$timeout.flush();
+    });
+
+    it('throws error when holderEl does not exist', function(){
+      var modal = this.Modal.create({
+        templateUrl: 'test/xxx.html',
+        holderEl: 'not-existing'
+      });
+
+      expect(modal.show).toThrow();
     });
 
     it('sets the correct boostrap modal options when dismissible is set to false', function(){
@@ -468,4 +484,109 @@ describe('mwUi Modal service', function () {
 
   });
 
+  describe('testing configuration', function(){
+    describe('modal holder el', function(){
+      it('is by default body', function(){
+        var modal = this.Modal.create({templateUrl: 'test/xxx.html'});
+
+        modal.show();
+        this.$timeout.flush();
+        this.$rootScope.$digest();
+
+        expect(angular.element('body').find('.mw-modal').length).toBe(1);
+
+        modal.destroy();
+      });
+
+      it('can be configured globally for all modals', function(){
+        angular.element('body').append('<div class="custom-el"></div>');
+
+        mwModalOptionsProvider.config({holderEl: '.custom-el'});
+        var modal = this.Modal.create({templateUrl: 'test/xxx.html'});
+        var modal2 = this.Modal.create({templateUrl: 'test/xxx.html'});
+        modal.show();
+        modal2.show();
+        this.$timeout.flush();
+        this.$rootScope.$digest();
+
+        expect(angular.element('.custom-el').find('.mw-modal').length).toBe(2);
+
+        modal.destroy();
+        modal2.destroy();
+        angular.element('.custom-el').remove();
+      });
+
+      it('can be configured per modal', function(){
+        mwModalOptionsProvider.config({holderEl: '.custom-el'});
+        var modal = this.Modal.create({templateUrl: 'test/xxx.html', holderEl: '.custom-el2'});
+        angular.element('body').append('<div class="custom-el2"></div>');
+
+        modal.show();
+        this.$timeout.flush();
+        this.$rootScope.$digest();
+
+        expect(angular.element('.custom-el2').find('.mw-modal').length).toBe(1);
+
+        modal.destroy();
+        angular.element('.custom-el2').remove();
+      });
+    });
+
+    describe('dismissible option', function(){
+      beforeEach(function(){
+        this.openSpy = jasmine.createSpy('openModal').and.callThrough();
+        window.$.fn.modal.Constructor.prototype.show = this.openSpy;
+        jasmine.clock().install();
+      });
+
+      afterEach(function(){
+        jasmine.clock().uninstall();
+      });
+
+      it('is by default true', function(){
+        var modal = this.Modal.create({
+          templateUrl: 'test/xxx.html'
+        });
+
+        modal.show();
+        jasmine.clock().tick(101);
+        this.$rootScope.$digest();
+
+        expect(this.openSpy.calls.first().object.options.backdrop).toBe(true);
+
+        modal.destroy();
+      });
+
+      it('can be configured globally for all modals', function(){
+        mwModalOptionsProvider.config({dismissible: false});
+        var modal = this.Modal.create({
+          templateUrl: 'test/xxx.html'
+        });
+
+        modal.show();
+        jasmine.clock().tick(101);
+        this.$rootScope.$digest();
+
+        expect(this.openSpy.calls.first().object.options.backdrop).toBe('static');
+
+        modal.destroy();
+      });
+
+      it('can be configured per modal', function(){
+        mwModalOptionsProvider.config({dismissible: false});
+        var modal = this.Modal.create({
+          templateUrl: 'test/xxx.html',
+          dismissible: true
+        });
+
+        modal.show();
+        jasmine.clock().tick(101);
+        this.$rootScope.$digest();
+
+        expect(this.openSpy.calls.first().object.options.backdrop).toBe(true);
+
+        modal.destroy();
+      });
+    });
+  });
 });

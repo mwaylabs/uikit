@@ -10,7 +10,7 @@ angular.module('mwUI.Relution')
       },
       templateUrl: 'uikit/templates/deprecated/mw_form_input.html',
       link: function(){
-        uiDeprecationWarning('The directive mw-form-input has been renamed to mw-input-wrapper. Please use the new directive instead!');
+        window.mwUI.Utils.shims.deprecationWarning('[mwFormInput] The directive mw-form-input has been renamed to mw-input-wrapper. Please use the new directive instead!');
       }
     };
   })
@@ -25,7 +25,7 @@ angular.module('mwUI.Relution')
       },
       templateUrl: 'uikit/templates/deprecated/mw_form_input.html',
       link: function () {
-        uiDeprecationWarning('The directive mw-form-wrapper does not exist anymore. Please use the directive mw-input-wrapper instead!');
+        window.mwUI.Utils.shims.deprecationWarning('[mwFormWrapper] The directive mw-form-wrapper does not exist anymore. Please use the directive mw-input-wrapper instead!');
       }
     };
   })
@@ -41,11 +41,11 @@ angular.module('mwUI.Relution')
       },
       templateUrl: 'uikit/templates/deprecated/mw_form_checkbox.html',
       link: function(scope) {
-        uiDeprecationWarning('The directive mw-form-checkbox does not exist anymore. Please use the directive mw-input-wrapper instead!');
+        window.mwUI.Utils.shims.deprecationWarning('[mwFormCheckbox] The directive mw-form-checkbox does not exist anymore. Please use the directive mw-input-wrapper instead!');
 
         if (scope.badges) {
           var formatBadges = function () {
-            uiDeprecationWarning('The badges attribute of the deprecated mw-form-checkbox is not supported anymore. Please transclude the badges instead');
+            window.mwUI.Utils.shims.deprecationWarning('[mwFormCheckbox] The badges attribute of the deprecated mw-form-checkbox is not supported anymore. Please transclude the badges instead');
             scope.typedBadges = [];
             var splittedBadges = scope.badges.split(',');
             angular.forEach(splittedBadges, function (badge) {
@@ -82,7 +82,7 @@ angular.module('mwUI.Relution')
   .directive('mwCustomCheckbox', function(){
     return {
       link: function(){
-        uiDeprecationWarning('The directive mw-custom-checkbox is deprecated. The custom checkbox is default now. You can remove this directive from the checkbox input element');
+        window.mwUI.Utils.shims.deprecationWarning('[mwCustomCheckbox] The directive mw-custom-checkbox is deprecated. The custom checkbox is default now. You can remove this directive from the checkbox input element');
       }
     };
   })
@@ -90,7 +90,7 @@ angular.module('mwUI.Relution')
   .directive('mwCustomRadio', function(){
     return {
       link: function(){
-        uiDeprecationWarning('The directive mw-custom-radio is deprecated. The custom radio box is default now. You can remove this directive from the radio input element');
+        window.mwUI.Utils.shims.deprecationWarning('[mwCustomRadio] The directive mw-custom-radio is deprecated. The custom radio box is default now. You can remove this directive from the radio input element');
       }
     };
   })
@@ -98,7 +98,7 @@ angular.module('mwUI.Relution')
   .directive('mwCustomSelect', function(){
     return {
       link: function(){
-        uiDeprecationWarning('The directive mw-custom-select is deprecated. The custom selectbox is default now. You can remove this directive from the select input');
+        window.mwUI.Utils.shims.deprecationWarning('[mwCustomSelect] The directive mw-custom-select is deprecated. The custom selectbox is default now. You can remove this directive from the select input');
       }
     };
   })
@@ -118,7 +118,7 @@ angular.module('mwUI.Relution')
         if (scope.mwOptionsCollection.length === 0) {
           scope.mwOptionsCollection.fetch();
         }
-        uiDeprecationWarning('The directive mw-form-multi-select-2 is deprecated. It has been renamed to mw-checkbox-group. ' +
+        window.mwUI.Utils.shims.deprecationWarning('[mwFormMultiSelect2] The directive mw-form-multi-select-2 is deprecated. It has been renamed to mw-checkbox-group. ' +
           'The new directive wont fetch the options collection automatically when it is empty');
       }
     };
