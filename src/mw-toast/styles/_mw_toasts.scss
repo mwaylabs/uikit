@@ -43,13 +43,14 @@
         display: flex;
         -webkit-align-self: flex-end;
         align-self: flex-end;
+        min-height: 70px;
 
-        @include box-shadow(0 0 6px 0 rgba(200,200,200,0.8));
+        @include box-shadow(2px 2px 12px 0 rgba(90, 90, 90, 0.59));
 
         .status-indicator {
-          min-width: 84px;
+          min-width: 70px;
           background: black;
-          font-size: 25px;
+          font-size: 17px;
           position: relative;
           z-index: 1;
           border-radius: $border-radius-base 0 0 $border-radius-base;
@@ -60,17 +61,20 @@
           align-items: center;
           -webkit-justify-content: center;
           justify-content: center;
-
+          &.success {
+            color: $brand-success !important;
+          }
+          color: white;
           .mw-icon {
             position: relative;
-
-            * {
-              color: white;
-            }
           }
 
+          &.default {
+            background: black;
+          }
+          
           &.success{
-            background: $brand-success;
+            background: white;
           }
 
           &.danger{
@@ -95,11 +99,12 @@
             margin-top: 0;
           }
 
-          padding: 14px 24px;
+          padding: 14px 14px 12px 0;
           position: relative;
           display: -webkit-flex;
           display: flex;
           align-items: center;
+          min-width: 300px;
 
           .holder {
             -webkit-flex-basis: 100%;
@@ -114,15 +119,55 @@
             font-weight: normal;
             text-decoration: underline;
           }
+
+          &.default {
+            background: black;
+            color: white;
+          }
+          
+          &.success {
+            background: white;
+          }
+
+          &.danger {
+            background: $brand-danger;
+            color: white;
+          }
+
+          &.warning {
+            background: $brand-warning;
+            color: white;
+          }
+
+          &.info {
+            background: $brand-info;
+            color: white;
+          }
+
+          &.primary {
+            background: $brand-primary;
+            color: white;
+          }
         }
 
         .closer {
           position: relative;
-          top: 3px;
+          top: -10px;
+          left: 5px;
           width: 30px;
           text-align: center;
           margin-left: 5px;
           cursor: pointer;
+          opacity: 0.51;
+
+          &.mw-icon {
+            &.success {
+              color: $gray;
+            }
+            * {
+              color: white;
+            }
+          }
         }
 
         @include single-transition(all, 0.8s, cubic-bezier(.41,-0.44,.33,.98));

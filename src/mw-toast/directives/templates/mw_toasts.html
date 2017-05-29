@@ -7,7 +7,7 @@
           <span mw-icon="{{toast.icon}}"></span>
         </div>
 
-        <div class="message">
+        <div class="message {{toast.type}}">
 
           <div class="holder margin-top-5">
 
@@ -32,7 +32,7 @@
 
           </div>
 
-          <div class="closer" ng-click="hideToast(toast.id)">
+          <div class="closer {{toast.type}}" ng-click="hideToast(toast.id)">
             <span mw-icon="mwUI.cross"></span>
           </div>
 
