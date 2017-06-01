@@ -13,23 +13,23 @@ before_install:
 before_deploy:
 - grunt build --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
 deploy:
-- provider: script
-  script: grunt shell:gitRelease --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
-  skip_cleanup: true
-  on:
-    branch: master
-- provider: releases
-  api_key:
-    secure: DmSkHAyFIkdz38zA1yKQS6hIMXQzmeDfeeIXREF3H3J6x0aXOZBp5ZVl9PIXHVLbtAHvrMp+kmKWqSuNW3jZPUi4oMQpfECgLdpAoNdo8rLuuQTAAphKEDQcs/YiVCsO2kOhiFliPMfV6e0Vb22uDYpKaUIGC2k7X2p8h3pYbQ2zMNwpeWkZ5Wjgc3Q4poShEaeihbqQ8SPQG4hdAoZUVYghkF7JFgMxm7gz/ZDzPq9ciAF6rv+2RqZvV/wLnRAGnwquUVQ9mRS/5Mjd9PUDdDWFQ1Ph1XkPVP7fAT6SxuZ6Tb2eaeZytOqyT5YRYL9ZYt6j/rsZjvbnFEE5NyeSO/8lLlJTAOivHH6vN7IydCUG03qdykWJ7XpCheVFH9UAMb2U4FZv6yb+GDLkWbPKKcHon+wnBvmapKen57zYJdwNDg6xxFT7dPYO8DNPve2xw7owbGTkghCEXo9b/104io0LtOt4/MTO9UH/zJTjlFxQdiACJ6Nj9HlD6Wfj8MM96M8Zaq2DsGeohv/wqP4Umw/vmyazjysNYmPxADfxKqfrn+JQM1BASTdxgcleVtcZM5/vFjV8aC5yHet6ayYdca4bL/eFZYM4PPTdTJvxynXql+gFTiJII2WIylC16JJGYAu1Qcbi9ppCLwlTt6RonleI7XozLkFsQ2p4Qf+zc/I=
-  file: zip/*.zip
-  skip_cleanup: true
-  file_glob: true
-  on:
-    tags: true
-- provider: npm
-  email: a.zarges@mwaysolutions.com
-  api_key:
-    secure: zlB6m4IT0R3ta46jmh6K2EJp2cySvQeXUawLIbbuKWdxLLYb2FS3DEtW9SrwjkTNzmQ8Xk2DzrPj2yCkK2vQ6IPJHARx07sFZHb6DRF8ILkiMycMdffetgYGJ9UApnJ3ysrw0J4rMhI0uXtg4UVeil2dO69WlZYFIsNxF3TrdO5mKdMBiVlxLAh2xQYQya5/Y9It489O0deKEmQfmIBGfcujmLLpQZe15NSaD4mt9QqOV7rcEMm+4RaUDQn+1APhQWLvTkABHsz9NuNHYziu3t6nRimQcuxwOnLk9oyz1qNMo5K8Ajy/rw3xqI173rkbiJK5Lb6n/lBiXQ9h5Rp8syKrKjLX8utIejdjuuW5F/hUal2IC9lXIt3GOmIhNvgGNpSYz2tN2O0TIOQ13+jYM8SR6i6tijrfQnfaJZAQJ82OJvijkmKfDK1zgd3hIrUbSHMHgP+MGWjGX16ZATqnTGi0spRK0740TsxNfmt9Rb7xAnuESX6mTZZgyCH++ugqP4mloAORRONAIHFrILdivyRVaU9qxVhhOWpyFvbp+TiOSZy9awlgugLd262pkJ7/olzqVfJ2/jYOMDs6mC4C1m6oPs02tBn7n1CKriFQAo6Z/QJu6Me5YmSVTSmN53qmZKnU9McvP0PvbtKuDEBpoUDVkBb1HwZGPWkaRxQkDT0=
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: script
+    script: grunt shell:gitRelease --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+    skip_cleanup: true
+    on:
+      branch: master
+  - provider: releases
+    api_key:
+      secure: l+pHQnd2tLse8PptmF3B4iA3gtK9Uqm93RDOPMLeaeUX7eSs9aV+YY0b0Fk/uTYo8DJycY627uyGd01Hk69NIf2vaOpjHEm1X7r3bZSB5EGRvInQSZWknLVjbVa1drQugB/I2VO16oScHqi1F6s1VEqFbPjewwv+q/4DQe8a3qXFJAj82qpukLK3bSeimBsooU7BelYafcl8aR5f8xnhHvt5wbBYQebiM/ZY1s0SIAvcJXYCKAplCysFD7T1EJRuVij86LMDNQ2tRkLYouGyfdD0C5gW0gpzLwOMwIhp5k1m8WKSmfhE+4SXMyHex075etRAAgHzAgF7FY3Hy74wv2ieQrZxxJPeV+bgp/i7ixtAzVfvU9ALyhPFj7KJPv1NdDaEln+hURfnV+syKxXok8rg9NA3Iu35yj0KyGntsh6rC2kji+jiunMZkn4V+uPWt5et2qpwkxE63Q9sPTxVoF7+/LG4uvPSwMpS24qQ+VRs+auzXxgfrA2XyHPsRgc+HX2wW4GZi6f4vsOUuwzD1HuQ4XP6ZddILHaz4baKFZvYr7NcNb3xeCHj9EJKI3c6MmtFl1pudl/OANQsIU+hM9EdAAEVRQg1oEaVK40+lOTVYj1HGZ+2jBprCJsGB3yOOk7/1IoZ5SFTHMshi1AknujmhHZgvhOze9uyR3i216M=
+    file: zip/*.zip
+    skip_cleanup: true
+    file_glob: true
+    on:
+      tags: true
+  - provider: npm
+    email: a.zarges@mwaysolutions.com
+    api_key:
+      secure: zlB6m4IT0R3ta46jmh6K2EJp2cySvQeXUawLIbbuKWdxLLYb2FS3DEtW9SrwjkTNzmQ8Xk2DzrPj2yCkK2vQ6IPJHARx07sFZHb6DRF8ILkiMycMdffetgYGJ9UApnJ3ysrw0J4rMhI0uXtg4UVeil2dO69WlZYFIsNxF3TrdO5mKdMBiVlxLAh2xQYQya5/Y9It489O0deKEmQfmIBGfcujmLLpQZe15NSaD4mt9QqOV7rcEMm+4RaUDQn+1APhQWLvTkABHsz9NuNHYziu3t6nRimQcuxwOnLk9oyz1qNMo5K8Ajy/rw3xqI173rkbiJK5Lb6n/lBiXQ9h5Rp8syKrKjLX8utIejdjuuW5F/hUal2IC9lXIt3GOmIhNvgGNpSYz2tN2O0TIOQ13+jYM8SR6i6tijrfQnfaJZAQJ82OJvijkmKfDK1zgd3hIrUbSHMHgP+MGWjGX16ZATqnTGi0spRK0740TsxNfmt9Rb7xAnuESX6mTZZgyCH++ugqP4mloAORRONAIHFrILdivyRVaU9qxVhhOWpyFvbp+TiOSZy9awlgugLd262pkJ7/olzqVfJ2/jYOMDs6mC4C1m6oPs02tBn7n1CKriFQAo6Z/QJu6Me5YmSVTSmN53qmZKnU9McvP0PvbtKuDEBpoUDVkBb1HwZGPWkaRxQkDT0=
+    skip_cleanup: true
+    on:
+      tags: true
