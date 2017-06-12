@@ -1,3 +1,19 @@
+# v1.0.12
+## Features
+### Backbone Module
+- Selectable of the collection was extended with the method `useSelectionFor(modelOrCollection)` to reset the `modelOrCollection`
+with the current selection
+- The `mwUI.Collection` is now triggering the event `change:filterValue` when a filter was set on the filterable
+
+## Fixes
+### Backbone Module
+The page of the filterable is reset to 1 when a filter was set. This fixes the wrong offset when the user has paginated 
+through the collection and changes the filter afterwards e.g. by searching.
+
+### List Module
+The scroll listener of the directive `mwListableHead2` is now only active when the directive is visible to improve performance
+and to fix broken affixed state when a user is e.g. switching from one tab to another
+
 # v1.0.11
 ## Features
 ### Src-Relution Module
