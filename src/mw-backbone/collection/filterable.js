@@ -152,18 +152,24 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     return _sortOrder;
   };
 
-  this.setFilters = function (filterMap) {
+  this.setFilters = function (filterMap, options) {
+    options = options || {};
 
     _.forEach(filterMap, function (value, key) {
       if (_.has(this.filterValues, key)) {
         this.filterValues[key] = value;
+        var filterValue = {};
+        filterValue[key] = value;
+        if(_.isUndefined(options.silent) || !options.silent){
+          collectionInstance.trigger('change:filterValue', filterValue);
+        }
       } else {
         throw new Error('Filter named \'' + key + '\' not found, did you add it to filterValues of the model?');
       }
     }, this);
 
+    this.setPage(1);
     this.filterIsSet = true;
-
   };
 
   this.getFilters = function () {
