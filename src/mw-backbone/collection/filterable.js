@@ -162,6 +162,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
       }
     }, this);
 
+    this.setPage(1);
     this.filterIsSet = true;
 
   };
