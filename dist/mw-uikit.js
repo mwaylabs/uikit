@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.11-bv1.0.11';
+  root.mwUI.VERSION = '1.0.12-b430';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -1592,18 +1592,24 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     return _sortOrder;
   };
 
-  this.setFilters = function (filterMap) {
+  this.setFilters = function (filterMap, options) {
+    options = options || {};
 
     _.forEach(filterMap, function (value, key) {
       if (_.has(this.filterValues, key)) {
         this.filterValues[key] = value;
+        var filterValue = {};
+        filterValue[key] = value;
+        if(_.isUndefined(options.silent) || !options.silent){
+          collectionInstance.trigger('change:filterValue', filterValue);
+        }
       } else {
         throw new Error('Filter named \'' + key + '\' not found, did you add it to filterValues of the model?');
       }
     }, this);
 
+    this.setPage(1);
     this.filterIsSet = true;
-
   };
 
   this.getFilters = function () {
@@ -1905,6 +1911,37 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
 
   };
 
+  this.setCollectionFromSelection = function (collection) {
+    var selected = this.getSelected();
+    if (collection instanceof mwUI.Backbone.Collection) {
+      collection.replace(selected.toJSON());
+    } else {
+      throw new Error('[Selectable] The passed collection is not an instance of mwUI.Backbone.Collection');
+    }
+    return collection;
+  };
+
+  this.setModelFromSelection = function (model) {
+    var selected = this.getSelected();
+    if (model instanceof Backbone.Model) {
+      if (selected.length === 0) {
+        model.clear();
+      } else {
+        model.set(selected.first().toJSON());
+      }
+    } else {
+      throw new Error('[Selectable] The passed model is not an instance of Backbone.Model');
+    }
+    return model;
+  };
+
+  this.useSelectionFor = function (modelOrCollection) {
+    if (modelOrCollection instanceof Backbone.Model) {
+      return this.setModelFromSelection(modelOrCollection);
+    } else if(modelOrCollection instanceof Backbone.Collection){
+      return this.setCollectionFromSelection(modelOrCollection);
+    }
+  };
 
   var main = function () {
     if (!(_collection instanceof Backbone.Collection)) {
@@ -3912,6 +3949,10 @@ angular.module('mwUI.List')
         var newOffset;
 
         var throttledScrollFn = _.throttle(function () {
+          if(!el.is(':visible')){
+            return;
+          }
+
           if (!newOffset) {
             var headerOffset,
               headerHeight,
