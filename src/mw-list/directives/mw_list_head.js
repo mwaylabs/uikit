@@ -39,6 +39,10 @@ angular.module('mwUI.List')
         var newOffset;
 
         var throttledScrollFn = _.throttle(function () {
+          if(!el.is(':visible')){
+            return;
+          }
+
           if (!newOffset) {
             var headerOffset,
               headerHeight,
