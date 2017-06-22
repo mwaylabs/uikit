@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('mwUi menu toggle active class directive', function () {
+describe('mwUi menu toggle active class directive', function () {
   beforeEach(module('mwUI.Menu'));
 
   beforeEach(function () {
