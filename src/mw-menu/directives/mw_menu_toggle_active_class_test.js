@@ -141,8 +141,8 @@ describe('mwUi menu toggle active class directive', function () {
   });
 
   it('is active when an isActive function is defined and the function returns true', function(){
-    this.$scope.entry.set('isActive', function(){return true});
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$scope.entry.set('isActive', function(){return true;});
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
 
     this.$scope.$digest();
     this.$timeout.flush();
@@ -151,8 +151,8 @@ describe('mwUi menu toggle active class directive', function () {
   });
 
   it('is not active when an isActive function is defined and the function returns false', function(){
-    this.$scope.entry.set('isActive', function(){return false});
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$scope.entry.set('isActive', function(){return false;});
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
 
     this.$scope.$digest();
     this.$timeout.flush();
@@ -161,9 +161,9 @@ describe('mwUi menu toggle active class directive', function () {
   });
 
   it('is still active when an isActive function is but it is not matching the current url', function(){
-    this.$scope.entry.set('isActive', function(){return true});
+    this.$scope.entry.set('isActive', function(){return true;});
     this.$scope.entry.set('url', '/abc');
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
 
     this.$location.setUrl('/xyz');
     this.$scope.$digest();
@@ -181,10 +181,10 @@ describe('mwUi menu toggle active class directive', function () {
         id: 2,
         label: 'sub_xxx',
         url: '/abc/xxx',
-        isActive: function(){return true}
+        isActive: function(){return true;}
       }]
     });
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
 
     this.$location.setUrl('/xyz');
     this.$scope.$digest();
@@ -198,15 +198,15 @@ describe('mwUi menu toggle active class directive', function () {
       id: 1,
       label: 'xxx',
       url: '/xxx',
-      isActive: function(){return false},
+      isActive: function(){return false;},
       subEntries: [{
         id: 2,
         label: 'sub_xxx',
         url: '/abc/xxx',
-        isActive: function(){return true}
+        isActive: function(){return true;}
       }]
     });
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
 
     this.$location.setUrl('/xyz');
     this.$scope.$digest();
@@ -221,9 +221,9 @@ describe('mwUi menu toggle active class directive', function () {
       id: 1,
       label: 'xxx',
       url: '/xxx',
-      isActive: function(){return this.$scope.isActive}.bind(this)
+      isActive: function(){return this.$scope.isActive;}.bind(this)
     });
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
     this.$location.setUrl('/xyz');
     this.$scope.$digest();
     this.$timeout.flush();
@@ -241,9 +241,9 @@ describe('mwUi menu toggle active class directive', function () {
       id: 1,
       label: 'xxx',
       url: '/xxx',
-      isActive: function(){return this.$scope.isActive}.bind(this)
+      isActive: function(){return this.$scope.isActive;}.bind(this)
     });
-    var el = this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
+    this.$compile('<div mw-menu-toggle-active-class="entry"></div>')(this.$scope);
     this.$location.setUrl('/xyz');
     this.$scope.$digest();
     this.$timeout.flush();
