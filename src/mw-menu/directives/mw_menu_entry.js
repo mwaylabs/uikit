@@ -11,7 +11,8 @@ angular.module('mwUI.Menu')
         class: '@styleClass',
         order: '=',
         activeUrls: '=',
-        action: '&'
+        action: '&',
+        isActive: '&'
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
       require: ['mwMenuEntry', '?^^mwMenuEntry', '?^mwMenuTopEntries'],
@@ -74,9 +75,12 @@ angular.module('mwUI.Menu')
             order: scope.order || getDomOrder(),
             activeUrls: scope.activeUrls || [],
             class: scope.class,
-            action: scope.action ? function () {
-                scope.$eval(scope.action);
-              } : null
+            action: attrs.action ? function () {
+              scope.action();
+            } : null,
+            isActive: attrs.isActive ? function () {
+              return scope.isActive();
+            } : null
           });
         };
 
