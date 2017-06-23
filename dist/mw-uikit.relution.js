@@ -490,6 +490,14 @@ angular.module('mwComponentsBb', [])
         el.on('blur', 'input[type=text]', function () {
           el.children().removeClass('is-focused');
         });
+
+        scope.$watch(function () {
+          if (scope.collection.filterable && scope.property) {
+            return scope.collection.filterable.filterValues[scope.property];
+          }
+        }, function (val) {
+          scope.viewModel.searchVal = val;
+        });
       }
     };
   }])

@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.0.11-bv1.0.11';
+  root.mwUI.VERSION = '1.0.12-b436';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -1592,18 +1592,24 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
     return _sortOrder;
   };
 
-  this.setFilters = function (filterMap) {
+  this.setFilters = function (filterMap, options) {
+    options = options || {};
 
     _.forEach(filterMap, function (value, key) {
       if (_.has(this.filterValues, key)) {
         this.filterValues[key] = value;
+        var filterValue = {};
+        filterValue[key] = value;
+        if(_.isUndefined(options.silent) || !options.silent){
+          collectionInstance.trigger('change:filterValue', filterValue);
+        }
       } else {
         throw new Error('Filter named \'' + key + '\' not found, did you add it to filterValues of the model?');
       }
     }, this);
 
+    this.setPage(1);
     this.filterIsSet = true;
-
   };
 
   this.getFilters = function () {
@@ -1905,6 +1911,37 @@ mwUI.Backbone.Selectable.Collection = function (collectionInstance, options) {
 
   };
 
+  this.setCollectionFromSelection = function (collection) {
+    var selected = this.getSelected();
+    if (collection instanceof mwUI.Backbone.Collection) {
+      collection.replace(selected.toJSON());
+    } else {
+      throw new Error('[Selectable] The passed collection is not an instance of mwUI.Backbone.Collection');
+    }
+    return collection;
+  };
+
+  this.setModelFromSelection = function (model) {
+    var selected = this.getSelected();
+    if (model instanceof Backbone.Model) {
+      if (selected.length === 0) {
+        model.clear();
+      } else {
+        model.set(selected.first().toJSON());
+      }
+    } else {
+      throw new Error('[Selectable] The passed model is not an instance of Backbone.Model');
+    }
+    return model;
+  };
+
+  this.useSelectionFor = function (modelOrCollection) {
+    if (modelOrCollection instanceof Backbone.Model) {
+      return this.setModelFromSelection(modelOrCollection);
+    } else if(modelOrCollection instanceof Backbone.Collection){
+      return this.setCollectionFromSelection(modelOrCollection);
+    }
+  };
 
   var main = function () {
     if (!(_collection instanceof Backbone.Collection)) {
@@ -3912,6 +3949,10 @@ angular.module('mwUI.List')
         var newOffset;
 
         var throttledScrollFn = _.throttle(function () {
+          if(!el.is(':visible')){
+            return;
+          }
+
           if (!newOffset) {
             var headerOffset,
               headerHeight,
@@ -4299,7 +4340,9 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       label: null,
       icon: null,
       activeUrls: [],
-      order: null
+      order: null,
+      action: null,
+      isActive: null
     };
   },
   nested: function () {
@@ -4388,14 +4431,27 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
   hasSubEntries: function () {
     return this.get('subEntries').length > 0;
   },
+  hasManualActiveFunction: function () {
+    return this.get('isActive') && typeof this.get('isActive') === 'function';
+  },
   isActiveForUrl: function (url) {
-    return this.ownUrlIsActiveForUrl(url) || this.activeUrlIsActiveForUrl(url);
+    if (this.hasManualActiveFunction()) {
+      return this.get('isActive')();
+    } else {
+      return this.ownUrlIsActiveForUrl(url) || this.activeUrlIsActiveForUrl(url);
+    }
   },
   getActiveSubEntryForUrl: function (url) {
     return this.get('subEntries').getActiveEntryForUrl(url);
   },
   hasActiveSubEntryOrIsActiveForUrl: function (url) {
-    return this.get('type') === 'ENTRY' && (!!this.getActiveSubEntryForUrl(url) || this.isActiveForUrl(url));
+    if (this.get('type') === 'ENTRY') {
+      if (this.hasManualActiveFunction()) {
+        return this.get('isActive')();
+      } else {
+        return !!this.getActiveSubEntryForUrl(url) || this.isActiveForUrl(url);
+      }
+    }
   },
   constructor: function (model, options) {
     options = options || {};
@@ -4599,7 +4655,8 @@ angular.module('mwUI.Menu')
         class: '@styleClass',
         order: '=',
         activeUrls: '=',
-        action: '&'
+        action: '&',
+        isActive: '&'
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_entry.html',
       require: ['mwMenuEntry', '?^^mwMenuEntry', '?^mwMenuTopEntries'],
@@ -4662,9 +4719,12 @@ angular.module('mwUI.Menu')
             order: scope.order || getDomOrder(),
             activeUrls: scope.activeUrls || [],
             class: scope.class,
-            action: scope.action ? function () {
-                scope.$eval(scope.action);
-              } : null
+            action: attrs.action ? function () {
+              scope.action();
+            } : null,
+            isActive: attrs.isActive ? function () {
+              return scope.isActive();
+            } : null
           });
         };
 
@@ -4722,22 +4782,35 @@ angular.module('mwUI.Menu')
   .directive('mwMenuToggleActiveClass', ['$rootScope', '$location', '$timeout', function ($rootScope, $location, $timeout) {
     return {
       scope: {
-        entry: '=mwMenuToggleActiveClass'
+        entry: '=mwMenuToggleActiveClass',
+        isActive: '&'
       },
       link: function (scope, el) {
         var setIsActiveState = function () {
           $timeout(function () {
-            var url = $location.url();
+            var url = $location.url(),
+              hadClass = el.hasClass('active');
 
             if (scope.entry.hasActiveSubEntryOrIsActiveForUrl(url)) {
               el.addClass('active');
             } else {
               el.removeClass('active');
             }
+
+            if (hadClass !== el.hasClass('active')) {
+              scope.$emit('menu-toggle-active-class-changed', el.hasClass('active'));
+            }
           });
         };
 
+        if (scope.entry && scope.entry.get('isActive')) {
+          scope.$watch(function () {
+            return scope.entry.get('isActive')();
+          }, setIsActiveState);
+        }
+
         setIsActiveState();
+        $rootScope.$on('menu-toggle-active-class-changed', setIsActiveState);
         $rootScope.$on('$locationChangeSuccess', setIsActiveState);
         $rootScope.$on('$routeChangeError', setIsActiveState);
       }
