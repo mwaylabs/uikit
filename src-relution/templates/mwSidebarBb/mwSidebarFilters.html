@@ -6,7 +6,7 @@
     <button class="btn btn-default btn-block dropdown-toggle"
             ng-class="{hidden:viewModel.showFilterForm}"
             data-toggle="dropdown">
-      <span mw-icon="rln-icon filter_add"></span>
+      <span mw-icon="rln-icon icon-filter_add"></span>
       {{appliedFilter.get('name') || ('common.applyQuickFilter' | i18n) }}
     </button>
 
@@ -33,14 +33,14 @@
         <div ng-if="appliedFilter.id===filter.id && filter.canModifyFilter()"
              class="pull-right action-btns hidden-xs hidden-sm">
 
-          <button class="btn btn-link"
+          <button class="btn btn-link edit"
                   ng-click="editFilter(filter)">
-            <span mw-icon="rln-icon edit"></span>
+            <span mw-icon="rln-icon icon-edit"></span>
           </button>
 
-          <button class="btn btn-link"
+          <button class="btn btn-link delete"
                   ng-click="deleteFilter(filter)">
-            <span mw-icon="rln-icon delete"></span>
+            <span mw-icon="rln-icon icon-delete"></span>
           </button>
 
         </div>
@@ -73,7 +73,10 @@
         <div ng-if="viewModel.tmpFilter.canCreatePublicFilter()"
              class="public-filter margin-top-10">
           <p>
-            <b>{{'common.saveQuickFilterPublic' | i18n}}</b>
+            <label>
+              <input type="checkbox" ng-model="isPublic" mw-model="viewModel.tmpFilter">
+              {{'common.saveQuickFilterPublic' | i18n}}
+            </label>
             <span mw-icon="fa-question-circle"
                   tooltip="{{'common.saveQuickFilterPublicTooltip' | i18n}}">
             </span>

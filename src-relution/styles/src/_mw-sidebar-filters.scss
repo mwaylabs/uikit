@@ -5,6 +5,12 @@
       width: 100%;
     }
 
+    .public-filter{
+      label{
+        margin-right: 5px;
+      }
+    }
+
     input[type="number"]::-webkit-input-placeholder
     {
       color: #555555 !important;
@@ -119,7 +125,6 @@
         .btn{
           font-size: 18px;
           padding: 3px 0;
-          margin-right: -10px;
 
           i{
             color: #999;
