@@ -8,7 +8,9 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       label: null,
       icon: null,
       activeUrls: [],
-      order: null
+      order: null,
+      action: null,
+      isActive: null
     };
   },
   nested: function () {
@@ -97,14 +99,27 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
   hasSubEntries: function () {
     return this.get('subEntries').length > 0;
   },
+  hasManualActiveFunction: function () {
+    return this.get('isActive') && typeof this.get('isActive') === 'function';
+  },
   isActiveForUrl: function (url) {
-    return this.ownUrlIsActiveForUrl(url) || this.activeUrlIsActiveForUrl(url);
+    if (this.hasManualActiveFunction()) {
+      return this.get('isActive')();
+    } else {
+      return this.ownUrlIsActiveForUrl(url) || this.activeUrlIsActiveForUrl(url);
+    }
   },
   getActiveSubEntryForUrl: function (url) {
     return this.get('subEntries').getActiveEntryForUrl(url);
   },
   hasActiveSubEntryOrIsActiveForUrl: function (url) {
-    return this.get('type') === 'ENTRY' && (!!this.getActiveSubEntryForUrl(url) || this.isActiveForUrl(url));
+    if (this.get('type') === 'ENTRY') {
+      if (this.hasManualActiveFunction()) {
+        return this.get('isActive')();
+      } else {
+        return !!this.getActiveSubEntryForUrl(url) || this.isActiveForUrl(url);
+      }
+    }
   },
   constructor: function (model, options) {
     options = options || {};

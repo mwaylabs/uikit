@@ -5,6 +5,27 @@
 with the current selection
 - The `mwUI.Collection` is now triggering the event `change:filterValue` when a filter was set on the filterable
 
+### Menu Module
+- The menu-entry directive was extended with an `is-active` attribute that accepts a function or a boolean.
+This attribute can be used to control the active state of a `mw-menu-entry` programmatically. Can be useful for entries that 
+don't have a url but only a click action. When a manual `is-active` function is defined the url won't be checked
+```html
+<div mw-menu-entry 
+     label="abc"
+     url="#/xyz"
+     is-active="false"></div> <!-- This entry will never be in active state -->
+     
+<div mw-menu-entry 
+     label="abc"
+     url="#/xyz"
+     is-active="true"></div> <!-- This entry will always be in active state -->  
+        
+<div mw-menu-entry 
+     label="abc"
+     url="#/xyz"
+     is-active="ctrl.isEntryActive()"></div> <!-- This entry will be in active state  when the isEntryActive() function returns true -->          
+```
+
 ## Fixes
 ### Backbone Module
 The page of the filterable is reset to 1 when a filter was set. This fixes the wrong offset when the user has paginated 
