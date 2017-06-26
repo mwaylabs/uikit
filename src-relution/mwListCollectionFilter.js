@@ -30,10 +30,13 @@ angular.module('mwCollection')
 
       // FilterHolders save in backend
       this.fetchFilters = function () {
-        if (_filterHolders.length > 0) {
+        if (_filterHolders.length > 0 || _filterHolders.fetched) {
           return $q.when(_filterHolders);
         } else {
-          return _filterHolders.fetch();
+          return _filterHolders.fetch().then(function () {
+            _filterHolders.fetched = true;
+            return _filterHolders;
+          });
         }
       };
 
@@ -55,45 +58,18 @@ angular.module('mwCollection')
         }.bind(this));
       };
 
-
       this.getAppliedFilter = function () {
         return _appliedFilter;
       };
 
-      this._waitForAuthenticatedUser = function () {
-        var dfd = $q.defer();
-        if (AuthenticatedUser.get('authenticated')) {
-          dfd.resolve(AuthenticatedUser);
-        } else {
-          AuthenticatedUser.once('change:authenticated', function () {
-            dfd.resolve(AuthenticatedUser);
-          });
-        }
-        return dfd.promise;
-      };
-
-      this._localFilterWasSetByUser = function (localFilter) {
-        return this._waitForAuthenticatedUser().then(function () {
-          var wasSetByUser = false;
-          if (_.isArray(localFilter.aclEntries)) {
-            localFilter.aclEntries.forEach(function (aclEntry) {
-              if (!wasSetByUser) {
-                var aclUuid = aclEntry.split(':')[0],
-                  userUuid = AuthenticatedUser.get('uuid');
-                wasSetByUser = (aclUuid === userUuid);
-              }
-            });
-          }
-          return wasSetByUser;
-        });
-      };
-
       this._setAppliedFilter = function (appliedFilter) {
-        return this._localFilterWasSetByUser(appliedFilter).then(function (wasSetByUser) {
-          if (wasSetByUser) {
-            _appliedFilter.set(appliedFilter);
-          }
-          return _appliedFilter;
+        _appliedFilter.set(appliedFilter);
+        return _appliedFilter;
+      };
+
+      this.filterWasSetByUser = function (filter) {
+        return this.fetchFilters().then(function () {
+          return !!_filterHolders.get(filter);
         });
       };
 
@@ -112,6 +88,10 @@ angular.module('mwCollection')
         }
       };
 
+      this.unSetFilter = function(){
+        _appliedFilter.clear();
+      };
+
       this.applyFilter = function (filterModel) {
         var jsonFilter = filterModel.toJSON();
 
@@ -120,8 +100,15 @@ angular.module('mwCollection')
       };
 
       this.revokeFilter = function () {
+        var promises = [];
         _appliedFilter.clear();
-        return LocalForage.removeItem(_localFilterIdentifier);
+        _appliedSearchTerm = {
+          attr: null,
+          val: null
+        };
+        promises.push(LocalForage.removeItem(_localFilterIdentifier));
+        promises.push(LocalForage.removeItem(_localSearchIdentifier));
+        return $q.all(promises);
       };
 
       this.getAppliedSortOrder = function () {
