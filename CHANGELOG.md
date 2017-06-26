@@ -26,6 +26,13 @@ don't have a url but only a click action. When a manual `is-active` function is 
      is-active="ctrl.isEntryActive()"></div> <!-- This entry will be in active state  when the isEntryActive() function returns true -->          
 ```
 
+### Src-Relution Module
+- The search query of `mw-listable-head-2` (#93) will be persisted in local storage. To get the feature working the Attribute 
+`collection` of `mw-listable-head-2` has to be replaced with the attribute `mw-list-collection="mwListCollection"`
+- Fixed the selection of a public filter in the filter bar on page reload
+- Switch filter sidebar tabs immediately instead of waiting for the fetch results
+- Display loading spinner in filter sidebar tab when the filter is fetching results
+
 ## Fixes
 ### Backbone Module
 The page of the filterable is reset to 1 when a filter was set. This fixes the wrong offset when the user has paginated 

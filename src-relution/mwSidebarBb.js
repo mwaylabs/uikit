@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('mwSidebarBb', [])
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarFilters
-   * @element div
-   * @description
-   *
-   * Container for filters
-   *
-   */
+/**
+ * @ngdoc directive
+ * @name mwSidebar.directive:mwSidebarFilters
+ * @element div
+ * @description
+ *
+ * Container for filters
+ *
+ */
   .directive('mwSidebarFiltersBb', function ($timeout, FilterHolderModel) {
     return {
       transclude: true,
@@ -43,6 +43,7 @@ angular.module('mwSidebarBb', [])
         scope.showFilterForm = scope.$eval(attr.showFilterForm);
         scope.mwListCollection = scope.$eval(attr.mwListCollection);
         scope.collection = scope.$eval(attr.collection);
+        scope.isLoading = false;
 
         if (scope.mwListCollection) {
 
@@ -59,7 +60,7 @@ angular.module('mwSidebarBb', [])
             canShowForm: false
           };
 
-          if(scope.showFilterForm){
+          if (scope.showFilterForm) {
             scope.viewModel.showFilterForm = true;
           }
 
@@ -76,9 +77,23 @@ angular.module('mwSidebarBb', [])
           var filterCollection = function (filterModel) {
             scope.collection.filterable.resetFilters();
             scope.collection.filterable.setFilters(filterModel.get('filterValues'));
-            return scope.collection.fetch().then(function () {
-              setTotalAmount(filterModel);
+            return scope.mwListCollectionFilter.fetchAppliedSearchTerm().then(function (searchTerm) {
+              if (searchTerm.val) {
+                var searchTermFilter = {};
+                searchTermFilter[searchTerm.attr] = searchTerm.val;
+                scope.collection.filterable.setFilters(searchTermFilter);
+              }
+              return scope.collection.fetch().then(function () {
+                setTotalAmount(filterModel);
+              });
             });
+          };
+
+          scope.isFilterApplied = function (filter) {
+            var appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
+            if (filter) {
+              return appliedFilter.id === filter.id;
+            }
           };
 
           scope.saveFilter = function () {
@@ -108,9 +123,8 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.applyFilter = function (filterModel) {
-            filterCollection(filterModel).then(function () {
-              scope.mwListCollectionFilter.applyFilter(filterModel);
-            });
+            filterCollection(filterModel);
+            scope.mwListCollectionFilter.applyFilter(filterModel);
           };
 
           scope.revokeFilter = function () {
@@ -160,7 +174,6 @@ angular.module('mwSidebarBb', [])
           scope.mwListCollectionFilter.fetchAppliedFilter().then(function (filterModel) {
             setTotalAmount(filterModel);
           });
-
         } else if (scope.collection) {
           // TODO ADD OLD IMPLEMENTATION
           console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
@@ -172,6 +185,13 @@ angular.module('mwSidebarBb', [])
         } else {
           throw new Error('please pass a collection or mwCollection as scope attribute');
         }
+
+        scope.collection.on('request', function () {
+          scope.isLoading = true;
+        });
+        scope.collection.on('sync error', function () {
+          scope.isLoading = false;
+        });
       }
     };
   })
@@ -382,11 +402,11 @@ angular.module('mwSidebarBb', [])
           return elm.find('input').first().hasClass('ng-valid');
         };
 
-        scope.setFromDate = function(val){
+        scope.setFromDate = function (val) {
           ctrl.changeFilter(scope.fromProperty, val);
         };
 
-        scope.setToDate = function(val){
+        scope.setToDate = function (val) {
           ctrl.changeFilter(scope.toProperty, val);
         };
       }

@@ -2,18 +2,18 @@
 
 angular.module('mwComponentsBb', [])
 
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwFilterableSearch
-   * @element div
-   * @description
-   *
-   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
-   *
-   * @param {filterable} filterable Filterable instance.
-   * @param {expression} disabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   */
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwFilterableSearch
+ * @element div
+ * @description
+ *
+ * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+ *
+ * @param {filterable} filterable Filterable instance.
+ * @param {expression} disabled If expression evaluates to true, input is disabled.
+ * @param {string} property The name of the property on which the filtering should happen.
+ */
   .service('ignoreKeyPress', function () {
     var ENTER_KEY = 13;
     return {
@@ -29,6 +29,7 @@ angular.module('mwComponentsBb', [])
     return {
       scope: {
         collection: '=',
+        mwListCollection: '=',
         property: '@',
         customUrlParameter: '@',
         mwDisabled: '=',
@@ -36,15 +37,21 @@ angular.module('mwComponentsBb', [])
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
       link: function (scope, el) {
-        var inputEl = el.find('input');
+        var inputEl = el.find('input'),
+          collection,
+          listCollectionFilter;
 
         var setFilterVal = function (val) {
           if (scope.customUrlParameter) {
-            scope.collection.filterable.customUrlParams[scope.customUrlParameter] = val;
+            collection.filterable.customUrlParams[scope.customUrlParameter] = val;
           } else {
             var filter = {};
             filter[scope.property] = val;
-            scope.collection.filterable.setFilters(filter);
+            collection.filterable.setFilters(filter);
+
+            if (listCollectionFilter) {
+              listCollectionFilter.applySearchTerm(scope.property, val);
+            }
           }
         };
 
@@ -56,7 +63,7 @@ angular.module('mwComponentsBb', [])
           scope.searching = true;
           //backup searched text to reset after fetch complete in case of search text was empty
           setFilterVal(scope.viewModel.searchVal);
-          return scope.collection.fetch().finally(function () {
+          return collection.fetch().finally(function () {
             $timeout(function () {
               scope.searching = false;
             }, 500);
@@ -89,9 +96,20 @@ angular.module('mwComponentsBb', [])
           el.children().removeClass('is-focused');
         });
 
+        if (scope.collection) {
+          collection = scope.collection;
+        } else if (scope.mwListCollection) {
+          collection = scope.mwListCollection.getCollection();
+          listCollectionFilter = scope.mwListCollection.getMwListCollectionFilter();
+        }
+
+        if (!(collection instanceof Backbone.Collection)) {
+          throw new Error('[mwFilterableSearchBb] Either collection or mwCollection has to be set');
+        }
+
         scope.$watch(function () {
-          if (scope.collection.filterable && scope.property) {
-            return scope.collection.filterable.filterValues[scope.property];
+          if (collection.filterable && scope.property) {
+            return collection.filterable.filterValues[scope.property];
           }
         }, function (val) {
           scope.viewModel.searchVal = val;

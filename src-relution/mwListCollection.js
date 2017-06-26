@@ -7,45 +7,60 @@ angular.module('mwCollection', [])
 
   .service('MwListCollection', function ($q, MwListCollectionFilter) {
 
-    var MwListCollection = function(collection, id){
+    var MwListCollection = function (collection, id) {
 
       var _collection = collection,
-          _id = (id || collection.endpoint) + '_V1',
-          _mwFilter = new MwListCollectionFilter(_id);
+        _id = (id || collection.endpoint) + '_V1',
+        _mwFilter = new MwListCollectionFilter(_id);
 
-      this.getMwListCollectionFilter = function(){
+      this.getMwListCollectionFilter = function () {
         return _mwFilter;
       };
 
-      this.getCollection = function(){
+      this.getCollection = function () {
         return _collection;
       };
 
-      this.fetch = function(){
+      this.fetch = function () {
         var mwListCollectionFilter = this.getMwListCollectionFilter();
 
-        return $q.all([mwListCollectionFilter.fetchAppliedFilter(),mwListCollectionFilter.fetchAppliedSortOrder()]).then(function(rsp){
+        return $q.all([
+          mwListCollectionFilter.fetchAppliedFilter(),
+          mwListCollectionFilter.fetchAppliedSortOrder(),
+          mwListCollectionFilter.fetchAppliedSearchTerm(),
+          mwListCollectionFilter.fetchFilters()
+        ]).then(function (rsp) {
           var appliedFilter = rsp[0],
-              sortOrder = rsp[1],
-              filterValues = appliedFilter.get('filterValues');
+            sortOrder = rsp[1],
+            searchTerm = rsp[2],
+            filterValues = appliedFilter.get('filterValues');
 
-          if(sortOrder.property){
-            _collection.filterable.setSortOrder(sortOrder.order+sortOrder.property);
-          }
+          return mwListCollectionFilter.filterWasSetByUser(appliedFilter).then(function (wasSetByUser) {
+            if (sortOrder.property) {
+              _collection.filterable.setSortOrder(sortOrder.order + sortOrder.property);
+            }
 
-          if(appliedFilter.get('group')){
-            _collection.filterable.setFilters(filterValues);
-          } else {
-            _collection.filterable.filterIsSet = false;
-          }
+            if (searchTerm.val) {
+              var searchTermFilter = {};
+              searchTermFilter[searchTerm.attr] = searchTerm.val;
+              _collection.filterable.setFilters(searchTermFilter);
+            }
 
-          return $q.all([_collection.fetch(),mwListCollectionFilter.fetchFilters()]).then(function(){
-            return this;
+            if (appliedFilter.get('group') && wasSetByUser) {
+              _collection.filterable.setFilters(filterValues);
+            } else {
+              _collection.filterable.filterIsSet = false;
+              mwListCollectionFilter.unSetFilter();
+            }
+
+            return _collection.fetch().then(function () {
+              return this;
+            }.bind(this));
           }.bind(this));
         }.bind(this));
       };
 
-      collection.on('change:sortOrder', function(sortOrder){
+      collection.on('change:sortOrder', function (sortOrder) {
         this.getMwListCollectionFilter().applySortOrder(sortOrder);
       }, this);
     };

@@ -6,6 +6,7 @@ angular.module('mwUI.List')
     return {
       scope: {
         collection: '=',
+        mwListCollection: '=',
         affix: '=',
         affixOffset: '=',
         collectionName: '@',
@@ -25,7 +26,8 @@ angular.module('mwUI.List')
           mwHeaderEl = angular.element('*[mw-header]'),
           canShowSelected = false,
           _affix = angular.isDefined(scope.affix) ? scope.affix : true,
-          windowEl = angular.element($window);
+          windowEl = angular.element($window),
+          collection;
 
         scope.selectable = false;
         scope.selectedAmount = 0;
@@ -39,7 +41,7 @@ angular.module('mwUI.List')
         var newOffset;
 
         var throttledScrollFn = _.throttle(function () {
-          if(!el.is(':visible')){
+          if (!el.is(':visible')) {
             return;
           }
 
@@ -103,7 +105,7 @@ angular.module('mwUI.List')
             return;
           }
 
-          var Collection = scope.collection.constructor.extend({
+          var CollectionWithMissingEntries = collection.constructor.extend({
             filterableOptions: function () {
               return {
                 filterDefinition: function () {
@@ -123,12 +125,12 @@ angular.module('mwUI.List')
               };
             }
           });
-          var collection = new Collection();
-          collection.url = scope.collection.url();
+          var collectionExt = new CollectionWithMissingEntries();
+          collectionExt.url = collection.url();
 
           scope.isLoadingModelsNotInCollection = true;
 
-          collection.fetch().then(function (collection) {
+          collectionExt.fetch().then(function (collection) {
             scope.hasFetchedModelsNotInCollection = true;
             var selected = scope.selectable.getSelected();
             collection.each(function (model) {
@@ -143,6 +145,10 @@ angular.module('mwUI.List')
 
             scope.isLoadingModelsNotInCollection = false;
           });
+        };
+
+        scope.getCollection = function () {
+          return collection;
         };
 
         scope.showSelected = function () {
@@ -185,10 +191,10 @@ angular.module('mwUI.List')
         };
 
         scope.getTotalAmount = function () {
-          if (scope.collection.filterable && scope.collection.filterable.getTotalAmount()) {
-            return scope.collection.filterable.getTotalAmount();
+          if (collection.filterable && collection.filterable.getTotalAmount()) {
+            return collection.filterable.getTotalAmount();
           } else {
-            return scope.collection.length;
+            return collection.length;
           }
         };
 
@@ -220,7 +226,7 @@ angular.module('mwUI.List')
         };
 
         var init = function () {
-          scope.selectable = scope.collection.selectable;
+          scope.selectable = collection.selectable;
           if (scope.isModal) {
             //element in modal
             scrollEl = modalEl;
@@ -272,11 +278,14 @@ angular.module('mwUI.List')
           }
         });
 
-        scope.$watch('collection', function (collection) {
-          if (collection) {
-            init();
-          }
-        });
+        if (scope.mwListCollection) {
+          collection = scope.mwListCollection.getCollection();
+        } else if (scope.collection) {
+          collection = scope.collection;
+        } else {
+          throw new Error('[mwListableHead2] Either a collection or a mwListCollection has to be passed as attribute');
+        }
+        init();
       }
     };
   });

@@ -1,4 +1,5 @@
 <div class="mw-listable-header clearfix"
+     ng-if="getCollection()"
      ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0,'has-search-bar':searchAttribute}">
 
   <div class="selection-controller">
@@ -27,6 +28,7 @@
     <div ng-if="searchAttribute"
          mw-filterable-search-bb
          collection="collection"
+         mw-list-collection="mwListCollection"
          placeholder="{{'List.mwListHead.searchFor' | i18n:{name: collectionName} }}"
          property="{{searchAttribute}}">
     </div>

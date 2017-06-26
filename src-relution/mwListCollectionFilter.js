@@ -3,16 +3,20 @@ angular.module('mwCollection')
   .service('MwListCollectionFilter', function ($q,
                                                LocalForage,
                                                FilterHoldersCollection,
-                                               FilterHolderProvider,
-                                               AuthenticatedUser) {
+                                               FilterHolderProvider) {
 
     var Filter = function (type) {
 
       var _type = type,
         _localFilterIdentifier = 'applied_filter_' + _type,
         _localSortOrderIdentifier = 'applied_sort_order_' + _type,
+        _localSearchIdentifier = 'applied_search_' + _type,
         _filterHolders = new FilterHoldersCollection(null, type),
         _appliedFilter = FilterHolderProvider.createFilterHolder(),
+        _appliedSearchTerm = {
+          attr: null,
+          val: null
+        },
         _appliedSortOrder = {
           order: null,
           property: null
@@ -25,10 +29,13 @@ angular.module('mwCollection')
 
       // FilterHolders save in backend
       this.fetchFilters = function () {
-        if (_filterHolders.length > 0) {
+        if (_filterHolders.length > 0 || _filterHolders.fetched) {
           return $q.when(_filterHolders);
         } else {
-          return _filterHolders.fetch();
+          return _filterHolders.fetch().then(function () {
+            _filterHolders.fetched = true;
+            return _filterHolders;
+          });
         }
       };
 
@@ -50,45 +57,20 @@ angular.module('mwCollection')
         }.bind(this));
       };
 
-
       this.getAppliedFilter = function () {
         return _appliedFilter;
       };
 
-      this._waitForAuthenticatedUser = function () {
-        var dfd = $q.defer();
-        if (AuthenticatedUser.get('authenticated')) {
-          dfd.resolve(AuthenticatedUser);
-        } else {
-          AuthenticatedUser.once('change:authenticated', function () {
-            dfd.resolve(AuthenticatedUser);
-          });
-        }
-        return dfd.promise;
-      };
-
-      this._localFilterWasSetByUser = function (localFilter) {
-        return this._waitForAuthenticatedUser().then(function () {
-          var wasSetByUser = false;
-          if (_.isArray(localFilter.aclEntries)) {
-            localFilter.aclEntries.forEach(function (aclEntry) {
-              if (!wasSetByUser) {
-                var aclUuid = aclEntry.split(':')[0],
-                  userUuid = AuthenticatedUser.get('uuid');
-                wasSetByUser = (aclUuid === userUuid);
-              }
-            });
-          }
-          return wasSetByUser;
-        });
-      };
-
       this._setAppliedFilter = function (appliedFilter) {
-        return this._localFilterWasSetByUser(appliedFilter).then(function (wasSetByUser) {
-          if (wasSetByUser) {
-            _appliedFilter.set(appliedFilter);
-          }
-          return _appliedFilter;
+        _appliedFilter.set(appliedFilter);
+        return _appliedFilter;
+      };
+
+      this.filterWasSetByUser = function (filter) {
+        return this.fetchFilters().then(function () {
+          return !!_filterHolders.get(filter);
+        }, function () {
+          return false;
         });
       };
 
@@ -107,6 +89,10 @@ angular.module('mwCollection')
         }
       };
 
+      this.unSetFilter = function () {
+        _appliedFilter.clear();
+      };
+
       this.applyFilter = function (filterModel) {
         var jsonFilter = filterModel.toJSON();
 
@@ -115,8 +101,15 @@ angular.module('mwCollection')
       };
 
       this.revokeFilter = function () {
+        var promises = [];
         _appliedFilter.clear();
-        return LocalForage.removeItem(_localFilterIdentifier);
+        _appliedSearchTerm = {
+          attr: null,
+          val: null
+        };
+        promises.push(LocalForage.removeItem(_localFilterIdentifier));
+        promises.push(LocalForage.removeItem(_localSearchIdentifier));
+        return $q.all(promises);
       };
 
       this.getAppliedSortOrder = function () {
@@ -154,6 +147,29 @@ angular.module('mwCollection')
       this.revokeSortOrder = function () {
         return LocalForage.removeItem(_localSortOrderIdentifier);
       };
+
+      this.applySearchTerm = function (attr, searchTerm) {
+        _appliedSearchTerm = {
+          attr: attr,
+          val: searchTerm.length > 0 ? searchTerm : null
+        };
+        return LocalForage.setItem(_localSearchIdentifier, _appliedSearchTerm);
+      };
+
+      this.fetchAppliedSearchTerm = function () {
+        if (_appliedSearchTerm.val) {
+          return $q.when(_appliedSearchTerm);
+        } else {
+          return LocalForage.getItem(_localSearchIdentifier).then(function (appliedSearch) {
+            appliedSearch = appliedSearch || {};
+            _appliedSearchTerm = {
+              attr: appliedSearch.attr,
+              val: appliedSearch.val
+            };
+            return _appliedSearchTerm;
+          });
+        }
+      }
 
     };
 
