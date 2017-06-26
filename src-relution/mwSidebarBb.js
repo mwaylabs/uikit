@@ -60,7 +60,7 @@ angular.module('mwSidebarBb', [])
             canShowForm: false
           };
 
-          if(scope.showFilterForm){
+          if (scope.showFilterForm) {
             scope.viewModel.showFilterForm = true;
           }
 
@@ -77,8 +77,15 @@ angular.module('mwSidebarBb', [])
           var filterCollection = function (filterModel) {
             scope.collection.filterable.resetFilters();
             scope.collection.filterable.setFilters(filterModel.get('filterValues'));
-            return scope.collection.fetch().then(function () {
-              setTotalAmount(filterModel);
+            return scope.mwListCollectionFilter.fetchAppliedSearchTerm().then(function(searchTerm){
+              if(searchTerm.val){
+                var searchTermFilter = {};
+                searchTermFilter[searchTerm.attr] = searchTerm.val;
+                scope.collection.filterable.setFilters(searchTermFilter);
+              }
+              return scope.collection.fetch().then(function () {
+                setTotalAmount(filterModel);
+              });
             });
           };
 

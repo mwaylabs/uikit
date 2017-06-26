@@ -11,8 +11,13 @@ angular.module('mwCollection')
       var _type = type,
         _localFilterIdentifier = 'applied_filter_' + _type,
         _localSortOrderIdentifier = 'applied_sort_order_' + _type,
+        _localSearchIdentifier = 'applied_search_' + _type,
         _filterHolders = new FilterHoldersCollection(null, type),
         _appliedFilter = FilterHolderProvider.createFilterHolder(),
+        _appliedSearchTerm = {
+          attr: null,
+          val: null
+        },
         _appliedSortOrder = {
           order: null,
           property: null
@@ -154,6 +159,29 @@ angular.module('mwCollection')
       this.revokeSortOrder = function () {
         return LocalForage.removeItem(_localSortOrderIdentifier);
       };
+
+      this.applySearchTerm = function (attr, searchTerm) {
+        _appliedSearchTerm = {
+          attr: attr,
+          val: searchTerm.length > 0 ? searchTerm : null
+        };
+        return LocalForage.setItem(_localSearchIdentifier, _appliedSearchTerm);
+      };
+
+      this.fetchAppliedSearchTerm = function () {
+        if (_appliedSearchTerm.val) {
+          return $q.when(_appliedSearchTerm);
+        } else {
+          return LocalForage.getItem(_localSearchIdentifier).then(function (appliedSearch) {
+            appliedSearch = appliedSearch || {};
+            _appliedSearchTerm = {
+              attr: appliedSearch.attr,
+              val: appliedSearch.val
+            };
+            return _appliedSearchTerm;
+          });
+        }
+      }
 
     };
 
