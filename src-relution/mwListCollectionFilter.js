@@ -3,8 +3,7 @@ angular.module('mwCollection')
   .service('MwListCollectionFilter', function ($q,
                                                LocalForage,
                                                FilterHoldersCollection,
-                                               FilterHolderProvider,
-                                               AuthenticatedUser) {
+                                               FilterHolderProvider) {
 
     var Filter = function (type) {
 
@@ -70,6 +69,8 @@ angular.module('mwCollection')
       this.filterWasSetByUser = function (filter) {
         return this.fetchFilters().then(function () {
           return !!_filterHolders.get(filter);
+        }, function () {
+          return false;
         });
       };
 
