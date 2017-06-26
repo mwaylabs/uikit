@@ -1,4 +1,9 @@
 .mw-sidebar-filters {
+  .action-btns{
+    .btn.edit{
+      margin-right: 0;
+    }
+  }
   .form{
     .mw-select{
       display: block;
@@ -121,6 +126,11 @@
 
       .action-btns{
         padding-right: 10px;
+
+        .mw-spinner{
+          font-size: 25px;
+          margin-top: 6px;
+        }
 
         .btn{
           font-size: 18px;
