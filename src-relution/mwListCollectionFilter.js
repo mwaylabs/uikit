@@ -88,7 +88,7 @@ angular.module('mwCollection')
         }
       };
 
-      this.unSetFilter = function(){
+      this.unSetFilter = function () {
         _appliedFilter.clear();
       };
 

@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('mwSidebarBb', [])
-  /**
-   * @ngdoc directive
-   * @name mwSidebar.directive:mwSidebarFilters
-   * @element div
-   * @description
-   *
-   * Container for filters
-   *
-   */
+/**
+ * @ngdoc directive
+ * @name mwSidebar.directive:mwSidebarFilters
+ * @element div
+ * @description
+ *
+ * Container for filters
+ *
+ */
   .directive('mwSidebarFiltersBb', function ($timeout, FilterHolderModel) {
     return {
       transclude: true,
@@ -77,8 +77,8 @@ angular.module('mwSidebarBb', [])
           var filterCollection = function (filterModel) {
             scope.collection.filterable.resetFilters();
             scope.collection.filterable.setFilters(filterModel.get('filterValues'));
-            return scope.mwListCollectionFilter.fetchAppliedSearchTerm().then(function(searchTerm){
-              if(searchTerm.val){
+            return scope.mwListCollectionFilter.fetchAppliedSearchTerm().then(function (searchTerm) {
+              if (searchTerm.val) {
                 var searchTermFilter = {};
                 searchTermFilter[searchTerm.attr] = searchTerm.val;
                 scope.collection.filterable.setFilters(searchTermFilter);
@@ -175,10 +175,10 @@ angular.module('mwSidebarBb', [])
             setTotalAmount(filterModel);
           });
 
-          scope.collection.on('request', function(){
+          scope.collection.on('request', function () {
             scope.isLoading = true;
           });
-          scope.collection.on('sync error', function(){
+          scope.collection.on('sync error', function () {
             scope.isLoading = false;
           });
 
@@ -403,11 +403,11 @@ angular.module('mwSidebarBb', [])
           return elm.find('input').first().hasClass('ng-valid');
         };
 
-        scope.setFromDate = function(val){
+        scope.setFromDate = function (val) {
           ctrl.changeFilter(scope.fromProperty, val);
         };
 
-        scope.setToDate = function(val){
+        scope.setToDate = function (val) {
           ctrl.changeFilter(scope.toProperty, val);
         };
       }
