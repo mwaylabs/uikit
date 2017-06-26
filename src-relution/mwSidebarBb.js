@@ -43,6 +43,7 @@ angular.module('mwSidebarBb', [])
         scope.showFilterForm = scope.$eval(attr.showFilterForm);
         scope.mwListCollection = scope.$eval(attr.mwListCollection);
         scope.collection = scope.$eval(attr.collection);
+        scope.isLoading = false;
 
         if (scope.mwListCollection) {
 
@@ -108,9 +109,8 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.applyFilter = function (filterModel) {
-            filterCollection(filterModel).then(function () {
-              scope.mwListCollectionFilter.applyFilter(filterModel);
-            });
+            filterCollection(filterModel);
+            scope.mwListCollectionFilter.applyFilter(filterModel);
           };
 
           scope.revokeFilter = function () {
@@ -159,6 +159,13 @@ angular.module('mwSidebarBb', [])
           scope.mwListCollectionFilter.fetchFilters();
           scope.mwListCollectionFilter.fetchAppliedFilter().then(function (filterModel) {
             setTotalAmount(filterModel);
+          });
+
+          scope.collection.on('request', function(){
+            scope.isLoading = true;
+          });
+          scope.collection.on('sync error', function(){
+            scope.isLoading = false;
           });
 
         } else if (scope.collection) {

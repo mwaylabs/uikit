@@ -19,6 +19,12 @@
            class="btn btn-link">
           {{'common.unFiltered' | i18n}}
         </a>
+        <div ng-if="!appliedFilter.id"
+             class="pull-right action-btns hidden-xs hidden-sm">
+          <div ng-if="isLoading">
+            <div mw-spinner></div>
+          </div>
+        </div>
       </li>
       <li ng-repeat="filter in filters.models"
           ng-class="{'active':appliedFilter.id===filter.id}"
@@ -33,15 +39,21 @@
         <div ng-if="appliedFilter.id===filter.id && filter.canModifyFilter()"
              class="pull-right action-btns hidden-xs hidden-sm">
 
-          <button class="btn btn-link edit"
-                  ng-click="editFilter(filter)">
-            <span mw-icon="rln-icon icon-edit"></span>
-          </button>
+          <div ng-if="!isLoading">
+            <button class="btn btn-link edit"
+                    ng-click="editFilter(filter)">
+              <span mw-icon="rln-icon icon-edit"></span>
+            </button>
 
-          <button class="btn btn-link delete"
-                  ng-click="deleteFilter(filter)">
-            <span mw-icon="rln-icon icon-delete"></span>
-          </button>
+            <button class="btn btn-link delete"
+                    ng-click="deleteFilter(filter)">
+              <span mw-icon="rln-icon icon-delete"></span>
+            </button>
+          </div>
+
+          <div ng-if="isLoading">
+            <div mw-spinner></div>
+          </div>
 
         </div>
       </li>
