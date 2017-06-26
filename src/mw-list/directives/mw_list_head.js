@@ -105,7 +105,7 @@ angular.module('mwUI.List')
             return;
           }
 
-          var CollectionExt = collection.constructor.extend({
+          var CollectionWithMissingEntries = collection.constructor.extend({
             filterableOptions: function () {
               return {
                 filterDefinition: function () {
@@ -125,7 +125,7 @@ angular.module('mwUI.List')
               };
             }
           });
-          var collectionExt = new CollectionExt();
+          var collectionExt = new CollectionWithMissingEntries();
           collectionExt.url = collection.url();
 
           scope.isLoadingModelsNotInCollection = true;
