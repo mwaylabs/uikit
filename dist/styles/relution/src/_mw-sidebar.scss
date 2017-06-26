@@ -40,30 +40,16 @@
 
   &.has-value {
     .input-group-addon {
-      .reset-icon {
-        display: block;
-      }
-
       .search-icon {
-        display: none;
-
         &.searching i {
           animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite;
           -webkit-animation: flash 0.8s cubic-bezier(.72, -0.08, .64, 1.18) infinite; /* Safari and Chrome */
         }
       }
     }
-  }
 
-  &.is-focused {
-    .input-group-addon {
-      .search-icon {
-        display: block;
-      }
-
-      .reset-icon {
-        display: none;
-      }
+    .reset-icon {
+      display: block;
     }
   }
 }
@@ -75,6 +61,13 @@
   border-radius: 50%;
   animation: searching 1.3s ease infinite;
   -webkit-animation: searching 1.3s ease infinite; /* Safari and Chrome */
+}
+
+.reset-icon {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 .sidebar {
