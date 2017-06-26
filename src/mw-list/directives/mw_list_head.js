@@ -105,7 +105,7 @@ angular.module('mwUI.List')
             return;
           }
 
-          var Collection = collection.constructor.extend({
+          var CollectionExt = collection.constructor.extend({
             filterableOptions: function () {
               return {
                 filterDefinition: function () {
@@ -125,12 +125,12 @@ angular.module('mwUI.List')
               };
             }
           });
-          var collection = new Collection();
-          collection.url = collection.url();
+          var collectionExt = new CollectionExt();
+          collectionExt.url = collection.url();
 
           scope.isLoadingModelsNotInCollection = true;
 
-          collection.fetch().then(function (collection) {
+          collectionExt.fetch().then(function (collection) {
             scope.hasFetchedModelsNotInCollection = true;
             var selected = scope.selectable.getSelected();
             collection.each(function (model) {
