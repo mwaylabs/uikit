@@ -1,12 +1,12 @@
 'use strict';
 
 describe('MwListCollectionFilter', function() {
-  var MwListCollectionFilter,
+  var $q,
+    MwListCollectionFilter,
     filterInLocalStorage,
     currentUserUuid,
     FilterHolderProviderSpy,
     FilterHolderSpy,
-    AuthenticatedUserSpy,
     $rootScope;
 
   beforeEach(module('mwCollection'));
@@ -25,6 +25,18 @@ describe('MwListCollectionFilter', function() {
 
     var FilterHolderStub = function (dummy, type) {
       this.type = type;
+      this.fetch = function(){
+        var dfd = $q.defer();
+        dfd.resolve([]);
+        return dfd.promise;
+      };
+      this.get = function(filter){
+        if(filter.id === 'BELONGS_TO_USER'){
+          return true;
+        } else {
+          return false;
+        }
+      };
     };
 
     //create spies to mimic output-methods to external real context
@@ -35,44 +47,23 @@ describe('MwListCollectionFilter', function() {
       set: function(value) {}
     };
 
-    AuthenticatedUserSpy = {
-      get: function() {},
-      set: function(attr, val){
-        if(attr === 'uuid'){
-          currentUserUuid = val;
-          if(this.callback){
-            this.callback();
-          }
-        }
-      },
-      once: function(evName, callback){
-        this.callback = callback
-      }
-    };
-
     //redirect calls-to-this-external-methods to the stubs / spies
     $provide.value('LocalForage', LocalForageStub);
     $provide.value('FilterHoldersCollection', FilterHolderStub);
     $provide.value('FilterHolderProvider', FilterHolderProviderSpy);
-    $provide.value('AuthenticatedUser', AuthenticatedUserSpy);
 
     //spy on these methods to see if they get called
     spyOn(FilterHolderProviderSpy, 'createFilterHolder').and.returnValue(FilterHolderSpy);
     spyOn(FilterHolderSpy, 'set');
-    spyOn(AuthenticatedUserSpy, 'get').and.callFake(function(attr){
-      if(attr === 'authenticated'){
-        return !!currentUserUuid;
-      }
-      return currentUserUuid;
-    });
 
     currentUserUuid = null;
   }));
 
 
-  beforeEach(inject(function(_$rootScope_, _MwListCollectionFilter_) {
+  beforeEach(inject(function(_$rootScope_, _MwListCollectionFilter_, _$q_) {
     $rootScope = _$rootScope_;
     MwListCollectionFilter = _MwListCollectionFilter_;
+    $q = _$q_;
   }));
 
 
@@ -100,44 +91,19 @@ describe('MwListCollectionFilter', function() {
       expect(appliedFilter).not.toBeNull();
     });
 
-    it('waits until the user is authenticated before setting appliedfilter', function(done) {
-      var filterInLocalStorage = {
-        aclEntries: ['USER1:rw']
-      };
-      listCollectionFilter._setAppliedFilter(filterInLocalStorage).then(function(){
+    it('return true when current user is the filter owner', function(done) {
+      listCollectionFilter.filterWasSetByUser({id: 'BELONGS_TO_USER'}).then(function(belongsToUser){
+        expect(belongsToUser).toBeTruthy();
         done();
       });
-
-      AuthenticatedUserSpy.set('uuid', 'USER1');
       $rootScope.$digest();
     });
 
-    it('sets applied filter when current user is the filter owner', function(done) {
-      var filterInLocalStorage = {
-        aclEntries: ['USER1:rw']
-      };
-
-      listCollectionFilter._setAppliedFilter(filterInLocalStorage).then(function(appliedFilter){
-        expect(appliedFilter).not.toBeNull();
-        expect(FilterHolderSpy.set).toHaveBeenCalledWith(filterInLocalStorage);
+    it('returns false when current user is not the filter owner', function(done) {
+      listCollectionFilter.filterWasSetByUser({id: 'BELONGS_NOT_TO_USER'}).then(function(belongsToUser){
+        expect(belongsToUser).toBeFalsy();
         done();
       });
-
-      AuthenticatedUserSpy.set('uuid', 'USER1');
-      $rootScope.$digest();
-    });
-
-    it('does not set applied filter when current user is not the filter owner', function(done) {
-      var filterInLocalStorage = {
-        aclEntries: ['USER1:rw']
-      };
-      listCollectionFilter._setAppliedFilter(filterInLocalStorage).then(function(appliedFilter){
-        expect(appliedFilter).not.toBeNull();
-        expect(FilterHolderSpy.set).not.toHaveBeenCalledWith(filterInLocalStorage);
-        done();
-      });
-
-      AuthenticatedUserSpy.set('uuid', 'USER2');
       $rootScope.$digest();
     });
   });
