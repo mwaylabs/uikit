@@ -1,0 +1,216 @@
+.mw-toasts {
+
+  &.messages-list {
+    z-index: 999;
+    position: relative;
+
+    .content {
+      position: fixed;
+      right: 0;
+      top: 0;
+    }
+
+    ul {
+      margin: $navbar-height+5 20px 0 20px;
+      padding: 0;
+      list-style: none;
+      position: relative;
+
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+
+      &:before {
+        content: "";
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        width: 100%;
+        height: 7px;
+        margin-top: -7px;
+      }
+
+      .message-item {
+        z-index: 9;
+        position: relative;
+        padding: 0;
+        margin-bottom: 13px;
+        border-radius: $border-radius-base;
+        background: white;
+
+        display: -webkit-flex;
+        display: flex;
+        -webkit-align-self: flex-end;
+        align-self: flex-end;
+        min-height: 70px;
+
+        @include box-shadow(2px 2px 12px 0 rgba(90, 90, 90, 0.59));
+
+        .status-indicator {
+          min-width: 70px;
+          background: black;
+          font-size: 17px;
+          position: relative;
+          z-index: 1;
+          border-radius: $border-radius-base 0 0 $border-radius-base;
+
+          display: -webkit-flex;
+          display: flex;
+          -webkit-align-items: center;
+          align-items: center;
+          -webkit-justify-content: center;
+          justify-content: center;
+          &.success {
+            color: $brand-success !important;
+          }
+          color: white;
+          .mw-icon {
+            position: relative;
+          }
+
+          &.default {
+            background: black;
+          }
+          
+          &.success{
+            background: white;
+          }
+
+          &.danger{
+            background: $brand-danger;
+          }
+
+          &.warning{
+            background: $brand-warning;
+          }
+
+          &.info{
+            background: $brand-info;
+          }
+
+          &.primary{
+            background: $brand-primary;
+          }
+        }
+
+        .message {
+          h5{
+            margin-top: 0;
+          }
+
+          padding: 14px 14px 12px 0;
+          position: relative;
+          display: -webkit-flex;
+          display: flex;
+          align-items: center;
+          min-width: 300px;
+
+          .holder {
+            -webkit-flex-basis: 100%;
+            flex-basis: 100%;
+          }
+
+          .btn-link {
+            font-size: 14px;
+            padding: 0;
+            vertical-align: inherit;
+            color: inherit;
+            font-weight: normal;
+            text-decoration: underline;
+          }
+
+          &.default {
+            background: black;
+            color: white;
+          }
+          
+          &.success {
+            background: white;
+          }
+
+          &.danger {
+            background: $brand-danger;
+            color: white;
+          }
+
+          &.warning {
+            background: $brand-warning;
+            color: white;
+          }
+
+          &.info {
+            background: $brand-info;
+            color: white;
+          }
+
+          &.primary {
+            background: $brand-primary;
+            color: white;
+          }
+        }
+
+        .closer {
+          position: relative;
+          top: -10px;
+          left: 5px;
+          width: 30px;
+          text-align: center;
+          margin-left: 5px;
+          cursor: pointer;
+          opacity: 0.51;
+
+          &.mw-icon {
+            &.success {
+              color: $gray;
+            }
+            * {
+              color: white;
+            }
+          }
+        }
+
+        @include single-transition(all, 0.8s, cubic-bezier(.41,-0.44,.33,.98));
+        opacity: 1;
+        //animation: toast-message-out 0.6s cubic-bezier(0, .33, .79, 1.46);
+
+        &.ng-enter {
+          opacity: 0;
+          @include translateY(-30px);
+        }
+
+        &.ng-enter.ng-enter-active {
+          opacity: 1;
+          @include translateY(0);
+        }
+
+        &.ng-leave{
+          transform: translateX(0);
+        }
+
+        &.ng-leave.ng-leave-active{
+          transform: translateX(120%);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $screen-sm) {
+  .mw-toasts{
+    &.messages-list ul{
+      .message-item{
+        .status-indicator{
+          min-width: 60px;
+          font-size: 20px;
+        }
+
+        .message{
+          padding: 8px 24px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
