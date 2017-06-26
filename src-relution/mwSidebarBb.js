@@ -174,14 +174,6 @@ angular.module('mwSidebarBb', [])
           scope.mwListCollectionFilter.fetchAppliedFilter().then(function (filterModel) {
             setTotalAmount(filterModel);
           });
-
-          scope.collection.on('request', function () {
-            scope.isLoading = true;
-          });
-          scope.collection.on('sync error', function () {
-            scope.isLoading = false;
-          });
-
         } else if (scope.collection) {
           // TODO ADD OLD IMPLEMENTATION
           console.warn('The scope attribute collection is deprecated please use the mwCollection instead');
@@ -193,6 +185,13 @@ angular.module('mwSidebarBb', [])
         } else {
           throw new Error('please pass a collection or mwCollection as scope attribute');
         }
+
+        scope.collection.on('request', function () {
+          scope.isLoading = true;
+        });
+        scope.collection.on('sync error', function () {
+          scope.isLoading = false;
+        });
       }
     };
   })
