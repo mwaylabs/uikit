@@ -82,6 +82,13 @@ angular.module('mwSidebarBb', [])
             });
           };
 
+          scope.isFilterApplied = function (filter) {
+            var appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
+            if (filter) {
+              return appliedFilter.id === filter.id;
+            }
+          };
+
           scope.saveFilter = function () {
             var filter;
             if (scope.viewModel.tmpFilter.isNew()) {

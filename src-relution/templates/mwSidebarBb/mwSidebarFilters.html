@@ -11,7 +11,7 @@
     </button>
 
     <ul class="filter-dropdown dropdown-menu" style="min-width:100%" role="menu">
-      <li ng-class="{'active':appliedFilter.id===filter.id}"
+      <li ng-class="{'active':appliedFilter.isNew()}"
           class="filter">
         <a href="#"
            mw-prevent-default="click"
@@ -19,7 +19,7 @@
            class="btn btn-link">
           {{'common.unFiltered' | i18n}}
         </a>
-        <div ng-if="!appliedFilter.id"
+        <div ng-if="appliedFilter.isNew()"
              class="pull-right action-btns hidden-xs hidden-sm">
           <div ng-if="isLoading">
             <div mw-spinner></div>
@@ -27,7 +27,7 @@
         </div>
       </li>
       <li ng-repeat="filter in filters.models"
-          ng-class="{'active':appliedFilter.id===filter.id}"
+          ng-class="{'active':isFilterApplied(filter)}"
           class="filter">
         <a href="#"
            mw-prevent-default="click"
