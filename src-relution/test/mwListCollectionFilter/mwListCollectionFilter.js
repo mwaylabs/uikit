@@ -4,7 +4,6 @@ describe('MwListCollectionFilter', function () {
   var $q,
     $locationSpy,
     LocalForageSpy,
-    AuthenticatedUserSpy,
     MwListCollectionFilter,
     filterInLocalStorage = {},
     currentUserUuid,
@@ -80,27 +79,10 @@ describe('MwListCollectionFilter', function () {
       }
     };
 
-    AuthenticatedUserSpy = {
-      get: function () {
-      },
-      set: function (attr, val) {
-        if (attr === 'uuid') {
-          currentUserUuid = val;
-          if (this.callback) {
-            this.callback();
-          }
-        }
-      },
-      once: function (evName, callback) {
-        this.callback = callback
-      }
-    };
-
     //redirect calls-to-this-external-methods to the stubs / spies
     $provide.value('LocalForage', LocalForageStub);
     $provide.value('FilterHoldersCollection', FilterHolderStub);
     $provide.value('FilterHolderProvider', FilterHolderProviderSpy);
-    $provide.value('AuthenticatedUser', AuthenticatedUserSpy);
 
     $locationSpy = jasmine.createSpyObj('$location', ['search']);
     $provide.service('$location', function () {
@@ -126,12 +108,6 @@ describe('MwListCollectionFilter', function () {
     //spy on these methods to see if they get called
     spyOn(FilterHolderProviderSpy, 'createFilterHolder').and.returnValue(new RlnModel());
     spyOn(FilterHolderSpy, 'set');
-    spyOn(AuthenticatedUserSpy, 'get').and.callFake(function (attr) {
-      if (attr === 'authenticated') {
-        return !!currentUserUuid;
-      }
-      return currentUserUuid;
-    });
 
     currentUserUuid = null;
   }));

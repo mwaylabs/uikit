@@ -6,7 +6,6 @@ angular.module('mwCollection')
                                                $route,
                                                $timeout,
                                                LocalForage,
-                                               AuthenticatedUser,
                                                FilterHoldersCollection,
                                                FilterHolderProvider) {
 
