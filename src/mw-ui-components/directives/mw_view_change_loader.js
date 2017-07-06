@@ -4,12 +4,17 @@ angular.module('mwUI.UiComponents')
     return {
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_view_change_loader.html',
       link: function (scope) {
+        var routeUpdateInProgress = false;
         scope.viewModel = {
           loading: false
         };
 
-        var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function () {
-          scope.viewModel.loading = true;
+        var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function (ev) {
+          if(!routeUpdateInProgress){
+            scope.viewModel.loading = true;
+          } else {
+            routeUpdateInProgress = false;
+          }
         });
 
         var routeChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
@@ -20,10 +25,15 @@ angular.module('mwUI.UiComponents')
           scope.viewModel.loading = false;
         });
 
+        var routeChangeUpdateListener = $rootScope.$on('$routeUpdate', function () {
+          routeUpdateInProgress = true;
+        });
+
         scope.$on('$destroy', function () {
           locationChangeSuccessListener();
           routeChangeSuccessListener();
           routeChangeErrorListener();
+          routeChangeUpdateListener();
         });
       }
     };
