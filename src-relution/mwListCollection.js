@@ -27,35 +27,33 @@ angular.module('mwCollection', [])
         return $q.all([
           mwListCollectionFilter.fetchAppliedFilter(),
           mwListCollectionFilter.fetchAppliedSortOrder(),
-          mwListCollectionFilter.fetchAppliedSearchTerm(),
-          mwListCollectionFilter.fetchFilters()
+          mwListCollectionFilter.fetchAppliedSearchTerm()
         ]).then(function (rsp) {
           var appliedFilter = rsp[0],
             sortOrder = rsp[1],
             searchTerm = rsp[2],
             filterValues = appliedFilter.get('filterValues');
 
-          return mwListCollectionFilter.filterWasSetByUser(appliedFilter).then(function (wasSetByUser) {
-            if (sortOrder.property) {
-              _collection.filterable.setSortOrder(sortOrder.order + sortOrder.property);
-            }
+          if (sortOrder.property) {
+            _collection.filterable.setSortOrder(sortOrder.order + sortOrder.property);
+          }
 
-            if (searchTerm.val) {
-              var searchTermFilter = {};
-              searchTermFilter[searchTerm.attr] = searchTerm.val;
-              _collection.filterable.setFilters(searchTermFilter);
-            }
+          if (searchTerm.val) {
+            var searchTermFilter = {};
+            searchTermFilter[searchTerm.attr] = searchTerm.val;
+            _collection.filterable.setFilters(searchTermFilter);
+          }
 
-            if (appliedFilter.get('group') && wasSetByUser) {
-              _collection.filterable.setFilters(filterValues);
-            } else {
-              _collection.filterable.filterIsSet = false;
-              mwListCollectionFilter.unSetFilter();
-            }
+          if (!appliedFilter.isNew()) {
+            _collection.filterable.setFilters(filterValues);
+          }
 
-            return _collection.fetch().then(function () {
-              return this;
-            }.bind(this));
+          if (!mwListCollectionFilter.hasAppliedFilterOrSearchTerm()) {
+            _collection.filterable.filterIsSet = false;
+          }
+
+          return _collection.fetch().then(function () {
+            return this;
           }.bind(this));
         }.bind(this));
       };
