@@ -2,6 +2,7 @@
      ng-click="executeAction()">
   <a ng-if="entry.get('type') === 'ENTRY'"
      ng-href="{{entry.get('url')}}"
+     target="{{entry.get('target')}}"
      mw-menu-toggle-active-class="entry"
      class="entry">
     <span ng-if="entry.get('icon')"

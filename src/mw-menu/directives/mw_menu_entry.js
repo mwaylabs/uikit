@@ -8,6 +8,7 @@ angular.module('mwUI.Menu')
         icon: '@',
         label: '@',
         type: '@',
+        target: '@',
         class: '@styleClass',
         order: '=',
         activeUrls: '=',
@@ -72,6 +73,7 @@ angular.module('mwUI.Menu')
             url: scope.url,
             icon: scope.icon,
             type: scope.type || 'ENTRY',
+            target: scope.target,
             order: scope.order || getDomOrder(),
             activeUrls: scope.activeUrls || [],
             class: scope.class,
@@ -116,7 +118,7 @@ angular.module('mwUI.Menu')
           }
         });
 
-        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class', 'order'], setMenuEntry);
+        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class', 'order', 'target'], setMenuEntry);
       }
     };
   });
