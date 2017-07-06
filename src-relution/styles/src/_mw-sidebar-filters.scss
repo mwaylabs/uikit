@@ -16,6 +16,18 @@
       }
     }
 
+    .filter-name{
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+
+      *[mw-icon]{
+        height: 17px;
+        width: 23px;
+        display: inline-block;
+      }
+    }
+
     input[type="number"]::-webkit-input-placeholder
     {
       color: #555555 !important;
@@ -83,7 +95,7 @@
 
     .filter{
       margin-right: 37px;
-      padding-right: 0px;
+      padding-right: 0;
       padding-left: 12px;
       box-sizing: content-box;
       position: relative;
@@ -91,9 +103,29 @@
       width: 100%;
       text-align: left;
 
+      span[mw-icon]{
+        width: 15px;
+        display: inline-block;
+
+        i{
+          color: #999;
+          &.fa-globe{
+            font-size: 12px;
+          }
+
+          &.rln-icon{
+            margin-left: -2px;
+            margin-right: 2px;
+            display: inline-block;
+          }
+        }
+      }
+
       &.active{
         border: 1px solid #ccc;
         border-radius: $border-radius-base;
+        padding-right: 1px;
+        padding-left: 11px;
 
         .btn{
           color: $brand-primary;
@@ -135,10 +167,6 @@
         .btn{
           font-size: 18px;
           padding: 3px 0;
-
-          i{
-            color: #999;
-          }
         }
       }
     }
