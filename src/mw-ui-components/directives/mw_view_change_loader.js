@@ -9,7 +9,7 @@ angular.module('mwUI.UiComponents')
           loading: false
         };
 
-        var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function (ev) {
+        var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function () {
           if(!routeUpdateInProgress){
             scope.viewModel.loading = true;
           } else {
