@@ -7,7 +7,7 @@
             ng-class="{hidden:viewModel.showFilterForm}"
             data-toggle="dropdown">
       <span mw-icon="rln-icon icon-filter_add"></span>
-      {{appliedFilter.get('name') || ('common.applyQuickFilter' | i18n) }}
+      <span class="filter-name">{{appliedFilter.get('name') || ('common.applyQuickFilter' | i18n) }}</span>
     </button>
 
     <ul class="filter-dropdown dropdown-menu" style="min-width:100%" role="menu">
@@ -39,7 +39,7 @@
           <span ng-if="!filter.get('isPublic') && filter.canCreatePublicFilter()"
                 mw-icon="fa-lock"
                 tooltip="{{'common.filterIsPrivate' | i18n}}"></span>
-          {{filter.get('name')}}
+          <span class="filter-name">{{filter.get('name')}}</span>
         </a>
 
         <div ng-if="appliedFilter.id===filter.id"
