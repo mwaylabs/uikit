@@ -189,7 +189,7 @@ angular.module('mwSidebarBb', [])
         scope.collection.on('request', function () {
           scope.isLoading = true;
         });
-        scope.collection.on('sync error', function () {
+        scope.collection.on('sync error remove', function () {
           scope.isLoading = false;
         });
       }
