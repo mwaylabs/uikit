@@ -36,14 +36,14 @@ angular.module('mwCollection')
         //Set reloadOnSearch false so angular does not reinitialize the controller
         $route.current.$$route.reloadOnSearch = false;
         //Route update is triggered when reloadOnSearch is set to true and a search param has changed
-        var off = $rootScope.$on('$routeUpdate', function () {
+        var unbindRouteUpdateListener = $rootScope.$on('$routeUpdate', function () {
           $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
-          off();
+          unbindRouteUpdateListener();
         });
         //Route change success is triggered when reloadOnSearch is set to false and a search param has changed
-        var off2 = $rootScope.$on('$routeChangeSuccess', function () {
+        var unbindRouteChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
           $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
-          off2();
+          unbindRouteChangeSuccessListener();
         });
       };
 
