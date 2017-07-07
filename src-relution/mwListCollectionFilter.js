@@ -4,7 +4,6 @@ angular.module('mwCollection')
                                                $rootScope,
                                                $location,
                                                $route,
-                                               $timeout,
                                                LocalForage,
                                                FilterHoldersCollection,
                                                FilterHolderProvider) {
