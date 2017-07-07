@@ -1,0 +1,73 @@
+
+.mw-timeline-fieldset {
+
+  &.collapsable {
+    .legend {
+      cursor: pointer;
+    }
+  }
+
+  .legend,
+  .hidden-entries {
+    width: 120px;
+    padding: 6px;
+    font-size: 11px;
+    text-align: center;
+    z-index: 2;
+    position: relative;
+    color: white;
+    border-radius: 2px;
+    margin: 0 auto 40px auto;
+    background: $brand-primary;
+
+    .toggler {
+      float: right;
+    }
+  }
+
+  .hidden-entries {
+    background: #ccc;
+    color: #fff;
+    margin-bottom: -26px;
+    margin-top: -20px;
+    cursor: pointer;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  &.entries-are-hidden + .mw-timeline-fieldset {
+    margin-top: 80px;
+  }
+}
+
+@media (max-width: $screen-sm) {
+
+  .mw-timeline-fieldset {
+
+    legend {
+      margin: 0;
+      text-align: left;
+      background: none;
+      width: 100%;
+      border-bottom: 1px solid $brand-primary;
+      color: #555;
+      text-transform: uppercase;
+      font-size: 16px;
+      font-weight: lighter;
+      cursor: pointer;
+    }
+
+    .hidden-entries {
+      margin: 10px 0;
+      width: 100%;
+    }
+
+    &.entries-are-hidden + .mw-timeline-fieldset {
+      margin-top: 20px;
+    }
+
+  }
+}
