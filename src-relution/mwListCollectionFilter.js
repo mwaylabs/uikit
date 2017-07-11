@@ -64,16 +64,19 @@ angular.module('mwCollection')
           searchFilter.q = null;
         }
 
+        var oldSearchFilter = _.clone(currentSearchFilter),
+          newSearchFilter = _.extend(currentSearchFilter, searchFilter);
+
         var isDifferent = false;
-        for (var k in searchFilter) {
-          if (!isDifferent && searchFilter.hasOwnProperty(k)) {
-            isDifferent = searchFilter[k] !== currentSearchFilter[k];
+        for (var k in newSearchFilter) {
+          if (!isDifferent && newSearchFilter.hasOwnProperty(k)) {
+            isDifferent = !oldSearchFilter[k] || newSearchFilter[k] !== oldSearchFilter[k];
           }
         }
 
         if (isDifferent) {
           preventRouteReload();
-          $location.search(searchFilter);
+          $location.search(newSearchFilter);
         }
       };
 
@@ -307,6 +310,7 @@ angular.module('mwCollection')
             return this.applySearchTerm(appliedSearch.attr, appliedSearch.val);
           }.bind(this));
         }
+
       }
     };
 

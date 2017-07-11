@@ -220,6 +220,18 @@ describe('MwListCollectionFilter', function () {
       });
       $rootScope.$digest();
     });
+
+    it('does not overwrite exisitng search params', function(done){
+      queryParams = {
+        xyz: 'IRRELEVANT'
+      };
+
+      listCollectionFilter.applyFilter({uuid: 'NEW_FILTER'}).then(function () {
+        expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: 'NEW_FILTER', qAttr: null, q: null, xyz: 'IRRELEVANT'});
+        done();
+      });
+      $rootScope.$digest();
+    });
   });
 
   describe('testing fetching applied search term', function () {
@@ -286,6 +298,18 @@ describe('MwListCollectionFilter', function () {
         expect(LocalForageSpy.setItem.calls.mostRecent().args[1]).toEqual({val: 'NEW_SEARCH', attr: 'IRRELEVANT'});
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: null, q: 'NEW_SEARCH', qAttr: 'IRRELEVANT'});
         expect(appliedSearchTerm.val).toMatch('NEW_SEARCH');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('does not overwrite exisitng search params', function(done){
+      queryParams = {
+        xyz: 'IRRELEVANT'
+      };
+
+      listCollectionFilter.applySearchTerm('IRRELEVANT', 'NEW_SEARCH').then(function () {
+        expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: null, q: 'NEW_SEARCH', qAttr: 'IRRELEVANT', xyz: 'IRRELEVANT'});
         done();
       });
       $rootScope.$digest();
