@@ -1,0 +1,118 @@
+$headerHeight: 56px !default;
+
+div[mw-header] {
+
+}
+
+.mw-header {
+  position: relative;
+  margin-bottom: 25px;
+  height: $headerHeight - 5;
+
+  .fixed-content {
+    position: fixed;
+    height: $headerHeight;
+    padding: 0 1.5em;
+    width: 100%;
+    left: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.9);
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    border-bottom: 1px solid #e7e7e7;
+
+    .back-btn {
+      margin-right: 3px;
+      padding: 6px;
+      background: transparent;
+
+      i {
+        @include transition(color 0.5s ease);
+      }
+
+      &:hover {
+        i {
+          color: $brand-primary;
+        }
+      }
+    }
+
+    .title-holder {
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-grow: 1;
+      flex-grow: 1;
+      overflow: hidden;
+      white-space: nowrap;
+
+      .header-icon {
+        margin-right: 2px;
+        padding-top: 2px;
+
+        i {
+          font-size: 19px;
+          vertical-align: middle;
+        }
+      }
+
+      h1 {
+        display: inline-block;
+        margin: 0;
+        -webkit-flex-grow: 2;
+        flex-grow: 2;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+  }
+
+  @media (max-width: $screen-sm) {
+    $smHeaderHeight: $headerHeight - 15;
+
+    .mw-header {
+      height: $smHeaderHeight;
+
+      .fixed-content {
+        height: $smHeaderHeight + 6;
+
+        .title-holder{
+          padding-top: 0;
+          .header-icon i{
+            font-size: 17px;
+            vertical-align: baseline;
+          }
+        }
+
+        .mw-bread-crumbs{
+
+          > *[mw-bread-crumb]:not(:last-child) {
+            display: none;
+          }
+        }
+      }
+
+    }
+  }
+
+  @media (max-width: $screen-xs) {
+    .mw-header{
+      .fixed-content {
+        .back-btn{
+          border: 1px solid #efefef;
+          padding: 0px 10px;
+          margin-right: 5px;
+          border-radius: $border-radius-base;
+        }
+
+        .mw-bread-crumbs{
+          > *[mw-bread-crumb]{
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+}
