@@ -24,7 +24,6 @@ angular.module('mwUI.UiComponents')
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
       controller: function ($scope) {
         var panes = $scope.panes = [];
-
         $scope.select = function (pane) {
           angular.forEach(panes, function (p) {
             p.selected = false;
@@ -44,7 +43,7 @@ angular.module('mwUI.UiComponents')
         // add a change listener on the pane 
         if ($scope.tabChanged && typeof $scope.tabChanged === 'function') { 
           $scope.$watch('activePaneNumber', function (_new, _old) {
-            if (_new !== _old && panes && panes[_new - 1]) {
+            if (_new !== _old) {
               $scope.select(panes[_new - 1]);
             }
           });
