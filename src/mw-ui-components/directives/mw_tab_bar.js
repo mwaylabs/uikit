@@ -1,5 +1,18 @@
 angular.module('mwUI.UiComponents')
   //TODO rename
+  /**
+   * @example ```html
+   * <!-- change callback example -->
+   * <div mw-tabs active-pane-number="myCtrl.activePane" tab-changed="myCtrl.tabChanged">
+      <div mw-tabs-pane="{{'mytitle'| i18n}}">
+      Tab 1
+      </div>
+      <div mw-tabs-pane="{{'mytitle_2'| i18n}}">
+      Tab 2
+      </div>
+    </div>
+   * ```
+   */
   .directive('mwTabs', function () {
     return {
       transclude: true,
@@ -31,8 +44,8 @@ angular.module('mwUI.UiComponents')
         // add a change listener on the pane 
         if ($scope.tabChanged && typeof $scope.tabChanged === 'function') { 
           $scope.$watch('activePaneNumber', function (_new, _old) {
-            if (_new !== _old) {
-              $scope.select(_new);
+            if (_new !== _old && panes && panes[_new - 1]) {
+              $scope.select(panes[_new - 1]);
             }
           });
         }
