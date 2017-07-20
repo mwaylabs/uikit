@@ -5,7 +5,8 @@ angular.module('mwUI.UiComponents')
       transclude: true,
       scope: {
         justified: '=',
-        activePaneNumber: '='
+        activePaneNumber: '=',
+        tabChanged: '='
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
       controller: function ($scope) {
@@ -21,7 +22,20 @@ angular.module('mwUI.UiComponents')
           }
 
           pane.selected = true;
+          // emit the callback
+          if ($scope.tabChanged && typeof $scope.tabChanged === 'function') {
+            $scope.tabChanged($scope.activePaneNumber);
+          }
         };
+        
+        // add a change listener on the pane 
+        if ($scope.tabChanged && typeof $scope.tabChanged === 'function') { 
+          $scope.$watch('activePaneNumber', function (_new, _old) {
+            if (_new !== _old) {
+              $scope.select(_new);
+            }
+          });
+        }
 
         this.registerPane = function (pane) {
           if ( ( $scope.activePaneNumber && $scope.activePaneNumber-1 === panes.length) || (!panes.length && !$scope.activePaneNumber) ) {
