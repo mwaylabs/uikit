@@ -1,0 +1,11 @@
+.mw-form-actions{
+  .mw-spinner{
+    margin-top: 4px;
+  }
+
+  @media (max-width: $screen-sm) {
+    .action-text {
+      display: none;
+    }
+  }
+}
