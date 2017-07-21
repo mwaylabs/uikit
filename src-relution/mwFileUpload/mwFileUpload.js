@@ -112,6 +112,7 @@ angular.module('mwFileUpload', [])
           } else {
             if (data.result && data.result.message) {
               data.result.message = 'Validation failed. File has to be ' + attrs.validator;
+              console.log(data.result.message);
             }
             error(data, data.result);
           }
