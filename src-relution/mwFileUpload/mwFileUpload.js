@@ -94,7 +94,7 @@ angular.module('mwFileUpload', [])
         var success = function(data, result){
           var parsedResult = getResult(result);
           if (!attrs.validator || mwMimetype.checkMimeType(parsedResult.contentType, attrs.validator)) {
-            if (scope.model instanceof window.mCAP.Model) {
+            if (scope.model instanceof Backbone.Model) {
               scope.model.set(scope.model.parse(parsedResult));
             } else if (scope.attribute) {
               scope.model = parsedResult[scope.attribute];
