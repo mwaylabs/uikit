@@ -12,14 +12,19 @@ angular.module('mwUI.Utils')
       var prevReloadOnSearchVal = $route.current.$$route.reloadOnSearch;
       //Set reloadOnSearch false so angular does not reinitialize the controller
       $route.current.$$route.reloadOnSearch = false;
+
+      var unbindRouteUpdateListener,
+        unbindRouteChangeSuccessListener;
+
       //Route update is triggered when reloadOnSearch is set to true and a search param has changed
-      var unbindRouteUpdateListener = $rootScope.$on('$routeUpdate', function () {
+      unbindRouteUpdateListener = $rootScope.$on('$routeUpdate', function () {
         $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
         unbindRouteUpdateListener();
         unbindRouteChangeSuccessListener();
       });
+      
       // //Route change success is triggered when reloadOnSearch is set to false and a search param has changed
-      var unbindRouteChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
+      unbindRouteChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
         $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
         unbindRouteChangeSuccessListener();
         unbindRouteUpdateListener();
@@ -82,7 +87,7 @@ angular.module('mwUI.Utils')
           setUrlQueryParams(obj);
         }
       },
-      removeObject: function () {
+      removeObject: function (obj) {
         var wasChanged = false;
         if (_.isObject(obj)) {
           for (var key in obj) {

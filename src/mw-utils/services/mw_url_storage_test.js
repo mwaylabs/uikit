@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('MwUrlStorageTest', function() {
+describe('MwUrlStorageTest', function() {
   var queryParams = {},
       currentUrl = '',
       $rootScope,
