@@ -26,7 +26,7 @@
     "grunt-text-replace": "0.4.0",
     "husky": "^0.10.2",
     "matchdep": "~0.1.1",
-    "ng-html2js ": "2.0.0",
+    "ng-html2js": "2.0.0",
     "sinon": "1.17.3",
     "underscore": "1.8.3",
 
