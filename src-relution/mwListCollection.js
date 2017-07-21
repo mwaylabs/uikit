@@ -3,7 +3,7 @@
  */
 'use strict';
 
-angular.module('mwCollection', ['ngRoute', 'mwUI.Backbone'])
+angular.module('mwCollection', ['ngRoute', 'mwUI.Backbone', 'mwUI.Utils'])
 
   .service('MwListCollection', function ($q, MwListCollectionFilter) {
 
