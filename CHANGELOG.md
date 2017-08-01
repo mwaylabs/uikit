@@ -1,3 +1,16 @@
+# v1.0.13
+## Features
+### Utils module
+- Service `mwUrlStorage` was added to store runtime vars in url e.g. for deeplinking. Call 
+`mwUrlStorage.setItem('key','value')` to store a variable in the url. Will be available also after route change.
+
+### Ui Components module
+- `mwTabs` directive got attribute `tabChanged` to register a callback when a tab has been changed
+
+## Fixes
+### Src-Relution Module
+- `mwFileUpload` directive checks whether model is instance of `Backbone.Model` instead of `mCAP.Model`
+
 # v1.0.12
 ## Features
 ### Backbone Module
