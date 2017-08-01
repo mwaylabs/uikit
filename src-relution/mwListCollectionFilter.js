@@ -4,6 +4,7 @@ angular.module('mwCollection')
                                                $rootScope,
                                                $location,
                                                $route,
+                                               mwUrlStorage,
                                                LocalForage,
                                                FilterHoldersCollection,
                                                FilterHolderProvider) {
@@ -25,30 +26,8 @@ angular.module('mwCollection')
           property: null
         };
 
-      var preventRouteReload = function () {
-        //Check whether reloadOnSearch is already disabled
-        if ($route.current.$$route.reloadOnSearch === false) {
-          return;
-        }
-        // Remember the state so we can set it to the original state after we have updated the route
-        var prevReloadOnSearchVal = $route.current.$$route.reloadOnSearch;
-        //Set reloadOnSearch false so angular does not reinitialize the controller
-        $route.current.$$route.reloadOnSearch = false;
-        //Route update is triggered when reloadOnSearch is set to true and a search param has changed
-        var unbindRouteUpdateListener = $rootScope.$on('$routeUpdate', function () {
-          $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
-          unbindRouteUpdateListener();
-        });
-        //Route change success is triggered when reloadOnSearch is set to false and a search param has changed
-        var unbindRouteChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
-          $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
-          unbindRouteChangeSuccessListener();
-        });
-      };
-
       var setUrlQueryParams = function () {
-        var searchFilter = {},
-          currentSearchFilter = $location.search() || {};
+        var searchFilter = {};
 
         if (!_appliedFilter.isNew()) {
           searchFilter.f = _appliedFilter.id;
@@ -64,25 +43,11 @@ angular.module('mwCollection')
           searchFilter.q = null;
         }
 
-        var oldSearchFilter = _.clone(currentSearchFilter),
-          newSearchFilter = _.extend(currentSearchFilter, searchFilter);
-
-        var isDifferent = false;
-        for (var k in newSearchFilter) {
-          if (!isDifferent && newSearchFilter.hasOwnProperty(k)) {
-            isDifferent = !oldSearchFilter[k] || newSearchFilter[k] !== oldSearchFilter[k];
-          }
-        }
-
-        if (isDifferent) {
-          preventRouteReload();
-          $location.search(newSearchFilter);
-        }
+        mwUrlStorage.setObject(searchFilter, {removeOnUrlChange: true});
       };
 
       var urlContainsFilters = function () {
-        var urlFilters = $location.search() || {};
-        return (urlFilters.q && urlFilters.qAttr) || urlFilters.f;
+        return (mwUrlStorage.getItem('q') && mwUrlStorage.getItem('qAttr')) || mwUrlStorage.getItem('f');
       };
 
       this.hasAppliedFilterOrSearchTerm = function () {
@@ -136,8 +101,7 @@ angular.module('mwCollection')
       };
 
       this._getAppliedFilterFromUrl = function () {
-        var searchParams = $location.search() || {},
-          filterUuid = searchParams.f;
+        var filterUuid = mwUrlStorage.getItem('f');
         if (filterUuid) {
           return {uuid: filterUuid};
         } else {
@@ -281,9 +245,9 @@ angular.module('mwCollection')
       };
 
       this._getAppliedSearchTermFromUrl = function () {
-        var searchParams = $location.search() || {},
-          searchAttr = searchParams.qAttr,
-          searchVal = searchParams.q;
+        var searchAttr = mwUrlStorage.getItem('qAttr'),
+          searchVal = mwUrlStorage.getItem('q');
+
         if (searchAttr && searchAttr.length > 0 && searchVal && searchVal.length > 0) {
           return {
             attr: searchAttr,
