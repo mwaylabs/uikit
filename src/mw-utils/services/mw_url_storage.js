@@ -22,7 +22,7 @@ angular.module('mwUI.Utils')
         unbindRouteUpdateListener();
         unbindRouteChangeSuccessListener();
       });
-      
+
       // //Route change success is triggered when reloadOnSearch is set to false and a search param has changed
       unbindRouteChangeSuccessListener = $rootScope.$on('$routeChangeSuccess', function () {
         $route.current.$$route.reloadOnSearch = prevReloadOnSearchVal;
@@ -36,10 +36,16 @@ angular.module('mwUI.Utils')
       return _.difference(_.values(params), _.values(currentSearchParams));
     };
 
-    var setUrlQueryParams = function (params) {
+    var setUrlQueryParams = function (params, preferQueryOverStorage) {
       if (getChangedValues(params).length > 0) {
         var currentSearchParams = $location.search(),
+          newSearchParams;
+
+        if(preferQueryOverStorage){
+          newSearchParams = _.extend(params, currentSearchParams);
+        } else {
           newSearchParams = _.extend(currentSearchParams, params);
+        }
 
         preventRouteReload();
         $location.search(newSearchParams);
@@ -48,7 +54,7 @@ angular.module('mwUI.Utils')
 
     $rootScope.$on('$locationChangeSuccess', function (ev, newUrl, oldUrl) {
       if (newUrl !== oldUrl) {
-        setUrlQueryParams(storage);
+        setUrlQueryParams(storage, true);
       }
     });
 
