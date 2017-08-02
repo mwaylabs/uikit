@@ -3,8 +3,8 @@
     ng-click="toggleSortOrder()">
   <span ng-if="canBeSorted()" class="sort-indicators">
     <i ng-show="!isSelected()" mw-icon="mwUI.sort" class="sort-indicator"></i>
-    <i ng-if="isSelected('-')" mw-icon="mwUI.sortAsc"></i>
-    <i ng-if="isSelected('+')" mw-icon="mwUI.sortDesc"></i>
+    <i ng-if="isSelected('+')" mw-icon="mwUI.sortAsc"></i>
+    <i ng-if="isSelected('-')" mw-icon="mwUI.sortDesc"></i>
   </span>
 
   <span ng-transclude class="title"></span>
