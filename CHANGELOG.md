@@ -1,3 +1,9 @@
+# v1.0.14
+## Features
+### Backbone module
+- Selectable was extended with the public method `setSingleSelection(true|false)` to change the selection mode.
+It also allows to set single selection to true even though the attribute `preSelected` is a collection.
+
 # v1.0.13
 ## Features
 ### Utils module

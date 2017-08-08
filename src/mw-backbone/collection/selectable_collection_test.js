@@ -480,6 +480,88 @@ describe('Collection Selectable', function () {
       expect(radioCollection.selectable.getSelected().length).toBe(1);
       expect(radioCollection.selectable.getSelected().first().get('id')).toBe(2);
     });
+
+    it('allows to set single selection to true when no preselection was set', function(){
+      var collection = new mwUI.Backbone.Collection();
+
+      collection.selectable.setSingleSelection(true);
+
+      expect(collection.selectable.isSingleSelection()).toBeTruthy();
+    });
+
+    it('allows to set single selection to false when no preselection was set', function(){
+      var collection = new mwUI.Backbone.Collection();
+
+      collection.selectable.setSingleSelection(false);
+
+      expect(collection.selectable.isSingleSelection()).toBeFalsy();
+    });
+
+    it('allows to set single selection to true when no preselection is a collection', function(){
+      var collection = new mwUI.Backbone.Collection(),
+          SelectableCollection = mwUI.Backbone.Collection.extend({
+            selectableOptions: function(){
+              return {
+                preSelected: collection
+              };
+            }
+          }),
+        selectableCollection = new SelectableCollection();
+
+      selectableCollection.selectable.setSingleSelection(true);
+
+      expect(selectableCollection.selectable.isSingleSelection()).toBeTruthy();
+    });
+
+    it('allows to set single selection to false when no preselection is a collection', function(){
+      var collection = new mwUI.Backbone.Collection(),
+        SelectableCollection = mwUI.Backbone.Collection.extend({
+          selectableOptions: function(){
+            return {
+              preSelected: collection
+            };
+          }
+        }),
+        selectableCollection = new SelectableCollection();
+
+      selectableCollection.selectable.setSingleSelection(false);
+
+      expect(selectableCollection.selectable.isSingleSelection()).toBeFalsy();
+    });
+
+    it('allows to set single selection to true when no preselection is a model', function(){
+      var model = new mwUI.Backbone.Model(),
+        SelectableCollection = mwUI.Backbone.Collection.extend({
+          selectableOptions: function(){
+            return {
+              preSelected: model
+            };
+          }
+        }),
+        selectableCollection = new SelectableCollection();
+
+      selectableCollection.selectable.setSingleSelection(true);
+
+      expect(selectableCollection.selectable.isSingleSelection()).toBeTruthy();
+    });
+
+    it('does not allow to set single selection to false when no preselection is a model', function(){
+      var model = new mwUI.Backbone.Model(),
+        SelectableCollection = mwUI.Backbone.Collection.extend({
+          selectableOptions: function(){
+            return {
+              preSelected: model
+            };
+          }
+        }),
+        selectableCollection = new SelectableCollection();
+
+      var throwFn = function () {
+        selectableCollection.selectable.setSingleSelection(false);
+      };
+
+      expect(throwFn).toThrow();
+    });
   });
 
   describe('testing preselection', function () {
