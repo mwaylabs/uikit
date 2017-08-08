@@ -503,7 +503,7 @@ describe('Collection Selectable', function () {
             selectableOptions: function(){
               return {
                 preSelected: collection
-              }
+              };
             }
           }),
         selectableCollection = new SelectableCollection();
@@ -519,7 +519,7 @@ describe('Collection Selectable', function () {
           selectableOptions: function(){
             return {
               preSelected: collection
-            }
+            };
           }
         }),
         selectableCollection = new SelectableCollection();
@@ -535,7 +535,7 @@ describe('Collection Selectable', function () {
           selectableOptions: function(){
             return {
               preSelected: model
-            }
+            };
           }
         }),
         selectableCollection = new SelectableCollection();
@@ -551,7 +551,7 @@ describe('Collection Selectable', function () {
           selectableOptions: function(){
             return {
               preSelected: model
-            }
+            };
           }
         }),
         selectableCollection = new SelectableCollection();
