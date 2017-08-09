@@ -15,14 +15,13 @@ get_version () {
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g')
 
-  echo "$version"
+  echo $version
 }
 
-version_is_mentioned_in_changelog () {
- local changelog=$(cat CHANGELOG.md \
-  | grep $1)
+get_changelog () {
+ local changelog=$(sed -n -e "/# v$1/,/# v/ p" CHANGELOG.md | sed -e '1d;$d')
 
-  echo "$changelog"
+ echo $changelog
 }
 
 # Sets everything back to the beginning, before the release process has been started
@@ -39,27 +38,28 @@ exit_with_error () {
 }
 
 # Set version number from package json version
-VERSION_NUMBER=${get_version}
+VERSION_NUMBER=$(get_version)
+CHANGELOG=$(get_changelog $VERSION_NUMBER)
 
 # Check if user is on branch master
-if [ "$CURRENT_BRANCH" != "master" ]; then
-  exit_with_error "You are on branch $CURRENT_BRANCH. This script can be only executed on master branch"
-fi
+#if [ "$CURRENT_BRANCH" != "master" ]; then
+#  exit_with_error "You are on branch $CURRENT_BRANCH. This script can be only executed on master branch"
+#fi
 
 # Check if there are any local changes that are not committed yet
-if [ -n "$(git status --porcelain)" ]; then
-  git status --porcelain
-  exit_with_error "There are changes that are not committed yet. Make sure you have checked in all changes before you run this script!";
-fi
+#if [ -n "$(git status --porcelain)" ]; then
+#  git status --porcelain
+#  exit_with_error "There are changes that are not committed yet. Make sure you have checked in all changes before you run this script!";
+#fi
 
 # Check if all changes have been pushed to remote
-if [ "$(git log origin/$CURRENT_BRANCH..HEAD)" ]; then
-  exit_with_error "Not all changes are pushed! Please push all changes before you run this script"
-fi
+#if [ "$(git log origin/$CURRENT_BRANCH..HEAD)" ]; then
+#  exit_with_error "Not all changes are pushed! Please push all changes before you run this script"
+#fi
 
 # Check if version is mentioned in CHANGELOG.md
-if [ -n "$(version_is_mentioned_in_changelog v$VERSION_NUMBER)" ]; then
-  exit_with_error "No entry was found in CHANGELOG.md that highlights the changes of v$VERSION_NUMBER. Please create an entry and write down the changes"
+if [ "$CHANGELOG" == "" ] ; then
+  exit_with_error "No entry was found in CHANGELOG.md that highlights the changes of v$VERSION_NUMBER. Please create an entry \"# v$VERSION_NUMBER\" and write down the changes"
 fi
 
 # Check if a tag with the same version already exists
@@ -111,7 +111,7 @@ mv .gitignore .releaseignore
 mv .ignore_tmp .gitignore
 
 # Create tag and push it
-git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER}"
+git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER} \n ${CHANGELOG}"
 git push origin --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 
 echo "##########################################"
