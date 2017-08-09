@@ -11,13 +11,8 @@ before_install:
 - npm install -g karma
 - bower install
 before_deploy:
-- grunt build --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+- grunt release
 deploy:
-  - provider: script
-    script: grunt shell:gitRelease --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
-    skip_cleanup: true
-    on:
-      branch: master
   - provider: releases
     api_key:
       secure: l+pHQnd2tLse8PptmF3B4iA3gtK9Uqm93RDOPMLeaeUX7eSs9aV+YY0b0Fk/uTYo8DJycY627uyGd01Hk69NIf2vaOpjHEm1X7r3bZSB5EGRvInQSZWknLVjbVa1drQugB/I2VO16oScHqi1F6s1VEqFbPjewwv+q/4DQe8a3qXFJAj82qpukLK3bSeimBsooU7BelYafcl8aR5f8xnhHvt5wbBYQebiM/ZY1s0SIAvcJXYCKAplCysFD7T1EJRuVij86LMDNQ2tRkLYouGyfdD0C5gW0gpzLwOMwIhp5k1m8WKSmfhE+4SXMyHex075etRAAgHzAgF7FY3Hy74wv2ieQrZxxJPeV+bgp/i7ixtAzVfvU9ALyhPFj7KJPv1NdDaEln+hURfnV+syKxXok8rg9NA3Iu35yj0KyGntsh6rC2kji+jiunMZkn4V+uPWt5et2qpwkxE63Q9sPTxVoF7+/LG4uvPSwMpS24qQ+VRs+auzXxgfrA2XyHPsRgc+HX2wW4GZi6f4vsOUuwzD1HuQ4XP6ZddILHaz4baKFZvYr7NcNb3xeCHj9EJKI3c6MmtFl1pudl/OANQsIU+hM9EdAAEVRQg1oEaVK40+lOTVYj1HGZ+2jBprCJsGB3yOOk7/1IoZ5SFTHMshi1AknujmhHZgvhOze9uyR3i216M=
