@@ -29,6 +29,7 @@ reset () {
     git reset --hard origin/$CURRENT_BRANCH
     git config user.name "$CURRENT_GIT_USER"
     git config user.email "$CURRENT_GIT_USERMAIL"
+    git remote remove origin_gh
 }
 
 # Shows error message and exits with statuscode 1
@@ -37,9 +38,40 @@ exit_with_error () {
     exit 1
 }
 
+# Check if GH_REF and GH_TOKEN env variables are set. They are configured in .travis.yml
+if [ -z "$GH_REF" ] || [ -z "$GH_TOKEN" ]
+then
+  echo In order to release the env variable GH_REF and GH_TOKEN has to be set!
+  exit 1
+fi
+
+# Set or add the remote url for the github repo with the GH_TOKEN
+# The GH_TOKEN is a github personal access token https://github.com/settings/tokens
+# It is encrypted with travis `$ travis encrypt GH_TOKEN=<GH_PERSONAL_TOKEN>` and set as global env via the .travis.yml
+if git remote | grep origin_gh > /dev/null
+then
+  git remote set-url origin_gh https://$GH_TOKEN@$GH_REF.git
+else
+  git remote add origin_gh https://$GH_TOKEN@$GH_REF.git
+fi
+git fetch origin_gh
+
+# This replaces the current commiter for the release
+git config user.name "$RELEASE_GIT_NAME"
+git config user.email "$RELEASE_GIT_MAIL"
+
+# Calls function when script exits (error and success)
+trap reset EXIT
+
 # Set version number from package json version
 VERSION_NUMBER=$(get_version)
 CHANGELOG=$(get_changelog $VERSION_NUMBER)
+
+# Check if a tag with the same version already exists
+if [ "$(git ls-remote origin_gh refs/tags/v$VERSION_NUMBER)" ]; then
+ echo Skipping deployment because tag already exists. Increment version number to release a new version
+ exit 0;
+fi
 
 # Check if user is on branch master
 if [ "$CURRENT_BRANCH" != "master" ]; then
@@ -53,18 +85,13 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # Check if all changes have been pushed to remote
-if [ "$(git log origin/$CURRENT_BRANCH..HEAD)" ]; then
+if [ "$(git log origin_gh/$CURRENT_BRANCH..HEAD)" ]; then
   exit_with_error "Not all changes are pushed! Please push all changes before you run this script"
 fi
 
 # Check if version is mentioned in CHANGELOG.md
 if [ "$CHANGELOG" == "" ] ; then
   exit_with_error "No entry was found in CHANGELOG.md that highlights the changes of v$VERSION_NUMBER. Please create an entry \"# v$VERSION_NUMBER\" and write down the changes"
-fi
-
-# Check if a tag with the same version already exists
-if [ "$(git ls-remote origin refs/tags/v$VERSION_NUMBER)" ]; then
- exit_with_error "The version ${VERSION_NUMBER} has been already released. Increment version number of package.json in order to create a new release"
 fi
 
 echo "##########################################"
@@ -80,13 +107,6 @@ echo "#                                        #"
 echo "# Releasing version ${VERSION_NUMBER}... #"
 echo "#                                        #"
 echo "##########################################"
-
-# Calls function when script exits (error and success)
-trap reset EXIT
-
-# This replaces the current commiter for the release
-git config user.name "$RELEASE_GIT_NAME"
-git config user.email "$RELEASE_GIT_MAIL"
 
 # The .releaseignore becomes the gitignore for the release so that files that are actually ignored can be released (e.g. the dist folder)
 # After the commit the actual .gitignore will be set
@@ -112,7 +132,7 @@ mv .ignore_tmp .gitignore
 
 # Create tag and push it
 git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER}" -m "${CHANGELOG}"
-git push origin --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
+git push origin_gh --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 
 echo "##########################################"
 echo "#                                        #"
