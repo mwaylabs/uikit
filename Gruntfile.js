@@ -13,8 +13,7 @@ module.exports = function (grunt) {
     fileName: 'mw-uikit',
     fileNameRelution: 'mw-uikit.relution',
     getVersion: function () {
-      var packageJson = grunt.file.readJSON('package.json');
-      return packageJson.version;
+      return grunt.file.readJSON('package.json').version;
     },
     getGruntParam: function (paramName, defaultValue) {
       var gruntParam = grunt.option(paramName);
@@ -24,14 +23,6 @@ module.exports = function (grunt) {
       } else {
         return gruntParam || defaultValue;
       }
-    },
-    getversionWithBuildNumber: function () {
-      return uikitConfig.getVersion() + '-b' + uikitConfig.getGruntParam('buildNumber', 'LOCAL');
-    },
-    getReleaseNameWithBuildNum: function () {
-      return uikitConfig.fileName +
-        '-v' + uikitConfig.getversionWithBuildNumber() +
-        '-sha.c' + uikitConfig.getGruntParam('commitHash', 'none').toString().substr(0,5);
     }
   };
 
@@ -190,7 +181,7 @@ module.exports = function (grunt) {
           {
             from: /UIKITVERSIONNUMBER/,
             to: function () {
-              return uikitConfig.getversionWithBuildNumber();
+              return uikitConfig.getVersion();
             }
           }
         ]
@@ -205,22 +196,10 @@ module.exports = function (grunt) {
         command: function () {
           return [
             'mkdir -p zip',
-            'cp -r dist zip/' + uikitConfig.getReleaseNameWithBuildNum(),
+            'cp -r dist zip/' + uikitConfig.getVersion(),
             'cd zip',
-            'zip -r ' + uikitConfig.getReleaseNameWithBuildNum() + '.zip ' + uikitConfig.getReleaseNameWithBuildNum(),
-            'rm -rf ' + uikitConfig.getReleaseNameWithBuildNum()
-          ].join('&&');
-        }
-      },
-      gitRelease: {
-        options: {
-          stdout: true,
-          failOnError: true
-        },
-        command: function(){
-          return [
-            'export VERSION_NUMBER='+uikitConfig.getversionWithBuildNumber(),
-            './bin/git_release.sh'
+            'zip -r ' + uikitConfig.getVersion() + '.zip ' + uikitConfig.getVersion(),
+            'rm -rf ' + uikitConfig.getVersion()
           ].join('&&');
         }
       }
