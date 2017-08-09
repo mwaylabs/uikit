@@ -42,20 +42,20 @@ VERSION_NUMBER=$(get_version)
 CHANGELOG=$(get_changelog $VERSION_NUMBER)
 
 # Check if user is on branch master
-#if [ "$CURRENT_BRANCH" != "master" ]; then
-#  exit_with_error "You are on branch $CURRENT_BRANCH. This script can be only executed on master branch"
-#fi
+if [ "$CURRENT_BRANCH" != "master" ]; then
+  exit_with_error "You are on branch $CURRENT_BRANCH. This script can be only executed on master branch"
+fi
 
 # Check if there are any local changes that are not committed yet
-#if [ -n "$(git status --porcelain)" ]; then
-#  git status --porcelain
-#  exit_with_error "There are changes that are not committed yet. Make sure you have checked in all changes before you run this script!";
-#fi
+if [ -n "$(git status --porcelain)" ]; then
+  git status --porcelain
+  exit_with_error "There are changes that are not committed yet. Make sure you have checked in all changes before you run this script!";
+fi
 
 # Check if all changes have been pushed to remote
-#if [ "$(git log origin/$CURRENT_BRANCH..HEAD)" ]; then
-#  exit_with_error "Not all changes are pushed! Please push all changes before you run this script"
-#fi
+if [ "$(git log origin/$CURRENT_BRANCH..HEAD)" ]; then
+  exit_with_error "Not all changes are pushed! Please push all changes before you run this script"
+fi
 
 # Check if version is mentioned in CHANGELOG.md
 if [ "$CHANGELOG" == "" ] ; then
@@ -111,7 +111,7 @@ mv .gitignore .releaseignore
 mv .ignore_tmp .gitignore
 
 # Create tag and push it
-git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER} \n ${CHANGELOG}"
+git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER}" -m "${CHANGELOG}"
 git push origin --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 
 echo "##########################################"
