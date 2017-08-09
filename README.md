@@ -32,5 +32,6 @@ The Uikit itself is split into several submodules so you can also just use parts
 ## Customize it
 It is built with SASS and Bootstrap so you can easy customize it. For example to use a different color you can overwrite the bootstrap `$brand-primary` variable with your own color code.
 
-## Documentation
-A documentation and a sample portal is currently in progress and available soon
+## Scripts
+ - `npm run copy` copies the dist folder to a specified path. The path is specified by setting the environment variable
+ `export UIKIT_COPY_PATH=YOUR_PATH_WHERE_TO_COPY_DIST_FOLDER`. Save this in your `bashrc` so it's available after restart 

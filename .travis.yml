@@ -11,10 +11,10 @@ before_install:
 - npm install -g karma
 - bower install
 before_deploy:
-- grunt build --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+- grunt release
 deploy:
   - provider: script
-    script: grunt shell:gitRelease --buildNumber $TRAVIS_BUILD_NUMBER --commitHash $TRAVIS_COMMIT
+    script: ./bin/release.sh
     skip_cleanup: true
     on:
       branch: master

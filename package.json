@@ -45,7 +45,7 @@
     "prepush": "./git-hooks/pre-push",
     "start": "grunt watch",
     "build": "grunt build",
-    "release": "grunt release"
+    "copy": "./bin/copy_dist.sh"
   },
   "repository": {
     "type": "git",
