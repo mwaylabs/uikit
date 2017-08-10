@@ -3,8 +3,8 @@
 ### Modal module
 - Modaloptions was extended with size property so a modal size can be configured:
   - DEFAULT: Default bootstrap modal size
-  - BIGGER: Takes almost whole window max size 1024px
-  - LARGE: Takes almost whole window with max size
+  - BIGGER: Takes almost whole window, max size 1024px
+  - LARGE: Takes almost whole window without a max size
   - FULLSCREEN: Takes the whole window
   ```
   Modal.prepare({
