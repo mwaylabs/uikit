@@ -29,7 +29,7 @@ angular.module('mwUI.Modal')
         }
       };
 
-      var _prepareController = function(locals){
+      var _prepareController = function (locals) {
         _setAttributes(_usedScope, _scopeAttributes);
 
         if (_controller) {
@@ -68,9 +68,9 @@ angular.module('mwUI.Modal')
         });
       };
 
-      var _setScopeWatcher = function(){
-        _watchers.forEach(function(watcher){
-          _usedScope.$watch(watcher.expression,watcher.callback);
+      var _setScopeWatcher = function () {
+        _watchers.forEach(function (watcher) {
+          _usedScope.$watch(watcher.expression, watcher.callback);
         });
       };
 
@@ -96,7 +96,7 @@ angular.module('mwUI.Modal')
 
         _resolveLocals().then(function (locals) {
           _setScopeWatcher();
-          _scopeAttributes.hideModal = function(){
+          _scopeAttributes.hideModal = function () {
             return _self.hide();
           };
 
@@ -149,7 +149,7 @@ angular.module('mwUI.Modal')
         return _usedScope;
       };
 
-      this.watchScope = function(expression, callback){
+      this.watchScope = function (expression, callback) {
         _watchers.push({
           expression: expression,
           callback: callback
@@ -167,8 +167,8 @@ angular.module('mwUI.Modal')
       this.show = function () {
         var dfd = $q.defer();
         var $holderEl = angular.element(_modalOptions.holderEl);
-        if(!$holderEl || $holderEl.length === 0){
-          throw new Error('[Modal] no element could be found for the selector string '+_modalOptions.holderEl+'. Make sure that the element exists');
+        if (!$holderEl || $holderEl.length === 0) {
+          throw new Error('[Modal] no element could be found for the selector string ' + _modalOptions.holderEl + '. Make sure that the element exists');
         }
         Toast.clear();
         _previousFocusedEl = angular.element(document.activeElement);
@@ -320,12 +320,12 @@ angular.module('mwUI.Modal')
      * @returns {Object} Modal
      */
     this.create = function (modalOptions, bootstrapModalOptions) {
-      if(modalOptions && modalOptions.el){
+      if (modalOptions && modalOptions.el) {
         modalOptions.holderEl = modalOptions.el;
         window.mwUI.Utils.shims.deprecationWarning('[Modal] The modal options property el was renamed to holderEl');
       }
 
-      if(modalOptions && modalOptions.class){
+      if (modalOptions && modalOptions.class) {
         modalOptions.styleClass = modalOptions.class;
         window.mwUI.Utils.shims.deprecationWarning('[Modal] The modal options property class was renamed to styleClass');
       }
