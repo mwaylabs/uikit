@@ -1,3 +1,12 @@
+window.mwUI.Modal = {
+  Sizes: {
+    DEFAULT: 'DEFAULT',
+    BIGGER: 'BIGGER',
+    LARGE: 'LARGE',
+    FULLSCREEN: 'FULLSCREEN'
+  }
+};
+
 angular.module('mwUI.Modal', ['mwUI.i18n', 'mwUI.Toast']);
 
 // @include ./directives/mw_modal.js
@@ -13,6 +22,6 @@ angular.module('mwUI.Modal', ['mwUI.i18n', 'mwUI.Toast']);
 
 angular.module('mwUI.Modal')
 
-  .config(function(i18nProvider){
+  .config(function (i18nProvider) {
     i18nProvider.addResource('mw-modal/i18n', 'uikit');
   });

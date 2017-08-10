@@ -104,13 +104,14 @@ angular.module('mwUI.Modal')
 
           _usedScope.$on('COMPILE:FINISHED', function () {
             _modal.addClass('mw-modal');
+            _modal.addClass(_modalOptions.size);
             _modal.addClass(_modalOptions.styleClass);
             _bootstrapModal = _modal.find('.modal');
             _bootStrapModalOptions.show = false;
 
-            if(!_modalOptions.dismissible){
-              _bootStrapModalOptions.backdrop =  'static';
-              _bootStrapModalOptions.keyboard =  false;
+            if (!_modalOptions.dismissible) {
+              _bootStrapModalOptions.backdrop = 'static';
+              _bootStrapModalOptions.keyboard = false;
             }
 
             _bootstrapModal.modal(_bootStrapModalOptions);
@@ -289,6 +290,11 @@ angular.module('mwUI.Modal')
       (function main() {
 
         _getTemplate();
+
+        var allowedModalSizes = _.values(mwUI.Modal.Sizes);
+        if (allowedModalSizes.indexOf(_modalOptions.size) === -1) {
+          throw new Error('Modal size ' + _modalOptions.size + ' is invalid. It can be only ' + allowedModalSizes.join(',') + '. mwUI.Modal.Sizes provides all available sizes');
+        }
 
         _scope.$on('$destroy', function () {
           _self.hide();
