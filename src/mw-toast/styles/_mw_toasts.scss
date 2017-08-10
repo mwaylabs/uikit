@@ -1,3 +1,9 @@
+*[mw-ui].has-mw-menu-top-bar{
+  .mw-toasts.messages-list ul{
+    margin: $navbar-height+10 20px 0 20px;
+  }
+}
+
 .mw-toasts {
 
   &.messages-list {
@@ -11,7 +17,7 @@
     }
 
     ul {
-      margin: $navbar-height+5 20px 0 20px;
+      margin: 20px 20px 0 20px;
       padding: 0;
       list-style: none;
       position: relative;
@@ -72,7 +78,7 @@
           &.default {
             background: black;
           }
-          
+
           &.success{
             background: white;
           }
@@ -124,7 +130,7 @@
             background: black;
             color: white;
           }
-          
+
           &.success {
             background: white;
           }
