@@ -92,9 +92,11 @@
     }
 
     .modal-body {
-      .mw-tabs {
+      overflow: auto;
+
+      *[mw-tabs] {
         .tab-content {
-          padding: 20px 30px;
+          overflow: auto;
         }
       }
     }
