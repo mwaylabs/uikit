@@ -1,3 +1,19 @@
+# v1.0.15
+## Features
+### Modal module
+- Modaloptions was extended with size property so a modal size can be configured:
+  - DEFAULT: Default bootstrap modal size
+  - BIGGER: Takes almost whole window max size 1024px
+  - LARGE: Takes almost whole window with max size
+  - FULLSCREEN: Takes the whole window
+  ```
+  Modal.prepare({
+   templateUrl: 'PTH_TO_TEMPLATE.html',
+   controller: 'CONTROLLER_NAME',
+   size: mwUI.Modal.Sizes.DEFAULT|BIGGER|LARGE|FULLSCREEN 
+  });
+  ```
+
 # v1.0.14
 ## Features
 ### Backbone module
