@@ -52,7 +52,8 @@ VERSION_NUMBER=$(cat package.json \
   | grep version \
   | head -1 \
   | awk -F: '{ print $2 }' \
-  | sed 's/[",]//g')
+  | sed 's/[",]//g' \
+  | xargs)
 
 # Get changelog from current version. Version has to be mentioned in Changelog: `# vX.X.X`
 CHANGELOG=$(sed -n -e "/# v$VERSION_NUMBER/,/# v/ p" CHANGELOG.md \
