@@ -60,7 +60,7 @@ CHANGELOG=$(sed -n -e "/# v$VERSION_NUMBER/,/# v/ p" CHANGELOG.md \
 
 # Check if a tag with the same version already exists
 if [ "$(git ls-remote origin_gh refs/tags/v$VERSION_NUMBER)" ]; then
- echo Skipping deployment because tag already exists. Increment version number to release a new version
+ echo Skipping deployment because tag for version ${VERSION_NUMBER} already exists. Increment version number to release a new version
  exit 0;
 fi
 
