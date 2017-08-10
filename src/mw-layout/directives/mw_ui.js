@@ -18,12 +18,10 @@ angular.module('mwUI.Layout')
         };
 
         scope.addClass = function(styleClass){
-          console.log('ADD CLASS', styleClass);
-          el.addClass(styleClass)
+          el.addClass(styleClass);
         };
 
         scope.removeClass = function(styleClass){
-          console.log('REMOVE CLASS', styleClass);
           el.removeClass(styleClass);
         };
       }
