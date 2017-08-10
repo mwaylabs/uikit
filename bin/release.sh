@@ -8,22 +8,6 @@ CURRENT_GIT_USER=`git config user.name`
 CURRENT_GIT_USERMAIL=`git config user.email`
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
-get_version () {
- local version=$(cat package.json \
-  | grep version \
-  | head -1 \
-  | awk -F: '{ print $2 }' \
-  | sed 's/[",]//g')
-
-  echo $version
-}
-
-get_changelog () {
- local changelog=$(sed -n -e "/# v$1/,/# v/ p" CHANGELOG.md | sed -e '1d;$d')
-
- echo $changelog
-}
-
 # Sets everything back to the beginning, before the release process has been started
 reset () {
     git reset --hard origin/$CURRENT_BRANCH
@@ -63,9 +47,16 @@ git config user.email "$RELEASE_GIT_MAIL"
 # Calls function when script exits (error and success)
 trap reset EXIT
 
-# Set version number from package json version
-VERSION_NUMBER=$(get_version)
-CHANGELOG=$(get_changelog $VERSION_NUMBER)
+# Get version number from package json version
+VERSION_NUMBER=$(cat package.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g')
+
+# Get changelog from current version. Version has to be mentioned in Changelog: `# vX.X.X`
+CHANGELOG=$(sed -n -e "/# v$VERSION_NUMBER/,/# v/ p" CHANGELOG.md \
+  | sed -e '1d;$d')
 
 # Check if a tag with the same version already exists
 if [ "$(git ls-remote origin_gh refs/tags/v$VERSION_NUMBER)" ]; then
