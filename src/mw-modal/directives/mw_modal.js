@@ -11,13 +11,13 @@ angular.module('mwUI.Modal')
       controller: function($scope){
         this.addClass = function(styleClass){
           $scope.addClass(styleClass);
-        }
+        };
       },
       link: function (scope, el) {
         scope.$emit('COMPILE:FINISHED');
         scope.mwModalTmpl = mwModalTmpl;
         scope.addClass = function(styleClass){
-          el.addClass(styleClass)
+          el.addClass(styleClass);
         };
 
         if(scope.title){
