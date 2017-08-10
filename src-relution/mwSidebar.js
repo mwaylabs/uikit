@@ -60,10 +60,18 @@ angular.module('mwSidebar', [])
 
         var reposition = function () {
           var offsetTop = angular.element(el).offset().top,
-            offsetHeaderTop = angular.element('*[mw-header]').offset().top + angular.element('*[mw-header]').height(),
+            offsetHeaderTop = 0,
+            newOffset = 0,
             spacer = 15, //Offset so the sidebar has some whitespce to the header
-            newOffset = offsetTop - offsetHeaderTop - spacer,
             scrollTop = $document.scrollTop();
+
+          if(angular.element('*[mw-header]').length){
+            offsetHeaderTop = angular.element('*[mw-header]').offset().top + angular.element('*[mw-header]').height();
+          } else if(angular.element('*[mw-menu-top-bar]').length){
+            offsetHeaderTop = angular.element('*[mw-menu-top-bar]').offset().top + angular.element('*[mw-menu-top-bar]').height();
+          }
+
+          newOffset = offsetTop - offsetHeaderTop - spacer;
 
           if(newOffset <= 10 ){
             //There is no element between sidebar and header so we can kill the scroll listener

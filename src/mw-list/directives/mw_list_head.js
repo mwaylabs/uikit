@@ -22,6 +22,7 @@ angular.module('mwUI.List')
       link: function (scope, el, attrs, ctrl, $transclude) {
         var scrollEl,
           bodyEl = angular.element('body'),
+          menuBarEl = angular.element('*[mw-menu-top-bar]'),
           modalEl = el.parents('*[mw-modal-body]'),
           mwHeaderEl = angular.element('*[mw-header]'),
           canShowSelected = false,
@@ -46,23 +47,31 @@ angular.module('mwUI.List')
           }
 
           if (!newOffset) {
-            var headerOffset,
-              headerHeight,
+            var headerOffset = 0,
+              headerHeight = 0,
               headerBottomOffset,
               listHeaderOffset,
-              spacer;
+              spacer = 0;
 
             if (scope.isModal) {
               var modalHeaderEl = el.parents('.modal-content').find('.modal-header');
-              headerOffset = modalHeaderEl.offset().top;
-              headerHeight = modalHeaderEl.innerHeight();
-              spacer = 0;
-            } else if (mwHeaderEl.length) {
-              headerOffset = mwHeaderEl.last().offset().top;
-              headerHeight = mwHeaderEl.last().innerHeight();
-              spacer = 5;
+              if (modalHeaderEl.length) {
+                headerOffset = modalHeaderEl.offset().top;
+                headerHeight = modalHeaderEl.innerHeight();
+                spacer = 0;
+              } else {
+                spacer = el.innerHeight();
+              }
+
+              spacer -= 4; // closes a small gap
             } else {
-              return;
+              if (mwHeaderEl.length) {
+                headerOffset = mwHeaderEl.last().offset().top;
+                headerHeight = mwHeaderEl.last().innerHeight();
+                spacer = 5;
+              } else if (menuBarEl.length) {
+                headerOffset = menuBarEl.innerHeight();
+              }
             }
 
             headerBottomOffset = headerOffset + headerHeight;
