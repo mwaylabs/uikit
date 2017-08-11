@@ -3,7 +3,7 @@ $modalHeader: 55;
 $modalFooter: 72;
 $windowPadding: 60;
 
-.mw-modal {
+*[mw-modal] {
   position: relative;
   z-index: 9999;
 
