@@ -7,7 +7,8 @@ angular.module('mwUI.Modal')
       styleClass: '',
       holderEl: 'body',
       dismissible: true,
-      bootStrapModalOptions: {}
+      bootStrapModalOptions: {},
+      size: mwUI.Modal.Sizes.DEFAULT // can be DEFAULT, BIGGER, LARGE, FULLSCREEN
     };
 
     this.config = function (options) {
