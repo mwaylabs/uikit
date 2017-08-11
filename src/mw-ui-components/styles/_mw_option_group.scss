@@ -34,6 +34,18 @@
 
           .description {
             margin-left: 40px;
+
+            .title{
+              display: flex;
+              align-items: center;
+              overflow: auto;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+
+              .badges{
+                margin-left: 5px;
+              }
+            }
           }
         }
       }

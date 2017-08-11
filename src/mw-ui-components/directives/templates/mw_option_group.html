@@ -11,7 +11,14 @@
             <span mw-icon="{{icon}}"></span>
           </div>
           <div class="description" ng-class="{'col-md-11': icon, 'col-md-12': !icon}">
-            <h4>{{title}}</h4>
+            <div class="title">
+              <h4>{{title}}</h4>
+              <div ng-if="badges" class="badges">
+                <div mw-badge="info" ng-repeat="badge in badges">
+                  {{badge}}
+                </div>
+              </div>
+            </div>
 
             <p>{{description}}</p>
           </div>
