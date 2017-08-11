@@ -4,9 +4,25 @@ angular.module('mwUI.Layout')
     return {
       transclude: true,
       templateUrl: 'uikit/mw-layout/directives/templates/mw_ui.html',
-      link: function (scope) {
+      controller: function($scope){
+        this.addClass = function(styleClass){
+          $scope.addClass(styleClass);
+        };
+        this.removeClass = function(styleClass){
+          $scope.removeClass(styleClass);
+        };
+      },
+      link: function (scope, el) {
         scope.displayToasts = function(){
           return Modal.getOpenedModals().length === 0;
+        };
+
+        scope.addClass = function(styleClass){
+          el.addClass(styleClass);
+        };
+
+        scope.removeClass = function(styleClass){
+          el.removeClass(styleClass);
         };
       }
     };

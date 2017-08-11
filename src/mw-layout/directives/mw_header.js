@@ -10,8 +10,9 @@ angular.module('mwUI.Layout')
         showBackButton: '=',
         mwBreadCrumbs: '='
       },
+      require: '^?mwUi',
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
-      link: function (scope, el, attrs, ctrl, $transclude) {
+      link: function (scope, el, attrs, mwUiCtrl, $transclude) {
         $rootScope.siteTitleDetails = scope.title;
         BrowserTitleHandler.setTitle(scope.title);
 
@@ -25,6 +26,10 @@ angular.module('mwUI.Layout')
           $route.reload();
         };
 
+        scope.back = function () {
+          $location.path(scope.url);
+        };
+
         if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
           scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
           scope.url = scope.url.replace('#', '');
@@ -32,9 +37,12 @@ angular.module('mwUI.Layout')
           console.error('Url attribute in header is missing!!');
         }
 
-        scope.back = function () {
-          $location.path(scope.url);
-        };
+        if(mwUiCtrl){
+          mwUiCtrl.addClass('has-mw-header');
+          scope.$on('$destroy', function(){
+            mwUiCtrl.removeClass('has-mw-header');
+          });
+        }
       }
     };
   });

@@ -1,4 +1,4 @@
-.mw-ui{
+*[mw-ui]{
   margin: 0 $portalMarginX;
 
   .btn{
@@ -46,5 +46,15 @@
 
   .clickable{
     cursor: pointer;
+  }
+
+  *[ng-view]{
+    margin-top: 20px;
+  }
+
+  &.has-mw-header{
+    *[ng-view]{
+      margin-top: 0px;
+    }
   }
 }
