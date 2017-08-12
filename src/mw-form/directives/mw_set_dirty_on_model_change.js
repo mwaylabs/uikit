@@ -14,5 +14,5 @@ angular.module('mwUI.Form')
           return val;
         };
       }
-    }
+    };
   });
