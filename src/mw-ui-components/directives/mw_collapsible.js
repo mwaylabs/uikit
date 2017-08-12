@@ -22,25 +22,33 @@ angular.module('mwUI.UiComponents')
           return totalHeight;
         };
 
+        var open = function(){
+          var collapsedBody = el.find('.mw-collapsible-body');
+
+          collapsedBody.css('max-height', getHeight(collapsedBody));
+          scope.viewModel.collapsed = false;
+        };
+
+        var close = function(){
+          var collapsedBody = el.find('.mw-collapsible-body');
+
+          collapsedBody.css('max-height', 0);
+          scope.viewModel.collapsed = true;
+        };
+
         scope.toggle = function () {
-          var collapsedBody = el.find('.mw-collapsible-body'),
-            maxHeight;
-
-          if (!scope.viewModel.collapsed) {
-            maxHeight = getHeight(collapsedBody);
+          if (scope.mwCollapsable === false) {
+            close();
           } else {
-            maxHeight = 0;
+            open();
           }
-
-          collapsedBody.css('max-height', maxHeight);
-          scope.viewModel.collapsed = !scope.viewModel.collapsed;
         };
 
         scope.$watch('mwCollapsable', function () {
           if (scope.mwCollapsable === false) {
-            scope.viewModel.collapsed = true;
+            close();
           } else {
-            scope.viewModel.collapsed = false;
+            open();
           }
         });
       }
