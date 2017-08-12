@@ -37,10 +37,10 @@ angular.module('mwUI.UiComponents')
         };
 
         scope.toggle = function () {
-          if (scope.mwCollapsable === false) {
-            close();
-          } else {
+          if (scope.viewModel.collapsed) {
             open();
+          } else {
+            close();
           }
         };
 
