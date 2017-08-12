@@ -29,8 +29,11 @@ describe('mwUi Modal service', function () {
     };
 
     $templateCache.put('test/xxx.html', '<div mw-modal title="test"><div mw-modal-body>xxx</div></div>');
-    angular.element('*[mw-modal]').remove();
   }));
+
+  afterEach(function(){
+    angular.element('*[mw-modal]').remove();
+  });
 
   describe('testing configuring modal', function () {
     it('creates a modal', function () {
