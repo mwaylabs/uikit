@@ -24,16 +24,25 @@ angular.module('mwUI.UiComponents')
 
         var open = function(){
           var collapsedBody = el.find('.mw-collapsible-body');
-
-          collapsedBody.css('max-height', getHeight(collapsedBody));
-          scope.viewModel.collapsed = false;
+        var removeMaxHeight = function(){
+          collapsedBody.css('max-height', 'initial');
+          collapsedBody.off('transitionend', removeMaxHeight);
         };
 
-        var close = function(){
-          var collapsedBody = el.find('.mw-collapsible-body');
+        var open = function () {
+          //transitionendFromTest is to trigger event from test, transitionend can not be triggered
+          collapsedBody.on('transitionend transitionendFromTest', removeMaxHeight);
+          collapsedBody.css('max-height', getHeight(collapsedBody));
+          scope.isCollapsed = false;
+        };
 
-          collapsedBody.css('max-height', 0);
-          scope.viewModel.collapsed = true;
+        var close = function () {
+          collapsedBody.off('transitionend', removeMaxHeight);
+          collapsedBody.css('max-height', getHeight(collapsedBody));
+          setTimeout(function(){
+            collapsedBody.css('max-height', 0);
+          }, 5);
+          scope.isCollapsed = true;
         };
 
         scope.toggle = function () {

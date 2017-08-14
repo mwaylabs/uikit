@@ -190,4 +190,19 @@ describe('mwCollapsable', function () {
     });
   });
 
+    it('extends its height when its opened', function(){
+      var transcludedContent = '<div id="testContent">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
+      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent + '</div>';
+      scope.opened = false;
+
+      el = $compile(collapsable)(scope);
+      angular.element('body').append(el);
+      scope.$digest();
+      isolateScope = el.isolateScope();
+      isolateScope.toggle();
+      el.find('.mw-collapsible-body').trigger('transitionendFromTest');
+      scope.$digest();
+
+      expect(el.find('.mw-collapsible-body').css('max-height')).toBe('none');
+    });
 });
