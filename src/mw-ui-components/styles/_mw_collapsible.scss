@@ -21,16 +21,15 @@
   }
 
   .mw-collapsible-animate {
-    max-height: 0px;
+    opacity: 1;
     overflow: hidden;
-    opacity: 0;
     -webkit-transition: all ease-in-out 0.5s;
     transition: all ease-in-out 0.5s;
-  }
 
-  .mw-collapsible-animate.collapsed {
-    opacity: 1;
-    max-height: 2999px;
+    &.is-collapsed {
+      opacity: 0;
+      max-height: 0;
+    }
   }
 
   .mw-collapsible{

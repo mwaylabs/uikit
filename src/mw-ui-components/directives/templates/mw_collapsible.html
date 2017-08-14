@@ -2,13 +2,13 @@
   <div class="mw-collapsible-heading"
        ng-click="toggle()">
     <i class="fa fa-angle-right"
-       ng-class="{'fa-rotate-90': viewModel.collapsed}"></i>
+       ng-class="{'fa-rotate-90': !isCollapsed}"></i>
     <span class="mw-collapsible-heading-text">
       {{title}}
     </span>
   </div>
 
   <div class="mw-collapsible-body mw-collapsible-animate margin-top-5"
-       ng-class="{'collapsed': viewModel.collapsed}"
+       ng-class="{'is-collapsed': isCollapsed}"
        ng-transclude></div>
 </div>
