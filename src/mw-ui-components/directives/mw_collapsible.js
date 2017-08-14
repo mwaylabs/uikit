@@ -5,13 +5,12 @@ angular.module('mwUI.UiComponents')
     return {
       transclude: true,
       scope: {
-        mwCollapsable: '=',
+        isCollapsed: '=mwCollapsable',
         title: '@mwTitle'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsible.html',
       link: function (scope, el) {
-        scope.viewModel = {};
-        scope.viewModel.collapsed = false;
+        var collapsedBody = el.find('.mw-collapsible > .mw-collapsible-body');
 
         var getHeight = function (el) {
           var totalHeight = 0;
@@ -22,8 +21,6 @@ angular.module('mwUI.UiComponents')
           return totalHeight;
         };
 
-        var open = function(){
-          var collapsedBody = el.find('.mw-collapsible-body');
         var removeMaxHeight = function(){
           collapsedBody.css('max-height', 'initial');
           collapsedBody.off('transitionend', removeMaxHeight);
@@ -45,8 +42,10 @@ angular.module('mwUI.UiComponents')
           scope.isCollapsed = true;
         };
 
+        scope.el = el;
+
         scope.toggle = function () {
-          if (scope.viewModel.collapsed) {
+          if (scope.isCollapsed) {
             open();
           } else {
             close();
@@ -54,7 +53,7 @@ angular.module('mwUI.UiComponents')
         };
 
         scope.$watch('mwCollapsable', function () {
-          if (scope.mwCollapsable === false) {
+          if (scope.isCollapsed || angular.isUndefined(scope.isCollapsed)) {
             close();
           } else {
             open();
