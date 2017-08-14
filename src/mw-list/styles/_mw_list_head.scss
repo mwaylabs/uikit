@@ -79,6 +79,18 @@
             }
           }
         }
+
+        .mw-filterable-search.has-value{
+          .trigger-search{
+            display: none;
+          }
+
+          .reset-search{
+            top: 0;
+            right: 0;
+            position: initial;
+          }
+        }
       }
 
       .search-bar {

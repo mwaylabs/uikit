@@ -96,6 +96,17 @@ angular.module('mwComponentsBb', [])
           el.children().removeClass('is-focused');
         });
 
+        el.on('mousedown touch', function(ev){
+          var searchBtn = el.find('.trigger-search'),
+              resetBtn = el.find('.reset-search');
+
+          if(resetBtn.find(ev.target).length !== 0){
+            scope.reset();
+          } else if(searchBtn.find(ev.target).length !== 0){
+            scope.search();
+          }
+        });
+
         if (scope.collection) {
           collection = scope.collection;
         } else if (scope.mwListCollection) {
