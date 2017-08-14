@@ -15,6 +15,7 @@
     "hasToBeMin": "muss mindestens {{min}} sein",
     "hasToBeMinLength": "muss mindestens {{ngMinlength}} Zeichen haben",
     "hasToBeSmaller": "darf maximal {{max}} sein",
-    "hasToBeSmallerLength": "darf maximal {{ngMaxlength}} Zeichen haben"
+    "hasToBeSmallerLength": "darf maximal {{ngMaxlength}} Zeichen haben",
+    "invalidInput": "Eingabe is ungültig"
   }
 }

@@ -8,6 +8,8 @@ angular.module('mwUI.Form', ['mwUI.i18n','mwUI.Modal','mwUI.Utils']);
 // @include ./directives/mw_input_wrapper.js
 // @include ./directives/ng_model.js
 // @include ./directives/ng_model_errors.js
+// @include ./directives/mw_set_dirty_on_model_change.js
+// @include ./directives/validators/mw_custom_error_validator.js
 
 // @include ./services/mw_error_messages.js
 

@@ -42,19 +42,18 @@
         </button>
       </div>
 
-
-        <span class="help-block hidden-on-drag"
-              ng-show="file.fileValidator.$error.required">{{'errors.isRequired' | i18n }}</span>
-
     </div>
 
   </div>
 
-  <input type="hidden"
-         name="fileValidator"
+  <input type="file"
+         class="hidden"
+         name="file"
+         accept="{{inputValidator}}"
+         ng-model="selectedFile"
          ng-required="mwRequired"
-         ng-model="model">
-
-  <input type="file" class="hidden" name="file" accept="{{inputValidator}}">
+         mw-set-dirty-on-model-change
+         mw-custom-error-validator="{{uploadError}}"
+         mw-is-valid="!uploadError">
 
 </div>

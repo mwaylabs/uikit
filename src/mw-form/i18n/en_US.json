@@ -15,6 +15,7 @@
     "hasToBeMin": "has to be at least {{min}}",
     "hasToBeMinLength": "has to have a least {{ngMinlength}} chars",
     "hasToBeSmaller": "must not be greater than {{max}}",
-    "hasToBeSmallerLength": "must not have more chars than {{ngMaxlength}}"
+    "hasToBeSmallerLength": "must not have more chars than {{ngMaxlength}}",
+    "invalidInput": "input is invalid"
   }
 }

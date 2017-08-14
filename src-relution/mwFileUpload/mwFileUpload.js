@@ -49,6 +49,10 @@ angular.module('mwFileUpload', [])
 
         scope.uploadState = 'none';
 
+        scope.uploadError = null;
+
+        scope.selectedFile = null;
+
         scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
 
         if (!scope.mimeTypeGroup) {
@@ -111,10 +115,8 @@ angular.module('mwFileUpload', [])
             });
           } else {
             if (data.result && data.result.message) {
-              data.result.message = 'Validation failed. File has to be ' + attrs.validator;
-              console.log(data.result.message);
+              scope.uploadError = 'Validation failed. File has to be ' + attrs.validator;
             }
-            error(data, data.result);
           }
         };
 
@@ -205,9 +207,11 @@ angular.module('mwFileUpload', [])
           dataType: 'json',
           formData: scope.formData,
           send: function () {
+            scope.uploadError = '...';
             $timeout(function () {
               scope.uploadState = 'uploading';
             });
+            scope.selectedFile = hiddenfileEl.val();
           },
           progress: function (e, data) {
             $timeout(function () {
@@ -215,6 +219,7 @@ angular.module('mwFileUpload', [])
             });
           },
           done: function (e, data) {
+            scope.uploadError = null;
             $timeout(function () {
               scope.uploadState = 'done';
               scope.uploadProgress = 0;
@@ -222,6 +227,7 @@ angular.module('mwFileUpload', [])
             });
           },
           error: function (rsp) {
+            scope.uploadError = rsp.statusText;
             $timeout(function () {
               scope.uploadState = 'done';
               scope.uploadProgress = 0;
@@ -231,6 +237,18 @@ angular.module('mwFileUpload', [])
         });
 
         hiddenfileEl.fileupload('option', mwFileUpload.getGlobalConfig());
+
+        scope.$watch('model', function(val, previousVal){
+          if(val){
+            scope.selectedFile = val;
+          } else {
+            if(previousVal){
+              scope.selectedFile = '';
+            } else {
+              scope.selectedFile = null;
+            }
+          }
+        });
 
         scope.$watch('url', function (val) {
           if (val) {
