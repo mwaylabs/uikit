@@ -116,10 +116,7 @@ angular.module('mwFileUpload', [])
           } else {
             if (data.result && data.result.message) {
               scope.uploadError = 'Validation failed. File has to be ' + attrs.validator;
-              data.result.message = scope.uploadError;
-              console.log(data.result.message);
             }
-            error(data, data.result);
           }
         };
 
