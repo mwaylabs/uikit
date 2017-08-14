@@ -6,7 +6,7 @@
     <button class="btn btn-default btn-block dropdown-toggle"
             ng-class="{hidden:viewModel.showFilterForm}"
             data-toggle="dropdown">
-      <span mw-icon="rln-icon icon-filter_add"></span>
+      <span mw-icon="rln-icon filter_add"></span>
       <span class="filter-name">{{appliedFilter.get('name') || ('common.applyQuickFilter' | i18n) }}</span>
     </button>
 
@@ -48,12 +48,12 @@
           <div ng-if="!isLoading && filter.canModifyFilter()">
             <button class="btn btn-link edit"
                     ng-click="editFilter(filter)">
-              <span mw-icon="rln-icon icon-edit"></span>
+              <span mw-icon="rln-icon edit"></span>
             </button>
 
             <button class="btn btn-link delete"
                     ng-click="deleteFilter(filter)">
-              <span mw-icon="rln-icon icon-delete"></span>
+              <span mw-icon="rln-icon delete"></span>
             </button>
           </div>
 
@@ -68,7 +68,7 @@
            mw-prevent-default="click"
            ng-click="addFilter(filter)"
            class="btn btn-link">
-          <span mw-icon="rln-icon icon-add"></span>
+          <span mw-icon="rln-icon add"></span>
           {{'common.addFilter' | i18n}}
         </a>
       </li>
