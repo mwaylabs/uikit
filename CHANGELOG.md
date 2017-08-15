@@ -1,5 +1,9 @@
 # v1.0.15
 ## Features
+### Layout module
+- Support pages without `mwHeader`
+- Handle style when no `mwMenuTopBar` is available
+
 ### Modal module
 - Modaloptions was extended with size property so a modal size can be configured:
   - DEFAULT: Default bootstrap modal size
@@ -13,6 +17,26 @@
    size: mwUI.Modal.Sizes.DEFAULT|BIGGER|LARGE|FULLSCREEN 
   });
   ```
+  
+### Ui components module
+- Hardcoded `max-height` of `mwCollapsable` was removed and is now calculated during runtime. It also allows transcluded 
+content to grow in height.
+- `mwOptionsGroup` was extended with the optional attribute `badges` that can be an array of strings. They will be displayed
+as badges right next to to the title
+
+### Src-Relution module
+- `mwFileUpload` directive registers error message for `mwInputWrapper` when mime-type is invalid.
+
+## Bug Fixes
+### List module
+- Fixed issue that reset button did not work when the search input was focused
+- Responsive mode of `mwListHead` was adjusted so the clear search button is not floating around in the middle of the view. 
+  Instead the reset button will replace the search icon as soon as there is a input value.
+### Modal module
+- Fixed overflow issue in modal body. When the content is wider then the modal it can be scrolled horizontally
+### Src-Relution module
+- Fixed duplicate is required error message in `mwFileUpload` directive
+- Remove `icon-` prefix of relution font icons because font was updated
 
 # v1.0.14
 ## Features
