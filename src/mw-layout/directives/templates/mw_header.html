@@ -2,7 +2,7 @@
   <div class="fixed-content col-md-12">
 
     <div ng-if="canShowBackButton()"
-         class="back-btn clickable"
+         class="back-btn clickable round-btn"
          ng-click="back()">
           <span mw-icon="mwUI.angleLeft"></span>
     </div>
@@ -25,7 +25,10 @@
 
       <h1 class="lead page-title"
           ng-click="refresh()">
-        {{title}}
+        <span class="text">{{title}}</span>
+        <div class="refresh-btn clickable round-btn">
+          <span mw-icon="mwUI.refresh"></span>
+        </div>
       </h1>
     </div>
 

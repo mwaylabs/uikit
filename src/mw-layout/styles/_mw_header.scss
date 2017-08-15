@@ -1,4 +1,5 @@
 $headerHeight: 56px !default;
+$headerIconMargin: 6px;
 
 div[mw-header] {
 
@@ -8,6 +9,40 @@ div[mw-header] {
   position: relative;
   margin-bottom: 25px;
   height: $headerHeight - 5;
+
+  .round-btn {
+    display: flex;
+    min-width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid $gray-light;
+    position: relative;
+    top: -2px;
+    background: transparent;
+    @include transition(all 0.3s ease);
+
+    *[mw-icon], i {
+      font-size: 9px;
+    }
+
+    i {
+      color: $brand-primary;
+
+      @include transition(color 0.3s ease);
+    }
+
+    &:hover {
+      color: white;
+      background: $brand-primary;
+      border-color: $brand-primary;
+
+      i {
+        color: white;
+      }
+    }
+  }
 
   .fixed-content {
     position: fixed;
@@ -24,34 +59,10 @@ div[mw-header] {
     border-bottom: 1px solid #e7e7e7;
 
     .back-btn {
-      display: flex;
-      width: 18px;
-      height: 18px;
-      padding: 0;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      border: 1px solid $gray-light;
-      margin-right: 8px;
-      position: relative;
-      top: -2px;
-      background: transparent;
-      @include transition(all 0.3s ease);
+      margin-right: $headerIconMargin;
 
-      i {
-        color: $brand-primary;
-
-        @include transition(color 0.3s ease);
-      }
-
-      &:hover {
-        color: white;
-        background: $brand-primary;
-        border-color: $brand-primary;
-
-        i {
-          color: white;
-        }
+      *[mw-icon], i {
+        font-size: 12px;
       }
     }
 
@@ -64,71 +75,111 @@ div[mw-header] {
       white-space: nowrap;
 
       .header-icon {
-        margin-right: 2px;
-        padding-top: 2px;
+        margin-right: $headerIconMargin;
+        align-self: center;
 
         i {
-          font-size: 19px;
+          font-size: 20px;
+          top: -1px;
           vertical-align: middle;
         }
       }
 
       h1 {
-        display: inline-block;
+        display: flex;
         margin: 0;
         -webkit-flex-grow: 2;
         flex-grow: 2;
-        text-overflow: ellipsis;
         overflow: hidden;
-      }
-    }
-  }
+        align-items: center;
 
-  @media (max-width: $screen-sm) {
-    $smHeaderHeight: $headerHeight - 15;
-
-    .mw-header {
-      height: $smHeaderHeight;
-
-      .fixed-content {
-        height: $smHeaderHeight + 6;
-
-        .title-holder{
-          padding-top: 0;
-          .header-icon i{
-            font-size: 17px;
-            vertical-align: baseline;
-          }
+        .text {
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
 
-        .mw-bread-crumbs{
-
-          > *[mw-bread-crumb]:not(:last-child) {
-            display: none;
-          }
-        }
-      }
-
-    }
-  }
-
-  @media (max-width: $screen-xs) {
-    .mw-header{
-      .fixed-content {
-        .back-btn{
-          border: 1px solid #efefef;
-          padding: 0px 10px;
-          margin-right: 5px;
-          border-radius: $border-radius-base;
+        .refresh-btn {
+          margin-left: $headerIconMargin;
+          display: none;
         }
 
-        .mw-bread-crumbs{
-          > *[mw-bread-crumb]{
-            display: none;
+        &:hover {
+          .refresh-btn {
+            display: flex;
           }
         }
       }
     }
   }
+}
 
+@media (max-width: $screen-sm) {
+  $smHeaderHeight: $headerHeight - 15;
+  $smHeaderIconMargin: 4px;
+
+  .mw-header {
+    height: $smHeaderHeight !important;
+
+    .round-btn {
+      min-width: 14px;
+      height: 14px;
+      top: 0;
+
+      *[mw-icon], i {
+        font-size: 8px;
+      }
+    }
+
+    .fixed-content {
+      height: $smHeaderHeight + 6 !important;
+
+      .back-btn {
+        margin-right: $smHeaderIconMargin;
+
+        *[mw-icon], i {
+          font-size: 10px;
+        }
+
+        // Click range extender so its easier to press the button
+        &:after{
+          content: '';
+          position: absolute;
+          top: -14px;
+          height: 40px;
+          width: 40px;
+        }
+      }
+
+      .title-holder .header-icon {
+        margin-right: $smHeaderIconMargin;
+
+        i {
+          font-size: 18px;
+        }
+      }
+
+      h1 .refresh-btn {
+        margin-left: $smHeaderIconMargin;
+      }
+
+      .mw-bread-crumbs {
+
+        > *[mw-bread-crumb]:not(:last-child) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $screen-xs) {
+  .mw-header {
+    .fixed-content {
+      .mw-bread-crumbs {
+        > *[mw-bread-crumb] {
+          display: none;
+        }
+      }
+    }
+  }
 }
