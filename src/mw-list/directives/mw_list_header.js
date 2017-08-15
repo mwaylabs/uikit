@@ -5,12 +5,13 @@ angular.module('mwUI.List')
     return {
       require: '^mwListableBb',
       scope: {
-        property: '@sort'
+        property: '@sort',
+        isOptional: '=optional'
       },
       transclude: true,
       replace: true,
       templateUrl: 'uikit/mw-list/directives/templates/mw_list_header.html',
-      link: function (scope, elm, attr, mwListCtrl) {
+      link: function (scope, elm, attr, mwListCtrl, $transclude) {
         var ascending = '+',
           descending = '-',
           collection = mwListCtrl.getCollection();
@@ -54,10 +55,10 @@ angular.module('mwUI.List')
           }
         };
 
-        mwListCtrl.registerColumn(scope);
+        mwListCtrl.registerColumn(scope, scope.isOptional);
 
         scope.$on('$destroy', function () {
-          mwListCtrl.unRegisterColumn(scope);
+          mwListCtrl.unRegisterColumn(scope, scope.isOptional);
         });
       }
     };

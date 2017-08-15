@@ -23,13 +23,15 @@ angular.module('mwUI.List')
 
         this.actionColumns = [];
 
-        this.registerColumn = function (scope) {
-          _columns.push(scope);
+        this.registerColumn = function (scope, isOptional) {
+          var column = {scope: scope, isOptional: isOptional, id: scope.$id, pos: _columns.length};
+          _columns.push(column);
+          $scope.$emit('mwList:registerColumn', column);
         };
 
         this.unRegisterColumn = function (scope) {
           if (scope && scope.$id) {
-            var scopeInArray = _.findWhere(_columns, {$id: scope.$id}),
+            var scopeInArray = _.findWhere(_columns, {id: scope.$id}),
               indexOfScope = _.indexOf(_columns, scopeInArray);
 
             if (indexOfScope > -1) {
@@ -63,6 +65,25 @@ angular.module('mwUI.List')
         } else if ($scope.collection) {
           _collection = $scope.collection;
         }
+      }
+    };
+  })
+
+  .directive('mwListableBb', function(){
+    return {
+      require: 'mwListableBb',
+      link: function(scope, el, attr, mwListCtrl){
+        var manageColumVisibility = function(){
+          mwListCtrl.getColumns().forEach(function(column){
+            if(column.isOptional){
+              el.addClass('hidden-col-'+column.pos);
+            }
+          });
+        };
+
+        var throttledHandler = _.throttle(manageColumVisibility, 100);
+
+        scope.$on('mwList:registerColumn', throttledHandler);
       }
     };
   });

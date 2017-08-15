@@ -1,13 +1,13 @@
 @mixin stripped-table() {
 
-  tr{
+  tr {
 
     &:nth-child(odd) > td,
-    &:nth-child(odd) > th{
+    &:nth-child(odd) > th {
       background-color: transparent;
     }
 
-    &:not(:last-child) td,th{
+    &:not(:last-child) td, th {
       border-bottom: 1px solid $list-hover-color;
     }
 
@@ -28,7 +28,19 @@
   }
 }
 
+@mixin generate-hidden-col-helper($from, $to) {
+  @for $i from $from through $to {
+    &.hidden-col-#{$i} {
+      thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
+      tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
+        display: none !important;
+      }
+    }
+  }
+}
+
 .mw-list {
+  @include generate-hidden-col-helper(0, 20);
 
   thead {
 
@@ -84,6 +96,10 @@
           margin-right: 0;
         }
       }
+
+      &.hidden {
+        display: none !important;
+      }
     }
   }
 
@@ -93,6 +109,10 @@
     }
 
     @include stripped-table();
+
+    td.hidden {
+      display: none !important;
+    }
 
     td span[mw-icon] {
       top: 2px;
@@ -114,8 +134,8 @@
     }
   }
 
-  tfoot{
-    .mw-spinner{
+  tfoot {
+    .mw-spinner {
       margin: 0 auto;
     }
   }
@@ -174,8 +194,8 @@
 
 }
 
-.table.table-striped{
-  tbody{
+.table.table-striped {
+  tbody {
     @include stripped-table();
   }
 }
