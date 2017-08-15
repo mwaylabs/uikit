@@ -24,17 +24,33 @@ div[mw-header] {
     border-bottom: 1px solid #e7e7e7;
 
     .back-btn {
-      margin-right: 3px;
-      padding: 6px;
+      display: flex;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid $gray-light;
+      margin-right: 8px;
+      position: relative;
+      top: -2px;
       background: transparent;
+      @include transition(all 0.3s ease);
 
       i {
-        @include transition(color 0.5s ease);
+        color: $brand-primary;
+
+        @include transition(color 0.3s ease);
       }
 
       &:hover {
+        color: white;
+        background: $brand-primary;
+        border-color: $brand-primary;
+
         i {
-          color: $brand-primary;
+          color: white;
         }
       }
     }
