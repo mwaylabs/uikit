@@ -4,10 +4,10 @@ angular.module('mwUI.UiComponents')
     return {
       scope: {
         title: '@',
-        description: '@',
-        icon: '@',
-        mwDisabled: '=',
-        badges: '='
+        description: '@?',
+        icon: '@?',
+        mwDisabled: '=?',
+        badges: '=?'
       },
       transclude: true,
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_option_group.html',
