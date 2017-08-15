@@ -8,10 +8,9 @@ describe('mwHeader', function () {
   var i18n;
   var i18nProvider;
 
-  beforeEach(module('mwUI'));
-  beforeEach(module('mwComponents'));
-  beforeEach(module('ngRoute'));
   beforeEach(module('karmaDirectiveTemplates'));
+  beforeEach(module('ngRoute'));
+  beforeEach(module('mwUI.Layout'));
 
   beforeEach(function () {
     module('mwUI', function (_i18nProvider_) {
@@ -50,20 +49,24 @@ describe('mwHeader', function () {
         scope.$digest();
       }));
 
-  it('should change location when clicking back button', function () {
-    expect(location.path()).toBe('');
+  it('changes location when clicking back button', function () {
+    spyOn(location, 'path');
+
     el.isolateScope().back();
-    expect(location.path()).toBe('/devices');
+
+    expect(location.path).toHaveBeenCalledWith('/devices');
   });
 
-  it('should do a page refresh', function () {
+  it('does a page refresh', function () {
     spyOn(route, 'reload');
     expect(route.reload).not.toHaveBeenCalled();
+
     el.isolateScope().refresh();
+
     expect(route.reload).toHaveBeenCalled();
   });
 
-  it('should add class no-buttons when nothing is transcluded', function () {
+  it('adds class no-buttons when nothing is transcluded', function () {
     el = angular.element(
       '<div mw-header ' +
       'title="test1" ' +
@@ -77,7 +80,7 @@ describe('mwHeader', function () {
     expect(el.find('.mw-header').hasClass('no-buttons')).toBeTruthy();
   });
 
-  it('should add class no-buttons when nothing is transcluded and back buttons are disabled', function () {
+  it('adds class no-buttons when nothing is transcluded and back buttons are disabled', function () {
     el = angular.element(
       '<div mw-header ' +
       'title="test2" ' +
@@ -92,7 +95,7 @@ describe('mwHeader', function () {
     expect(el.find('.mw-header').hasClass('no-buttons')).toBeTruthy();
   });
 
-  it('should not add class no-buttons when nothing is transcluded and back buttons are enabled', function () {
+  it('does not add class no-buttons when nothing is transcluded and back buttons are enabled', function () {
     el = angular.element(
       '<div mw-header ' +
       'title="test3" ' +
@@ -107,34 +110,32 @@ describe('mwHeader', function () {
     expect(el.find('.mw-header').hasClass('no-buttons')).toBeFalsy();
   });
 
-  it('should remove "#" from url', function () {
+  it('removes "#" from url when calling back', function () {
     el = angular.element(
       '<div mw-header ' +
       'title="test4" ' +
-      'mw-bread-crumbs="[{title:\'abc1\',url:\'#/devices\'}]" ' +
+      'url="#/devices" ' +
       '</div>'
     );
-
     $compile(el)(scope);
     scope.$digest();
+    spyOn(location, 'path');
 
-    expect(el.isolateScope().url).toBe('/devices');
+    el.isolateScope().back();
+
+    expect(location.path).toHaveBeenCalledWith('/devices');
   });
 
-  it('should throw an error if no url is present', function () {
+  it('throws an error when show back button is set to true but no url is present', function () {
     el = angular.element(
       '<div mw-header ' +
       'title="test4" ' +
       'show-back-button="true"' +
       '</div>'
     );
-
-    spyOn(console, 'error');
-
     $compile(el)(scope);
-    scope.$digest();
 
-    expect(console.error).toHaveBeenCalled();
+    expect( scope.$digest).toThrow();
   });
 
 });
