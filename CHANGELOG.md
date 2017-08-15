@@ -4,10 +4,6 @@
 - Support pages without `mwHeader`
 - Handle style when no  mwMenuTopBar` is available
 
-### List module
-- Responsive mode of `mwListHead`was adjusted so the clear search button is not floating around in the middle of the view. 
-Instead the reset button will replace the search icon as soon as there is a input value.
-
 ### Modal module
 - Modaloptions was extended with size property so a modal size can be configured:
   - DEFAULT: Default bootstrap modal size
@@ -34,6 +30,8 @@ as badges right next to to the title
 ## Bug Fixes
 ### List module
 - Fixed issue that reset button did not work when the search input is focused
+- Responsive mode of `mwListHead`was adjusted so the clear search button is not floating around in the middle of the view. 
+  Instead the reset button will replace the search icon as soon as there is a input value.
 ### Modal module
 - Fixed overflow issue in modal body. When the content is wider the the modal it can be scrolled horizontally
 ### Src-Relution module
