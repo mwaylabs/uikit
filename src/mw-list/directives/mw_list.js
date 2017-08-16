@@ -23,19 +23,39 @@ angular.module('mwUI.List')
 
         this.actionColumns = [];
 
-        this.registerColumn = function (scope, isOptional) {
-          var column = {scope: scope, isOptional: isOptional, id: scope.$id, pos: _columns.length};
-          _columns.push(column);
-          $scope.$emit('mwList:registerColumn', column);
+        var notifyColumns = function (event, affectedCol) {
+          $scope.$emit(event, affectedCol);
+          _columns.forEach(function (column) {
+            column.scope.$broadcast(event, affectedCol);
+          });
         };
 
-        this.unRegisterColumn = function (scope) {
-          if (scope && scope.$id) {
-            var scopeInArray = _.findWhere(_columns, {id: scope.$id}),
+        this.registerColumn = function (column) {
+          _columns.push(column);
+          notifyColumns('mwList:registerColumn');
+        };
+
+        this.updateColumn = function (column) {
+          if (column && column.id) {
+            var scopeInArray = _.findWhere(_columns, {id: column.id}),
+              indexOfScope = _.indexOf(_columns, scopeInArray);
+
+            if (indexOfScope > -1) {
+              var existingColumn = _columns[indexOfScope];
+              _.extend(existingColumn, column);
+              notifyColumns('mwList:updateColumn', existingColumn);
+            }
+          }
+        };
+
+        this.unRegisterColumn = function (column) {
+          if (column && column.id) {
+            var scopeInArray = _.findWhere(_columns, {id: column.id}),
               indexOfScope = _.indexOf(_columns, scopeInArray);
 
             if (indexOfScope > -1) {
               _columns.splice(indexOfScope, 1);
+              notifyColumns('mwList:unRegisterColumn', _columns[indexOfScope]);
             }
           }
         };
