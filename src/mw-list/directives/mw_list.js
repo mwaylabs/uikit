@@ -69,14 +69,21 @@ angular.module('mwUI.List')
     };
   })
 
-  .directive('mwListableBb', function(){
+  .directive('mwListableBb', function () {
     return {
       require: 'mwListableBb',
-      link: function(scope, el, attr, mwListCtrl){
-        var manageColumVisibility = function(){
-          mwListCtrl.getColumns().forEach(function(column){
-            if(column.isOptional){
-              el.addClass('hidden-col-'+column.pos);
+      link: function (scope, el, attr, mwListCtrl) {
+        var makeAllColumnsVisible = function () {
+          el.removeClass(function (index, className) {
+            return (className.match(/(^|\s)hidden-col-\S+/g) || []).join(' ');
+          });
+        };
+
+        var manageColumVisibility = function () {
+          makeAllColumnsVisible();
+          mwListCtrl.getColumns().forEach(function (column) {
+            if (!column.scope.isVisible()) {
+              el.addClass('hidden-col-' + column.pos);
             }
           });
         };
