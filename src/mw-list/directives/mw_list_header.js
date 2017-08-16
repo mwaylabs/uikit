@@ -12,7 +12,7 @@ angular.module('mwUI.List')
       transclude: true,
       replace: true,
       templateUrl: 'uikit/mw-list/directives/templates/mw_list_header.html',
-      link: function (scope, elm, attr, mwListCtrl, $transclude) {
+      link: function (scope, elm, attr, mwListCtrl) {
         var ascending = '+',
           descending = '-',
           collection = mwListCtrl.getCollection();
@@ -37,7 +37,7 @@ angular.module('mwUI.List')
             scope: scope,
             pos: elm.index(),
             id: scope.$id
-          }
+          };
         };
 
         var setTitle = function(){
