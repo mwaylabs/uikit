@@ -104,11 +104,19 @@ angular.module('mwUI.List')
           }
         };
 
-        mwListCtrl.registerColumn(scope, scope.isOptional);
+        mwListCtrl.registerColumn(getColumn());
 
         scope.$on('$destroy', function () {
-          mwListCtrl.unRegisterColumn(scope, scope.isOptional);
+          mwListCtrl.unRegisterColumn(getColumn());
         });
+
+        scope.$on('mwList:registerColumn', throttledUpdateCol);
+        scope.$on('mwList:unRegisterColumn', throttledUpdateCol);
+        attr.$observe('title', throttledUpdateCol);
+        $rootScope.$on('i18n:localeChanged', function() {
+          $timeout(throttledUpdateCol);
+        });
+        $timeout(throttledUpdateCol);
       }
     };
   });
