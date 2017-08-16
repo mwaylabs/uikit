@@ -1,7 +1,7 @@
 angular.module('mwUI.List')
 
-  //Todo rename to mwList
-  .directive('mwListableBb', function(){
+//Todo rename to mwList
+  .directive('mwListableBb', function () {
     return {
       //TODO rename collection to mwCollection
       //Move sort and filter persistance into filterable and remove mwListCollection
@@ -111,6 +111,8 @@ angular.module('mwUI.List')
         var throttledHandler = _.throttle(manageColumVisibility, 100);
 
         scope.$on('mwList:registerColumn', throttledHandler);
+        scope.$on('mwList:unRegisterColumn', throttledHandler);
+        scope.$on('mwList:updateColumn', throttledHandler);
       }
     };
   });
