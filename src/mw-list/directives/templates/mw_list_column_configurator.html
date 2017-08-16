@@ -1,0 +1,16 @@
+<div class="mw-list-column-configurator btn-group">
+  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span mw-icon="mwUI.gears"></span>
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li ng-repeat="column in columns"
+        ng-if="column.scope && getColTitle(column)">
+      <a href="#" mw-prevent-default="click" ng-click="column.scope.toggleColumn()">
+        <span ng-if="column.scope.isVisible()"
+              mw-icon="mwUI.check"></span>
+        {{getColTitle(column)}}
+      </a>
+    </li>
+  </ul>
+</div>
