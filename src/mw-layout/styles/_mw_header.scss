@@ -12,19 +12,20 @@ div[mw-header] {
 
   .round-btn {
     display: flex;
-    min-width: 18px;
-    height: 18px;
+    min-width: 16px;
+    height: 16px;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     border: 1px solid $gray-light;
     position: relative;
-    top: -2px;
+    top: -1px;
     background: transparent;
     @include transition(all 0.3s ease);
 
     *[mw-icon], i {
       font-size: 9px;
+      line-height: initial;
     }
 
     i {
