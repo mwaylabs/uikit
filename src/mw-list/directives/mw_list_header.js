@@ -1,12 +1,13 @@
 angular.module('mwUI.List')
 
   //TODO rename to mwListHeader
-  .directive('mwListableHeaderBb', function () {
+  .directive('mwListableHeaderBb', function ($rootScope, $timeout) {
     return {
       require: '^mwListableBb',
       scope: {
-        property: '@sort',
-        isOptional: '=optional'
+        property: '@?sort',
+        title: '@?',
+        hidden: '=?'
       },
       transclude: true,
       replace: true,
