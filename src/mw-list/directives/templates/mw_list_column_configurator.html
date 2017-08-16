@@ -5,10 +5,10 @@
   </button>
   <ul class="dropdown-menu">
     <li ng-repeat="column in columns"
-        ng-if="column.scope && getColTitle(column)">
+        ng-if="column.scope && getColTitle(column)"
+        ng-class="{'is-checked': column.scope.isVisible()}">
       <a href="#" mw-prevent-default="click" ng-click="column.scope.toggleColumn()">
-        <span ng-if="column.scope.isVisible()"
-              mw-icon="mwUI.check"></span>
+        <span mw-icon="mwUI.check" class="checked-indicator"></span>
         {{getColTitle(column)}}
       </a>
     </li>
