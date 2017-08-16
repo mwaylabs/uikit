@@ -32,6 +32,54 @@ angular.module('mwUI.List')
           return collection.fetch();
         };
 
+        var getColumn = function(){
+          return {
+            scope: scope,
+            pos: elm.index(),
+            id: scope.$id
+          }
+        };
+
+        var setTitle = function(){
+          if(!attr.title){
+            scope.title = elm.text().trim();
+          }
+        };
+
+        var updateCol = function(){
+          scope.pos = elm.index();
+          setTitle();
+          mwListCtrl.updateColumn(getColumn());
+        };
+
+        var throttledUpdateCol = _.throttle(updateCol, 100);
+
+        scope.getTitle = function(){
+          return scope.title || '';
+        };
+
+        scope.isVisible = function(){
+          return !scope.hidden;
+        };
+
+        scope.hideColumn = function(){
+          scope.hidden = true;
+          mwListCtrl.updateColumn(getColumn());
+        };
+
+        scope.showColumn= function(){
+          scope.hidden = false;
+          mwListCtrl.updateColumn(getColumn());
+        };
+
+        scope.toggleColumn = function(){
+          if(scope.hidden){
+            scope.showColumn();
+          } else {
+            scope.hideColumn();
+          }
+        };
+
         scope.canBeSorted = function(){
           return angular.isString(scope.property) && scope.property.length > 0 && !!collection.filterable;
         };
