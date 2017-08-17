@@ -5,10 +5,10 @@ angular.module('mwUI.Layout')
       transclude: true,
       scope: {
         title: '@',
-        url: '@',
-        mwTitleIcon: '@',
-        showBackButton: '=',
-        mwBreadCrumbs: '='
+        url: '@?',
+        mwTitleIcon: '@?',
+        showBackButton: '=?',
+        mwBreadCrumbs: '=?'
       },
       require: '^?mwUi',
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
@@ -27,14 +27,18 @@ angular.module('mwUI.Layout')
         };
 
         scope.back = function () {
-          $location.path(scope.url);
+          var path = scope.url.replace('#', '');
+          $location.path(path);
+        };
+
+        scope.canShowBackButton = function(){
+          return (angular.isUndefined(scope.showBackButton) || scope.showBackButton) && angular.isDefined(scope.url);
         };
 
         if (!scope.url && scope.mwBreadCrumbs && scope.mwBreadCrumbs.length > 0) {
           scope.url = scope.mwBreadCrumbs[scope.mwBreadCrumbs.length - 1].url;
-          scope.url = scope.url.replace('#', '');
         } else if (!scope.url && scope.showBackButton) {
-          console.error('Url attribute in header is missing!!');
+          throw new Error('[mwHeader] Can not show back button when the attribute url is not defined');
         }
 
         if(mwUiCtrl){
