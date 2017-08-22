@@ -18,17 +18,6 @@ angular.module('mwUI.Menu')
       link: function (scope, el, attrs, ctrl) {
         scope.entries = ctrl.getMenu();
 
-        scope.unCollapse = function () {
-          var collapseEl = el.find('.navbar-collapse');
-          if (collapseEl.hasClass('in')) {
-            collapseEl.collapse('hide');
-          }
-        };
-
-        $rootScope.$on('$locationChangeSuccess', function () {
-          scope.unCollapse();
-        });
-
         scope.$on('mw-menu:triggerReorder', _.throttle(function () {
           $timeout(function () {
             scope.$broadcast('mw-menu:reorder');
