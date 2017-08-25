@@ -23,7 +23,7 @@ describe('mwCollapsable', function () {
     isolateScope = el.isolateScope();
   }));
 
-  afterEach(function(){
+  afterEach(function () {
     angular.element('body *[mw-collapsable]').remove();
   });
 
@@ -191,7 +191,7 @@ describe('mwCollapsable', function () {
       expect(el.find('.mw-collapsible-body').css('max-height')).toBe(expectedHeight + 'px');
     });
 
-    it('extends its height when its opened', function(){
+    it('extends its height when its opened', function () {
       var transcludedContent = '<div id="testContent">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
       collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
       scope.closed = true;
@@ -207,7 +207,7 @@ describe('mwCollapsable', function () {
       expect(el.find('.mw-collapsible-body').css('max-height')).toBe('none');
     });
 
-    it('removes max height when no transition end event is fired during intialisation', function(){
+    it('removes max height when no transition end event is fired during intialisation', function () {
       var transcludedContent = 'abc';
       collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
       scope.closed = false;
@@ -220,7 +220,7 @@ describe('mwCollapsable', function () {
       expect(el.find('.mw-collapsible-body').css('max-height')).toBe('none');
     });
 
-    it('removes max height when no transition end event is fired when it is toggled', function(){
+    it('removes max height when no transition end event is fired when it is toggled', function () {
       var transcludedContent = 'abc';
       collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
       scope.closed = true;
