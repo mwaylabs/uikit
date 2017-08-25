@@ -223,7 +223,7 @@ angular.module('mwCollection')
           attr: null,
           val: null
         };
-        return LocalForage.removeItem(_localFilterIdentifier).then(function () {
+        return LocalForage.removeItem(_localSearchIdentifier).then(function () {
           setUrlQueryParams();
           return _appliedFilter;
         })
