@@ -41,11 +41,21 @@ angular.module('mwCollection', ['ngRoute', 'mwUI.Backbone', 'mwUI.Utils'])
           if (searchTerm.val) {
             var searchTermFilter = {};
             searchTermFilter[searchTerm.attr] = searchTerm.val;
-            _collection.filterable.setFilters(searchTermFilter);
+            try{
+              _collection.filterable.setFilters(searchTermFilter);
+            } catch (err){
+              console.warn('[MwListCollection] The filter attribute '+searchTerm.attr+' for the searchterm '+searchTerm.val+' does not exist!');
+              mwListCollectionFilter.clearAppliedSearchTerm();
+            }
           }
 
           if (!appliedFilter.isNew()) {
-            _collection.filterable.setFilters(filterValues);
+            try{
+              _collection.filterable.setFilters(filterValues);
+            } catch(err){
+              console.warn('[MwListCollection] Filter could not be applied!',err);
+              mwListCollectionFilter.clearAppliedFilter();
+            }
           }
 
           if (!mwListCollectionFilter.hasAppliedFilterOrSearchTerm()) {
