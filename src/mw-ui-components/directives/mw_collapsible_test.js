@@ -5,15 +5,17 @@ describe('mwCollapsable', function () {
   var el;
   var collapsable;
   var isolateScope;
+  var $timeout;
 
   beforeEach(module('karmaDirectiveTemplates'));
 
   beforeEach(module('mwUI.UiComponents'));
 
-  beforeEach(inject(function (_$compile_, _$rootScope_) {
+  beforeEach(inject(function (_$compile_, _$rootScope_, _$timeout_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     scope = _$rootScope_.$new();
+    $timeout = _$timeout_;
 
     collapsable = '<div mw-collapsable mw-title="TITLE">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
     el = $compile(collapsable)(scope);
@@ -185,7 +187,7 @@ describe('mwCollapsable', function () {
       isolateScope.toggle();
       scope.$digest();
 
-      var expectedHeight = el.find('#testContent1').innerHeight() + el.find('#testContent2').innerHeight() + 4 * margin;
+      var expectedHeight = el.find('#testContent1').innerHeight() + el.find('#testContent2').innerHeight() + 3 * margin;
       expect(el.find('.mw-collapsible-body').css('max-height')).toBe(expectedHeight + 'px');
     });
 
@@ -200,6 +202,36 @@ describe('mwCollapsable', function () {
       isolateScope = el.isolateScope();
       isolateScope.toggle();
       el.find('.mw-collapsible-body').trigger('transitionendFromTest');
+      scope.$digest();
+
+      expect(el.find('.mw-collapsible-body').css('max-height')).toBe('none');
+    });
+
+    it('removes max height when no transition end event is fired during intialisation', function(){
+      var transcludedContent = 'abc';
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
+      scope.closed = false;
+
+      el = $compile(collapsable)(scope);
+      angular.element('body').append(el);
+      $timeout.flush();
+      scope.$digest();
+
+      expect(el.find('.mw-collapsible-body').css('max-height')).toBe('none');
+    });
+
+    it('removes max height when no transition end event is fired when it is toggled', function(){
+      var transcludedContent = 'abc';
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
+      scope.closed = true;
+      el = $compile(collapsable)(scope);
+      angular.element('body').append(el);
+      scope.$digest();
+      $timeout.flush();
+      isolateScope = el.isolateScope();
+
+      isolateScope.toggle();
+      $timeout.flush();
       scope.$digest();
 
       expect(el.find('.mw-collapsible-body').css('max-height')).toBe('none');
