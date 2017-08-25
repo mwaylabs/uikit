@@ -95,7 +95,7 @@ angular.module('mwUI.List')
       link: function (scope, el, attr, mwListCtrl) {
         var makeAllColumnsVisible = function () {
           el.removeClass(function (index, className) {
-            return (className.match(/(^|\s)hidden-col-\S+/g) || []).join(' ');
+            return (className.match(/(^|\s)(hidden-col-|visible-col-)\S+/g) || []).join(' ');
           });
         };
 
@@ -104,6 +104,8 @@ angular.module('mwUI.List')
           mwListCtrl.getColumns().forEach(function (column) {
             if (!column.scope.isVisible()) {
               el.addClass('hidden-col-' + column.pos);
+            } else {
+              el.addClass('visible-col-' + column.pos);
             }
           });
         };

@@ -36,6 +36,12 @@
         display: none !important;
       }
     }
+    &.visible-col-#{$i} {
+      thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
+      tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
+        display: table-cell !important;
+      }
+    }
   }
 }
 
