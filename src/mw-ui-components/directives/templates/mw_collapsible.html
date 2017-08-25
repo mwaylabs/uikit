@@ -9,6 +9,7 @@
   </div>
 
   <div class="mw-collapsible-body mw-collapsible-animate margin-top-5"
-       ng-class="{'is-collapsed': isCollapsed}"
-       ng-transclude></div>
+       ng-class="{'is-collapsed': isCollapsed}">
+    <div ng-transclude class="collapsed-content"></div>
+  </div>
 </div>
