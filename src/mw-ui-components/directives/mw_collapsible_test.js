@@ -111,8 +111,8 @@ describe('mwCollapsable', function () {
   describe('testing height', function () {
     it('sets max-height when element is opened when transcluded element has no padding and margin', function () {
       var transcludedContent = '<div id="testContent">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
-      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent + '</div>';
-      scope.opened = false;
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
+      scope.closed = true;
 
       el = $compile(collapsable)(scope);
       angular.element('body').append(el);
@@ -126,8 +126,8 @@ describe('mwCollapsable', function () {
 
     it('sets max-height when element is opened when transcluded element has padding', function () {
       var transcludedContent = '<div id="testContent" style="padding: 100px">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
-      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent + '</div>';
-      scope.opened = false;
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
+      scope.closed = true;
 
       el = $compile(collapsable)(scope);
       angular.element('body').append(el);
@@ -142,8 +142,8 @@ describe('mwCollapsable', function () {
     it('sets max-height when element is opened when multiple elements are transcluded', function () {
       var transcludedContent1 = '<div id="testContent1">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>',
         transcludedContent2 = '<div id="testContent2">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
-      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent1 + transcludedContent2 + '</div>';
-      scope.opened = false;
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent1 + transcludedContent2 + '</div>';
+      scope.closed = true;
 
       el = $compile(collapsable)(scope);
       angular.element('body').append(el);
@@ -159,8 +159,8 @@ describe('mwCollapsable', function () {
     it('sets max-height when element is opened when multiple elements are transcluded and one of them is hidden', function () {
       var transcludedContent1 = '<div id="testContent1">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>',
         transcludedContent2 = '<div id="testContent2" style="display: none">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
-      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent1 + transcludedContent2 + '</div>';
-      scope.opened = false;
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent1 + transcludedContent2 + '</div>';
+      scope.closed = true;
 
       el = $compile(collapsable)(scope);
       angular.element('body').append(el);
@@ -177,8 +177,8 @@ describe('mwCollapsable', function () {
       var margin = 10,
         transcludedContent1 = '<div id="testContent1" style="margin: ' + margin + 'px">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>',
         transcludedContent2 = '<div id="testContent2" style="margin: ' + margin + 'px">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
-      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent1 + transcludedContent2 + '</div>';
-      scope.opened = false;
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent1 + transcludedContent2 + '</div>';
+      scope.closed = true;
 
       el = $compile(collapsable)(scope);
       angular.element('body').append(el);
@@ -193,8 +193,8 @@ describe('mwCollapsable', function () {
 
     it('extends its height when its opened', function(){
       var transcludedContent = '<div id="testContent">TEXTTEXTTEXTTEXTTEXTTEXTTEXTTEXT</div>';
-      collapsable = '<div mw-collapsable="opened" mw-title="TITLE">' + transcludedContent + '</div>';
-      scope.opened = false;
+      collapsable = '<div mw-collapsable="closed" mw-title="TITLE">' + transcludedContent + '</div>';
+      scope.closed = true;
 
       el = $compile(collapsable)(scope);
       angular.element('body').append(el);
