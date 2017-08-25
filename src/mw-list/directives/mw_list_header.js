@@ -1,13 +1,12 @@
 angular.module('mwUI.List')
 
-  //TODO rename to mwListHeader
+//TODO rename to mwListHeader
   .directive('mwListableHeaderBb', function ($rootScope, $timeout) {
     return {
       require: '^mwListableBb',
       scope: {
         property: '@?sort',
-        title: '@?',
-        hidden: '=?'
+        title: '@?'
       },
       transclude: true,
       replace: true,
@@ -15,7 +14,8 @@ angular.module('mwUI.List')
       link: function (scope, elm, attr, mwListCtrl) {
         var ascending = '+',
           descending = '-',
-          collection = mwListCtrl.getCollection();
+          collection = mwListCtrl.getCollection(),
+          hidden;
 
         var getSortOrder = function () {
           if (collection && collection.filterable) {
@@ -32,7 +32,7 @@ angular.module('mwUI.List')
           return collection.fetch();
         };
 
-        var getColumn = function(){
+        var getColumn = function () {
           return {
             scope: scope,
             pos: elm.index(),
@@ -40,47 +40,61 @@ angular.module('mwUI.List')
           };
         };
 
-        var setTitle = function(){
-          if(!attr.title){
+        var setTitle = function () {
+          if (!attr.title) {
             scope.title = elm.text().trim();
           }
         };
 
-        var updateCol = function(){
-          scope.pos = elm.index();
-          setTitle();
-          mwListCtrl.updateColumn(getColumn());
+        var updateCol = function () {
+          $timeout(function(){
+            scope.pos = elm.index();
+            setTitle();
+            mwListCtrl.updateColumn(getColumn());
+          });
         };
 
-        var throttledUpdateCol = _.throttle(updateCol, 100);
+        var throttledUpdateCol = _.debounce(updateCol, 100);
 
-        scope.getTitle = function(){
+        scope.getTitle = function () {
           return scope.title || '';
         };
 
-        scope.isVisible = function(){
-          return !scope.hidden;
+
+
+        scope.isVisible = function () {
+          // var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint();
+          // if(_.isArray(scope.hidden)){
+          //   return scope.hidden.indexOf(activeBreakPoint) === -1;
+          // } else {
+          //   return !scope.hidden;
+          // }
+          if (angular.isUndefined(hidden)) {
+            return elm.is(':visible');
+          } else {
+            return !hidden;
+          }
         };
 
-        scope.hideColumn = function(){
-          scope.hidden = true;
+        scope.hideColumn = function () {
+          hidden = true;
           mwListCtrl.updateColumn(getColumn());
         };
 
-        scope.showColumn= function(){
-          scope.hidden = false;
+        scope.showColumn = function () {
+          hidden = false;
           mwListCtrl.updateColumn(getColumn());
         };
 
-        scope.toggleColumn = function(){
-          if(scope.hidden){
+        scope.toggleColumn = function () {
+          if (!scope.isVisible()) {
             scope.showColumn();
           } else {
             scope.hideColumn();
           }
         };
 
-        scope.canBeSorted = function(){
+        scope.canBeSorted = function () {
           return angular.isString(scope.property) && scope.property.length > 0 && !!collection.filterable;
         };
 
@@ -99,7 +113,7 @@ angular.module('mwUI.List')
 
           if (sortOrder && prefix) {
             return sortOrder === prefix + scope.property;
-          } else if(sortOrder && !prefix){
+          } else if (sortOrder && !prefix) {
             return (sortOrder === '+' + scope.property || sortOrder === '-' + scope.property);
           }
         };
@@ -111,11 +125,11 @@ angular.module('mwUI.List')
         });
 
         scope.$on('mwList:registerColumn', throttledUpdateCol);
+        scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:unRegisterColumn', throttledUpdateCol);
         attr.$observe('title', throttledUpdateCol);
-        $rootScope.$on('i18n:localeChanged', function() {
-          $timeout(throttledUpdateCol);
-        });
+        $rootScope.$on('i18n:localeChanged', throttledUpdateCol);
+        $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateCol);
         $timeout(throttledUpdateCol);
       }
     };
