@@ -1,10 +1,14 @@
-/**
- * Created by zarges on 17/02/16.
- */
-angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
+window.mwUI.Utils = {
+  ViewportBreakPoints: {
+    XS: 'xs',
+    SM: 'sm',
+    MD: 'md',
+    LG: 'lg'
+  },
+  shims: {}
+};
 
-window.mwUI.Utils = {};
-window.mwUI.Utils.shims = {};
+angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
 
 // @include ./directives/mw_append_route_class.js
 // @include ./directives/mw_draggable.js
@@ -18,6 +22,7 @@ window.mwUI.Utils.shims = {};
 
 // @include ./modals/mw_leave_confirmation_modal.js
 
+// @include ./services/mw_bootstrap_breakpoint.js
 // @include ./services/mw_browser_title_handler.js
 // @include ./services/mw_callback_handler.js
 // @include ./services/mw_url_storage.js
