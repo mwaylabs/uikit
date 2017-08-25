@@ -7,7 +7,7 @@
     <li ng-repeat="column in columns"
         ng-if="column.scope && getColTitle(column)"
         ng-class="{'is-checked': column.scope.isVisible()}">
-      <a href="#" mw-prevent-default="click" ng-click="column.scope.toggleColumn()">
+      <a href="#" mw-prevent-default="click" ng-click="column.scope.toggleColumn()" mw-stop-propagation="click">
         <span mw-icon="mwUI.check" class="checked-indicator"></span>
         {{getColTitle(column)}}
       </a>
