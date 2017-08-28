@@ -29,6 +29,12 @@ angular.module('mwUI.List')
           }
         };
 
+        scope.reset = function(){
+          scope.colums.forEach(function(column){
+            column.scope.resetColumnVisibility();
+          });
+        };
+
         dropDownToggle.on('show.bs.dropdown', function () {
           dropDownMenu.css({
             position: 'fixed',

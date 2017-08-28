@@ -97,6 +97,11 @@ angular.module('mwUI.List')
           }
         };
 
+        scope.resetColumnVisibility = function(){
+          hidden = void(0);
+          mwListCtrl.updateColumn(getColumn());
+        };
+
         scope.canBeSorted = function () {
           return angular.isString(scope.property) && scope.property.length > 0 && !!collection.filterable;
         };
