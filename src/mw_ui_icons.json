@@ -14,5 +14,7 @@
   "chevronDownCircle": "fa-chevron-circle-down",
   "question": "fa-question",
   "questionCircle": "fa-question-circle-o",
-  "refresh": "fa-refresh"
+  "refresh": "fa-refresh",
+  "gears": "fa-cog",
+  "undo": "fa-undo"
 }

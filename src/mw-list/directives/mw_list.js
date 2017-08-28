@@ -1,7 +1,7 @@
 angular.module('mwUI.List')
 
-  //Todo rename to mwList
-  .directive('mwListableBb', function(){
+//Todo rename to mwList
+  .directive('mwListableBb', function () {
     return {
       //TODO rename collection to mwCollection
       //Move sort and filter persistance into filterable and remove mwListCollection
@@ -23,17 +23,39 @@ angular.module('mwUI.List')
 
         this.actionColumns = [];
 
-        this.registerColumn = function (scope) {
-          _columns.push(scope);
+        var notifyColumns = function (event, affectedCol) {
+          $scope.$emit(event, affectedCol);
+          _columns.forEach(function (column) {
+            column.scope.$broadcast(event, affectedCol);
+          });
         };
 
-        this.unRegisterColumn = function (scope) {
-          if (scope && scope.$id) {
-            var scopeInArray = _.findWhere(_columns, {$id: scope.$id}),
+        this.registerColumn = function (column) {
+          _columns.push(column);
+          notifyColumns('mwList:registerColumn');
+        };
+
+        this.updateColumn = function (column) {
+          if (column && column.id) {
+            var scopeInArray = _.findWhere(_columns, {id: column.id}),
+              indexOfScope = _.indexOf(_columns, scopeInArray);
+
+            if (indexOfScope > -1) {
+              var existingColumn = _columns[indexOfScope];
+              _.extend(existingColumn, column);
+              notifyColumns('mwList:updateColumn', existingColumn);
+            }
+          }
+        };
+
+        this.unRegisterColumn = function (column) {
+          if (column && column.id) {
+            var scopeInArray = _.findWhere(_columns, {id: column.id}),
               indexOfScope = _.indexOf(_columns, scopeInArray);
 
             if (indexOfScope > -1) {
               _columns.splice(indexOfScope, 1);
+              notifyColumns('mwList:unRegisterColumn', _columns[indexOfScope]);
             }
           }
         };
@@ -63,6 +85,36 @@ angular.module('mwUI.List')
         } else if ($scope.collection) {
           _collection = $scope.collection;
         }
+      }
+    };
+  })
+
+  .directive('mwListableBb', function () {
+    return {
+      require: 'mwListableBb',
+      link: function (scope, el, attr, mwListCtrl) {
+        var makeAllColumnsVisible = function () {
+          el.removeClass(function (index, className) {
+            return (className.match(/(^|\s)(hidden-col-|visible-col-)\S+/g) || []).join(' ');
+          });
+        };
+
+        var manageColumVisibility = function () {
+          makeAllColumnsVisible();
+          mwListCtrl.getColumns().forEach(function (column) {
+            if (!column.scope.isVisible()) {
+              el.addClass('hidden-col-' + column.pos);
+            } else {
+              el.addClass('visible-col-' + column.pos);
+            }
+          });
+        };
+
+        var throttledHandler = _.debounce(manageColumVisibility, 200);
+
+        scope.$on('mwList:registerColumn', throttledHandler);
+        scope.$on('mwList:unRegisterColumn', throttledHandler);
+        scope.$on('mwList:updateColumn', throttledHandler);
       }
     };
   });

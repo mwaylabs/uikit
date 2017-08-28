@@ -7,11 +7,13 @@ angular.module('mwUI.List')
       compile: function (elm) {
 
         elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-list-body-row-checkbox item="item"></td>');
+        elm.append('<td ng-if="actionColumns.length == 0" width="1%" class="configurator-col"></td>');
 
         return function (scope, elm, attr, mwListCtrl) {
           var selectedClass = 'selected';
 
           scope.collection = mwListCtrl.getCollection();
+          scope.actionColumns = mwListCtrl.actionColumns;
 
           if (!scope.item) {
             throw new Error('No item available in the list! Please make sure to use ng-repeat="item in collection"');

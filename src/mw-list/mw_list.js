@@ -3,6 +3,7 @@ angular.module('mwUI.List', ['mwUI.i18n', 'mwUI.Backbone', 'mwUI.UiComponents'])
 // @include ./directives/mw_list.js
 // @include ./directives/mw_list_body_row.js
 // @include ./directives/mw_list_body_row_checkbox.js
+// @include ./directives/mw_list_column_configurator.js
 // @include ./directives/mw_list_footer_row.js
 // @include ./directives/mw_list_head.js
 // @include ./directives/mw_list_header.js

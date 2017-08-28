@@ -7,7 +7,8 @@ angular.module('mwUI.List')
       scope: true,
       compile: function (elm) {
         elm.prepend('<th ng-if="hasCollection" width="1%"></th>');
-        elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"></th>');
+        elm.append('<th ng-if="actionColumns.length > 0" colspan="{{ actionColumns.length }}" width="1%" class="action-button"><div mw-list-column-configurator></div></th>');
+        elm.append('<th ng-if="actionColumns.length == 0" width="1%" class="configurator-col"><div mw-list-column-configurator></div></th>');
 
         return function (scope, elm, attr, mwListCtrl) {
           //empty collection is [] so ng-if would not work as expected
