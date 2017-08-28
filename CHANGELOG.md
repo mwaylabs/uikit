@@ -1,3 +1,20 @@
+# v1.0.16
+## Features
+### Layout module
+- Back button of `mw-header` is now more visible by adding a border around it (#126)
+- A refresh icon was added to the `mw-header` to make a soft page refresh
+
+## Bug Fixes
+### Menu module
+- Fixed bug that menu did not close when changing screen size or changing the route in mobile mode (#131)
+
+### Ui components module
+- Fixed wrong initial state of `mwCollapsable` when content was not available during initialisation (#136)
+
+### Src-Relution module
+- Fixed exception when filter attribute of filterable is not available (#137). When this happens e.g when the user changes
+the url query param manually the whole filter will be reset 
+
 # v1.0.15
 ## Features
 ### Layout module
