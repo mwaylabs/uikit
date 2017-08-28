@@ -110,7 +110,7 @@ angular.module('mwUI.List')
           });
         };
 
-        var throttledHandler = _.throttle(manageColumVisibility, 100);
+        var throttledHandler = _.debounce(manageColumVisibility, 200);
 
         scope.$on('mwList:registerColumn', throttledHandler);
         scope.$on('mwList:unRegisterColumn', throttledHandler);
