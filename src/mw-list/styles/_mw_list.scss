@@ -106,6 +106,10 @@
       &.hidden {
         display: none !important;
       }
+
+      &.configurator-col{
+        padding-right: 0;
+      }
     }
   }
 
