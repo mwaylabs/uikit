@@ -15,5 +15,6 @@
   "question": "fa-question",
   "questionCircle": "fa-question-circle-o",
   "refresh": "fa-refresh",
-  "gears": "fa-cog"
+  "gears": "fa-cog",
+  "undo": "fa-undo"
 }
