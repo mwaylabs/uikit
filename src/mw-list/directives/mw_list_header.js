@@ -1,12 +1,14 @@
 angular.module('mwUI.List')
 
 //TODO rename to mwListHeader
-  .directive('mwListableHeaderBb', function ($rootScope, $timeout) {
+  .directive('mwListableHeaderBb', function ($rootScope, $timeout, mwBootstrapBreakpoint) {
     return {
       require: '^mwListableBb',
       scope: {
         property: '@?sort',
-        title: '@?'
+        title: '@?',
+        hidden: '=?', // can be an array with the bootstrap breakproints ['xs','sm','md','lg'] to hide column for a breakpoint or a boolean
+        mandatory: '=?' // when mandotory user can not unselect column
       },
       transclude: true,
       replace: true,
@@ -56,19 +58,20 @@ angular.module('mwUI.List')
 
         var throttledUpdateCol = _.debounce(updateCol, 100);
 
+        var updateVisibility = function(){
+          var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint();
+          if(_.isArray(scope.hidden)){
+            hidden = scope.hidden.indexOf(activeBreakPoint) !== -1;
+          } else if(_.isBoolean(scope.hidden)){
+            hidden = scope.hidden;
+          }
+        };
+
         scope.getTitle = function () {
           return scope.title || '';
         };
 
-
-
         scope.isVisible = function () {
-          // var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint();
-          // if(_.isArray(scope.hidden)){
-          //   return scope.hidden.indexOf(activeBreakPoint) === -1;
-          // } else {
-          //   return !scope.hidden;
-          // }
           if (angular.isUndefined(hidden)) {
             return elm.is(':visible');
           } else {
@@ -87,7 +90,7 @@ angular.module('mwUI.List')
         };
 
         scope.toggleColumn = function () {
-          if (!scope.isVisible()) {
+          if (!scope.isVisible() || scope.isMandatory()) {
             scope.showColumn();
           } else {
             scope.hideColumn();
@@ -118,6 +121,10 @@ angular.module('mwUI.List')
           }
         };
 
+        scope.isMandatory = function(){
+          return scope.mandatory;
+        };
+
         mwListCtrl.registerColumn(getColumn());
 
         scope.$on('$destroy', function () {
@@ -127,9 +134,12 @@ angular.module('mwUI.List')
         scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:unRegisterColumn', throttledUpdateCol);
+        scope.$watch('hidden', updateVisibility);
         attr.$observe('title', throttledUpdateCol);
         $rootScope.$on('i18n:localeChanged', throttledUpdateCol);
         $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateCol);
+        $rootScope.$on('mwBootstrapBreakpoint:changed', updateVisibility);
+        $rootScope.$on('$modalOpenSuccess', updateVisibility);
         $timeout(throttledUpdateCol);
       }
     };
