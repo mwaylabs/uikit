@@ -1,23 +1,22 @@
 angular.module('mwUI.List')
 
-  .directive('mwListColumnConfigurator', function () {
+  .directive('mwListColumnConfigurator', function ($timeout) {
     return {
       require: '^mwListableBb',
       scope: true,
       templateUrl: 'uikit/mw-list/directives/templates/mw_list_column_configurator.html',
       link: function (scope, el, attrs, mwListCtrl) {
         var dropDownMenu = el.find('.dropdown-menu'),
-          dropDownToggle = el.find('.btn-group');
+          dropDownToggle = el.find('.btn-group'),
+          hideDropDownEvents = 'scroll touchmove mousewheel resize';
+
+        scope.colums = mwListCtrl.getColumns();
 
         var hide = function () {
           if (dropDownToggle.hasClass('open')) {
             dropDownMenu.dropdown('toggle');
           }
-          angular.element(window).off('scroll', hide);
-          angular.element(window).off('resize', hide);
         };
-
-        scope.colums = mwListCtrl.getColumns();
 
         scope.getColTitle = function (column) {
           if (column && column.scope) {
@@ -34,10 +33,18 @@ angular.module('mwUI.List')
           dropDownMenu.css({
             position: 'fixed',
             top: el.offset().top + el.innerHeight() + 5,
-            left: (el.offset().left + el.innerWidth()) - dropDownMenu.innerWidth()
+            left: 'initial',
+            right: '30px'
           });
-          angular.element(window).on('scroll', hide);
-          angular.element(window).on('resize', hide);
+
+          // We need to trigger a digest cycle otherwise it can happen that the dropdown list is not up to date
+          $timeout(function(){
+            angular.element(window).on(hideDropDownEvents, hide);
+          });
+        });
+
+        dropDownToggle.on('hide.bs.dropdown', function () {
+          angular.element(window).off(hideDropDownEvents, hide);
         });
       }
     };
