@@ -1,3 +1,53 @@
+# v1.0.17
+## Features
+### List module
+- The columns of a table are now configurable. The user can now select columns that should be (not) visible. You can
+add optional columns by adding the attribute `hidden` to the `mw-listable-header-bb` directive. It is also possible to configure optional columns per 
+bootstrap breakpoint `xs`, `sm`, `md`, `lg` by passing them as array into the `hidden` attribute. 
+Optional columns will be only visible when the user selects them or they don't match the active breakpoint. 
+If you have columns that are mandatory and shall not be unselected you can set the attribute `mandatory`
+  ```html
+   <table mw-listable-bb
+             collection="ctrl.heroes">
+        <thead>
+        <tr mw-listable-header-row-bb>
+          <th mw-listable-header-bb
+              width="30%"
+              mandatory="true"> <!-- is mandatory and user can not unselect this column -->
+            {{'hero.name' | i18n}} <!-- this is the text that will be displayed in the column configurator because no title was defined -->
+          </th>
+          <th mw-listable-header-bb
+              sort="abc"
+              title="Description" <!-- this is the text that will be displayed in the column configurator -->
+              hidden <!-- is not visible for all breakpoints unless user selects column to be visible -->
+              width="30%">
+            {{'hero.description' | i18n}}
+          </th>
+          <th mw-listable-header-bb
+              hidden="['xs', 'sm']" <!-- is not visible when the breakpoint xs or sm is active (smartphones, tablets) -->
+              width="40%">
+            {{'hero.superPowers' | i18n}}
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr mw-listable-body-row-bb
+            ng-repeat="item in ctrl.heroes.models">
+          ...
+        </tr>
+        </tbody>
+      </table>
+  ```
+  The `mw-listable-header-row-bb` automatically adds a button that lets the user configure the visiblity of all columns. The
+  column name is automatically generated either by using the title attribute or the transcluded text
+
+### Src-Relution module
+- The directive `mw-file-upload` was extended with the attribute `has-drop-zone="true|false"` to disable the dropzone
+where the user can drop a file. By default the dropzone is turned on.
+- The directive `mw-file-upload` got a cancel button to abort uploads. The button is visible when an upload is in progress
+- The directive `mw-file-upload` was restyled and displays the file name that is uploaded. It also got translations for
+the locales de_DE and en_US.
+
 # v1.0.16
 ## Features
 ### Layout module
