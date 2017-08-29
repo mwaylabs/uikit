@@ -1,15 +1,15 @@
 angular.module('mwFileUpload', [])
 
-  .provider('mwFileUpload', function(){
+  .provider('mwFileUpload', function () {
     var _defaultConfig = {};
 
-    this.setGlobalConfig = function(conf){
+    this.setGlobalConfig = function (conf) {
       _.extend(_defaultConfig, conf);
     };
 
-    this.$get = function(){
+    this.$get = function () {
       return {
-        getGlobalConfig: function(){
+        getGlobalConfig: function () {
           return _defaultConfig;
         }
       };
@@ -44,15 +44,21 @@ angular.module('mwFileUpload', [])
 
         var timeout,
           fileUploaderEl = elm.find('.mw-file-upload'),
-          hiddenfileEl = elm.find('input[type=file]');
+          hiddenfileEl = elm.find('input[type=file]'),
+          userHasCanceledUpload = false,
+          uploadXhr;
 
         scope._showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
 
         scope.uploadState = 'none';
 
-        scope.uploadError = null;
+        scope.isInvalid = false;
+
+        scope.uploadError = false;
 
         scope.selectedFile = null;
+
+        scope.uploadMessage = '';
 
         scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
 
