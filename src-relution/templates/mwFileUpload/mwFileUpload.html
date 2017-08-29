@@ -8,10 +8,13 @@
   <div ng-class="{'has-error': file.$error.required}">
 
     <div ng-show="uploadState == 'uploading'" class="upload-progress-bar">
-      <div class="progress progress-striped active margin-top-5">
-        <div class="progress-bar"
-             ng-style="{width: uploadProgress + '%'};"></div>
+      <div class="upload-info panel panel-primary">
+        {{uploadMessage}}
+        <div class="state-indicator">
+          <div class="progress" ng-style="{width: uploadProgress + '%'}"></div>
+        </div>
       </div>
+      <div class="btn btn-danger" ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}</div>
     </div>
 
     <div ng-show="uploadState != 'uploading'" class="upload-btn">
@@ -20,7 +23,7 @@
               type="button"
               class="btn btn-primary btn-upload hidden-on-drag"
               ng-click="triggerUploadDialog()">
-        <span mw-icon="rln-icon upload"></span> {{ text || ('common.upload' | i18n) }}
+        <span mw-icon="rln-icon upload"></span> {{ text || ('rlnUikit.mwFileUpload.upload' | i18n) }}
       </button>
 
       <div class="drop-zone">
@@ -28,17 +31,17 @@
         <div class="content">
           <span mw-icon="fa-file-o"></span>
 
-          <h3>Drop your file here</h3>
+          <h3>{{'rlnUikit.mwFileUpload.dropFiles' | i18n}}</h3>
         </div>
 
       </div>
 
-      <div ng-if="fileIsSet()" class="hidden-on-drag">
-        <p ng-if="_showFileName"><span mw-icon="fa-file-o"></span> {{getFileName()}}</p>
+      <div ng-if="fileIsSet()" class="hidden-on-drag selected-file-info">
+        <p ng-if="_showFileName" class="filename panel panel-default"><span mw-icon="fa-file-o"></span> {{getFileName()}}</p>
 
         <button type="button" class="btn btn-danger"
                 ng-click="remove()">
-          <span mw-icon="rln-icon delete"></span> {{'common.remove' | i18n }}
+          <span mw-icon="rln-icon delete"></span> {{'rlnUikit.mwFileUpload.remove' | i18n }}
         </button>
       </div>
 
@@ -54,6 +57,6 @@
          ng-required="mwRequired"
          mw-set-dirty-on-model-change
          mw-custom-error-validator="{{uploadError}}"
-         mw-is-valid="!uploadError">
+         mw-is-valid="!isInvalid">
 
 </div>

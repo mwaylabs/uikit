@@ -6,13 +6,13 @@
     width: inherit;
     height: inherit;
 
-    .content{
+    .content {
       width: 100%;
       top: 0;
       left: 0;
       position: relative;
       height: 150px;
-      border: 3px dashed #ddd;
+      border: 3px dashed $gray-light;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -20,12 +20,57 @@
       @include single-transition(border-color, 0.6s, ease);
 
       h3, .fa {
-        color: #ddd;
+        color: $gray-light;
       }
 
       .fa {
         font-size: 28px;
-        color: #ddd;
+        color: $gray-light;
+      }
+    }
+  }
+
+  .panel {
+    padding: 12px;
+    margin-bottom: 0px;
+  }
+
+  .selected-file-info,
+  .upload-progress-bar {
+    display: flex;
+
+    .panel {
+      padding: 5px 12px;
+      margin-bottom: 0;
+      margin-right: 5px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .upload-info {
+    padding-bottom: 10px;
+    position: relative;
+    font-size: 11px;
+    flex-grow: 1;
+
+    .state-indicator {
+      position: absolute;
+      width: 100%;
+      height: 5px;
+      background: $gray-lighter;
+      left: 0;
+      bottom: 0;
+      border-radius: 0px 0px 2px 2px;
+
+      .progress {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: $brand-primary;
       }
     }
   }
@@ -43,15 +88,15 @@
   }
 
   &.drag-over {
-    .drop-zone .content{
+    .drop-zone .content {
       border-color: $brand-success;
     }
   }
 
-  &.full-screen{
+  &.full-screen {
     .drop-zone,
-    .upload-progress-bar{
-      background: rgba(255,255,255,0.7);
+    .upload-progress-bar {
+      background: rgba(255, 255, 255, 0.7);
       position: fixed;
       z-index: 9999;
       padding: 5%;
@@ -59,28 +104,34 @@
       height: 100%;
       top: 0;
       left: 0;
+      text-align: center;
 
-      .content{
+      .content {
         height: 100%;
       }
     }
 
-    .upload-progress-bar{
-      padding: 35%;
+    .upload-progress-bar {
+      padding: calc(50vh - 33px) 20%
     }
   }
 
-  &.hidden-btn{
+  &.hidden-btn {
     display: none;
     height: 0;
 
-    &.drag-start, &.uploading{
+    &.drag-start, &.uploading {
       display: block;
     }
 
-    &.uploading{
-      .upload-progress-bar{
-        display: block !important;
+    &.uploading {
+      .upload-progress-bar {
+        display: flex !important;
+
+        .panel,
+        .btn{
+          height: 33px;
+        }
       }
     }
   }
