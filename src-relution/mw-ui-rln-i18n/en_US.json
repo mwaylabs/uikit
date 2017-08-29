@@ -1,0 +1,12 @@
+{
+  "rlnUikit": {
+    "mwFileUpload": {
+      "dropFiles": "Drop your file here to upload it",
+      "upload": "Select file",
+      "remove": "Remove",
+      "invalidMimeType": "The uploaded file is invalid. Mime-Type has to be {{mimeType}}",
+      "abort": "Cancel",
+      "uploading": "Uploading {{fileName}}..."
+    }
+  }
+}

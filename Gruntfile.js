@@ -59,8 +59,8 @@ module.exports = function (grunt) {
           'src-relution/mwUI.js',
           'src-relution/**/*.js',
           '!src-relution/test/**/*.js',
-          '.tmp/templates.js',
           '.tmp/templates-relution.js',
+          '.tmp/templates-relution-i18n.js',
           'libs/angular-sanitize/angular-sanitize.js',
           'libs/showdown/dist/showdown.js',
           'libs/jquery-ui/ui/widget.js',
@@ -137,7 +137,7 @@ module.exports = function (grunt) {
     ngtemplates: {
       old: {
         src: [
-          'src-relution/templates/**/*.html'
+          'src-relution/templates/**/*.html',
         ],
         dest: '.tmp/templates-relution.js',
         options: {
@@ -145,7 +145,22 @@ module.exports = function (grunt) {
             return 'uikit/' + url.replace('src-relution/', '');
           },
           bootstrap: function (module, script) {
-            return 'angular.module("mwUI").run(["$templateCache", function($templateCache) {' + script + '}]);';
+            return 'angular.module("mwUI.Relution").run(["$templateCache", function($templateCache) {' + script + '}]);';
+          },
+          htmlmin: {collapseWhitespace: true, collapseBooleanAttributes: true}
+        }
+      },
+      oldI18n: {
+        src: [
+          'src-relution/mw-ui-rln-i18n/**/*.json'
+        ],
+        dest: '.tmp/templates-relution-i18n.js',
+        options: {
+          url: function (url) {
+            return 'uikit-relution/' + url.replace('src-relution/', '');
+          },
+          bootstrap: function (module, script) {
+            return 'angular.module("mwUI.Relution").run(["$templateCache", function($templateCache) {' + script + '}]);';
           },
           htmlmin: {collapseWhitespace: true, collapseBooleanAttributes: true}
         }
@@ -210,7 +225,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test', ['jshint', 'process', 'process-old', 'karma']);
 
   grunt.registerTask('process', ['ngtemplates:new', 'preprocess:js', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
-  grunt.registerTask('process-old', ['ngtemplates:old', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
+  grunt.registerTask('process-old', ['ngtemplates:old', 'ngtemplates:oldI18n', 'concat', 'ngAnnotate:dist', 'copy:distToSamplePortal']);
 
   grunt.registerTask('build', ['clean', 'process', 'process-old', 'replace:setBuildNumber', 'copy:scssToDistfolder', 'copy:relutionScssToDistfolder']);
   grunt.registerTask('release', ['build', 'uglify', 'shell:zipUiKit']);

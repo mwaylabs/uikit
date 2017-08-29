@@ -1,0 +1,12 @@
+{
+  "rlnUikit": {
+    "mwFileUpload": {
+      "dropFiles": "Datei hier hin ziehen um diese hochzuladen",
+      "upload": "Datei auswählen",
+      "remove": "Entfernen",
+      "invalidMimeType": "Die hochgeladene Datei ist ungültig. Der vorgegebene Mime-Type is {{mimeType}}",
+      "abort": "Abbrechen",
+      "uploading": "{{fileName}} wird hochgeladen..."
+    }
+  }
+}

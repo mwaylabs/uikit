@@ -15,7 +15,7 @@ angular.module('mwUI.Relution', [
   'mwHelper',
   'mwMap',
   'mwFileUpload'
-]).config(function(mwIconProvider, mwValidationMessagesProvider){
+]).config(function(mwIconProvider, i18nProvider, mwValidationMessagesProvider){
   'use strict';
 
   mwIconProvider.getIconSet('mwUI').replaceIcons({
@@ -28,6 +28,8 @@ angular.module('mwUI.Relution', [
   mwValidationMessagesProvider.registerValidator('match','errors.doesNotMatch');
   mwValidationMessagesProvider.registerValidator('emailOrPlaceholder','errors.emailOrPlaceholder');
   mwValidationMessagesProvider.registerValidator('itunesOrHttpLink','errors.itunesOrHttpLink');
+
+  i18nProvider.addResource('mw-ui-rln-i18n', 'uikit-relution');
 
   window.requestAnimFrame = (function () {
     return  window.requestAnimationFrame ||

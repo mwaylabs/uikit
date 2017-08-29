@@ -17,7 +17,7 @@ angular.module('mwFileUpload', [])
 
   })
 
-  .directive('mwFileUpload', function ($q, mwFileUpload, ResponseHandler, mwMimetype, $timeout) {
+  .directive('mwFileUpload', function ($q, $timeout, mwFileUpload, ResponseHandler, mwMimetype, i18n) {
     return {
       restrict: 'A',
       scope: {
