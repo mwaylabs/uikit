@@ -2,7 +2,7 @@
   "name": "mw-uikit",
   "description": "A toolbox to build portals with AngularJS 1.5.x that have a lot of forms and list views for example admin portals to manage data.",
   "author": "Alexander Zarges <a.zarges@mwaysolutions.com> (http://relution.io)",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "license":"Apache-2.0",
   "devDependencies": {
     "angular": "1.5.7",
