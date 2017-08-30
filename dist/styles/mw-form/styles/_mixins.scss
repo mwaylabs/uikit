@@ -1,0 +1,12 @@
+@mixin required-input-highlighter($color) {
+  textarea,
+  input {
+    &:not([type=button]){
+      border-left: 3px solid $color;
+    }
+  }
+
+  input[type=button],button{
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,186 @@
+$headerHeight: 56px !default;
+$headerIconMargin: 6px;
+
+div[mw-header] {
+
+}
+
+.mw-header {
+  position: relative;
+  margin-bottom: 25px;
+  height: $headerHeight - 5;
+
+  .round-btn {
+    display: flex;
+    min-width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid $gray-light;
+    position: relative;
+    top: -1px;
+    background: transparent;
+    @include transition(all 0.3s ease);
+
+    *[mw-icon], i {
+      font-size: 9px;
+      line-height: initial;
+    }
+
+    i {
+      color: $brand-primary;
+
+      @include transition(color 0.3s ease);
+    }
+
+    &:hover {
+      color: white;
+      background: $brand-primary;
+      border-color: $brand-primary;
+
+      i {
+        color: white;
+      }
+    }
+  }
+
+  .fixed-content {
+    position: fixed;
+    height: $headerHeight;
+    padding: 0 1.5em;
+    width: 100%;
+    left: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.9);
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    border-bottom: 1px solid #e7e7e7;
+
+    .back-btn {
+      margin-right: $headerIconMargin;
+
+      *[mw-icon], i {
+        font-size: 12px;
+      }
+    }
+
+    .title-holder {
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-grow: 1;
+      flex-grow: 1;
+      overflow: hidden;
+      white-space: nowrap;
+
+      .header-icon {
+        margin-right: $headerIconMargin;
+        align-self: center;
+
+        i {
+          font-size: 20px;
+          top: -1px;
+          vertical-align: middle;
+        }
+      }
+
+      h1 {
+        display: flex;
+        margin: 0;
+        -webkit-flex-grow: 2;
+        flex-grow: 2;
+        overflow: hidden;
+        align-items: center;
+
+        .text {
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+
+        .refresh-btn {
+          margin-left: $headerIconMargin;
+          display: none;
+        }
+
+        &:hover {
+          .refresh-btn {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $screen-sm) {
+  $smHeaderHeight: $headerHeight - 15;
+  $smHeaderIconMargin: 4px;
+
+  .mw-header {
+    height: $smHeaderHeight !important;
+
+    .round-btn {
+      min-width: 14px;
+      height: 14px;
+      top: 0;
+
+      *[mw-icon], i {
+        font-size: 8px;
+      }
+    }
+
+    .fixed-content {
+      height: $smHeaderHeight + 6 !important;
+
+      .back-btn {
+        margin-right: $smHeaderIconMargin;
+
+        *[mw-icon], i {
+          font-size: 10px;
+        }
+
+        // Click range extender so its easier to press the button
+        &:after{
+          content: '';
+          position: absolute;
+          top: -14px;
+          height: 40px;
+          width: 40px;
+        }
+      }
+
+      .title-holder .header-icon {
+        margin-right: $smHeaderIconMargin;
+
+        i {
+          font-size: 18px;
+        }
+      }
+
+      h1 .refresh-btn {
+        margin-left: $smHeaderIconMargin;
+      }
+
+      .mw-bread-crumbs {
+
+        > *[mw-bread-crumb]:not(:last-child) {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $screen-xs) {
+  .mw-header {
+    .fixed-content {
+      .mw-bread-crumbs {
+        > *[mw-bread-crumb] {
+          display: none;
+        }
+      }
+    }
+  }
+}
