@@ -1,3 +1,8 @@
+# v1.18.0
+## Features
+- Change version number pattern from MAJOR.0.MINOR to match the Semantic Versioning Specification (SemVer) pattern (MAJOR.MINOR.PATCH). 
+-- This will fix the versioning syntax in bower.json when version ranges are used.
+
 # v1.0.17
 ## Features
 ### List module
