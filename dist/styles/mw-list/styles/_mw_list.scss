@@ -1,0 +1,235 @@
+@mixin stripped-table() {
+
+  tr {
+
+    &:nth-child(odd) > td,
+    &:nth-child(odd) > th {
+      background-color: transparent;
+    }
+
+    &:not(:last-child) td, th {
+      border-bottom: 1px solid $list-hover-color;
+    }
+
+    &.clickable:hover td {
+      background-color: $list-hover-color;
+      cursor: pointer;
+    }
+
+    &.selected td,
+    &.selected:hover td {
+      background-color: $list-active-color !important;
+    }
+  }
+
+  tr td {
+    vertical-align: middle;
+    @include single-transition(background-color, 0.2s, ease);
+  }
+}
+
+@mixin generate-hidden-col-helper($from, $to) {
+  @for $i from $from through $to {
+    &.hidden-col-#{$i} {
+      thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
+      tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
+        display: none !important;
+      }
+    }
+    &.visible-col-#{$i} {
+      thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
+      tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
+        display: table-cell !important;
+      }
+    }
+  }
+}
+
+.mw-list {
+  @include generate-hidden-col-helper(0, 20);
+
+  thead {
+
+    th {
+      font-weight: 500;
+      color: #555;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      border-top: none !important;
+
+      .sort-indicator,
+      .title {
+        @include single-transition(all, 0.2s, ease);
+      }
+
+      .sort-indicator {
+        width: 8px;
+        opacity: 0;
+      }
+
+      &.clickable .title {
+        margin-left: -10px;
+        margin-right: 10px;
+      }
+
+      &.sort-active {
+        font-weight: bolder;
+        color: #000;
+
+        .sort-indicator {
+          display: none;
+        }
+
+      }
+
+      &:hover {
+        .sort-indicator {
+          opacity: 1;
+        }
+
+      }
+
+      //set next to last child to max width
+      &:nth-last-child(2) {
+        max-width: 1px;
+      }
+
+      &.sort-active,
+      &.clickable:hover {
+        .title {
+          margin-left: 0;
+          margin-right: 0;
+        }
+      }
+
+      &.hidden {
+        display: none !important;
+      }
+
+      &.configurator-col{
+        padding-right: 0;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      height: 50px;
+    }
+
+    @include stripped-table();
+
+    td.hidden {
+      display: none !important;
+    }
+
+    td span[mw-icon] {
+      top: 2px;
+    }
+
+    td.icon-column {
+      width: 40px;
+
+      img {
+        max-height: 40px;
+        max-width: 40px;
+      }
+    }
+
+    td.primary-column {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  tfoot {
+    .mw-spinner {
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    thead {
+      th {
+        white-space: initial;
+
+        .sort-indicator {
+          display: none;
+        }
+
+        .title {
+          margin: 0 !important;
+        }
+      }
+    }
+
+    tbody {
+      td.icon-column {
+        width: 40px;
+        position: relative;
+
+        img {
+          max-height: 20px;
+          max-width: 20px;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          margin: auto;
+        }
+      }
+
+      td.primary-column {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  @media (max-width: $screen-xs) {
+
+    td.icon-column img {
+      max-height: 20px;
+      max-width: 20px;
+    }
+
+    td.primary-column {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+}
+
+.table.table-striped {
+  tbody {
+    @include stripped-table();
+  }
+}
+
+.table > thead > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > th,
+.table > tbody > tr > td,
+.table > tfoot > tr > th,
+.table > tfoot > tr > td {
+  vertical-align: middle;
+}
+
+.table > tbody,
+.table > tfoot {
+  tr:first-child {
+    td, th {
+      border-top: none;
+    }
+  }
+
+  tr:last-child {
+    td, th {
+      border-bottom: none;
+    }
+  }
+}
