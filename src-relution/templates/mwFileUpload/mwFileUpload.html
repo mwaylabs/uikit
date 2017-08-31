@@ -14,7 +14,7 @@
           <div class="progress" ng-style="{width: uploadProgress + '%'}"></div>
         </div>
       </div>
-      <div class="btn btn-danger" ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}</div>
+      <div ng-if="showCancelButton" class="btn btn-danger" ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}</div>
     </div>
 
     <div ng-show="uploadState != 'uploading'" class="upload-btn">
