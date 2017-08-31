@@ -59,6 +59,9 @@ angular.module('mwUI.List')
         var throttledUpdateCol = _.debounce(updateCol, 100);
 
         var updateVisibility = function(){
+          if (!mwListCtrl.enableConfigurator) {
+            hidden = false;
+          }
           var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint();
           if(_.isArray(scope.hidden)){
             hidden = scope.hidden.indexOf(activeBreakPoint) !== -1;

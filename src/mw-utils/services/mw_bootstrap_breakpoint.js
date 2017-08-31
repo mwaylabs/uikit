@@ -22,10 +22,8 @@ angular.module('mwUI.Utils')
       });
 
       if(oldBreakPoint !== activeBreakPoint){
-        console.log('TRIGGER', activeBreakPoint);
         $rootScope.$broadcast('mwBootstrapBreakpoint:changed', activeBreakPoint);
       }
-      console.log(activeBreakPoint);
     };
 
     var throttleSetActiveBreakPoint = _.debounce(setActiveBreakPoint, 200);
