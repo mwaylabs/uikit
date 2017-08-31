@@ -36,7 +36,9 @@ angular.module('mwFileUpload', [])
         stateChangeCallback: '&',
         fullScreen: '=',
         hiddenBtn: '=',
-        hasDropZone: '=?'
+        hasDropZone: '=?',
+        showCancelButton: '=?',
+        abortFlag: '=?'
       },
       require: '?^form',
       templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
@@ -316,6 +318,12 @@ angular.module('mwFileUpload', [])
             initDragAndDrop();
           } else {
             deInitDragAndDrop();
+          }
+        });
+
+        scope.$watch('abortFlag', function (abortFlag) {
+          if (abortFlag) {
+            scope.abort();
           }
         });
 
