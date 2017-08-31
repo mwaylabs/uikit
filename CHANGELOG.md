@@ -1,3 +1,21 @@
+# v1.18.2
+## Bug Fixes
+### Src-Relution module
+- Fixes the directive `mw-file-upload` by adding an optional flag (showCancelButton) to explicitly show the cancel button, by default the directive doesn't show the cancel button.
+```html
+    <div mw-file-upload
+          ...
+         show-cancel-button="true"> <!-- set the flag to true if you want to cancel the upload -->
+    </div>
+```
+- Extend the directive `mw-file-upload` by adding an optional flag (abortFlag) to abort the current upload from outside the directive.
+```html
+    <div mw-file-upload
+          ...
+         abort-flag="viewModel.abortFlag"><!-- set the flag to true if you want to cancel the upload -->
+    </div>
+```
+
 # v1.18.1
 ## Bug Fixes
 ### List module
