@@ -7,7 +7,8 @@ angular.module('mwUI.List')
       //Move sort and filter persistance into filterable and remove mwListCollection
       scope: {
         collection: '=',
-        mwListCollection: '='
+        mwListCollection: '=',
+        enableConfigurator: '=?'
       },
       compile: function (elm) {
         elm.append('<tfoot mw-listable-footer-bb></tfoot>');
@@ -20,7 +21,7 @@ angular.module('mwUI.List')
         var _columns = $scope.columns = [],
           _collection = null,
           _mwListCollectionFilter = null;
-
+        this.enableConfigurator = $scope.enableConfigurator;
         this.actionColumns = [];
 
         var notifyColumns = function (event, affectedCol) {

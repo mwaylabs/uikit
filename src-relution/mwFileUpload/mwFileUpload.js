@@ -312,7 +312,6 @@ angular.module('mwFileUpload', [])
           initDragAndDrop();
         }
         scope.$watch('hasDropZone', function (hasDropZone) {
-          console.log(hasDropZone);
           if (angular.isUndefined(hasDropZone) || hasDropZone) {
             initDragAndDrop();
           } else {
