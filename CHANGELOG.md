@@ -1,3 +1,16 @@
+
+# v1.18.1
+## Bug Fixes
+### List module
+- Fixes the column configurator feature, which was introduced in 1.0.17, by adding a configuration flag to enable it. The feature is now deactivated by default to ensure the backwards compatibility. It can be enabled for every single list by adding the ```enable-configurator="true"``` flag.
+```html
+   <table mw-listable-bb
+          collection="ctrl.heroes"
+          enable-configurator="true">
+        ...
+   </table>
+```
+
 # v1.18.0
 ## Features
 - Change version number pattern from MAJOR.0.MINOR to match the Semantic Versioning Specification (SemVer) pattern (MAJOR.MINOR.PATCH). 
