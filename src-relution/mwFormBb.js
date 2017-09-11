@@ -234,6 +234,13 @@ angular.module('mwFormBb', ['mwUI.i18n'])
           tmpModel: new scope.mwCollection.model()
         };
 
+        //Add the last selected item (only added when explicitely requested)
+        scope.mwCollection.on('addBeforeSave', function() {
+          if (scope.viewModel && scope.viewModel.tmpModel) {
+            scope.mwCollection.add(scope.viewModel.tmpModel.toJSON());
+          }
+        });
+        
         //add empty model on + button
         scope.add = function (model) {
           scope.mwCollection.add(model.toJSON());

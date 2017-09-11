@@ -1,3 +1,8 @@
+# v1.18.3
+## Bug Fixes
+### Src-Relution module
+- Extend the directive `mw-multi-select-boxes` by listening to the event `addBeforeSave`. If the event gets triggered by the mwListCollection, the last selected element will be added to the list, even when the user didn't clicked on the add button.
+
 # v1.18.2
 ## Bug Fixes
 ### Src-Relution module
