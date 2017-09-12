@@ -1,3 +1,8 @@
+# v1.18.4
+## Bug Fixes
+### Src-Relution module
+- Add an additional check to the directive `mw-multi-select-boxes` in the event `addBeforeSave`. This will fix an issue when the Backbone object is instantiated but empty. The event will now no longer add this empty object to the collection.
+
 # v1.18.3
 ## Bug Fixes
 ### Src-Relution module
