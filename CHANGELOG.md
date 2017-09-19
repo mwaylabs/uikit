@@ -1,3 +1,8 @@
+# v1.18.5
+## Bug Fixes
+### Src-Relution module
+- Fix typo in mwMimetype service which prevents uploads with file extension image/jpeg.
+
 # v1.18.4
 ## Bug Fixes
 ### Src-Relution module
