@@ -46,7 +46,7 @@ angular.module('mwFileUpload')
         'image/gif',
         'image/pjpeg',
         'image/jpg',
-        'image/jepg',
+        'image/jpeg',
         'image/png',
         'image/svg+xml',
         'image/*'
