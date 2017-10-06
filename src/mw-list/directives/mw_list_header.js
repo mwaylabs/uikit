@@ -17,7 +17,11 @@ angular.module('mwUI.List')
         var ascending = '+',
           descending = '-',
           collection = mwListCtrl.getCollection(),
-          hidden;
+          innerText = elm.text() || '',
+          tableConfigurator = mwListCtrl.getTableConfigurator(),
+          persistId = scope.property || attr.title || innerText.trim(),
+          systemHasHiddenElement = false,
+          userHasHiddenElement;
 
         var getSortOrder = function () {
           if (collection && collection.filterable) {
@@ -50,7 +54,7 @@ angular.module('mwUI.List')
         };
 
         var updateCol = function () {
-          $timeout(function(){
+          $timeout(function () {
             scope.pos = elm.index();
             setTitle();
             mwListCtrl.updateColumn(getColumn());
@@ -59,37 +63,61 @@ angular.module('mwUI.List')
 
         var throttledUpdateCol = _.debounce(updateCol, 100);
 
-        var updateVisibility = function(){
-          if (!mwListCtrl.enableConfigurator) {
-            hidden = false;
+        var isHiddenByBootstrapClass = function () {
+          var bootstrapHiddenClass = elm.attr('class').match(/hidden-[a-z]{2}/g),
+            bootstrapVisibleClass = elm.attr('class').match(/visible-[a-z]{2}/g),
+            activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint(),
+            hiddenByBootstrap = false;
+
+          if (bootstrapHiddenClass) {
+            bootstrapHiddenClass.forEach(function (className) {
+              if (!hiddenByBootstrap && className.split('-')[1] === activeBreakPoint.toLowerCase()) {
+                hiddenByBootstrap = true;
+              }
+            });
           }
-          var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint();
-          if(_.isArray(scope.hidden)){
-            hidden = scope.hidden.indexOf(activeBreakPoint) !== -1;
-          } else if(_.isBoolean(scope.hidden)){
-            hidden = scope.hidden;
+
+          if(bootstrapVisibleClass){
+            hiddenByBootstrap = true;
+            bootstrapVisibleClass.forEach(function(className){
+              if(hiddenByBootstrap && className.split('-')[1] === activeBreakPoint.toLowerCase()){
+                hiddenByBootstrap = false;
+              }
+            });
           }
+
+          return hiddenByBootstrap;
         };
 
-        scope.getTitle = function () {
-          return scope.title || '';
+        var isHiddenByHiddenAttr = function(){
+          var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint(),
+              hiddenByHiddenAttr = false;
+
+          if (angular.isArray(scope.hidden)) {
+            hiddenByHiddenAttr = scope.hidden.indexOf(activeBreakPoint) !== -1;
+          } else if (_.isBoolean(scope.hidden)) {
+            hiddenByHiddenAttr = scope.hidden;
+          } else if(angular.isDefined(attr.hidden)){
+            hiddenByHiddenAttr = true;
+          }
+
+          return hiddenByHiddenAttr;
         };
 
-        scope.isVisible = function () {
-          if (angular.isUndefined(hidden)) {
-            return elm.is(':visible');
-          } else {
-            return !hidden;
-          }
+        var updateVisibility = function () {
+          console.log('UPDATE VIS!')
+          systemHasHiddenElement = isHiddenByHiddenAttr() || isHiddenByBootstrapClass();
         };
+
+        var throttledUpdateVisibility = _.debounce(updateVisibility, 100);
 
         scope.hideColumn = function () {
-          hidden = true;
+          userHasHiddenElement = true;
           mwListCtrl.updateColumn(getColumn());
         };
 
         scope.showColumn = function () {
-          hidden = false;
+          userHasHiddenElement = false;
           mwListCtrl.updateColumn(getColumn());
         };
 
@@ -101,9 +129,21 @@ angular.module('mwUI.List')
           }
         };
 
-        scope.resetColumnVisibility = function(){
-          hidden = void(0);
+        scope.resetColumnVisibility = function () {
+          userHasHiddenElement = void(0);
           mwListCtrl.updateColumn(getColumn());
+        };
+
+        scope.getTitle = function () {
+          return scope.title || '';
+        };
+
+        scope.isVisible = function () {
+          if(angular.isUndefined(userHasHiddenElement)){
+            return !systemHasHiddenElement;
+          } else {
+            return !userHasHiddenElement;
+          }
         };
 
         scope.canBeSorted = function () {
@@ -130,7 +170,7 @@ angular.module('mwUI.List')
           }
         };
 
-        scope.isMandatory = function(){
+        scope.isMandatory = function () {
           return scope.mandatory;
         };
 
