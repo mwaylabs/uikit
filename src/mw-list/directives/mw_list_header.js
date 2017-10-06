@@ -38,7 +38,8 @@ angular.module('mwUI.List')
           return {
             scope: scope,
             pos: elm.index(),
-            id: scope.$id
+            id: scope.$id,
+            persistId: persistId
           };
         };
 
@@ -142,13 +143,27 @@ angular.module('mwUI.List')
         scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:unRegisterColumn', throttledUpdateCol);
-        scope.$watch('hidden', updateVisibility);
+        scope.$watch('hidden', throttledUpdateVisibility);
         attr.$observe('title', throttledUpdateCol);
         $rootScope.$on('i18n:localeChanged', throttledUpdateCol);
         $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateCol);
-        $rootScope.$on('mwBootstrapBreakpoint:changed', updateVisibility);
-        $rootScope.$on('$modalOpenSuccess', updateVisibility);
+        $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateVisibility);
+        $rootScope.$on('$modalOpenSuccess', throttledUpdateVisibility);
         $timeout(throttledUpdateCol);
+        $timeout(throttledUpdateVisibility);
+
+        if (tableConfigurator) {
+          tableConfigurator.fetch().then(function () {
+            var persistedCol = tableConfigurator.get('columns').get(persistId);
+            if (persistedCol) {
+              if (persistedCol.get('visible')) {
+                scope.showColumn();
+              } else {
+                scope.hideColumn();
+              }
+            }
+          });
+        }
       }
     };
   });

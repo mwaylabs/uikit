@@ -12,9 +12,23 @@ angular.module('mwUI.List')
 
         scope.colums = mwListCtrl.getColumns();
 
+        var tableConfigurator = mwListCtrl.getTableConfigurator();
+
         var hide = function () {
           if (dropDownToggle.hasClass('open')) {
             dropDownMenu.dropdown('toggle');
+          }
+        };
+
+        var saveVisibilityState = function (column) {
+          if (tableConfigurator) {
+            tableConfigurator.get('columns').add({
+              id: column.persistId,
+              visible: column.scope.isVisible()
+            }, {merge: true});
+            tableConfigurator.save();
+          } else {
+            console.warn('In order to persist the visibility of the column the table needs an id!');
           }
         };
 
@@ -29,10 +43,18 @@ angular.module('mwUI.List')
           }
         };
 
-        scope.reset = function(){
-          scope.colums.forEach(function(column){
+        scope.reset = function () {
+          scope.colums.forEach(function (column) {
             column.scope.resetColumnVisibility();
           });
+          if (tableConfigurator) {
+            tableConfigurator.destroy();
+          }
+        };
+
+        scope.toggleColumn = function (column) {
+          column.scope.toggleColumn();
+          saveVisibilityState(column);
         };
 
         dropDownToggle.on('show.bs.dropdown', function () {
@@ -44,7 +66,7 @@ angular.module('mwUI.List')
           });
 
           // We need to trigger a digest cycle otherwise it can happen that the dropdown list is not up to date
-          $timeout(function(){
+          $timeout(function () {
             angular.element(window).on(hideDropDownEvents, hide);
           });
         });
