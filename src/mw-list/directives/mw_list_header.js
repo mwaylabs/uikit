@@ -105,7 +105,6 @@ angular.module('mwUI.List')
         };
 
         var updateVisibility = function () {
-          console.log('UPDATE VIS!')
           systemHasHiddenElement = isHiddenByHiddenAttr() || isHiddenByBootstrapClass();
         };
 
