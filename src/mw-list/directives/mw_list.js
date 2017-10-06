@@ -113,6 +113,12 @@ angular.module('mwUI.List')
     return {
       require: 'mwListableBb',
       link: function (scope, el, attr, mwListCtrl) {
+        var removeAllColsHideClass = function(){
+          el.removeClass('hide-all-cols');
+        };
+
+        var throttledRemoveAllColsHideClass = _.debounce(removeAllColsHideClass, 200);
+
         var makeAllColumnsVisible = function () {
           el.removeClass(function (index, className) {
             return (className.match(/(^|\s)(hidden-col-|visible-col-)\S+/g) || []).join(' ');
@@ -128,6 +134,7 @@ angular.module('mwUI.List')
               el.addClass('visible-col-' + column.pos);
             }
           });
+          throttledRemoveAllColsHideClass();
         };
 
         var throttledHandler = _.debounce(manageColumVisibility, 200);
