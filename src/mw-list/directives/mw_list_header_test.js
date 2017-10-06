@@ -18,7 +18,7 @@ describe('mwListHeader', function () {
         };
       });
     });
-    spyOn(_, 'debounce').and.callFake(function(cb) { return function() { cb(); } });
+    spyOn(_, 'debounce').and.callFake(function(cb) { return function() { cb(); }; });
   });
 
   beforeEach(inject(function ($compile, $timeout, $rootScope, $httpBackend) {
