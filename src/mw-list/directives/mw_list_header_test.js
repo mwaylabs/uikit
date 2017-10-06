@@ -10,7 +10,7 @@ describe('mwListHeader', function () {
 
   beforeEach(function () {
     module(function ($provide) {
-      $provide.service('mwBootstrapBreakpoint', function ($q) {
+      $provide.service('mwBootstrapBreakpoint', function () {
         return {
           getActiveBreakpoint: function(){
             return activeBreakPoint;
@@ -39,7 +39,7 @@ describe('mwListHeader', function () {
       this.scope.$digest();
       this.$headerEl = this.$el.find('.mw-list-header');
     };
-    this.setHeaderTemplate('<th mw-listable-header-bb sort="{{sortAttr}}"> ' + 'Title ' + '</th>')
+    this.setHeaderTemplate('<th mw-listable-header-bb sort="{{sortAttr}}"> ' + 'Title ' + '</th>');
   }));
 
   afterEach(function () {
