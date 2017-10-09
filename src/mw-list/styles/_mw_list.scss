@@ -24,32 +24,48 @@
 
   tr td {
     vertical-align: middle;
-    @include single-transition(background-color, 0.2s, ease);
+    @include single-transition(opacity, 0.2s, ease);
   }
 }
 
 @mixin generate-hidden-col-helper($from, $to) {
   @for $i from $from through $to {
-    &.hidden-col-#{$i} {
-      thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
-      tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
-        display: none !important;
-      }
-    }
     &.visible-col-#{$i} {
       thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
       tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
         display: table-cell !important;
       }
     }
+    &.hidden-col-#{$i}{
+      thead *[mw-listable-header-row-bb] th:nth-child(#{$i+1}),
+      tbody *[mw-listable-body-row-bb] td:nth-child(#{$i+1}) {
+        display: none !important;
+        opacity: 0;
+      }
+    }
+  }
+
+  &.hide-all-cols {
+    thead *[mw-listable-header-row-bb] th,
+    tbody *[mw-listable-body-row-bb] td {
+      opacity: 0;
+    }
+  }
+}
+
+@mixin generate-row-animation-helper($from, $to) {
+  @for $i from $from through $to {
+    tr:nth-child(#{$i}) td{
+      transition-delay: #{$i/50}s !important;
+    }
   }
 }
 
 .mw-list {
   @include generate-hidden-col-helper(0, 20);
+  @include generate-row-animation-helper(1, 40);
 
   thead {
-
     th {
       font-weight: 500;
       color: #555;
@@ -57,6 +73,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
       border-top: none !important;
+      transition: opacity 0.2s ease;
 
       .sort-indicator,
       .title {
@@ -107,7 +124,7 @@
         display: none !important;
       }
 
-      &.configurator-col{
+      &.configurator-col {
         padding-right: 0;
       }
     }

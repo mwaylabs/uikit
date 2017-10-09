@@ -8,19 +8,22 @@ angular.module('mwUI.List')
       scope: {
         collection: '=',
         mwListCollection: '=',
-        enableConfigurator: '=?'
+        enableConfigurator: '=?',
+        id: '@'
       },
       compile: function (elm) {
         elm.append('<tfoot mw-listable-footer-bb></tfoot>');
 
         return function (scope, elm) {
+          elm.addClass('hide-all-cols');
           elm.addClass('table table-striped mw-list');
         };
       },
-      controller: function ($scope) {
+      controller: function ($scope, TableConfigurator) {
         var _columns = $scope.columns = [],
           _collection = null,
-          _mwListCollectionFilter = null;
+          _mwListCollectionFilter = null,
+          _tableConfigurator;
         this.enableConfigurator = $scope.enableConfigurator;
         this.actionColumns = [];
 
@@ -65,8 +68,24 @@ angular.module('mwUI.List')
           return _columns;
         };
 
+        this.getId = function(){
+          return $scope.id;
+        };
+
         this.getCollection = function () {
           return _collection;
+        };
+
+        this.getTableConfigurator = function(){
+          if(!_tableConfigurator){
+            if($scope.id){
+              _tableConfigurator = TableConfigurator.getInstanceForTableId($scope.id);
+            } else {
+              return false;
+            }
+          }
+          _tableConfigurator.fetch();
+          return _tableConfigurator;
         };
 
         this.isSingleSelection = function () {
@@ -94,6 +113,12 @@ angular.module('mwUI.List')
     return {
       require: 'mwListableBb',
       link: function (scope, el, attr, mwListCtrl) {
+        var removeAllColsHideClass = function(){
+          el.removeClass('hide-all-cols');
+        };
+
+        var throttledRemoveAllColsHideClass = _.debounce(removeAllColsHideClass, 200);
+
         var makeAllColumnsVisible = function () {
           el.removeClass(function (index, className) {
             return (className.match(/(^|\s)(hidden-col-|visible-col-)\S+/g) || []).join(' ');
@@ -109,6 +134,7 @@ angular.module('mwUI.List')
               el.addClass('visible-col-' + column.pos);
             }
           });
+          throttledRemoveAllColsHideClass();
         };
 
         var throttledHandler = _.debounce(manageColumVisibility, 200);
