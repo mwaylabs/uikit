@@ -1,0 +1,193 @@
+.mw-file-upload {
+  position: relative;
+
+  .drop-zone {
+    display: none;
+    width: inherit;
+    height: inherit;
+
+    .content {
+      width: 100%;
+      top: 0;
+      left: 0;
+      position: relative;
+      height: 150px;
+      border: 3px dashed $gray-light;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      @include single-transition(border-color, 0.6s, ease);
+
+      h3, .fa {
+        color: $gray-light;
+      }
+
+      .fa {
+        font-size: 28px;
+        color: $gray-light;
+      }
+    }
+  }
+
+  .panel {
+    padding: 12px;
+    margin-bottom: 0px;
+  }
+
+  .selected-file-info,
+  .upload-container {
+    display: flex;
+
+    .panel {
+      padding: 5px 12px;
+      margin-bottom: 0;
+      margin-right: 5px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .upload-info {
+    padding-bottom: 10px;
+    position: relative;
+    font-size: 12px;
+    transition: all 0.5s ease;
+
+    .state-indicator {
+      position: absolute;
+      width: 100%;
+      height: 5px;
+      background: $gray-lighter;
+      left: 0;
+      bottom: 0;
+      border-radius: 0 0 2px 2px;
+
+      .progress {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: $brand-primary;
+        border-radius: 0 2px 2px 0;
+      }
+
+      &:after{
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right,
+          rgba($brand-primary, 0%) 0%,
+          rgba($brand-primary, 1%) 0%,
+          rgba($brand-primary, 1%) 1%,
+          rgba($brand-primary, 0%) 1%,
+          rgba($brand-primary, 0%) 2%,
+          rgba($brand-primary, 1%) 2%,
+          rgba($brand-primary, 1%) 3%,
+          rgba($brand-primary, 0%) 3%,
+          rgba($brand-primary, 0%) 4%,
+          rgba($brand-primary, 1%) 4%,
+          rgba($brand-primary, 1%) 6%,
+          rgba($brand-primary, 0%) 6%
+        );
+        background-size: 200%;
+        animation: running-upload 2s cubic-bezier(0.4, 0, 0.2, 1) 3s infinite;
+      }
+    }
+  }
+
+  &:not(.uploading) {
+    .upload-info {
+      width: 0;
+      flex-grow: 0;
+      padding-left: 0;
+      padding-right: 0;
+      margin-right: -1px;
+      opacity: 0;
+    }
+  }
+
+  &.uploading {
+    .upload-info {
+      flex-grow: 1;
+      padding-left: 12px;
+      padding-right: 12px;
+      margin-right: 5px;
+      opacity: 1;
+    }
+  }
+
+  &.drag-start {
+    height: 150px;
+
+    .hidden-on-drag {
+      display: none;
+    }
+
+    .drop-zone {
+      display: block;
+    }
+  }
+
+  &.drag-over {
+    .drop-zone .content {
+      border-color: $brand-success;
+    }
+  }
+
+  &.full-screen {
+    .drop-zone,
+    .upload-container {
+      background: rgba(255, 255, 255, 0.7);
+      position: fixed;
+      z-index: 9999;
+      padding: 5%;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      text-align: center;
+
+      .content {
+        height: 100%;
+      }
+    }
+
+    .upload-container {
+      padding: calc(50vh - 33px) 20%
+    }
+  }
+
+  &.hidden-btn {
+    display: none;
+    height: 0;
+
+    &.drag-start, &.uploading {
+      display: block;
+    }
+
+    &.uploading {
+      .upload-container {
+        display: flex !important;
+
+        .panel,
+        .btn {
+          height: 33px;
+        }
+      }
+    }
+  }
+
+  @keyframes running-upload {
+    0% {
+      background-position-x: 100%;
+    }
+    100% {
+      background-position-x: -100%;
+    }
+  }
+
+}
