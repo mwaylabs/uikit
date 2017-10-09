@@ -5,7 +5,7 @@
       "upload": "Datei auswählen",
       "remove": "Entfernen",
       "invalidMimeType": "Die hochgeladene Datei ist ungültig. Der vorgegebene Mime-Type is {{mimeType}}",
-      "abort": "Abbrechen",
+      "abort": "Upload abbrechen",
       "uploading": "{{fileName}} wird hochgeladen..."
     }
   }

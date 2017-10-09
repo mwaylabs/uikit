@@ -5,26 +5,27 @@
   'hidden-btn':hiddenBtn
   }">
 
-  <div ng-class="{'has-error': file.$error.required}">
+  <div ng-class="{'has-error': file.$error.required}" class="upload-container">
 
-    <div ng-show="uploadState == 'uploading'" class="upload-progress-bar">
-      <div class="upload-info panel panel-primary">
-        {{uploadMessage}}
-        <div class="state-indicator">
-          <div class="progress" ng-style="{width: uploadProgress + '%'}"></div>
-        </div>
+    <div class="upload-info panel panel-primary">
+      {{uploadMessage}}
+      <div class="state-indicator">
+        <div class="progress" ng-style="{width: uploadProgress + '%'}"></div>
       </div>
-      <div ng-if="showCancelButton" class="btn btn-danger" ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}</div>
+    </div>
+    <div ng-if="!hideCancelBtn && uploadState == 'uploading'"
+         class="btn btn-danger"
+         ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}
     </div>
 
-    <div ng-show="uploadState != 'uploading'" class="upload-btn">
+    <button ng-if="!fileIsSet() && uploadState != 'uploading'"
+            type="button"
+            class="btn btn-primary btn-upload hidden-on-drag"
+            ng-click="triggerUploadDialog()">
+      <span mw-icon="rln-icon upload"></span> {{ text || ('rlnUikit.mwFileUpload.upload' | i18n) }}
+    </button>
 
-      <button ng-show="!fileIsSet()"
-              type="button"
-              class="btn btn-primary btn-upload hidden-on-drag"
-              ng-click="triggerUploadDialog()">
-        <span mw-icon="rln-icon upload"></span> {{ text || ('rlnUikit.mwFileUpload.upload' | i18n) }}
-      </button>
+    <div ng-show="uploadState != 'uploading'" class="upload-btn" style="width: 100%">
 
       <div class="drop-zone">
 
@@ -37,7 +38,8 @@
       </div>
 
       <div ng-if="fileIsSet()" class="hidden-on-drag selected-file-info">
-        <p ng-if="_showFileName" class="filename panel panel-default"><span mw-icon="fa-file-o"></span> {{getFileName()}}</p>
+        <p ng-if="_showFileName" class="filename panel panel-default"><span mw-icon="fa-file-o"></span>
+          {{getFileName()}}</p>
 
         <button type="button" class="btn btn-danger"
                 ng-click="remove()">
@@ -46,7 +48,6 @@
       </div>
 
     </div>
-
   </div>
 
   <input type="file"

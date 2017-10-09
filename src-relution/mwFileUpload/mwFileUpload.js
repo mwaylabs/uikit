@@ -37,7 +37,7 @@ angular.module('mwFileUpload', [])
         fullScreen: '=',
         hiddenBtn: '=',
         hasDropZone: '=?',
-        showCancelButton: '=?',
+        hideCancelBtn: '=?',
         abortFlag: '=?'
       },
       require: '?^form',
