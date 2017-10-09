@@ -1,3 +1,18 @@
+# v1.19.0
+## Features
+### List module
+- Table rows got a opacity fade in animation to prevent flickering during initialisation when user has changed visibility of columns.
+
+### Src-Relution module
+- `mwFileUpload`: Made cancel button visible by default. To hide it set `hideCancelBtn` to `true`.
+- `mwFileUpload`: Added some small animations to the uploader.
+- `mwFileUpload`: Adjusted text of cancel button to `Abort upload`.
+
+## Bug Fixes
+### List module
+- Fix #144 by persisting columns that have been hidden or made visible by the user
+- Fix #154 by changing the visibility handling of columns. Provided test cases to check functionality
+
 # v1.18.5
 ## Bug Fixes
 ### Src-Relution module
