@@ -1,7 +1,25 @@
+# v1.19.1
+## Features
+### Ui components module
+- The `mw-collabsable` was extended with two optional attributes `icon` and `tooltip`.
+```html
+<div mw-collapsable="true" mw-title="Title" tooltip="ABC DEF"> <!-- for helper tooltip -->
+```html
+<div mw-collapsable="true" mw-title="Title" tooltip="ABC DEF" icon="fa-taxi"><!-- for helper tooltip with custom icon -->
+```
+When a tooltip is provided but no icon the question circle will be used as icon
+
+## Bug Fixes
+### Backbone module
+- When reseting a filter of the `Filterable` the pagination will be also reset. (#159)
+
 # v1.19.0
 ## Features
 ### List module
-- Table rows got a opacity fade in animation to prevent flickering during initialisation when user has changed visibility of columns.
+- Table rows got a opacity fade in animation to prevent flickering during initialisation when user has 
+changed visibility of columns.
+- Columns that have been hidden or made visible by the user are now persisted in localstorage so they keep their 
+visibility status after reload (#144)
 
 ### Src-Relution module
 - `mwFileUpload`: Made cancel button visible by default. To hide it set `hideCancelBtn` to `true`.
@@ -10,7 +28,6 @@
 
 ## Bug Fixes
 ### List module
-- Fix #144 by persisting columns that have been hidden or made visible by the user
 - Fix #154 by changing the visibility handling of columns. Provided test cases to check functionality
 
 # v1.18.5
@@ -21,24 +38,30 @@
 # v1.18.4
 ## Bug Fixes
 ### Src-Relution module
-- Add an additional check to the directive `mw-multi-select-boxes` in the event `addBeforeSave`. This will fix an issue when the Backbone object is instantiated but empty. The event will now no longer add this empty object to the collection.
+- Add an additional check to the directive `mw-multi-select-boxes` in the event `addBeforeSave`. 
+This will fix an issue when the Backbone object is instantiated but empty. 
+The event will now no longer add this empty object to the collection.
 
 # v1.18.3
 ## Bug Fixes
 ### Src-Relution module
-- Extend the directive `mw-multi-select-boxes` by listening to the event `addBeforeSave`. If the event gets triggered by the mwListCollection, the last selected element will be added to the list, even when the user didn't clicked on the add button.
+- Extend the directive `mw-multi-select-boxes` by listening to the event `addBeforeSave`. 
+If the event gets triggered by the mwListCollection, the last selected element will be added to the list, even when the 
+user didn't clicked on the add button.
 
 # v1.18.2
 ## Bug Fixes
 ### Src-Relution module
-- Fixes the directive `mw-file-upload` by adding an optional flag (showCancelButton) to explicitly show the cancel button, by default the directive doesn't show the cancel button.
+- Fixes the directive `mw-file-upload` by adding an optional flag (showCancelButton) to explicitly show the cancel 
+button, by default the directive doesn't show the cancel button.
 ```html
     <div mw-file-upload
           ...
          show-cancel-button="true"> <!-- set the flag to true if you want to cancel the upload -->
     </div>
 ```
-- Extend the directive `mw-file-upload` by adding an optional flag (abortFlag) to abort the current upload from outside the directive.
+- Extend the directive `mw-file-upload` by adding an optional flag (abortFlag) to abort the current upload from outside 
+the directive.
 ```html
     <div mw-file-upload
           ...
@@ -49,7 +72,9 @@
 # v1.18.1
 ## Bug Fixes
 ### List module
-- Fixes the column configurator feature, which was introduced in 1.0.17, by adding a configuration flag to enable it. The feature is now deactivated by default to ensure the backwards compatibility. It can be enabled for every single list by adding the ```enable-configurator="true"``` flag.
+- Fixes the column configurator feature, which was introduced in 1.0.17, by adding a configuration flag to enable it. 
+The feature is now deactivated by default to ensure the backwards compatibility. 
+It can be enabled for every single list by adding the ```enable-configurator="true"``` flag.
 ```html
    <table mw-listable-bb
           collection="ctrl.heroes"
@@ -67,7 +92,8 @@
 ## Features
 ### List module
 - The columns of a table are now configurable. The user can now select columns that should be (not) visible. You can
-add optional columns by adding the attribute `hidden` to the `mw-listable-header-bb` directive. It is also possible to configure optional columns per 
+add optional columns by adding the attribute `hidden` to the `mw-listable-header-bb` directive. 
+It is also possible to configure optional columns per 
 bootstrap breakpoint `xs`, `sm`, `md`, `lg` by passing them as array into the `hidden` attribute. 
 Optional columns will be only visible when the user selects them or they don't match the active breakpoint. 
 If you have columns that are mandatory and shall not be unselected you can set the attribute `mandatory`
