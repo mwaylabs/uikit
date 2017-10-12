@@ -6,7 +6,9 @@ angular.module('mwUI.UiComponents')
       transclude: true,
       scope: {
         isCollapsed: '=mwCollapsable',
-        title: '@mwTitle'
+        title: '@mwTitle',
+        tooltip: '@',
+        icon: '@'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsible.html',
       link: function (scope, el) {
