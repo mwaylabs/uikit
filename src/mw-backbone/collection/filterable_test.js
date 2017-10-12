@@ -215,6 +215,30 @@ describe('Filterable', function () {
 
       expect(filterable.getRequestParams().offset).toBe((100 - 1) * 30);
     });
+
+    it('resets offset when calling setFilters', function () {
+      var filterable = new this.Filterable(this.collection, {
+        filterValues: {
+          test: 'xxx'
+        }
+      });
+      filterable.setPage(100);
+
+      filterable.setFilters({
+        test: 'x'
+      });
+
+      expect(filterable.getRequestParams().offset).toBe(0);
+    });
+
+    it('resets offset when calling resetFilters', function () {
+      var filterable = new this.Filterable(this.collection);
+      filterable.setPage(100);
+
+      filterable.resetFilters();
+
+      expect(filterable.getRequestParams().offset).toBe(0);
+    });
   });
 
   describe('sorting', function () {
