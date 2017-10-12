@@ -7,8 +7,8 @@ angular.module('mwUI.UiComponents')
       scope: {
         isCollapsed: '=mwCollapsable',
         title: '@mwTitle',
-        tooltip: '@',
-        icon: '@'
+        tooltip: '@?',
+        icon: '@?'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_collapsible.html',
       link: function (scope, el) {
