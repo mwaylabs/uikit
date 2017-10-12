@@ -1,0 +1,19 @@
+.mw-bread-crumb {
+  font-size: floor($font-size-base * 1.15);
+
+  a {
+    font-weight: lighter;
+  }
+
+  .mw-icon i {
+    vertical-align: middle;
+    margin: -4px 5px 0 0;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: $screen-sm-min) {
+  .mw-bread-crumb {
+    font-size: ($font-size-base * 1.5);
+  }
+}

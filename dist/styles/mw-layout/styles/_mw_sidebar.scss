@@ -1,0 +1,49 @@
+*[mw-sidebar] {
+  position: relative;
+  width: inherit;
+
+  .mw-sidebar {
+    position: fixed;
+    height: 100%;
+    padding: 35px 30px 10px 3px;
+    margin: -35px 0 0 -3px;
+    background: #fff;
+    z-index: 1;
+    width: inherit;
+    overflow: auto;
+    overflow-x: hidden;
+
+    &:after {
+      height: 90%;
+      content: "";
+      position: absolute;
+      right: 16px;
+      width: 1px;
+      background: #ccc;
+      background: linear-gradient(color-stops(#efefef 0%, #cccccc 25%, #cccccc 75%, #ffffff 100%));
+      top: 35px;
+    }
+  }
+
+  @media (max-width: $screen-md) {
+    .mw-sidebar {
+      position: relative;
+      overflow: initial;
+      max-height: none !important;
+    }
+  }
+
+  @media (max-width: $screen-sm-max) {
+    &:before {
+      border-right: 0px;
+    }
+    .mw-sidebar {
+      padding-right: 0;
+
+      &:after {
+        background: none;
+      }
+    }
+
+  }
+}
