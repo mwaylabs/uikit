@@ -37,11 +37,6 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
       options.params.filter = filter;
     }
 
-    //reset pagination if filter values change
-    if (this.hasFilterChanged(filter)) {
-      _page = 1;
-    }
-
     // Pagination functionality
     if (_perPage && _page && (_limit || _.isUndefined(_limit))) {
       options.params.limit = _perPage;
@@ -160,7 +155,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
         this.filterValues[key] = value;
         var filterValue = {};
         filterValue[key] = value;
-        if(_.isUndefined(options.silent) || !options.silent){
+        if (_.isUndefined(options.silent) || !options.silent) {
           collectionInstance.trigger('change:filterValue', filterValue);
         }
       } else {
@@ -168,7 +163,7 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
       }
     }, this);
 
-    this.setPage(1);
+    this.resetPagination();
     this.filterIsSet = true;
   };
 
@@ -181,7 +176,12 @@ mwUI.Backbone.Filterable = function (collectionInstance, options) {
   this.resetFilters = function () {
     this.filterValues = _getClone(_initialFilterValues);
     this.customUrlParams = _customUrlParams;
+    this.resetPagination();
     this.filterIsSet = false;
+  };
+
+  this.resetPagination = function () {
+    this.setPage(options.page || 1);
   };
 
   (function _main() {
