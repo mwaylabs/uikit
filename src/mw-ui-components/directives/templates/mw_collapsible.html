@@ -5,6 +5,8 @@
        ng-class="{'fa-rotate-90': !isCollapsed}"></i>
     <span class="mw-collapsible-heading-text">
       {{title}}
+      <span ng-if="icon" mw-icon="{{icon}}" tooltip="{{tooltip}}"></span>
+      <span ng-if="tooltip && !icon" mw-icon="mwUI.questionCircle" tooltip="{{tooltip}}"></span>
     </span>
   </div>
 
