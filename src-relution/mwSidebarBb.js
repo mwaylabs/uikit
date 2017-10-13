@@ -196,6 +196,34 @@ angular.module('mwSidebarBb', [])
     };
   })
 
+  .factory('InvalidFilterModal', function (Modal) {
+    return Modal.prepare({
+      templateUrl: 'uikit/templates/mwSidebarBb/mwInvalidFilterModal.html',
+      controller: 'InvalidFilterModalController',
+      dismissible: false
+    });
+  })
+
+  .controller('InvalidFilterModalController', function ($scope) {
+    $scope.modify = function () {
+      if (typeof $scope.modifyAction === 'function') {
+        $scope.modifyAction();
+        $scope.hideModal();
+      } else {
+        throw new Error('[InvalidFilterModal] modifyAction has to be a function. Set callback function via modal.setScopeAttributes({modifyAction:...}');
+      }
+    };
+
+    // User really wants to navigate to that page which was saved before in a temp variable
+    $scope.delete = function () {
+      if ($scope.filterModel) {
+        $scope.filterModel.destroy();
+      } else {
+        throw new Error('[InvalidFilterModal] The scope attribute filterModel has to be a valid filterModel. Set it via modal.setScopeAttributes({filterModel:...})');
+      }
+    };
+  })
+
   /**
    * @ngdoc directive
    * @name mwSidebar.directive:mwSidebarSelect

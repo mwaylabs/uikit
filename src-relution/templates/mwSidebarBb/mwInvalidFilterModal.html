@@ -1,0 +1,19 @@
+<div mw-modal
+     title="{{'rlnUikit.mwSidebar.invalidFilterModal.title' | i18n}}">
+  <div mw-modal-body>
+    <p>
+      {{'rlnUikit.mwSidebar.invalidFilterModal.description' | i18n:{name: filterModel.get('name')} }}
+    </p>
+  </div>
+
+  <div mw-modal-footer>
+    <button type="button"
+            class="btn btn-danger"
+            ng-click="delete()">{{'rlnUikit.mwSidebar.invalidFilterModal.delete' | i18n }}
+    </button>
+    <button type="button"
+            class="btn btn-primary"
+            ng-click="modify()">{{'rlnUikit.mwSidebar.invalidFilterModal.modify' | i18n }}
+    </button>
+  </div>
+</div>
