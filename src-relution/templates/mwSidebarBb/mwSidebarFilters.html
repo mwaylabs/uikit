@@ -27,7 +27,7 @@
         </div>
       </li>
       <li ng-repeat="filter in filters.models"
-          ng-class="{'active':isFilterApplied(filter)}"
+          ng-class="{'active':isFilterApplied(filter), 'invalid': filter.get('invalid')}"
           class="filter">
         <a href="#"
            mw-prevent-default="click"
@@ -40,9 +40,13 @@
                 mw-icon="fa-lock"
                 tooltip="{{'common.filterIsPrivate' | i18n}}"></span>
           <span class="filter-name">{{filter.get('name')}}</span>
+          <span ng-if="filter.get('invalid')"
+                class="invalid-icon"
+                mw-icon="mwUI.warning"
+                tooltip="{{'rlnUikit.mwSidebar.invalidFilterModal.description' | i18n:{name: filter.get('name')} }}"></span>
         </a>
 
-        <div ng-if="appliedFilter.id===filter.id"
+        <div ng-if="appliedFilter.id===filter.id || filter.get('invalid')"
              class="pull-right action-btns hidden-xs hidden-sm">
 
           <div ng-if="!isLoading && filter.canModifyFilter()">

@@ -10,7 +10,7 @@ angular.module('mwSidebarBb', [])
  * Container for filters
  *
  */
-  .directive('mwSidebarFiltersBb', function ($timeout, FilterHolderModel) {
+  .directive('mwSidebarFiltersBb', function ($timeout, FilterHolderModel, InvalidFilterModal) {
     return {
       transclude: true,
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarFilters.html',
@@ -89,6 +89,16 @@ angular.module('mwSidebarBb', [])
             });
           };
 
+          var removeInvalidFilterKeys = function (filterModel, invalidFilterKeys) {
+            var filterValues = filterModel.get('filterValues');
+
+            invalidFilterKeys.forEach(function (invalidFilterKey) {
+              delete filterValues[invalidFilterKey];
+            });
+
+            return filterModel;
+          };
+
           scope.isFilterApplied = function (filter) {
             var appliedFilter = scope.mwListCollectionFilter.getAppliedFilter();
             if (filter) {
@@ -105,6 +115,8 @@ angular.module('mwSidebarBb', [])
             }
             scope.mwListCollectionFilter.saveFilter(filter).then(function (filterModel) {
               scope.viewModel.showFilterForm = false;
+              filterModel = scope.filters.get(filter);
+              filterModel.set('invalid', false);
               scope.applyFilter(filterModel);
             });
 
@@ -123,8 +135,23 @@ angular.module('mwSidebarBb', [])
           };
 
           scope.applyFilter = function (filterModel) {
-            filterCollection(filterModel);
-            scope.mwListCollectionFilter.applyFilter(filterModel);
+            var invalidFilterKeys = scope.collection.filterable.getInvalidFilterKeys(filterModel.get('filterValues'));
+
+            if (!filterModel.get('invalid')) {
+              filterCollection(filterModel);
+              scope.mwListCollectionFilter.applyFilter(filterModel);
+            } else {
+              var invalidFilterModal = new InvalidFilterModal();
+              invalidFilterModal.setScopeAttributes({
+                filterModel: filterModel,
+                modifyAction: function () {
+                  $timeout(function () {
+                    scope.editFilter(filterModel);
+                  });
+                }
+              });
+              invalidFilterModal.show();
+            }
           };
 
           scope.revokeFilter = function () {
@@ -170,7 +197,15 @@ angular.module('mwSidebarBb', [])
             return (_.size(scope.viewModel.tmpFilter.get('filterValues')) > 0);
           };
 
-          scope.mwListCollectionFilter.fetchFilters();
+          scope.mwListCollectionFilter.fetchFilters().then(function (mwListCollectionFilter) {
+            mwListCollectionFilter.each(function (filterModel) {
+              var invalidFilterKeys = scope.collection.filterable.getInvalidFilterKeys(filterModel.get('filterValues'));
+              if (invalidFilterKeys.length > 0) {
+                filterModel.set('invalid', true);
+                removeInvalidFilterKeys(filterModel, invalidFilterKeys);
+              }
+            });
+          });
           scope.mwListCollectionFilter.fetchAppliedFilter().then(function (filterModel) {
             setTotalAmount(filterModel);
           });

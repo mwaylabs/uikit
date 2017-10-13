@@ -164,7 +164,7 @@
       > a.btn{
         width: calc(100% - 40px);
         clear: both;
-        
+
         *[mw-icon]{
           display: block;
           float: left;
@@ -190,6 +190,18 @@
           height: 100%;
           width: 2px;
           background: #fff;
+        }
+      }
+
+      &.invalid{
+        color: $brand-danger !important;
+        a, a i{
+          color: $brand-danger !important;
+        }
+
+        .invalid-icon{
+          float: none !important;
+          display: inline !important;
         }
       }
 
