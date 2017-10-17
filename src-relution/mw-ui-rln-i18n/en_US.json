@@ -1,5 +1,6 @@
 {
   "rlnUikit": {
+    "cancel": "Cancel",
     "mwFileUpload": {
       "dropFiles": "Drop your file here to upload it",
       "upload": "Select file",

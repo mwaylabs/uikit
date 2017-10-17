@@ -1,5 +1,6 @@
 {
   "rlnUikit": {
+    "cancel": "Abbrechen",
     "mwFileUpload": {
       "dropFiles": "Datei hier hin ziehen um diese hochzuladen",
       "upload": "Datei auswählen",
