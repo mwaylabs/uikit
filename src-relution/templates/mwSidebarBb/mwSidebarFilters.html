@@ -27,6 +27,7 @@
         </div>
       </li>
       <li ng-repeat="filter in filters.models"
+          ng-if="!(filter.get('invalid') && !filter.canModifyFilter())"
           ng-class="{'active':isFilterApplied(filter), 'invalid': filter.get('invalid')}"
           class="filter">
         <a href="#"
