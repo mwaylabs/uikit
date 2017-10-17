@@ -253,6 +253,7 @@ angular.module('mwSidebarBb', [])
     $scope.delete = function () {
       if ($scope.filterModel) {
         $scope.filterModel.destroy();
+        $scope.hideModal();
       } else {
         throw new Error('[InvalidFilterModal] The scope attribute filterModel has to be a valid filterModel. Set it via modal.setScopeAttributes({filterModel:...})');
       }
