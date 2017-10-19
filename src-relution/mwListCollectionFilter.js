@@ -5,7 +5,7 @@ angular.module('mwCollection')
                                                $location,
                                                $route,
                                                mwUrlStorage,
-                                               LocalForage,
+                                               mwRuntimeStorage,
                                                FilterHoldersCollection,
                                                FilterHolderProvider) {
 
@@ -189,7 +189,7 @@ angular.module('mwCollection')
         if (_appliedSortOrder.order && _appliedSortOrder.property) {
           return $q.when(_appliedSortOrder);
         } else {
-          return LocalForage.getItem(_localSortOrderIdentifier).then(function (appliedSortOrder) {
+          return $q.when(mwRuntimeStorage.getItem(_localSortOrderIdentifier)).then(function (appliedSortOrder) {
             _appliedSortOrder = appliedSortOrder || {order: null, property: null};
             return _appliedSortOrder;
           });
@@ -209,13 +209,13 @@ angular.module('mwCollection')
         }
 
         _appliedFilter.set(sortOrderObj);
-        return LocalForage.setItem(_localSortOrderIdentifier, sortOrderObj).then(function () {
+        return $q.when(mwRuntimeStorage.setItem(_localSortOrderIdentifier, sortOrderObj)).then(function () {
           return sortOrderObj;
         });
       };
 
       this.revokeSortOrder = function () {
-        return LocalForage.removeItem(_localSortOrderIdentifier);
+        return mwRuntimeStorage.removeItem(_localSortOrderIdentifier);
       };
 
       this.clearAppliedSearchTerm = function () {
