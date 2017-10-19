@@ -19,62 +19,31 @@ angular.module('mwUI.Toast')
       options.button = options.button || {};
 
       var toast = {
-          id: options.id || _.uniqueId('toast'),
-          type: options.type || 'default',
-          visible: true,
-          message: message,
-          title: options.title,
-          autoHide: options.autoHide || false,
-          autoHideTime: options.autoHideTime || 5000,
-          autoHideCallback: options.autoHideCallback,
-          isHtmlMessage: options.isHtmlMessage,
-          icon: options.icon || _defaultIcons[options.type] || 'fa-info',
-          button: {
-            title: options.button.title,
-            link: options.button.link,
-            target: options.button.target,
-            isLink: options.button.isLink || !!options.button.link,
-            action: options.button.action
-          },
-          replaceCount: 0,
-          initDate: +new Date()
+        id: options.id || _.uniqueId('toast'),
+        type: options.type || 'default',
+        visible: true,
+        message: message,
+        title: options.title,
+        autoHide: options.autoHide || false,
+        autoHideTime: options.autoHideTime || 5000,
+        autoHideCallback: options.autoHideCallback,
+        isHtmlMessage: options.isHtmlMessage,
+        icon: options.icon || _defaultIcons[options.type] || 'fa-info',
+        button: {
+          title: options.button.title,
+          link: options.button.link,
+          target: options.button.target,
+          isLink: options.button.isLink || !!options.button.link,
+          action: options.button.action
         },
-        _autoRemoveTimeout;
-
-      var startAutoHideTimer = function () {
-        if (toast.autoHide) {
-          _autoRemoveTimeout = window.setTimeout(function () {
-            if (toast.autoHideCallback && typeof toast.autoHideCallback === 'function') {
-              toast.visible = false;
-              toast.autoHideCallback.apply(this, arguments);
-            }
-          }.bind(this), toast.autoHideTime);
-        }
+        replaceCount: 0,
+        initDate: +new Date()
       };
 
-      var resetAutoHideTimer = function () {
-        if (_autoRemoveTimeout) {
-          window.clearTimeout(_autoRemoveTimeout);
-        }
-        startAutoHideTimer();
-      };
-
-      var setAutoHideCallback = function (fn) {
-        toast.autoHideCallback = fn;
-        resetAutoHideTimer();
-      };
-
-      var replaceMessage = function (newMessage) {
+      toast.replaceMessage = function (newMessage) {
         toast.message = newMessage;
         toast.replaceCount++;
-        resetAutoHideTimer();
       };
-
-      toast.replaceMessage = replaceMessage;
-      toast.setAutoHideCallback = setAutoHideCallback;
-
-
-      startAutoHideTimer();
 
       return toast;
     };
@@ -83,11 +52,11 @@ angular.module('mwUI.Toast')
       _autoHideTime = timeInMs;
     };
 
-    this.setDefaultIcons = function(obj){
-      _.extend(_defaultIcons,obj);
+    this.setDefaultIcons = function (obj) {
+      _.extend(_defaultIcons, obj);
     };
 
-    this.$get = function ($timeout) {
+    this.$get = function ($timeout, mwScheduler) {
 
       return {
         findToast: function (id) {
@@ -100,6 +69,7 @@ angular.module('mwUI.Toast')
         },
         clear: function () {
           _toasts = [];
+          mwScheduler.reset();
         },
         getToasts: function () {
           return _.pluck(_toasts, 'toast');
@@ -110,19 +80,26 @@ angular.module('mwUI.Toast')
 
           if (toast) {
             toast.replaceMessage(message);
+            var existingTask = mwScheduler.get(toast.id);
+            if (existingTask) {
+              existingTask.resetTime();
+            }
           }
 
           return toast;
         },
         removeToast: function (id) {
-          var match = _.findWhere(_toasts, {id: id}),
-            index = _.indexOf(_toasts, match);
+          var existingToast = _.findWhere(_toasts, {id: id}),
+            index = _.indexOf(_toasts, existingToast);
 
-          if (match) {
-            _toasts.splice(index, 1);
+          if (existingToast) {
+            mwScheduler.remove(mwScheduler.get(existingToast.id));
+            $timeout(function () {
+              _toasts.splice(index, 1);
+            });
           }
 
-          return match;
+          return existingToast;
         },
         addToast: function (message, options) {
           options = options || {};
@@ -136,16 +113,14 @@ angular.module('mwUI.Toast')
           } else {
             var toast = new Toast(message, options);
 
-            var removeFn = function () {
-              $timeout(function () {
+            if (toast.autoHide) {
+              mwScheduler.add(function () {
                 if (options.autoHideCallback && typeof options.autoHideCallback === 'function') {
                   options.autoHideCallback.apply(this, arguments);
                 }
                 this.removeToast(toast.id);
-              }.bind(this));
-            }.bind(this);
-
-            toast.setAutoHideCallback(removeFn);
+              }, toast.autoHideTime, toast.id, this);
+            }
 
             _toasts.push({id: toast.id, toast: toast});
 
