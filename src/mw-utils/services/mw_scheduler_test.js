@@ -82,6 +82,16 @@ describe('MwSchedulerTest', function () {
       expect(spy).not.toHaveBeenCalled();
     });
 
+    it('does not start the scheduler when it was paused and add is called ', function () {
+      var startSpy = spyOn(this.subject, 'start');
+      this.subject.stop();
+
+      this.subject.add(function () {
+      }, 100);
+
+      expect(startSpy).not.toHaveBeenCalled();
+    });
+
     it('continues execution when starting the scheduler again', function () {
       var spy = jasmine.createSpy('task');
       var spy2 = jasmine.createSpy('task2');
