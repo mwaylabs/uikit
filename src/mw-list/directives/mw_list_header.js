@@ -77,10 +77,10 @@ angular.module('mwUI.List')
             });
           }
 
-          if(bootstrapVisibleClass){
+          if (bootstrapVisibleClass) {
             hiddenByBootstrap = true;
-            bootstrapVisibleClass.forEach(function(className){
-              if(hiddenByBootstrap && className.split('-')[1] === activeBreakPoint.toLowerCase()){
+            bootstrapVisibleClass.forEach(function (className) {
+              if (hiddenByBootstrap && className.split('-')[1] === activeBreakPoint.toLowerCase()) {
                 hiddenByBootstrap = false;
               }
             });
@@ -89,15 +89,15 @@ angular.module('mwUI.List')
           return hiddenByBootstrap;
         };
 
-        var isHiddenByHiddenAttr = function(){
+        var isHiddenByHiddenAttr = function () {
           var activeBreakPoint = mwBootstrapBreakpoint.getActiveBreakpoint(),
-              hiddenByHiddenAttr = false;
+            hiddenByHiddenAttr = false;
 
           if (angular.isArray(scope.hidden)) {
             hiddenByHiddenAttr = scope.hidden.indexOf(activeBreakPoint) !== -1;
           } else if (_.isBoolean(scope.hidden)) {
             hiddenByHiddenAttr = scope.hidden;
-          } else if(angular.isDefined(attr.hidden)){
+          } else if (angular.isDefined(attr.hidden)) {
             hiddenByHiddenAttr = true;
           }
 
@@ -138,7 +138,7 @@ angular.module('mwUI.List')
         };
 
         scope.isVisible = function () {
-          if(angular.isUndefined(userHasHiddenElement)){
+          if (angular.isUndefined(userHasHiddenElement)) {
             return !systemHasHiddenElement;
           } else {
             return !userHasHiddenElement;
