@@ -173,12 +173,9 @@ angular.module('mwUI.List')
           return scope.mandatory;
         };
 
-        mwListCtrl.registerColumn(getColumn());
-
         scope.$on('$destroy', function () {
           mwListCtrl.unRegisterColumn(getColumn());
         });
-
         scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:registerColumn', throttledUpdateCol);
         scope.$on('mwList:unRegisterColumn', throttledUpdateCol);
@@ -188,21 +185,19 @@ angular.module('mwUI.List')
         $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateCol);
         $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateVisibility);
         $rootScope.$on('$modalOpenSuccess', throttledUpdateVisibility);
-        $timeout(throttledUpdateCol);
-        $timeout(throttledUpdateVisibility);
 
         if (tableConfigurator) {
-          tableConfigurator.fetch().then(function () {
-            var persistedCol = tableConfigurator.get('columns').get(persistId);
-            if (persistedCol) {
-              if (persistedCol.get('visible')) {
-                scope.showColumn();
-              } else {
-                scope.hideColumn();
-              }
-            }
-          });
+          var persistedCol = tableConfigurator.get('columns').get(persistId);
+          if (persistedCol) {
+            userHasHiddenElement = !persistedCol.get('visible');
+          }
         }
+
+        $timeout(function () {
+          updateCol();
+          updateVisibility();
+          mwListCtrl.registerColumn(getColumn());
+        });
       }
     };
   });
