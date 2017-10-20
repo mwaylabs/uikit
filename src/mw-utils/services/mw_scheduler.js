@@ -136,8 +136,8 @@ angular.module('mwUI.Utils')
       }
     }.bind(this));
 
-    angular.element(window).on('blur', scheduler.stop);
-    angular.element(window).on('focus', scheduler.start);
+    angular.element(window).on('blur', scheduler.stop.bind(scheduler));
+    angular.element(window).on('focus', scheduler.start.bind(scheduler));
 
     return scheduler;
   });
