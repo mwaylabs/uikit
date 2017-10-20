@@ -20,7 +20,7 @@ angular.module('mwUI.List')
           innerText = elm.text() || '',
           tableConfigurator = mwListCtrl.getTableConfigurator(),
           persistId = scope.property || attr.title || innerText.trim(),
-          systemHasHiddenElement = false,
+          systemHasHiddenElement = true,
           userHasHiddenElement;
 
         var getSortOrder = function () {
