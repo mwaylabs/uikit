@@ -1,18 +1,24 @@
 window.mwUI.Utils.Scheduler = {};
 
 window.mwUI.Utils.Scheduler.Task = window.mwUI.Backbone.Model.extend({
-  _updateOriginalSleep: function () {
-    if (_.isNumber(this.get('executeInMs'))) {
-      this.set('originalSleepTime', this.get('executeInMs'));
+  defaults: function () {
+    return {
+      callback: function () {
+      },
+      executeInMs: 0,
+      _time: 0
     }
+  },
+  getRemainingSleepTime: function () {
+    return this.get('executeInMs') - this.get('_time');
   },
   decrementTime: function (time) {
     time = time || 1;
-    var currentSleepTime = this.get('executeInMs');
-    this.set({executeInMs: currentSleepTime - time}, {silent: true});
+    var currentTime = this.get('_time');
+    this.set('_time', currentTime + time);
   },
   canBeExecuted: function () {
-    return this.get('executeInMs') <= 0;
+    return this.getRemainingSleepTime() <= 0;
   },
   execute: function () {
     this.get('callback').apply(this.get('scope'));
@@ -21,11 +27,14 @@ window.mwUI.Utils.Scheduler.Task = window.mwUI.Backbone.Model.extend({
     }
   },
   resetTime: function () {
-    this.set('executeInMs', this.get('originalSleepTime'));
+    this.set('_time', 0);
   },
-  initialize: function () {
-    this.on('change:executeInMs', this._updateOriginalSleep, this);
-    this._updateOriginalSleep();
+  kill: function () {
+    if (this.collection) {
+      return this.collection.remove(this);
+    } else {
+      return false;
+    }
   }
 });
 
@@ -42,12 +51,12 @@ window.mwUI.Utils.Scheduler.TaskRunner = window.mwUI.Backbone.Collection.extend(
       return;
     }
 
-    if (!this._startTime) {
+    if (this._startTime) {
       this._startTime = timestamp;
     }
 
     progress = timestamp - this._startTime;
-    delta = this._prevValue ? progress - this._prevValue : progress;
+    delta = this._prevValue ? progress - this._prevValue : 0;
 
     if (this.length > 0) {
       this.secureEach(function (task) {
