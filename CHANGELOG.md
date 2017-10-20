@@ -1,3 +1,8 @@
+# v1.19.2
+## Bug Fixes
+### List module
+- Fix flickering of columns during table initialisation
+
 # v1.19.1
 ## Features
 ### Ui components module
