@@ -24,7 +24,7 @@
 
   tr td {
     vertical-align: middle;
-    @include single-transition(opacity, 0.2s, ease);
+    @include single-transition(background-color, 0.2s, ease);
   }
 }
 
@@ -47,23 +47,17 @@
 
   &.hide-all-cols {
     thead *[mw-listable-header-row-bb] th,
+    tbody *[mw-listable-body-row-bb],
     tbody *[mw-listable-body-row-bb] td {
-      opacity: 0;
-    }
-  }
-}
-
-@mixin generate-row-animation-helper($from, $to) {
-  @for $i from $from through $to {
-    tr:nth-child(#{$i}) td{
-      transition-delay: #{$i/50}s !important;
+      opacity: 0 !important;
+      border-color: transparent !important;
+      background-color: transparent !important;
     }
   }
 }
 
 .mw-list {
   @include generate-hidden-col-helper(0, 20);
-  @include generate-row-animation-helper(1, 40);
 
   thead {
     th {
