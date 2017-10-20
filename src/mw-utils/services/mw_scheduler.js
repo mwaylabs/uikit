@@ -111,23 +111,24 @@ window.mwUI.Utils.Scheduler.TaskRunner = window.mwUI.Backbone.Collection.extend(
     } else {
       return mwUI.Backbone.Collection.prototype.get.apply(this, arguments);
     }
-  },
-  initialize: function () {
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) {
-        this.stop();
-      } else {
-        this.start();
-      }
-    }.bind(this));
-
-    window.onfocus = this.start.bind(this);
-    window.onblur = this.stop.bind(this);
   }
 });
 
 angular.module('mwUI.Utils')
 
   .service('mwScheduler', function () {
-    return new window.mwUI.Utils.Scheduler.TaskRunner();
+    var scheduler = new window.mwUI.Utils.Scheduler.TaskRunner();
+
+    angular.element(document).on('visibilitychange', function () {
+      if (document.hidden) {
+        scheduler.stop();
+      } else {
+        scheduler.start();
+      }
+    }.bind(this));
+
+    angular.element(window).on('blur', scheduler.stop);
+    angular.element(window).on('focus', scheduler.start);
+
+    return scheduler;
   });
