@@ -155,16 +155,24 @@ describe('MwSchedulerTest', function () {
     });
   });
 
-  fdescribe('testing service', function(){
+  describe('testing service', function(){
     it('pauses runenr when window becomes inactive', function(){
       this.subject.add(function () {
       }, 100);
-      var stopSpy = spyOn(this.subject, 'stop');
-      debugger;
 
       angular.element(window).triggerHandler('blur');
 
-      expect(stopSpy).toHaveBeenCalled();
+      expect(this.subject.isStopped()).toBeTruthy();
+    });
+
+    it('starts runner when window becomes active', function(){
+      this.subject.add(function () {
+      }, 100);
+      angular.element(window).triggerHandler('blur');
+
+      angular.element(window).triggerHandler('focus');
+
+      expect(this.subject.isStopped()).toBeFalsy();
     });
   });
 
