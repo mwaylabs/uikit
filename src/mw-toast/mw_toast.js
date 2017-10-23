@@ -1,4 +1,4 @@
-angular.module('mwUI.Toast', ['ngSanitize']);
+angular.module('mwUI.Toast', ['ngSanitize', 'mwUI.Utils']);
 
 // @include ./services/mw_toast.js
 
