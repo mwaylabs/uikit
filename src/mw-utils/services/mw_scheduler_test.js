@@ -166,7 +166,7 @@ describe('MwSchedulerTest', function () {
   });
 
   describe('testing service', function(){
-    it('pauses runenr when window becomes inactive', function(){
+    it('pauses runner when window becomes inactive', function(){
       this.subject.add(function () {
       }, 100);
 
