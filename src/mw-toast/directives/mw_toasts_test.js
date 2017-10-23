@@ -1,6 +1,6 @@
 'use strict';
 
-describe('mwUi Toast directive', function () {
+ describe('mwUi Toast directive', function () {
   var $rootScope,
     $scope,
     $timeout,
@@ -37,63 +37,47 @@ describe('mwUi Toast directive', function () {
 
   describe('toast handling', function(){
     it('displays toasts when a toast was added', function(){
-      Toast.addToast('My Message');
+      Toast.addToast('xxx');
 
       $scope.$digest();
 
       expect(angular.element(element).find('li').length).toBe(1);
     });
 
-    it('can display multiple toasts', function(){
-      Toast.addToast('My Message');
-      Toast.addToast('My Message 2');
-      Toast.addToast('My Message 3');
-      Toast.addToast('My Message 4');
-      Toast.addToast('My Message 5');
-      Toast.addToast('My Message 6');
-
-      $scope.$digest();
-
-      expect(angular.element(element).find('li').length).toBe(6);
-    });
-
-    it('update the toast when the message was updated', function(){
-      var toast = Toast.addToast('My Message');
-      Toast.replaceToastMessage(toast.id, 'My updated message');
-
-      $scope.$digest();
-
-      expect(angular.element(element).find('li').length).toBe(1);
-      expect(angular.element(element).find('li').text().trim()).toEqual('My updated message');
-    });
-
-    it('updates the toastlist when a toast was removed', function(){
-      var toast2;
-
-      Toast.addToast('My Message');
-      toast2 = Toast.addToast('My Message 2');
-      Toast.addToast('My Message 3');
-      Toast.removeToast(toast2.id);
-
+    it('displays multiple toasts', function(){
+      Toast.addToast('xxx');
+      Toast.addToast('xxx 2');
       $scope.$digest();
 
       expect(angular.element(element).find('li').length).toBe(2);
-      expect(angular.element(element).find('li')[1].textContent.trim()).toEqual('My Message 3');
+    });
+
+    it('updates the toast when the message was updated', function(){
+      var toast = Toast.addToast('xxx');
+      Toast.replaceToastMessage(toast.id, 'abc');
+
+      $scope.$digest();
+
+      expect(angular.element(element).find('li').length).toBe(1);
+      expect(angular.element(element).find('li').text().trim()).toEqual('abc');
+    });
+
+    it('updates the toastlist when a toast was removed', function(){
+      Toast.addToast('xxx', {id: 1});
+      Toast.addToast('xxx 2', {id: 2});
+      Toast.removeToast(1);
+
+      $scope.$digest();
+      $timeout.flush();
+
+      expect(angular.element(element).find('li').length).toBe(1);
+      expect(angular.element(element).find('li')[0].textContent.trim()).toEqual('xxx 2');
     });
 
     it('removes a toast when clicking on the hide button', function(){
       $scope.$digest();
       var toast = Toast.addToast('My Message');
       $scope.hideToast(toast.id);
-
-      $scope.$digest();
-
-      expect(angular.element(element).find('li').length).toBe(0);
-    });
-
-    it('automatically removes a toast when autoHide is set to true', function(){
-      Toast.addToast('My Message', {autoHide: true, autoHideTime: 10});
-      jasmine.clock().tick(10);
 
       $scope.$digest();
       $timeout.flush();
