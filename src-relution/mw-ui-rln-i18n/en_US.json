@@ -1,5 +1,6 @@
 {
   "rlnUikit": {
+    "cancel": "Cancel",
     "mwFileUpload": {
       "dropFiles": "Drop your file here to upload it",
       "upload": "Select file",
@@ -7,6 +8,14 @@
       "invalidMimeType": "The uploaded file is invalid. Mime-Type has to be {{mimeType}}",
       "abort": "Abort upload",
       "uploading": "Uploading {{fileName}}..."
+    },
+    "mwSidebar": {
+      "invalidFilterModal": {
+        "title": "The filter is invalid",
+        "description": "The filter \"{{name}}\" contains filter attributes that are either not available anymore or have been changed. Therefore the filter does not work anymore. You can either modify the filter to make it work again or delete it.",
+        "delete": "Delete filter",
+        "modify": "Modify filter"
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 {
   "rlnUikit": {
+    "cancel": "Abbrechen",
     "mwFileUpload": {
       "dropFiles": "Datei hier hin ziehen um diese hochzuladen",
       "upload": "Datei auswählen",
@@ -7,6 +8,14 @@
       "invalidMimeType": "Die hochgeladene Datei ist ungültig. Der vorgegebene Mime-Type is {{mimeType}}",
       "abort": "Upload abbrechen",
       "uploading": "{{fileName}} wird hochgeladen..."
+    },
+    "mwSidebar": {
+      "invalidFilterModal": {
+        "title": "Der Filter ist nicht mehr gültig",
+        "description": "Der Filter \"{{name}}\" enthält Filter Attribute die entweder nicht mehr verfügbar sind oder geändert wurden. Der Filter kann daher nicht mehr verwendet werden. Sie können den Filter entweder bearbeiten, sodass dieser wieder verwendet werden kann oder löschen.",
+        "delete": "Filter löschen",
+        "modify": "Filter bearbeiten"
+      }
     }
   }
 }
