@@ -7,7 +7,7 @@ window.mwUI.Utils.Scheduler.Task = window.mwUI.Backbone.Model.extend({
       },
       executeInMs: 0,
       _time: 0
-    }
+    };
   },
   getRemainingSleepTime: function () {
     return this.get('executeInMs') - this.get('_time');

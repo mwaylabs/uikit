@@ -24,7 +24,7 @@ describe('MwSchedulerTest', function () {
         for(var i=0;i<timeInMs;i++, currentTs++){
           callback(currentTs);
         }
-      }
+      };
     };
   });
 
