@@ -5,7 +5,7 @@ angular.module('mwCollection')
                                                $location,
                                                $route,
                                                mwUrlStorage,
-                                               LocalForage,
+                                               mwRuntimeStorage,
                                                FilterHoldersCollection,
                                                FilterHolderProvider) {
 
@@ -130,7 +130,7 @@ angular.module('mwCollection')
         } else if (_appliedFilter.get('uuid')) {
           return $q.when(_appliedFilter);
         } else {
-          return LocalForage.getItem(_localFilterIdentifier).then(function (appliedFilter) {
+          return $q.when(mwRuntimeStorage.getItem(_localFilterIdentifier)).then(function (appliedFilter) {
             if (appliedFilter) {
               return this.filterWasSetByUser(appliedFilter).then(function (wasSetByUser) {
                 if (wasSetByUser) {
@@ -148,7 +148,7 @@ angular.module('mwCollection')
 
       this.clearAppliedFilter = function () {
         _appliedFilter.clear();
-        return LocalForage.removeItem(_localFilterIdentifier).then(function () {
+        return $q.when(mwRuntimeStorage.removeItem(_localFilterIdentifier)).then(function () {
           setUrlQueryParams();
           return _appliedFilter;
         })
@@ -165,7 +165,7 @@ angular.module('mwCollection')
         if (jsonFilter && _appliedFilter.id !== jsonFilter.uuid) {
           _appliedFilter.set(jsonFilter);
           setUrlQueryParams();
-          return LocalForage.setItem(_localFilterIdentifier, jsonFilter).then(function () {
+          return $q.when(mwRuntimeStorage.setItem(_localFilterIdentifier, jsonFilter)).then(function () {
             return _appliedFilter;
           });
         } else {
@@ -189,7 +189,7 @@ angular.module('mwCollection')
         if (_appliedSortOrder.order && _appliedSortOrder.property) {
           return $q.when(_appliedSortOrder);
         } else {
-          return LocalForage.getItem(_localSortOrderIdentifier).then(function (appliedSortOrder) {
+          return $q.when(mwRuntimeStorage.getItem(_localSortOrderIdentifier)).then(function (appliedSortOrder) {
             _appliedSortOrder = appliedSortOrder || {order: null, property: null};
             return _appliedSortOrder;
           });
@@ -209,13 +209,13 @@ angular.module('mwCollection')
         }
 
         _appliedFilter.set(sortOrderObj);
-        return LocalForage.setItem(_localSortOrderIdentifier, sortOrderObj).then(function () {
+        return $q.when(mwRuntimeStorage.setItem(_localSortOrderIdentifier, sortOrderObj)).then(function () {
           return sortOrderObj;
         });
       };
 
       this.revokeSortOrder = function () {
-        return LocalForage.removeItem(_localSortOrderIdentifier);
+        return mwRuntimeStorage.removeItem(_localSortOrderIdentifier);
       };
 
       this.clearAppliedSearchTerm = function () {
@@ -223,7 +223,7 @@ angular.module('mwCollection')
           attr: null,
           val: null
         };
-        return LocalForage.removeItem(_localSearchIdentifier).then(function () {
+        return $q.when(mwRuntimeStorage.removeItem(_localSearchIdentifier)).then(function () {
           setUrlQueryParams();
           return _appliedFilter;
         })
@@ -236,7 +236,7 @@ angular.module('mwCollection')
             val: searchTerm && searchTerm.length > 0 ? searchTerm : null
           };
           setUrlQueryParams();
-          return LocalForage.setItem(_localSearchIdentifier, _appliedSearchTerm).then(function () {
+          return $q.when(mwRuntimeStorage.setItem(_localSearchIdentifier, _appliedSearchTerm)).then(function () {
             return _appliedSearchTerm;
           });
         } else {
@@ -269,7 +269,7 @@ angular.module('mwCollection')
         } else if (_appliedSearchTerm.val) {
           return $q.when(_appliedSearchTerm);
         } else {
-          return LocalForage.getItem(_localSearchIdentifier).then(function (appliedSearch) {
+          return $q.when(mwRuntimeStorage.getItem(_localSearchIdentifier)).then(function (appliedSearch) {
             appliedSearch = appliedSearch || {};
             return this.applySearchTerm(appliedSearch.attr, appliedSearch.val);
           }.bind(this));
@@ -288,3 +288,4 @@ angular.module('mwCollection')
       }
     };
   });
+

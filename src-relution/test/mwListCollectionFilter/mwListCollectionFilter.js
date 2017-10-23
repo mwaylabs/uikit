@@ -3,6 +3,7 @@
 describe('MwListCollectionFilter', function () {
   var $q,
     $locationSpy,
+    RuntimeStorageSpy,
     LocalForageSpy,
     MwListCollectionFilter,
     filterInLocalStorage = {},
@@ -19,29 +20,23 @@ describe('MwListCollectionFilter', function () {
 
   beforeEach(module(function ($provide) {
     //create stubs to mimic external input-methods from the real context
-    LocalForageSpy = jasmine.createSpyObj('localForage', ['getItem', 'setItem', 'deleteItem']);
-    var LocalForageStub = {
+    RuntimeStorageSpy = jasmine.createSpyObj('runtimeStorage', ['getItem', 'setItem', 'deleteItem']);
+    var RuntimeStorageStub = {
       getItem: function (key) {
-        LocalForageSpy.getItem(key);
-        var dfd = $q.defer();
+        RuntimeStorageSpy.getItem(key);
         if (key === 'applied_filter_IRRELEVANT') {
-          dfd.resolve(filterInLocalStorage);
+          return filterInLocalStorage;
         } else if (key === 'applied_search_IRRELEVANT') {
-          dfd.resolve(appliedSearchTerm);
+         return appliedSearchTerm;
         }
-        return dfd.promise;
       },
       setItem: function (key, value) {
-        LocalForageSpy.setItem(key, value);
-        var dfd = $q.defer();
-        dfd.resolve(value);
-        return dfd.promise;
+        RuntimeStorageSpy.setItem(key, value);
+        return value;
       },
       removeItem: function (key) {
-        LocalForageSpy.deleteItem(key);
-        var dfd = $q.defer();
-        dfd.resolve();
-        return dfd.promise;
+        RuntimeStorageSpy.deleteItem(key);
+        return true;
       }
     };
 
@@ -80,7 +75,7 @@ describe('MwListCollectionFilter', function () {
     };
 
     //redirect calls-to-this-external-methods to the stubs / spies
-    $provide.value('LocalForage', LocalForageStub);
+    $provide.value('mwRuntimeStorage', RuntimeStorageStub);
     $provide.value('FilterHoldersCollection', FilterHolderStub);
     $provide.value('FilterHolderProvider', FilterHolderProviderSpy);
 
@@ -180,7 +175,7 @@ describe('MwListCollectionFilter', function () {
       queryParams = {f: 'BELONGS_TO_USER'};
 
       listCollectionFilter.fetchAppliedFilter().then(function () {
-        expect(LocalForageSpy.setItem.calls.mostRecent().args[1]).toEqual({uuid: 'BELONGS_TO_USER'});
+        expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1]).toEqual({uuid: 'BELONGS_TO_USER'});
         done();
       });
       $rootScope.$digest();
@@ -201,7 +196,7 @@ describe('MwListCollectionFilter', function () {
       queryParams = {f: 'BELONGS_NOT_TO_USER'};
 
       listCollectionFilter.fetchAppliedFilter().then(function (appliedFilter) {
-        expect(LocalForageSpy.deleteItem).toHaveBeenCalled();
+        expect(RuntimeStorageSpy.deleteItem).toHaveBeenCalled();
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: null, qAttr: null, q: null});
         expect(appliedFilter.get('uuid')).not.toBeDefined();
         done();
@@ -213,7 +208,7 @@ describe('MwListCollectionFilter', function () {
   describe('setting applied filter', function () {
     it('sets local storage and updates url when calling apply filter', function (done) {
       listCollectionFilter.applyFilter({uuid: 'NEW_FILTER'}).then(function (appliedFilter) {
-        expect(LocalForageSpy.setItem.calls.mostRecent().args[1]).toEqual({uuid: 'NEW_FILTER'});
+        expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1]).toEqual({uuid: 'NEW_FILTER'});
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: 'NEW_FILTER', qAttr: null, q: null});
         expect(appliedFilter.get('uuid')).toMatch('NEW_FILTER');
         done();
@@ -285,7 +280,7 @@ describe('MwListCollectionFilter', function () {
       queryParams = {q: 'Q_IRRELEVANT', qAttr: 'Q_IRRELEVANT'};
 
       listCollectionFilter.fetchAppliedSearchTerm().then(function () {
-        expect(LocalForageSpy.setItem.calls.mostRecent().args[1]).toEqual({val: 'Q_IRRELEVANT', attr: 'Q_IRRELEVANT'});
+        expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1]).toEqual({val: 'Q_IRRELEVANT', attr: 'Q_IRRELEVANT'});
         done();
       });
       $rootScope.$digest();
@@ -295,7 +290,7 @@ describe('MwListCollectionFilter', function () {
   describe('setting search term', function () {
     it('sets local storage and updates url when calling apply search term', function (done) {
       listCollectionFilter.applySearchTerm('IRRELEVANT', 'NEW_SEARCH').then(function (appliedSearchTerm) {
-        expect(LocalForageSpy.setItem.calls.mostRecent().args[1]).toEqual({val: 'NEW_SEARCH', attr: 'IRRELEVANT'});
+        expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1]).toEqual({val: 'NEW_SEARCH', attr: 'IRRELEVANT'});
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: null, q: 'NEW_SEARCH', qAttr: 'IRRELEVANT'});
         expect(appliedSearchTerm.val).toMatch('NEW_SEARCH');
         done();
