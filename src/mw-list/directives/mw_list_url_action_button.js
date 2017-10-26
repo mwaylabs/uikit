@@ -1,38 +1,26 @@
 angular.module('mwUI.List')
-  //TODO rename to mwListUrlActionButton
-  .directive('mwListableLinkShowBb', function () {
+//TODO rename to mwListUrlActionButton
+  .directive('mwListableLinkShowBb', function ($window) {
     return {
       restrict: 'A',
       require: '^mwListableBb',
-      template: '<span mw-link-show="{{link}}" link-target="{{linkTarget}}"></span>',
-      link: function (scope, elm, attr, mwListableCtrl) {
-        var updateLink = function(link){
-          if(_.isNumber(scope.$index) && link){
-            var existingItem = _.findWhere(mwListableCtrl.actionColumns, {id: scope.$index});
+      templateUrl: 'uikit/mw-list/directives/templates/mw_list_url_action_button.html',
+      scope: {
+        link: '@mwListableLinkShowBb',
+        target: '@linkTarget'
+      },
+      link: function (scope) {
+        scope.execute = function () {
+            var link = scope.link,
+              target = scope.target;
 
-            if(existingItem){
-              existingItem.link = link;
-            } else {
-              mwListableCtrl.actionColumns.push({id: scope.$index, link: link});
+            if (link && !target) {
+              debugger;
+              $window.location.href = link;
+            } else if (link && target && target !== 'self') {
+              window.open(link);
             }
-          }
-          scope.link = link;
-        };
-
-        var removeLink = function(){
-          if(scope.$index){
-            var existingItem = _.findWhere(mwListableCtrl.actionColumns, {id:scope.$index});
-            if(existingItem){
-              var indexOfExistingItem = _.indexOf(mwListableCtrl.actionColumns, existingItem);
-              mwListableCtrl.actionColumns.splice(indexOfExistingItem, 1);
-            }
-          }
-        };
-
-        scope.linkTarget = attr.linkTarget;
-        updateLink(attr.mwListableLinkShowBb);
-        attr.$observe('mwListableLinkShowBb', updateLink);
-        scope.$on('$destroy', removeLink);
+        }
       }
     };
   });
