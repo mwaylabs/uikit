@@ -1,9 +1,14 @@
 angular.module('mwUI.List')
 
-  //TODO rename to mwListBodyRow
-  .directive('mwListableBodyRowBb', function ($timeout) {
+//TODO rename to mwListBodyRow
+  .directive('mwListableBodyRowBb', function ($timeout, $window) {
     return {
       require: '^mwListableBb',
+      controller: function($scope){
+        this.getId = function(){
+          return $scope.$id;
+        }
+      },
       compile: function (elm) {
 
         elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-list-body-row-checkbox item="item"></td>');
