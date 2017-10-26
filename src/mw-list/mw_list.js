@@ -11,6 +11,7 @@ window.mwUI.List = {
 // @include ./collections/mw_table_configurators.js
 
 // @include ./directives/mw_list.js
+// @include ./directives/mw_list_action_button.js
 // @include ./directives/mw_list_body_row.js
 // @include ./directives/mw_list_body_row_checkbox.js
 // @include ./directives/mw_list_column_configurator.js
