@@ -1,3 +1,22 @@
+# v1.20.0
+## Features
+### Utils module
+- Adding mwRuntimeStorage service with an api like localstorage to store key, values during runtime
+- Adding mwScheduler to run future tasks. mwScheduler can be paused and continued at any time. When paused the execution time 
+from tasks will be paused. mwScheduler is paused when window becomes inactive and started when window becomes active again
+
+### Toast module
+- Toasts are using mwScheduler for the auto hide logic to fix #168
+
+### Src-Relution module
+- Filters, Searchquery and sort order are not persisted in localstorage anymore only in mwRuntimeStorage
+- Handling for invalid filters that can not be applied anymore
+
+
+## Bug Fixes
+### List module
+- Fix wrong positioned table configurator dropdown when you have scrolled down in the list
+
 # v1.19.2
 ## Bug Fixes
 ### List module
