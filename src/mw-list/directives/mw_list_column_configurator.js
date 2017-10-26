@@ -58,11 +58,12 @@ angular.module('mwUI.List')
         };
 
         dropDownToggle.on('show.bs.dropdown', function () {
+          var boundRect = el[0].getBoundingClientRect();
           dropDownMenu.css({
             position: 'fixed',
-            top: el.offset().top + el.innerHeight() + 5,
-            left: 'initial',
-            right: '30px'
+            top: boundRect.top + el.innerHeight(),
+            left: 'inherit',
+            marginLeft: dropDownMenu.innerWidth() * -1 + el.innerWidth()
           });
 
           // We need to trigger a digest cycle otherwise it can happen that the dropdown list is not up to date
