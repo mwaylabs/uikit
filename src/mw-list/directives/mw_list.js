@@ -26,6 +26,7 @@ angular.module('mwUI.List')
           _tableConfigurator;
         this.enableConfigurator = $scope.enableConfigurator;
         this.actionColumns = [];
+        this.maxActionColumnsAmount = 0;
 
         var notifyColumns = function (event, affectedCol) {
           $scope.$emit(event, affectedCol);
