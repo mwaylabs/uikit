@@ -23,7 +23,7 @@ angular.module('mwUI.List')
 
           scope.getActionColumnsAmount = function(){
             return mwListCtrl.maxActionColumnsAmount;
-          }
+          };
         };
       }
     };

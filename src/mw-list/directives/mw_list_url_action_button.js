@@ -15,12 +15,11 @@ angular.module('mwUI.List')
               target = scope.target;
 
             if (link && !target) {
-              debugger;
               $window.location.href = link;
             } else if (link && target && target !== 'self') {
               window.open(link);
             }
-        }
+        };
       }
     };
   });

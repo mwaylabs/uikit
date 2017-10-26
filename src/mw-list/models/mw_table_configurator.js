@@ -12,7 +12,6 @@ var MwTableConfigurator = window.mwUI.Backbone.Model.extend({
   },
   fetch: function(){
     if(!this.fetched){
-      console.log('FETCH', this.id);
       var localStorageResult = localStorage.getItem(window.mwUI.List.localStoragePrefix+'_'+this.id);
       if(localStorageResult){
         this.set(JSON.parse(localStorageResult));

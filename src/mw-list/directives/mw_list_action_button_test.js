@@ -1,4 +1,4 @@
-fdescribe('mwListUrlActionButton', function() {
+describe('mwListUrlActionButton', function() {
 
   beforeEach(function() {
     module('karmaDirectiveTemplates');
@@ -10,7 +10,7 @@ fdescribe('mwListUrlActionButton', function() {
     this.$timeout = $timeout;
     this.scope = $rootScope.$new();
     this.scope.action = this.action;
-    this.scope.items = [{id: 1, visible: true, action: function(){}}, {id: 2, visible: true, action: function(){console.log('JAU')}}];
+    this.scope.items = [{id: 1, visible: true, action: function(){}}, {id: 2, visible: true, action: function(){}}];
   }));
 
   it('registers the action to mw-list-body-row', function(){

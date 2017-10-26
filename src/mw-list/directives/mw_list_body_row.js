@@ -1,13 +1,13 @@
 angular.module('mwUI.List')
 
 //TODO rename to mwListBodyRow
-  .directive('mwListableBodyRowBb', function ($timeout, $window) {
+  .directive('mwListableBodyRowBb', function ($timeout) {
     return {
       require: '^mwListableBb',
       controller: function($scope){
         this.getId = function(){
           return $scope.$id;
-        }
+        };
       },
       compile: function (elm) {
 
