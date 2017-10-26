@@ -1,6 +1,7 @@
 angular.module('mwUI.UiComponents', ['mwUI.i18n', 'mwUI.Utils', 'mwUI.Backbone']);
 
 // @include ./directives/mw_alert.js
+// @include ./directives/mw_arrow_button.js
 // @include ./directives/mw_arrow_link.js
 // @include ./directives/mw_badge.js
 // @include ./directives/mw_bread_crumb.js
