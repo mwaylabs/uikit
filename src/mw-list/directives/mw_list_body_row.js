@@ -1,9 +1,14 @@
 angular.module('mwUI.List')
 
-  //TODO rename to mwListBodyRow
+//TODO rename to mwListBodyRow
   .directive('mwListableBodyRowBb', function ($timeout) {
     return {
       require: '^mwListableBb',
+      controller: function($scope){
+        this.getId = function(){
+          return $scope.$id;
+        };
+      },
       compile: function (elm) {
 
         elm.prepend('<td  ng-if="collection.selectable && item.selectable" mw-list-body-row-checkbox item="item"></td>');
@@ -34,10 +39,12 @@ angular.module('mwUI.List')
           });
 
           elm.on('dblclick', function () {
-            if (mwListCtrl.actionColumns && angular.isNumber(scope.$index)) {
-              var existingLink = _.findWhere(mwListCtrl.actionColumns,{id:scope.$index});
-              if(existingLink){
-                document.location.href = existingLink.link;
+            var rowId = scope.$id;
+            if (mwListCtrl.actionColumns) {
+              var columnActions = _.findWhere(mwListCtrl.actionColumns, {id: rowId}),
+                columnAction = columnActions.actions[0];
+              if (columnAction) {
+                $timeout(columnAction);
               }
             }
           });
