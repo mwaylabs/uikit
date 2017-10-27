@@ -1,5 +1,5 @@
 angular.module('mwUI.List')
-//TODO rename to mwListUrlActionButton
+
   .directive('mwListableAction', function ($timeout) {
     return {
       require: ['^mwListableBb', '^?mwListableBodyRowBb'],
