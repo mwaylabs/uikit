@@ -1,3 +1,21 @@
+# v1.20.1
+## Features
+### List module
+- Directive `mw-listable-action` was added to define a custom action that is registered as action column similiar
+  to `mw-list-url-action-button` only that you can transclude custom content and define custom function. 
+  Custom function is executed on click of the element and when the user double clicks on the row.
+  ```html
+  <td mw-listable-action="action()">
+    <div mw-arrow-button></div> <!-- transclude custom content -->
+  </td> 
+  ```
+  
+## Bug Fixes
+### List module
+- Colspan of action column header is now set correctly. It uses the maximum of registered `mw-listable-action` per row.
+  So when the first row registers only one `mw-listable-action` but the second registers two the colspan of the
+  action column header element will be set to two
+
 # v1.20.0
 ## Features
 ### Utils module
