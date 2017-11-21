@@ -384,11 +384,13 @@ angular.module('mwSidebarBb', [])
         customUrlParameter: '@'
       },
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarInput.html',
-      link: function (scope, elm, attr, ctrl) {
+      link: function (scope, elm, attr, mwSidebarFiltersBbCtrl) {
 
         scope.viewModel = {};
 
         scope._type = scope.type || 'text';
+
+        scope.collection = mwSidebarFiltersBbCtrl.getCollection();
 
         scope.isValid = function () {
           return elm.find('input').first().hasClass('ng-valid');
@@ -396,8 +398,16 @@ angular.module('mwSidebarBb', [])
 
         scope.changed = function () {
           var property = scope.customUrlParameter ? scope.customUrlParameter : scope.property;
-          ctrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
+          mwSidebarFiltersBbCtrl.changeFilter(property, scope.viewModel.val, !!scope.customUrlParameter);
         };
+
+        scope.$watch('collection.filterable.filterValues.' + scope.property, function (val) {
+          if (val && val.length > 0) {
+            scope.viewModel.val = val;
+          } else {
+            scope.viewModel.val = null;
+          }
+        });
       }
     };
   })
