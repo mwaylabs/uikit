@@ -14,15 +14,27 @@ Backbone.ajax = function (options) {
   if (mwUI.Backbone.use$http && _$http) {
     // Set HTTP Verb as 'method'
     options.method = options.type;
+
+    //Trigger sync event in case backbone.ajax is called manually and not by model/collection
+    if(!options.success && !options.error && options.instance){
+      options.instance.trigger('request');
+    }
+
     // Use angulars $http implementation for requests
     return _$http.apply(angular, arguments).then(function(resp){
       if (options.success && typeof options.success === 'function') {
         options.success(resp);
+      } else if(options.instance){
+        //Trigger success event in case backbone.ajax is called manually and not by model/collection
+        options.instance.trigger('sync');
       }
       return resp;
     }, function(resp){
       if (options.error && typeof options.error === 'function') {
         options.error(resp);
+      } else if(options.instance){
+        //Trigger error event in case backbone.ajax is called manually and not by model/collection
+        options.instance.trigger('error');
       }
       return _$q.reject(resp);
     });
