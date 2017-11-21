@@ -31,17 +31,26 @@ angular.module('mwUI.Utils')
       });
     };
 
-    var getChangedValues = function (params) {
+    var hasChangedValues = function (params, removeParams) {
       var currentSearchParams = $location.search();
-      return _.difference(_.values(params), _.values(currentSearchParams));
+      var changedParams = _.difference(_.values(params), _.values(currentSearchParams));
+      
+      removeParams = _.difference(_.values(removeParams), _.values(currentSearchParams));
+      return changedParams.length > 0 || removeParams.length > 0;
     };
 
-    var setUrlQueryParams = function (params, preferQueryOverStorage) {
-      if (getChangedValues(params).length > 0) {
+    var setUrlQueryParams = function (params, preferQueryOverStorage, removeKeys) {
+      if (hasChangedValues(params, removeKeys)) {
         var currentSearchParams = $location.search(),
           newSearchParams;
 
-        if(preferQueryOverStorage){
+        if (removeKeys) {
+          removeKeys.forEach(function (key) {
+            currentSearchParams[key] = null;
+          });
+        }
+
+        if (preferQueryOverStorage) {
           newSearchParams = _.extend(params, currentSearchParams);
         } else {
           newSearchParams = _.extend(currentSearchParams, params);
@@ -95,11 +104,15 @@ angular.module('mwUI.Utils')
       },
       removeObject: function (obj) {
         var wasChanged = false;
+        var removeKeys = [];
         if (_.isObject(obj)) {
           for (var key in obj) {
-            if (obj.hasOwnProperty(key) && storage[key]) {
-              storage[key] = null;
-              wasChanged = true;
+            if (obj.hasOwnProperty(key)) {
+              if (storage[key] || this.getItem(key)) {
+                storage[key] = null;
+                wasChanged = true;
+                removeKeys.push(key);
+              }
             }
           }
         } else {
@@ -107,21 +120,30 @@ angular.module('mwUI.Utils')
         }
 
         if (wasChanged) {
-          setUrlQueryParams(storage);
+          setUrlQueryParams(storage, false, removeKeys);
         }
       },
       removeItem: function (key) {
         if (storage[key]) {
           storage[key] = null;
-          setUrlQueryParams(storage);
+          setUrlQueryParams(storage, false, [key]);
+          return true;
+        } else if (this.getItem(key)) {
+          setUrlQueryParams(storage, false, [key]);
           return true;
         } else {
           return false;
         }
       },
       clear: function () {
+        var removeKeys = [];
+        for (var key in storage) {
+          if (storage.hasOwnProperty(key) && storage[key]) {
+            removeKeys.push(key);
+          }
+        }
         storage = {};
-        setUrlQueryParams(storage);
+        setUrlQueryParams(storage, false, removeKeys);
       }
     };
   });
