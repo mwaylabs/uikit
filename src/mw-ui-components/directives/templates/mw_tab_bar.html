@@ -4,12 +4,13 @@
   <ul class="nav nav-tabs"
       ng-class="{ 'nav-justified': justified }">
     <li ng-repeat="pane in panes"
-        ng-class="{ active: pane.selected }">
+        ng-class="{ active: pane.isSelected() }">
       <a ng-class="{ 'has-error': pane.isInvalid }"
          ng-click="select(pane)">
         <span ng-if="pane.icon"
               mw-icon="{{pane.icon}}"></span>
         {{ pane.title }}
+        <span ng-if="pane.badge" class="badge badge-default badge-light">{{pane.badge}}</span>
         <span ng-if="pane.tooltip"
               mw-icon="mwUI.questionCircle"
               tooltip="{{pane.tooltip}}"></span>
