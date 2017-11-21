@@ -58,6 +58,8 @@ div[mw-header] {
     -webkit-align-items: center;
     align-items: center;
     border-bottom: 1px solid #e7e7e7;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 
     .back-btn {
       margin-right: $headerIconMargin;
