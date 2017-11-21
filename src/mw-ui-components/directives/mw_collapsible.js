@@ -26,6 +26,7 @@ angular.module('mwUI.UiComponents')
 
         var removeMaxHeight = function () {
           collapsedBody.css('max-height', 'initial');
+          collapsedBody.css('overflow', 'initial');
           collapsedBody.off('transitionend', removeMaxHeight);
         };
 
@@ -44,6 +45,7 @@ angular.module('mwUI.UiComponents')
           collapsedBody.off('transitionend', removeMaxHeight);
           collapsedBody.css('max-height', getHeight());
           $timeout(function () {
+            collapsedBody.css('overflow', 'hidden');
             collapsedBody.css('max-height', 0);
           }, 5);
           scope.isCollapsed = true;
