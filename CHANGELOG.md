@@ -1,3 +1,24 @@
+# v1.21.0
+## Features
+### Backbone module
+- Trigger Backbone model/collection sync events (`request`, `sync`, `error` ) 
+when calling `model.request` or `collection.request
+- Set property `isSynchronising` on model/collection on request and unset it when its done
+
+### Ui components module
+- `mw-view-change-loader` can be set manually by triggering rootscope events 
+`$showViewChangeLoader` and `$hideViewChangeLoader`
+- `mwTabPane` was extended with scope property `id` and its possible to select a tab pane from `mwTabBar` by 
+setting scope property `activePaneNumber`
+- Transcluded content from `mwTabPane` is removed when tab is not selected anymore
+
+### Layout module
+- Add `backdrop-filter`to `mwHeader` to blur content beneath it (works only in safari so far)
+
+## Bug Fixes
+### Utils module
+- Fix mwUrlStorage so it also removes query params from url when they were set to `options.removeOnUrlChange` and remove is called
+
 # v1.20.1
 ## Features
 ### List module

@@ -9,6 +9,14 @@ angular.module('mwUI.UiComponents')
           loading: false
         };
 
+        var showLoaderListener = $rootScope.$on('$showViewChangeLoader', function () {
+          scope.viewModel.loading = true;
+        });
+
+        var hideLoaderListener = $rootScope.$on('$hideViewChangeLoader', function () {
+          scope.viewModel.loading = false;
+        });
+
         var locationChangeSuccessListener = $rootScope.$on('$locationChangeSuccess', function () {
           if(!routeUpdateInProgress){
             scope.viewModel.loading = true;
@@ -34,6 +42,8 @@ angular.module('mwUI.UiComponents')
           routeChangeSuccessListener();
           routeChangeErrorListener();
           routeChangeUpdateListener();
+          showLoaderListener();
+          hideLoaderListener();
         });
       }
     };
