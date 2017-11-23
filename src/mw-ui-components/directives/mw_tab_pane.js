@@ -4,15 +4,15 @@ angular.module('mwUI.UiComponents')
     return {
       scope: {
         title: '@mwTabsPane',
-        id: '@',
-        icon: '@',
-        tooltip: '@',
-        isInvalid: '=',
-        badge: '@'
+        id: '@?',
+        icon: '@?',
+        tooltip: '@?',
+        badge: '@?',
+        isInvalid: '=?'
       },
       transclude: true,
       replace: true,
-      require: '^mwTabs',
+      require: ['^mwTabs', '^?form'],
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_pane.html',
       controller: function ($scope) {
         var selected = false;
