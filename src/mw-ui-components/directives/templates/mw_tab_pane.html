@@ -1,5 +1,10 @@
 <div class="tab-pane mw-tab-pane"
      role="tabpanel"
      ng-class="{active: isSelected()}">
-  <div ng-if="isSelected()" ng-transclude></div>
+  <div ng-if="canUseNgIf()">
+    <div ng-if="isSelected()" ng-transclude></div>
+  </div>
+  <div ng-if="!canUseNgIf()">
+    <div ng-show="isSelected()" ng-transclude></div>
+  </div>
 </div>
