@@ -24,6 +24,8 @@ angular.module('mwUI.UiComponents')
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
       controller: function ($scope) {
+        // The panes are populated by the mw-tabs-pane directive that is calling `registerPane`of this controller
+        // It is defined as a scope attribute so it is available in this html template
         var panes = $scope.panes = [],
           activePaneIndex;
 
