@@ -25,14 +25,22 @@ angular.module('mwUI.UiComponents')
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
       controller: function ($scope) {
         var panes = $scope.panes = [],
-          activeNumber;
+          activePaneIndex;
 
         var setInitialSelection = function () {
-          activeNumber = null;
-          if (angular.isUndefined($scope.activePaneNumber) && angular.isUndefined($scope.activePaneId)) {
+          activePaneIndex = null;
+
+          // In case that no active pane is defined by setting activePaneNumber or Id the first pane will be selected
+          if (angular.isUndefined($scope.activePaneNumber) && angular.isUndefined($scope.activePaneId) && panes.length>0) {
             $scope.select(panes[0]);
+
+          // When a pane number is defined the pane with the index of activePaneNumber + 1 will be selected
+          // So when the second tab shall be selected set activePaneNumber to 2
           } else if (angular.isDefined($scope.activePaneNumber)) {
             $scope.selectTabByNumber($scope.activePaneNumber);
+
+          // When a pane id is defined the pane where the pane id equals the activePaneId will be selected
+          // Make sure to set an id on the mw-tab-pane
           } else if (angular.isDefined($scope.activePaneId)) {
             $scope.selectTabById($scope.activePaneId);
           }
@@ -53,19 +61,19 @@ angular.module('mwUI.UiComponents')
         };
 
         $scope.select = function (newPane) {
-          var newActivePaneNumber = _.indexOf($scope.panes, newPane) + 1;
+          var newPaneIndex = _.indexOf($scope.panes, newPane);
 
-          if (newPane && newActivePaneNumber > 0 && newActivePaneNumber !== activeNumber) {
+          if (newPane && newPaneIndex !== -1 && newPaneIndex !== activePaneIndex) {
             var previousSelectedPane = $scope.getActivePane();
             if (previousSelectedPane) {
               previousSelectedPane.deselect();
             }
 
             newPane.select();
-            activeNumber = newActivePaneNumber;
+            activePaneIndex = newPaneIndex;
 
             if ($scope.tabChanged && typeof $scope.tabChanged === 'function') {
-              $scope.tabChanged(activeNumber, newPane, previousSelectedPane);
+              $scope.tabChanged(activePaneIndex + 1, newPane, previousSelectedPane);
               $rootScope.$emit('$mwTabChange');
             }
           }
