@@ -26,15 +26,16 @@ angular.module('mwUI.UiComponents')
       controller: function ($scope) {
         // The panes are populated by the mw-tabs-pane directive that is calling `registerPane`of this controller
         // It is defined as a scope attribute so it is available in this html template
-        var panes = $scope.panes = [],
-          activePaneIndex;
+        var activePaneIndex;
+
+        $scope.panes = [];
 
         var setInitialSelection = function () {
           activePaneIndex = null;
 
           // In case that no active pane is defined by setting activePaneNumber or Id the first pane will be selected
-          if (angular.isUndefined($scope.activePaneNumber) && angular.isUndefined($scope.activePaneId) && panes.length>0) {
-            $scope.select(panes[0]);
+          if (angular.isUndefined($scope.activePaneNumber) && angular.isUndefined($scope.activePaneId) && $scope.panes.length>0) {
+            $scope.select($scope.panes[0]);
 
           // When a pane number is defined the pane with the index of activePaneNumber + 1 will be selected
           // So when the second tab shall be selected set activePaneNumber to 2
@@ -82,8 +83,8 @@ angular.module('mwUI.UiComponents')
         };
 
         $scope.selectTabByNumber = function (number) {
-          if (number > 0 && number <= $scope.tabs.length) {
-            $scope.select(panes[number - 1]);
+          if (number > 0 && number <= $scope.panes.length) {
+            $scope.select($scope.panes[number - 1]);
           }
         };
 
@@ -111,13 +112,13 @@ angular.module('mwUI.UiComponents')
         });
 
         this.registerPane = function (pane) {
-          panes.push(pane);
+          $scope.panes.push(pane);
           throttledSetInitialSelection();
         };
 
         this.unRegisterPane = function (pane) {
           if (pane) {
-            var indexOfExistingPane = _.indexOf(panes, pane);
+            var indexOfExistingPane = _.indexOf($scope.panes, pane);
             if (indexOfExistingPane !== -1) {
               $scope.panes.splice(indexOfExistingPane, 1);
             }
