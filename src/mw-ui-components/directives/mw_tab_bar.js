@@ -82,8 +82,8 @@ angular.module('mwUI.UiComponents')
         };
 
         $scope.selectTabByNumber = function (number) {
-          if (number > 0 && number <= $scope.tabs.length) {
-            $scope.select(panes[number - 1]);
+          if (number > 0 && number <= $scope.panes.length) {
+            $scope.select($scope.panes[number - 1]);
           }
         };
 
