@@ -1,0 +1,17 @@
+.mw-version-selector{
+  .descriptor-sm{
+    display: none;
+  }
+}
+
+@media (max-width: $screen-sm) {
+  .mw-version-selector{
+    .descriptor{
+      display: none;
+    }
+
+    .descriptor-sm{
+      display: inline;
+    }
+  }
+}
