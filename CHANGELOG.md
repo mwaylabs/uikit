@@ -1,3 +1,8 @@
+# v1.21.1
+## Bug Fixes
+### Ui components module
+- Fix bug that tab pane could not be selected by number anymore
+
 # v1.21.0
 ## Features
 ### Backbone module
