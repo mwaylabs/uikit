@@ -88,7 +88,7 @@ describe('MwUrlStorageTest', function () {
   });
 
   it('does create a new navigation history entry when calling setItem and keepInHistory is set to true', function () {
-    subject.setItem('abc', 'IRRELEVANT2', {keepInHistory: true});
+    subject.setItem('abc', 'IRRELEVANT', {keepInHistory: true});
 
     expect(locationSpy.replace).not.toHaveBeenCalled();
   });
