@@ -73,9 +73,25 @@ angular.module('mwUI.Utils')
     });
 
     return {
+      /*
+       * Return the value that is stored in the url for a key
+       *
+       * params:
+       * key: string
+       */
       getItem: function (key) {
         return $location.search()[key];
       },
+      /*
+       * Calls setItem but allows you to set a whole object instead of a key,value
+       *
+       * params:
+       * obj: object
+       * options: {
+       *   removeOnUrlChange: boolean
+       *   keepInHistory: boolean
+       * }
+       */
       setObject: function (obj, options) {
         options = options || {};
         var wasChanged = false;
@@ -93,9 +109,30 @@ angular.module('mwUI.Utils')
         }
 
         if (wasChanged) {
-          setUrlQueryParams(obj);
+          setUrlQueryParams(obj, false, false, options);
         }
       },
+      /*
+       * Save a key value pair as query param in the url
+       * The query will be in the url until you call removeItem('key') also on url change
+       * You don't have to worry about the param it will just stay
+       *
+       * In cases where you don't wan't to keep the query param in the url forever you can set the options param
+       * removeOnUrlChange to true (default is false
+       *
+       * The query won't be stored in the url history so when using the back button you will not go back to the previous
+       * query state but to the previous url
+       * In cases where you want to go to store the query in the history you can set the options param
+       * `keepInHistory` to true
+       *
+       * params:
+       * key: string
+       * value: string
+       * options: {
+       *   removeOnUrlChange: boolean
+       *   keepInHistory: boolean
+       * }
+       */
       setItem: function (key, value, options) {
         options = options || {};
         if (storage[key] !== value) {
@@ -104,9 +141,15 @@ angular.module('mwUI.Utils')
           }
           var obj = {};
           obj[key] = value;
-          setUrlQueryParams(obj);
+          setUrlQueryParams(obj, false, false, options);
         }
       },
+      /*
+       * Calls removeItem but allows you to remove a whole object instead of a key
+       *
+       * params:
+       * obj: object
+       */
       removeObject: function (obj) {
         var wasChanged = false;
         var removeKeys = [];
@@ -128,6 +171,12 @@ angular.module('mwUI.Utils')
           setUrlQueryParams(storage, false, removeKeys);
         }
       },
+      /*
+       * Removes a key with its value from the url
+       *
+       * params:
+       * key: string
+       */
       removeItem: function (key) {
         if (storage[key]) {
           storage[key] = null;
@@ -140,6 +189,10 @@ angular.module('mwUI.Utils')
           return false;
         }
       },
+      /*
+       * Removes all items that have been set by setItem or setObject from the url
+       * Other url query params that have been set e.g. by calling $location.search() won't be affected
+       */
       clear: function () {
         var removeKeys = [];
         for (var key in storage) {
