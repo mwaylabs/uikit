@@ -72,6 +72,7 @@ describe('MwUrlStorageTest', function () {
   afterEach(function () {
     this.queryParams = {};
     this.currentUrl = '';
+    subject.clear();
   });
 
   it('sets query param when calling setItem', function () {
