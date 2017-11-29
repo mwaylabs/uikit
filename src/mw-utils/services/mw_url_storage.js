@@ -34,12 +34,13 @@ angular.module('mwUI.Utils')
     var hasChangedValues = function (params, removeParams) {
       var currentSearchParams = $location.search();
       var changedParams = _.difference(_.values(params), _.values(currentSearchParams));
-      
+
       removeParams = _.difference(_.values(removeParams), _.values(currentSearchParams));
       return changedParams.length > 0 || removeParams.length > 0;
     };
 
-    var setUrlQueryParams = function (params, preferQueryOverStorage, removeKeys) {
+    var setUrlQueryParams = function (params, preferQueryOverStorage, removeKeys, options) {
+      options = options || {};
       if (hasChangedValues(params, removeKeys)) {
         var currentSearchParams = $location.search(),
           newSearchParams;
@@ -58,6 +59,10 @@ angular.module('mwUI.Utils')
 
         preventRouteReload();
         $location.search(newSearchParams);
+
+        if (!options.keepInHistory) {
+          $location.replace();
+        }
       }
     };
 
