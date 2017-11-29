@@ -1,3 +1,12 @@
+# v1.21.2
+## Features
+### Utils module
+- Urls query params that are set by the `mwUrlStorage` won't be put into the navigation history by default.
+So when calling `mwUrlStorage.setItem('key','value')` it will append the query prams to the url but not create a
+history entry. When using the back button you will be moved to the previous url. If you want to let the user browse 
+through the different query states you can set the options param `keepInHistory`
+`mwUrlStorage.setItem('key','value', {keepInHistory: true})`
+
 # v1.21.1
 ## Bug Fixes
 ### Ui components module
