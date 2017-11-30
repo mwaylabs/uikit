@@ -88,7 +88,8 @@ describe('MwListCollectionFilter', function () {
         search: function () {
           $locationSpy.search.apply($locationSpy, arguments);
           return queryParams;
-        }
+        },
+        replace: function(){}
       };
     });
     $provide.service('$route', function () {

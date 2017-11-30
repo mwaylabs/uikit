@@ -46,11 +46,13 @@ describe('MwUrlStorageTest', function () {
           queryParams = params;
         }
         return queryParams;
-      }
+      },
+      replace: function(){}
     };
     spyOn(locationSpy, 'path').and.callThrough();
     spyOn(locationSpy, 'search').and.callThrough();
     spyOn(locationSpy, 'url').and.callThrough();
+    spyOn(locationSpy, 'replace');
     $provide.value('$location', locationSpy);
 
     routeSpy = {
@@ -70,12 +72,25 @@ describe('MwUrlStorageTest', function () {
   afterEach(function () {
     this.queryParams = {};
     this.currentUrl = '';
+    subject.clear();
   });
 
   it('sets query param when calling setItem', function () {
     subject.setItem('abc', 'IRRELEVANT');
 
     expect(locationSpy.search).toHaveBeenCalledWith({abc: 'IRRELEVANT'});
+  });
+
+  it('does not create a new navigation history entry when calling setItem', function () {
+    subject.setItem('abc', 'IRRELEVANT');
+
+    expect(locationSpy.replace).toHaveBeenCalled();
+  });
+
+  it('does create a new navigation history entry when calling setItem and keepInHistory is set to true', function () {
+    subject.setItem('abc', 'IRRELEVANT', {keepInHistory: true});
+
+    expect(locationSpy.replace).not.toHaveBeenCalled();
   });
 
   it('updated query param when calling setItem and a previous value does exist', function () {
