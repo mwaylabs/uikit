@@ -66,7 +66,7 @@ angular.module('mwUI.UiComponents')
           }
         };
 
-        var throttledSetInitialSelection = _.debounce(setInitialSelection, 100);
+        var throttledSetInitialSelection = _.debounce(setInitialSelection, 10);
 
         $scope.getActivePane = function () {
           var activePane;
