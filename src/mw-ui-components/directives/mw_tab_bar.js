@@ -51,7 +51,7 @@ angular.module('mwUI.UiComponents')
           activePaneIndex = null;
 
           // In case that no active pane is defined by setting activePaneNumber or Id the first pane will be selected
-          if (angular.isUndefined($scope.activePaneNumber) && angular.isUndefined($scope.activePaneId) && $scope.panes.length>0) {
+          if (angular.isUndefined($scope.activePaneNumber) && angular.isUndefined($scope.activePaneId) && $scope.panes.length > 0) {
             $scope.select($scope.panes[0]);
 
           // When a pane number is defined the pane with the index of activePaneNumber + 1 will be selected
