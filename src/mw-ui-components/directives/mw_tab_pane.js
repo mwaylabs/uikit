@@ -51,6 +51,7 @@ angular.module('mwUI.UiComponents')
         scope.canUseNgIf = function(){
           return !formCtrl;
         };
+        scope.isInitialised = true;
       }
     };
   });

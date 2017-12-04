@@ -4,7 +4,7 @@
   <ul class="nav nav-tabs"
       ng-class="{ 'nav-justified': justified }">
     <li ng-repeat="pane in panes"
-        ng-class="{ active: pane.isSelected() }">
+        ng-class="{ active: $index === getActivePaneIndex() }">
       <a ng-class="{ 'has-error': pane.isInvalid }"
          ng-click="select(pane)">
         <span ng-if="pane.icon"
@@ -18,7 +18,12 @@
     </li>
   </ul>
 
-  <div class="tab-content"
+  <div ng-show="canShowPaneContent()"
+       class="tab-content"
        ng-transclude></div>
+
+  <div ng-if="!canShowPaneContent()"
+       mw-indefinite-loading>
+  </div>
 
 </div>

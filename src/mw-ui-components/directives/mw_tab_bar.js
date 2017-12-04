@@ -98,6 +98,19 @@ angular.module('mwUI.UiComponents')
           });
         };
 
+        $scope.getActivePaneIndex = function () {
+          if (activePaneIndex) {
+            return activePaneIndex;
+          } else {
+            return 0;
+          }
+        };
+
+        $scope.canShowPaneContent = function () {
+          var activePane = $scope.panes[activePaneIndex];
+          return (activePane && activePane.isInitialised);
+        };
+
         // add a change listener on the pane
         $scope.$watch('activePaneNumber', function (_new, _old) {
           if (_new && _new !== _old) {
