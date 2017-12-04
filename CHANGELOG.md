@@ -1,3 +1,14 @@
+# v1.21.3
+## Features
+### Ui components module
+- Keep tab content in the DOM by default. For complex tab content the attribute `removeInactiveContent` on
+`mwTabs` can be set to true. The default behaviour in gerenral is a bit faster during the initialisation but may slow down
+the general performance because the content wit h all its listeners stays in the dom.
+
+## Bug Fixes
+### Menu module
+- Fix #182: Menuentry is not hidden when it is removed during menu initialisation
+
 # v1.21.2
 ## Features
 ### Utils module
