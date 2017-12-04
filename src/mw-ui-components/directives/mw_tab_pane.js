@@ -1,5 +1,18 @@
 angular.module('mwUI.UiComponents')
 //TODO rename
+/**
+ * @ngdoc directive
+ * @name mwUI.UiComponents.directive:mwTabsPane
+ *
+ * @description TabPane content. Requires mwTabs as parent. Defines title, icon, tooltip, etc for the tab
+ *
+ * @param {mwTabsPane} string defines the title of the tab
+ * @param {id} number defines the id. Is required when you want to select a tab by id
+ * @param {icon} string defines the icon of the tab. Not displayed when not set
+ * @param {tooltip} string defines the tooltip of the tab. Not displayed when not set
+ * @param {badge} string defines the badge of the tab. Not displayed when not set
+ * @param {isInvalid} boolean defines whether the tab should be displayed in error state.
+ */
   .directive('mwTabsPane', function () {
     return {
       scope: {

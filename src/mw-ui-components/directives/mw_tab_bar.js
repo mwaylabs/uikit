@@ -1,16 +1,32 @@
 angular.module('mwUI.UiComponents')
 //TODO rename
 /**
+ * @ngdoc directive
+ * @name mwUI.UiComponents.directive:mwTabs
+ *
+ * @description Shows a tab view. Requires that you transclude mw-tabs-pane. They define the title, icon, etc of the tab
+ * When setting removeInactiveContent so true it will remove the tab content of inactive tabs from the dom. This is
+ * recommended for tab content that has a complex logic
+ *
+ * @param {justified} boolean defines the arrangement of the tabs. When set to true they fill available with. Default false
+ * @param {activePaneNumber} number defines the tab that should be selected. Starts with 1
+ * @param {activePaneId} string alternative to activePaneNumber defines the active tab by its id. Requires that you set an id on mw-tabs-pane
+ * @param {tabChanged} function the callback that shall be executed when the tab is changed. Will pass the activePaneNumber, newPane scope, previous pane scope as params
+ * @param {removeInactiveContent} boolean defines wether inactive pane content should be removed from dom or just be set to hidden. Default false
+ *
  * @example ```html
  * <!-- change callback example -->
- * <div mw-tabs active-pane-number="myCtrl.activePane" tab-changed="myCtrl.tabChanged">
- <div mw-tabs-pane="{{'mytitle'| i18n}}">
- Tab 1
- </div>
- <div mw-tabs-pane="{{'mytitle_2'| i18n}}">
- Tab 2
- </div>
- </div>
+ * <div mw-tabs
+ *      active-pane-number="myCtrl.activePane"
+ *      tab-changed="myCtrl.tabChanged"
+ *      remove-inactive-content="true">
+ *   <div mw-tabs-pane="{{'mytitle'| i18n}}">
+ *     Tab Content 1
+ *   </div>
+ *   <div mw-tabs-pane="{{'mytitle_2'| i18n}}">
+ *     Tab Content 2
+ *   </div>
+ * </div>
  * ```
  */
   .directive('mwTabs', function ($rootScope) {
