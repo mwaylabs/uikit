@@ -50,6 +50,10 @@ angular.module('mwUI.Menu')
         };
 
         var tryToRegisterAtParent = function () {
+          if (!menuEntry) {
+            return;
+          }
+
           if (parentCtrl) {
             if (!parentCtrl.getMenuEntry()) {
               // TODO could not produce that error. In case the following exception is thrown write a test case and comment line in
@@ -116,6 +120,9 @@ angular.module('mwUI.Menu')
           if (entryHolder) {
             entryHolder.remove(menuEntry);
           }
+
+          menuEntry = null;
+          ctrl.setMenuEntry(menuEntry);
         });
 
         scope.$watchGroup(['id', 'label', 'url', 'icon', 'class', 'order', 'target'], setMenuEntry);
