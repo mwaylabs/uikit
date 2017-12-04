@@ -12,7 +12,7 @@ angular.module('mwUI.UiComponents')
       },
       transclude: true,
       replace: true,
-      require: ['^mwTabs', '^?form'],
+      require: ['^mwTabs'],
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_pane.html',
       controller: function ($scope) {
         var selected = false;
@@ -28,13 +28,12 @@ angular.module('mwUI.UiComponents')
           selected = true;
         };
 
-        $scope.isSelected = function () {
+        this.isSelected = $scope.isSelected = function () {
           return selected;
         };
       },
       link: function (scope, el, attr, ctrls) {
-        var mwTabsCtrl = ctrls[0],
-            formCtrl = ctrls[1];
+        var mwTabsCtrl = ctrls[0];
 
         mwTabsCtrl.registerPane(scope);
 
@@ -44,13 +43,20 @@ angular.module('mwUI.UiComponents')
           mwTabsCtrl.unRegisterPane(scope);
         });
 
-        // Do not use ng-if to remove the transcluded tab pane content when the tab pane is in a `Form`
-        // Validation does not work when the content is removed from the dom
-        // When you have a tab bar with multiple tabs and each tab contains required input, the tab pane content
-        // must be always in the dom so the form controller knows that the inputs are existing
-        scope.canUseNgIf = function(){
-          return !formCtrl;
+        // Use ng-if to remove the transcluded tab pane content when the parent `mwTabs` controller allows it
+        // Set scope attribute `removeInactiveContent` on `mwTabs` to controll the behaviour. For complex content
+        // that is transcluded it is recommended to `removeInactiveContent` to true but be aware that it is a bit
+        // slower. However, it may have a possitive impact on the genral performance especially when the transluded content
+        // registeres a lot of event listeners and stuff
+        scope.canUseNgIf = function () {
+          var tabBarAllowsIt = mwTabsCtrl.canRemoveInactiveContent();
+          if (mwTabsCtrl && angular.isDefined(tabBarAllowsIt)) {
+            return tabBarAllowsIt;
+          } else {
+            return false;
+          }
         };
+
         scope.isInitialised = true;
       }
     };

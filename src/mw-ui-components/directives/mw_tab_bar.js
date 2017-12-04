@@ -20,7 +20,8 @@ angular.module('mwUI.UiComponents')
         justified: '=?',
         activePaneNumber: '=?',
         activePaneId: '@?',
-        tabChanged: '=?'
+        tabChanged: '=?',
+        removeInactiveContent: '=?'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_tab_bar.html',
       controller: function ($scope) {
@@ -137,6 +138,10 @@ angular.module('mwUI.UiComponents')
             }
             throttledSetInitialSelection();
           }
+        };
+
+        this.canRemoveInactiveContent = function(){
+          return $scope.removeInactiveContent;
         };
       }
     };
