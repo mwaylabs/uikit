@@ -51,6 +51,17 @@ describe('mwUi menu entry directive', function () {
     expect(this.menu.length).toBe(0);
   });
 
+  it('removes mw-menu-entry when it is removed during initialisation', function () {
+    this.$scope.isVisible = true;
+    this.buildMenuEl('<div mw-menu-entry ng-if="isVisible" label="xxx" url="xxx"></div>');
+    this.$scope.$digest();
+    this.$scope.isVisible = false;
+    this.$scope.$digest();
+    this.$timeout.flush();
+
+    expect(this.menu.length).toBe(0);
+  });
+
   it('sets order by it itself by using the position where it is in the dom and sort entries by it', function () {
     this.buildMenuEl('' +
       '<div mw-menu-entry label="xxx1" url="xxx1"></div>' +
