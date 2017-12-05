@@ -34,6 +34,7 @@ angular.module('mwUI.Menu')
           parentCtrl = ctrls[1],
           menuCtrl = ctrls[2],
           menuEntry = new mwUI.Menu.MwMenuEntry(),
+          timeouts = [],
           entryHolder;
 
         var getDomOrder = function () {
@@ -50,10 +51,6 @@ angular.module('mwUI.Menu')
         };
 
         var tryToRegisterAtParent = function () {
-          if (!menuEntry) {
-            return;
-          }
-
           if (parentCtrl) {
             if (!parentCtrl.getMenuEntry()) {
               // TODO could not produce that error. In case the following exception is thrown write a test case and comment line in
@@ -94,7 +91,7 @@ angular.module('mwUI.Menu')
 
         scope.menuEntry = menuEntry;
 
-        $timeout(tryToRegisterAtParent);
+        timeouts.push($timeout(tryToRegisterAtParent));
 
         ctrl.setMenuEntry(menuEntry);
 
@@ -117,6 +114,10 @@ angular.module('mwUI.Menu')
         });
 
         scope.$on('$destroy', function () {
+          timeouts.forEach(function (timeoutPromise) {
+            $timeout.cancel(timeoutPromise);
+          });
+
           if (entryHolder) {
             entryHolder.remove(menuEntry);
           }

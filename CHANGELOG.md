@@ -1,3 +1,9 @@
+# v1.21.4
+## Bug Fixes
+### Menu module
+- Clean up timeouts and throttled executions when menubar, menu-entry is destroyed. Otherwise functions
+are triggered that should not be triggered which results in an exception
+
 # v1.21.3
 ## Features
 ### Ui components module
