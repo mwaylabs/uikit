@@ -51,10 +51,6 @@ angular.module('mwUI.Menu')
         };
 
         var tryToRegisterAtParent = function () {
-          if (!menuEntry) {
-            return;
-          }
-
           if (parentCtrl) {
             if (!parentCtrl.getMenuEntry()) {
               // TODO could not produce that error. In case the following exception is thrown write a test case and comment line in
