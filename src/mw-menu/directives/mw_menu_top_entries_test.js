@@ -1,6 +1,6 @@
 'use strict';
 
-describe('mwUi menu divider directive', function () {
+describe('mwUi menu top entries', function () {
   beforeEach(module('mwUI.Menu'));
 
   beforeEach(module('karmaDirectiveTemplates'));
