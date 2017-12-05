@@ -120,4 +120,50 @@ describe('mwUi menu divider directive', function () {
       expect(el.find('.mw-menu-top-drop-down-item ul li a').last().attr('href')).toBe('abc/sub1');
     });
   });
+
+  describe('testing cleanup on destroy', function(){
+    it('does not issue any resort, reorder tasks when the menubar is destroyed', function(){
+      var tmpl = '<div mw-menu-top-entries="menu" ng-if="menuBarIsVisible">' +
+        '<div mw-menu-entry label="abc" url="abc">'+
+        '<div ng-if="isVisible" mw-menu-entry label="sub_abc" url="abc/sub1"></div>' +
+        '<div mw-menu-entry label="sub_abc" url="abc/sub1"></div>' +
+        '</div>'+
+        '</div>';
+      this.$compile(tmpl)(this.$scope);
+      this.$scope.menuBarIsVisible = true;
+      this.$scope.isVisible = true;
+      this.$scope.$digest();
+      this.$scope.isVisible = false;
+      this.$scope.$digest();
+      jasmine.clock().tick(1);
+
+      this.$scope.menuBarIsVisible = false;
+      this.$scope.$digest();
+
+      this.$timeout.verifyNoPendingTasks();
+    });
+
+    it('does not issue any resort, reorder tasks when the menubar is destroyed and there is a pending issue ' +
+      '(throttle has not been executed yet)', function(){
+      var tmpl = '<div mw-menu-top-entries="menu" ng-if="menuBarIsVisible">' +
+        '<div mw-menu-entry label="abc" url="abc">'+
+        '<div ng-if="isVisible" mw-menu-entry label="sub_abc" url="abc/sub1"></div>' +
+        '<div mw-menu-entry label="sub_abc" url="abc/sub1"></div>' +
+        '</div>'+
+        '</div>';
+      this.$compile(tmpl)(this.$scope);
+      this.$scope.menuBarIsVisible = true;
+      this.$scope.isVisible = true;
+      this.$scope.$digest();
+      this.$scope.isVisible = false;
+      this.$scope.$digest();
+      jasmine.clock().tick(1);
+
+      this.$timeout.flush();
+      this.$scope.menuBarIsVisible = false;
+      this.$scope.$digest();
+
+      this.$timeout.verifyNoPendingTasks();
+    });
+  });
 });
