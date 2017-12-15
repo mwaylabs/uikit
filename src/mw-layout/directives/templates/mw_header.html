@@ -1,5 +1,5 @@
-<div class="mw-header row" ng-class="{'mw-header-large': showDescription }">
-  <div class="fixed-content col-md-12" ng-class="{'fixed-content-large': showDescription }">
+<div class="mw-header row">
+  <div class="fixed-content col-md-12">
 
     <div ng-if="canShowBackButton()"
          class="back-btn clickable round-btn"
@@ -8,34 +8,37 @@
     </div>
 
     <div class="title-holder">
-      <span mw-icon="{{mwTitleIcon}}"
-            class="header-icon"
-            ng-if="mwTitleIcon">
-      </span>
-
-      <div ng-if="mwBreadCrumbs"
-           mw-bread-crumbs-holder>
-        <div ng-repeat="breadCrumb in mwBreadCrumbs"
-             mw-bread-crumb
-             url="{{breadCrumb.url}}"
-             title="{{breadCrumb.title}}"
-             show-arrow="true">
+      <div class="title-holder-item">
+        <span mw-icon="{{mwTitleIcon}}"
+              class="header-icon"
+              ng-if="mwTitleIcon">
+        </span>
+        <div ng-if="mwBreadCrumbs"
+            mw-bread-crumbs-holder>
+          <div ng-repeat="breadCrumb in mwBreadCrumbs"
+                mw-bread-crumb
+                url="{{breadCrumb.url}}"
+                title="{{breadCrumb.title}}"
+                show-arrow="true">
+          </div>
+        </div>
+        <div>
+          <h1 class="lead page-title">
+            <span class="text">{{title}}</span>
+            <div class="action-btn  clickable round-btn"
+                  ng-click="refresh()">
+              <span mw-icon="mwUI.refresh"></span>
+            </div>
+            <div ng-if="canShowDescriptionButton()"
+                  class="action-btn clickable round-btn description-btn"
+                  ng-click="toggleDescription()">
+              <span mw-icon="mwUI.info"></span>
+            </div>
+          </h1>
         </div>
       </div>
-      <div>
-        <h1 class="lead page-title">
-          <span class="text">{{title}}</span>
-          <div class="action-btn  clickable round-btn"
-               ng-click="refresh()">
-            <span mw-icon="mwUI.refresh"></span>
-          </div>
-          <div ng-if="canShowDescriptionButton()"
-               class="action-btn clickable round-btn"
-               ng-click="toggleDescription()">
-            <span mw-icon="mwUI.info"></span>
-          </div>
-        </h1>
-        <span class="text" ng-if="showDescription">
+      <div ng-if="showDescription" class="title-holder-item">
+        <span class="text">
           {{description}}
         </span>
       </div>

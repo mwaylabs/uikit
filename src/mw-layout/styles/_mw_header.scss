@@ -73,6 +73,7 @@ div[mw-header] {
       display: flex;
       -webkit-flex-grow: 1;
       flex-grow: 1;
+      flex-direction: column;
       overflow: hidden;
       white-space: nowrap;
 
@@ -85,6 +86,10 @@ div[mw-header] {
           top: -1px;
           vertical-align: middle;
         }
+      }
+
+      .title-holder-item {
+        display: flex;
       }
 
       h1 {
@@ -107,15 +112,8 @@ div[mw-header] {
       }
     }
   }
-
-  .fixed-content-large {
-    height: $headerHeight + 9;
-  }
 }
 
-.mw-header-large {
-  height: $headerHeight +4;
-}
 @media (max-width: $screen-sm) {
   $smHeaderHeight: $headerHeight - 15;
   $smHeaderIconMargin: 4px;
@@ -182,6 +180,9 @@ div[mw-header] {
         > *[mw-bread-crumb] {
           display: none;
         }
+      }
+      .description-btn {
+        display: none !important;
       }
     }
   }
