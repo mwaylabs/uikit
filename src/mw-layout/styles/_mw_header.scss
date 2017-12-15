@@ -9,7 +9,6 @@ div[mw-header] {
   position: relative;
   margin-bottom: 25px;
   height: $headerHeight - 5;
-
   .round-btn {
     display: flex;
     min-width: 16px;
@@ -101,21 +100,22 @@ div[mw-header] {
           overflow: hidden;
         }
 
-        .refresh-btn {
+        .action-btn {
           margin-left: $headerIconMargin;
-          display: none;
-        }
-
-        &:hover {
-          .refresh-btn {
-            display: flex;
-          }
+          display: flex;
         }
       }
     }
   }
+
+  .fixed-content-large {
+    height: $headerHeight + 9;
+  }
 }
 
+.mw-header-large {
+  height: $headerHeight +4;
+}
 @media (max-width: $screen-sm) {
   $smHeaderHeight: $headerHeight - 15;
   $smHeaderIconMargin: 4px;

@@ -1,5 +1,5 @@
-<div class="mw-header row">
-  <div class="fixed-content col-md-12">
+<div class="mw-header row" ng-class="{'mw-header-large': showDescription }">
+  <div class="fixed-content col-md-12" ng-class="{'fixed-content-large': showDescription }">
 
     <div ng-if="canShowBackButton()"
          class="back-btn clickable round-btn"
@@ -22,14 +22,23 @@
              show-arrow="true">
         </div>
       </div>
-
-      <h1 class="lead page-title"
-          ng-click="refresh()">
-        <span class="text">{{title}}</span>
-        <div class="refresh-btn clickable round-btn">
-          <span mw-icon="mwUI.refresh"></span>
-        </div>
-      </h1>
+      <div>
+        <h1 class="lead page-title">
+          <span class="text">{{title}}</span>
+          <div class="action-btn  clickable round-btn"
+               ng-click="refresh()">
+            <span mw-icon="mwUI.refresh"></span>
+          </div>
+          <div ng-if="canShowDescriptionButton()"
+               class="action-btn clickable round-btn"
+               ng-click="toggleDescription()">
+            <span mw-icon="mwUI.info"></span>
+          </div>
+        </h1>
+        <span class="text" ng-if="showDescription">
+          {{description}}
+        </span>
+      </div>
     </div>
 
     <div class="additional-content-holder"

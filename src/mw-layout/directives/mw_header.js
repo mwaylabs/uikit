@@ -8,7 +8,8 @@ angular.module('mwUI.Layout')
         url: '@?',
         mwTitleIcon: '@?',
         showBackButton: '=?',
-        mwBreadCrumbs: '=?'
+        mwBreadCrumbs: '=?',
+        description: '@?',
       },
       require: '^?mwUi',
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
@@ -26,9 +27,17 @@ angular.module('mwUI.Layout')
           $route.reload();
         };
 
+        scope.toggleDescription = function() {
+          scope.showDescription = !scope.showDescription;
+        };
+
         scope.back = function () {
           var path = scope.url.replace('#', '');
           $location.path(path);
+        };
+
+        scope.canShowDescriptionButton = function(){
+          return angular.isDefined(scope.description);
         };
 
         scope.canShowBackButton = function(){
