@@ -16,7 +16,7 @@ angular.module('mwUI.Layout')
       link: function (scope, el, attrs, mwUiCtrl, $transclude) {
         $rootScope.siteTitleDetails = scope.title;
         BrowserTitleHandler.setTitle(scope.title);
-
+        scope.descriptionMargin = scope.mwTitleIcon ? '20px' : '0px';
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
             el.find('.mw-header').addClass('no-buttons');
