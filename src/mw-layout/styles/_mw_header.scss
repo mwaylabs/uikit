@@ -23,7 +23,7 @@ div[mw-header] {
     @include transition(all 0.3s ease);
 
     *[mw-icon], i {
-      font-size: 9px;
+      font-size: 12px;
       line-height: initial;
     }
 
@@ -127,7 +127,7 @@ div[mw-header] {
       top: 0;
 
       *[mw-icon], i {
-        font-size: 8px;
+        font-size: 11px;
       }
     }
 
