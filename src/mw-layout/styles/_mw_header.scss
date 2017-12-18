@@ -9,10 +9,19 @@ div[mw-header] {
   position: relative;
   margin-bottom: 25px;
   height: $headerHeight - 5;
+
+  .action-btn-bar {
+    display: flex;
+    margin: 10px;
+    .description-btn {
+      margin-left: 5px;
+    }
+  }
+
   .round-btn {
     display: flex;
-    min-width: 16px;
-    height: 16px;
+    min-width: 23px;
+    height: 23px;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -122,8 +131,8 @@ div[mw-header] {
     height: $smHeaderHeight !important;
 
     .round-btn {
-      min-width: 14px;
-      height: 14px;
+      min-width: 21px;
+      height: 21px;
       top: 0;
 
       *[mw-icon], i {
