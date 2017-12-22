@@ -38,7 +38,8 @@ angular.module('mwFileUpload', [])
         hiddenBtn: '=',
         hasDropZone: '=?',
         hideCancelBtn: '=?',
-        abortFlag: '=?'
+        abortFlag: '=?',
+        maxFileSizeByte: '=?'
       },
       require: '?^form',
       templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
@@ -191,6 +192,13 @@ angular.module('mwFileUpload', [])
           angular.element(document).off('drop dragover', documentDrop);
         };
 
+        function readableFileSize(bytes) {
+          if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
+          var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
+            number = Math.floor(Math.log(bytes) / Math.log(1024));
+          return (bytes / Math.pow(1024, Math.floor(number))).toFixed(2) +  ' ' + units[number];
+        }
+
         scope.triggerUploadDialog = function () {
           elm.find('input').click();
         };
@@ -267,6 +275,33 @@ angular.module('mwFileUpload', [])
             }.bind(this));
           },
           add: function (e, data) {
+            var hasFileSizeError = false;
+            if (scope.maxFileSizeByte !== undefined) {
+              // check each file if it is too large to upload.
+              angular.forEach(data.files, function (file) {
+                if(file.size >= scope.maxFileSizeByte) {
+                  hasFileSizeError = true;
+                  var errorMsg = i18n.get('rlnUikit.mwFileUpload.fileTooLarge', {fileName: file.name, max: readableFileSize(scope.maxFileSizeByte), actual: '(' + readableFileSize(file.size) + ')'});
+                  $timeout(scope.errorCallback.bind(this, {
+                    result: {
+                      msg: errorMsg,
+                      code: 413,
+                      fileSize: file.size,
+                      fileName: file.name,
+                      fileType: file.type,
+                      maxFileSizeByte: scope.maxFileSizeByte,
+                    }
+                  }));
+                  scope.uploadError = errorMsg;
+                  scope.isInvalid = true;
+                }
+              });
+            }
+
+            if (hasFileSizeError) {
+              return;
+            }
+
             userHasCanceledUpload = false;
             var fileName = data.originalFiles[0].name || '';
             scope.uploadError = false;

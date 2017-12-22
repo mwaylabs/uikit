@@ -7,7 +7,8 @@
       "remove": "Entfernen",
       "invalidMimeType": "Die hochgeladene Datei ist ungültig. Der vorgegebene Mime-Type is {{mimeType}}",
       "abort": "Upload abbrechen",
-      "uploading": "{{fileName}} wird hochgeladen..."
+      "uploading": "{{fileName}} wird hochgeladen...",
+      "fileTooLarge": "{{fileName}} {{actual}} übersteigt die maximal erlaubte Dateigröße von {{max}}"
     },
     "mwSidebar": {
       "invalidFilterModal": {
