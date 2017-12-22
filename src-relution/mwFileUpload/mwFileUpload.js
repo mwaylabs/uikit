@@ -279,7 +279,7 @@ angular.module('mwFileUpload', [])
             if (scope.maxFileSizeByte !== undefined) {
               // check each file if it is too large to upload.
               angular.forEach(data.files, function (file) {
-                if(file.size >= scope.maxFileSizeByte) {
+                if(file.size > scope.maxFileSizeByte) {
                   hasFileSizeError = true;
                   var errorMsg = i18n.get('rlnUikit.mwFileUpload.fileTooLarge', {fileName: file.name, max: readableFileSize(scope.maxFileSizeByte), actual: '(' + readableFileSize(file.size) + ')'});
                   $timeout(scope.errorCallback.bind(this, {
