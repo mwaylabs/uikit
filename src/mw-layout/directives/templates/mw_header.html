@@ -4,7 +4,7 @@
     <div ng-if="canShowBackButton()"
          class="back-btn clickable round-btn"
          ng-click="back()">
-          <span mw-icon="mwUI.angleLeft"></span>
+      <span mw-icon="mwUI.angleLeft"></span>
     </div>
 
     <div class="title-holder">
@@ -14,12 +14,12 @@
               ng-if="mwTitleIcon">
         </span>
         <div ng-if="mwBreadCrumbs"
-            mw-bread-crumbs-holder>
+             mw-bread-crumbs-holder>
           <div ng-repeat="breadCrumb in mwBreadCrumbs"
-                mw-bread-crumb
-                url="{{breadCrumb.url}}"
-                title="{{breadCrumb.title}}"
-                show-arrow="true">
+               mw-bread-crumb
+               url="{{breadCrumb.url}}"
+               title="{{breadCrumb.title}}"
+               show-arrow="true">
           </div>
         </div>
         <div>
@@ -28,8 +28,9 @@
           </h1>
         </div>
       </div>
-      <div ng-if="showDescription" class="title-holder-item">
-        <div class="text" ng-style="{'margin-left': descriptionMargin}">
+      <div ng-if="showDescription"
+           class="title-holder-item">
+        <div class="text description">
           {{description}}
         </div>
       </div>
@@ -37,15 +38,15 @@
     <div class="action-btn-bar">
       <div class="action-btn  clickable round-btn"
            ng-click="refresh()">
-       <span mw-icon="mwUI.refresh"></span>
-       </div>
-       <div ng-if="canShowDescriptionButton()"
-             class="action-btn clickable round-btn description-btn"
-             ng-click="toggleDescription()">
-         <span mw-icon="mwUI.info"></span>
-       </div>
-     </div>
-     
+        <span mw-icon="mwUI.refresh"></span>
+      </div>
+      <div ng-if="canShowDescriptionButton()"
+           class="action-btn clickable round-btn description-btn"
+           ng-click="toggleDescription()">
+        <span mw-icon="mwUI.info"></span>
+      </div>
+    </div>
+
     <div class="additional-content-holder"
          ng-transclude>
     </div>

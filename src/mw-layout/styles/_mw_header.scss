@@ -121,6 +121,13 @@ div[mw-header] {
       }
     }
   }
+
+  description {
+    margin-left: 0px;
+    has-title-icon {
+      margin-left: 20px;
+    }
+  }
 }
 
 @media (max-width: $screen-sm) {
