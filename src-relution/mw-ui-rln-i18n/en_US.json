@@ -7,7 +7,8 @@
       "remove": "Remove",
       "invalidMimeType": "The uploaded file is invalid. Mime-Type has to be {{mimeType}}",
       "abort": "Abort upload",
-      "uploading": "Uploading {{fileName}}..."
+      "uploading": "Uploading {{fileName}}...",
+      "fileTooLarge": "{{fileName}} {{actual}} is exceeding the maximum allowed file-size {{max}}"
     },
     "mwSidebar": {
       "invalidFilterModal": {
