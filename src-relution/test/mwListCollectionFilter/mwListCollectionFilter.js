@@ -4,7 +4,6 @@ describe('MwListCollectionFilter', function () {
   var $q,
     $locationSpy,
     RuntimeStorageSpy,
-    LocalForageSpy,
     MwListCollectionFilter,
     filterInLocalStorage = {},
     currentUserUuid,
@@ -154,7 +153,7 @@ describe('MwListCollectionFilter', function () {
       $rootScope.$digest();
     });
 
-    it('returns local storage filter when no query params are set but localstorage has persisted filter', function (done) {
+    it('returns runtime storage filter when no query params are set but localstorage has persisted filter', function (done) {
       filterInLocalStorage.uuid = 'IRRELEVANT';
 
       listCollectionFilter.fetchAppliedFilter().then(function (appliedFilter) {
@@ -164,14 +163,14 @@ describe('MwListCollectionFilter', function () {
       $rootScope.$digest();
     });
 
-    it('returns null when no query params are set and no filter is in local storage', function () {
+    it('returns null when no query params are set and no filter is in runtime storage', function () {
       listCollectionFilter.fetchAppliedFilter().then(function (appliedFilter) {
         expect(appliedFilter.get('uuid')).not.toBeDefined();
       });
       $rootScope.$digest();
     });
 
-    it('updates local storage filter when query params are present and filter is available for user', function (done) {
+    it('updates runtime storage filter when query params are present and filter is available for user', function (done) {
       filterInLocalStorage.uuid = 'IRRELEVANT';
       queryParams = {f: 'BELONGS_TO_USER'};
 
@@ -192,7 +191,7 @@ describe('MwListCollectionFilter', function () {
       $rootScope.$digest();
     });
 
-    it('discards url filter when query params are present and filter is not available for user and deletes local storage', function (done) {
+    it('discards url filter when query params are present and filter is not available for user and deletes runtime storage', function (done) {
       filterInLocalStorage.uuid = 'IRRELEVANT';
       queryParams = {f: 'BELONGS_NOT_TO_USER'};
 
@@ -207,7 +206,7 @@ describe('MwListCollectionFilter', function () {
   });
 
   describe('setting applied filter', function () {
-    it('sets local storage and updates url when calling apply filter', function (done) {
+    it('sets runtime storage and updates url when calling apply filter', function (done) {
       listCollectionFilter.applyFilter({uuid: 'NEW_FILTER'}).then(function (appliedFilter) {
         expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1]).toEqual({uuid: 'NEW_FILTER'});
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: 'NEW_FILTER', qAttr: null, q: null});
@@ -241,7 +240,7 @@ describe('MwListCollectionFilter', function () {
       $rootScope.$digest();
     });
 
-    it('returns local storage filter when no query params are set but localstorage has persisted filter', function (done) {
+    it('returns runtime storage filter when no query params are set but runtime storage has persisted filter', function (done) {
       appliedSearchTerm = {val: 'IRRELEVANT', attr: 'IRRELEVANT'};
 
       listCollectionFilter.fetchAppliedSearchTerm().then(function (appliedSearchTerm) {
@@ -251,7 +250,7 @@ describe('MwListCollectionFilter', function () {
       $rootScope.$digest();
     });
 
-    it('returns null when no query params are set and no filter is in local storage', function () {
+    it('returns null when no query params are set and no filter is in runtime storage', function () {
       listCollectionFilter.fetchAppliedSearchTerm().then(function (appliedSearchTerm) {
         expect(appliedSearchTerm.val).toBe(null);
       });
@@ -276,7 +275,7 @@ describe('MwListCollectionFilter', function () {
       $rootScope.$digest();
     });
 
-    it('updates local storage filter when query params are present', function (done) {
+    it('updates runtime storage filter when query params are present', function (done) {
       appliedSearchTerm = {val: 'IRRELEVANT', attr: 'IRRELEVANT'};
       queryParams = {q: 'Q_IRRELEVANT', qAttr: 'Q_IRRELEVANT'};
 
@@ -289,7 +288,7 @@ describe('MwListCollectionFilter', function () {
   });
 
   describe('setting search term', function () {
-    it('sets local storage and updates url when calling apply search term', function (done) {
+    it('sets runtime storage and updates url when calling apply search term', function (done) {
       listCollectionFilter.applySearchTerm('IRRELEVANT', 'NEW_SEARCH').then(function (appliedSearchTerm) {
         expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1]).toEqual({val: 'NEW_SEARCH', attr: 'IRRELEVANT'});
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: null, q: 'NEW_SEARCH', qAttr: 'IRRELEVANT'});
@@ -306,6 +305,88 @@ describe('MwListCollectionFilter', function () {
 
       listCollectionFilter.applySearchTerm('IRRELEVANT', 'NEW_SEARCH').then(function () {
         expect($locationSpy.search.calls.mostRecent().args[0]).toEqual({f: null, q: 'NEW_SEARCH', qAttr: 'IRRELEVANT', xyz: 'IRRELEVANT'});
+        done();
+      });
+      $rootScope.$digest();
+    });
+  });
+
+  describe('setting sort order', function () {
+    it('converts sort string into object', function (done) {
+      listCollectionFilter.applySortOrder('+PROPERTY').then(function (appliedSortOrder) {
+        expect(appliedSortOrder.property).toBe('PROPERTY');
+        expect(appliedSortOrder.order).toBe('+');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('accepts sort object', function (done) {
+      listCollectionFilter.applySortOrder({property: 'PROPERTY', order: '+'}).then(function (appliedSortOrder) {
+        expect(appliedSortOrder.property).toBe('PROPERTY');
+        expect(appliedSortOrder.order).toBe('+');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('sets runtime storage and updates url when calling apply sort order', function (done) {
+      listCollectionFilter.applySortOrder('+PROPERTY').then(function () {
+        expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1].property).toBe('PROPERTY');
+        expect(RuntimeStorageSpy.setItem.calls.mostRecent().args[1].order).toBe('+');
+        expect($locationSpy.search.calls.mostRecent().args[0].s).toBe('PROPERTY');
+        expect($locationSpy.search.calls.mostRecent().args[0].sOrder).toBe('ASC');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('return sort order object when one is availble in the url', function(done){
+      queryParams = {
+        s: 'IRRELEVANT',
+        sOrder: 'ASC'
+      };
+
+      listCollectionFilter.fetchAppliedSortOrder().then(function (appliedSortOrder) {
+        expect(appliedSortOrder.property).toBe('IRRELEVANT');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('return sort order object with order "+" when sort order is set to ASC', function(done){
+      queryParams = {
+        s: 'IRRELEVANT',
+        sOrder: 'ASC'
+      };
+
+      listCollectionFilter.fetchAppliedSortOrder().then(function (appliedSortOrder) {
+        expect(appliedSortOrder.order).toBe('+');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('return sort order object with order "-" when sort order is set to DESC', function(done){
+      queryParams = {
+        s: 'IRRELEVANT',
+        sOrder: 'DESC'
+      };
+
+      listCollectionFilter.fetchAppliedSortOrder().then(function (appliedSortOrder) {
+        expect(appliedSortOrder.order).toBe('-');
+        done();
+      });
+      $rootScope.$digest();
+    });
+
+    it('return sort order object with order "-" when sort order is not set', function(done){
+      queryParams = {
+        s: 'IRRELEVANT'
+      };
+
+      listCollectionFilter.fetchAppliedSortOrder().then(function (appliedSortOrder) {
+        expect(appliedSortOrder.order).toBe('-');
         done();
       });
       $rootScope.$digest();
