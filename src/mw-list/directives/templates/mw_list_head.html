@@ -50,7 +50,7 @@
 
     <div ng-if="!selectable || selectedAmount<1" ng-transclude class="extra-content"></div>
     <span ng-if="!selectable || selectedAmount<1">
-      {{'List.mwListHead.itemAmount' | i18n:{name: collectionName, count: getTotalAmount()} }}
+      {{'List.mwListHead.itemAmount' | i18n:{name: collectionName, total: getTotalAmount()} }}
     </span>
   </div>
 
