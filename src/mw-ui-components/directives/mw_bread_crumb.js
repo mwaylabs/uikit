@@ -4,7 +4,8 @@ angular.module('mwUI.UiComponents')
     return {
       scope: {
         url: '@',
-        title: '@'
+        title: '@',
+        showLeftArrow: '=?'
       },
       templateUrl: 'uikit/mw-ui-components/directives/templates/mw_bread_crumb.html'
     };

@@ -1,5 +1,5 @@
 $headerHeight: 56px !default;
-$headerIconMargin: 6px;
+$headerIconMargin: 8px;
 
 div[mw-header] {
 
@@ -10,10 +10,19 @@ div[mw-header] {
   margin-bottom: 25px;
   height: $headerHeight - 5;
 
+  .action-btn-bar {
+    display: flex;
+    margin: 10px 0 10px;
+
+    > *:not(:last-child) {
+      margin-right: $headerIconMargin;
+    }
+  }
+
   .round-btn {
     display: flex;
-    min-width: 16px;
-    height: 16px;
+    min-width: 23px;
+    height: 23px;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -24,7 +33,7 @@ div[mw-header] {
     @include transition(all 0.3s ease);
 
     *[mw-icon], i {
-      font-size: 9px;
+      font-size: 12px;
       line-height: initial;
     }
 
@@ -61,19 +70,12 @@ div[mw-header] {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 
-    .back-btn {
-      margin-right: $headerIconMargin;
-
-      *[mw-icon], i {
-        font-size: 12px;
-      }
-    }
-
     .title-holder {
       display: -webkit-flex;
       display: flex;
       -webkit-flex-grow: 1;
       flex-grow: 1;
+      flex-direction: column;
       overflow: hidden;
       white-space: nowrap;
 
@@ -88,6 +90,10 @@ div[mw-header] {
         }
       }
 
+      .title-holder-item {
+        display: flex;
+      }
+
       h1 {
         display: flex;
         margin: 0;
@@ -95,23 +101,29 @@ div[mw-header] {
         flex-grow: 2;
         overflow: hidden;
         align-items: center;
+        padding: 0 5px;
 
         .text {
           text-overflow: ellipsis;
           overflow: hidden;
         }
 
-        .refresh-btn {
+        .action-btn {
           margin-left: $headerIconMargin;
-          display: none;
-        }
-
-        &:hover {
-          .refresh-btn {
-            display: flex;
-          }
+          display: flex;
         }
       }
+    }
+
+    .additional-content-holder{
+      margin-right: $headerIconMargin;
+    }
+  }
+
+  description {
+    margin-left: 0px;
+    has-title-icon {
+      margin-left: 20px;
     }
   }
 }
@@ -124,12 +136,12 @@ div[mw-header] {
     height: $smHeaderHeight !important;
 
     .round-btn {
-      min-width: 14px;
-      height: 14px;
+      min-width: 21px;
+      height: 21px;
       top: 0;
 
       *[mw-icon], i {
-        font-size: 8px;
+        font-size: 11px;
       }
     }
 
@@ -140,7 +152,7 @@ div[mw-header] {
         margin-right: $smHeaderIconMargin;
 
         *[mw-icon], i {
-          font-size: 10px;
+          font-size: 18px;
         }
 
         // Click range extender so its easier to press the button
@@ -182,6 +194,9 @@ div[mw-header] {
         > *[mw-bread-crumb] {
           display: none;
         }
+      }
+      .description-btn {
+        display: none !important;
       }
     }
   }

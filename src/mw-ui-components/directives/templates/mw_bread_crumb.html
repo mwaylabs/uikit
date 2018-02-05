@@ -1,9 +1,12 @@
 <div class="mw-bread-crumb">
   <a ng-href="{{url}}"
-     class="bread-crumb">
+     class="bread-crumb"
+     ng-class="{'has-left-arrow': showLeftArrow}">
+    <span ng-if="showLeftArrow"
+          class="arrow-left" mw-icon="mwUI.angleLeft"></span>
     {{title}}
   </a>
   <span mw-icon="mwUI.caretRight"
-        class="arrow">
+        class="arrow-right">
   </span>
 </div>
