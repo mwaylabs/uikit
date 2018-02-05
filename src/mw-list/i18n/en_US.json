@@ -5,8 +5,8 @@
       "selectAll": "Select all",
       "clearSelection": "Clear selection",
       "itemSelected": "{{name}} is selected",
-      "itemsSelected": "{{count}} {{name}} are selected",
-      "itemAmount": "{{count}} {{name}}",
+      "itemsSelected": "{{count}} out of {{total}} {{name}} are selected",
+      "itemAmount": "{{total}} {{name}}",
       "searchFor": "Search for {{name}}",
       "notAvailable": "N/V",
       "notAvailableTooltip": "The entry is not available anymore. Maybe is has been deleted."

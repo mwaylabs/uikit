@@ -41,7 +41,7 @@
         {{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
       </span>
       <span ng-if="selectedAmount > 1">
-        {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount} }}
+        {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount, total: getTotalAmount()} }}
       </span>
         <span mw-icon="mwUI.angleUp" ng-show="canShowSelected()"></span>
         <span mw-icon="mwUI.angleDown" ng-show="!canShowSelected()"></span>
