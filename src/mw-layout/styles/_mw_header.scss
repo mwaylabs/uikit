@@ -119,6 +119,13 @@ div[mw-header] {
       margin-right: $headerIconMargin;
     }
   }
+
+  description {
+    margin-left: 0px;
+    has-title-icon {
+      margin-left: 20px;
+    }
+  }
 }
 
 @media (max-width: $screen-sm) {
