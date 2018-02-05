@@ -1,12 +1,6 @@
 <div class="mw-header row">
   <div class="fixed-content col-md-12">
 
-    <div ng-if="canShowBackButton()"
-         class="back-btn clickable round-btn"
-         ng-click="back()">
-          <span mw-icon="mwUI.angleLeft"></span>
-    </div>
-
     <div class="title-holder">
       <div class="title-holder-item">
         <span mw-icon="{{mwTitleIcon}}"
@@ -19,7 +13,7 @@
                 mw-bread-crumb
                 url="{{breadCrumb.url}}"
                 title="{{breadCrumb.title}}"
-                show-arrow="true">
+                show-left-arrow="canShowBackButton() && $index === 0">
           </div>
         </div>
         <div>
