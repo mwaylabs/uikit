@@ -1,5 +1,5 @@
 $headerHeight: 56px !default;
-$headerIconMargin: 6px;
+$headerIconMargin: 8px;
 
 div[mw-header] {
 
@@ -12,9 +12,10 @@ div[mw-header] {
 
   .action-btn-bar {
     display: flex;
-    margin: 10px;
-    .description-btn {
-      margin-left: 5px;
+    margin: 10px 0 10px;
+
+    > *:not(:last-child) {
+      margin-right: $headerIconMargin;
     }
   }
 
@@ -112,6 +113,10 @@ div[mw-header] {
         }
       }
     }
+
+    .additional-content-holder{
+      margin-right: $headerIconMargin;
+    }
   }
 }
 
@@ -139,7 +144,7 @@ div[mw-header] {
         margin-right: $smHeaderIconMargin;
 
         *[mw-icon], i {
-          font-size: 10px;
+          font-size: 18px;
         }
 
         // Click range extender so its easier to press the button
