@@ -28,20 +28,22 @@
         </div>
       </div>
     </div>
-    <div class="action-btn-bar">
-      <div class="action-btn  clickable round-btn"
-           ng-click="refresh()">
-       <span mw-icon="mwUI.refresh"></span>
-       </div>
-       <div ng-if="canShowDescriptionButton()"
-             class="action-btn clickable round-btn description-btn"
-             ng-click="toggleDescription()">
-         <span mw-icon="mwUI.info"></span>
-       </div>
-     </div>
-     
+
     <div class="additional-content-holder"
          ng-transclude>
+    </div>
+
+    <div class="action-btn-bar">
+      <div ng-if="canShowDescriptionButton()"
+           class="action-btn clickable round-btn description-btn"
+           ng-click="toggleDescription()">
+        <span mw-icon="mwUI.info"></span>
+      </div>
+
+      <div class="action-btn  clickable round-btn"
+           ng-click="refresh()">
+        <span mw-icon="mwUI.refresh"></span>
+      </div>
     </div>
 
   </div>
