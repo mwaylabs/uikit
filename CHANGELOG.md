@@ -1,3 +1,16 @@
+# v1.22.0
+## Features
+- Improve memory usage by unbinding several event and rootscope listeners on $destroy
+
+## List module
+- Persist sort order in url as query param
+- Display total amount of items when items are selected
+
+## Layout module
+- Display reload button in header
+- Add possibility to pass a description into the header
+
+
 # v1.21.4
 ## Bug Fixes
 ### Menu module
