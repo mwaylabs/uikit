@@ -27,6 +27,7 @@ angular.module('mwUI.Form')
 
         scope.$on('$destroy', function () {
           isActive = false;
+          elm.off();
         });
       }
     };

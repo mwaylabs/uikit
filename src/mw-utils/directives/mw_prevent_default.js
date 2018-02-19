@@ -10,6 +10,10 @@ angular.module('mwUI.Utils')
         elm.on(attr.mwPreventDefault, function (event) {
           event.preventDefault();
         });
+
+        scope.$on('$destroy', function () {
+          elm.off();
+        });
       }
     };
   });

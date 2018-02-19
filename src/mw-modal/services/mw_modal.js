@@ -19,7 +19,8 @@ angular.module('mwUI.Modal')
         _usedScope = _scope.$new(),
         _usedController,
         _bootstrapModal,
-        _previousFocusedEl;
+        _previousFocusedEl,
+        _unbindLocationListener;
 
       var _setAttributes = function (target, attributes) {
         if (_.isObject(attributes) && _.isObject(target)) {
@@ -55,15 +56,15 @@ angular.module('mwUI.Modal')
       };
 
       var _destroyOnRouteChange = function () {
-        var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
+        _unbindLocationListener = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
           if (_bootstrapModal && _modalOpened) {
             ev.preventDefault();
             _self.hide().then(function () {
               document.location.href = newUrl;
-              changeLocationOff();
+              _unbindLocationListener();
             });
           } else {
-            changeLocationOff();
+            _unbindLocationListener();
           }
         });
       };
@@ -281,6 +282,11 @@ angular.module('mwUI.Modal')
           if (_usedScope) {
             _usedScope.$destroy();
             _usedScope = _scope.$new();
+            _bootstrapModal.off();
+          }
+
+          if(_unbindLocationListener){
+            _unbindLocationListener();
           }
 
           _scopeAttributes = modalOptions.scopeAttributes || {};

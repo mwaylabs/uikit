@@ -57,8 +57,14 @@ angular.module('mwPopover', [])
         var visible = false,
           content = '';
 
+        var destroyPopOver = function () {
+          if(el.popover){
+            el.popover('destroy');
+          }
+        };
+
         var buildPopover = function () {
-          el.popover('destroy');
+          destroyPopOver();
           el.popover({
             trigger: attr.popoverTrigger || 'hover',
             title: attr.popoverTitle,
@@ -98,10 +104,8 @@ angular.module('mwPopover', [])
         });
 
         scope.$on('$destroy', function () {
-          var popover = el.data('bs.popover');
-          if(popover && popover.tip()){
-            popover.tip().detach().remove();
-          }
+          destroyPopOver();
+          el.off();
         });
       }
     };

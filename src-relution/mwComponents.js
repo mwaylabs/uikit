@@ -208,9 +208,19 @@ angular.module('mwComponents', ['ngSanitize','mwUI.Utils'])
       restrict: 'A',
       require: '?^form',
       link: function (scope, elm, attr, ctrl) {
-        elm.parents('.modal').first().on('keyup', function (event) {
+        var modal = elm.parents('.modal').first();
+
+        var submit = function (event) {
           validateEnterKeyUp.clickIfValid(elm, event, ctrl);
-        });
+        };
+
+        if (modal) {
+          modal.on('keyup', submit);
+
+          scope.$on('$destroy', function () {
+            modal.off('keyup', submit);
+          });
+        }
       }
     };
   })

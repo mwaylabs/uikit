@@ -13,6 +13,10 @@ angular.module('mwHelper', [])
         elm.on(scope.mwSetDirtyOn, function(){
           formCtrl.$setDirty();
         });
+
+        scope.$on('$destroy', function(){
+          elm.off();
+        });
       }
     };
   })
@@ -128,9 +132,10 @@ angular.module('mwHelper', [])
         scopedCallback.callback.apply(scopedCallback.scope);
       });
     };
-    angular.element('body').on('DOMNodeInserted',_.throttle(_notify, 300));
-    angular.element('body').on('DOMNodeRemoved',_.throttle(_notify, 300));
-    angular.element($window).on('resize', _.throttle(_notify, 300));
+    var _throttledNotify = _.throttle(_notify, 300);
+    angular.element('body').on('DOMNodeInserted',_throttledNotify);
+    angular.element('body').on('DOMNodeRemoved',_throttledNotify);
+    angular.element($window).on('resize', _throttledNotify);
     $timeout(_notify,500);
     return {
       registerCallback: function(cb,scope){
@@ -252,6 +257,7 @@ angular.module('mwHelper', [])
 
         scope.$on('$destroy', function(){
           $interval.cancel(stopInterval);
+          inputElements.off();
         });
       }
     };

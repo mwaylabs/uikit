@@ -75,6 +75,11 @@ angular.module('mwUI.List')
         dropDownToggle.on('hide.bs.dropdown', function () {
           angular.element(window).off(hideDropDownEvents, hide);
         });
+
+        scope.$on('$destroy', function(){
+          dropDownToggle.off();
+          angular.element(window).off(hideDropDownEvents, hide);
+        });
       }
     };
   });
