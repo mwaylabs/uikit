@@ -37,10 +37,15 @@ angular.module('mwCollection')
 
         if (_appliedSearchTerm.val && _appliedSearchTerm.val.length > 0) {
           searchFilter.qAttr = _appliedSearchTerm.attr;
-          searchFilter.q = _appliedSearchTerm.val
+          searchFilter.q = _appliedSearchTerm.val;
         } else {
           searchFilter.qAttr = null;
           searchFilter.q = null;
+        }
+
+        if (_appliedSortOrder.property) {
+          searchFilter.s = _appliedSortOrder.property;
+          searchFilter.sOrder = _appliedSortOrder.order === '+' ? 'ASC' : 'DESC';
         }
 
         mwUrlStorage.setObject(searchFilter, {removeOnUrlChange: true});
@@ -48,6 +53,10 @@ angular.module('mwCollection')
 
       var urlContainsFilters = function () {
         return (mwUrlStorage.getItem('q') && mwUrlStorage.getItem('qAttr')) || mwUrlStorage.getItem('f');
+      };
+
+      var urlContainsSortOrder = function () {
+        return (mwUrlStorage.getItem('s'));
       };
 
       this.hasAppliedFilterOrSearchTerm = function () {
@@ -151,7 +160,7 @@ angular.module('mwCollection')
         return $q.when(mwRuntimeStorage.removeItem(_localFilterIdentifier)).then(function () {
           setUrlQueryParams();
           return _appliedFilter;
-        })
+        });
       };
 
       this.applyFilter = function (filterModel) {
@@ -184,9 +193,26 @@ angular.module('mwCollection')
         return _appliedSortOrder;
       };
 
+      this._getAppliedSortOrderFromUrl = function () {
+        var property = mwUrlStorage.getItem('s'),
+          order = mwUrlStorage.getItem('sOrder');
+
+        if (property) {
+          return {
+            order: order === 'ASC' ? '+' : '-',
+            property: property
+          };
+        } else {
+          return null;
+        }
+      };
+
       // Sort order that was applied and saved in local storage
       this.fetchAppliedSortOrder = function () {
-        if (_appliedSortOrder.order && _appliedSortOrder.property) {
+        if (urlContainsSortOrder()) {
+          var urlSortOrder = this._getAppliedSortOrderFromUrl();
+          return this.applySortOrder(urlSortOrder);
+        } else if (_appliedSortOrder.order && _appliedSortOrder.property) {
           return $q.when(_appliedSortOrder);
         } else {
           return $q.when(mwRuntimeStorage.getItem(_localSortOrderIdentifier)).then(function (appliedSortOrder) {
@@ -204,18 +230,25 @@ angular.module('mwCollection')
             sortOrderObj = {
               order: sortString[1],
               property: sortString[2]
-            }
+            };
           }
         }
-
-        _appliedFilter.set(sortOrderObj);
+        _appliedSortOrder = sortOrderObj;
+        _appliedFilter.set(_appliedSortOrder);
+        setUrlQueryParams();
         return $q.when(mwRuntimeStorage.setItem(_localSortOrderIdentifier, sortOrderObj)).then(function () {
           return sortOrderObj;
         });
       };
 
       this.revokeSortOrder = function () {
-        return mwRuntimeStorage.removeItem(_localSortOrderIdentifier);
+        _appliedSortOrder = {
+          order: null,
+          property: null
+        };
+        return mwRuntimeStorage.removeItem(_localSortOrderIdentifier).then(function () {
+          setUrlQueryParams();
+        });
       };
 
       this.clearAppliedSearchTerm = function () {
@@ -226,7 +259,7 @@ angular.module('mwCollection')
         return $q.when(mwRuntimeStorage.removeItem(_localSearchIdentifier)).then(function () {
           setUrlQueryParams();
           return _appliedFilter;
-        })
+        });
       };
 
       this.applySearchTerm = function (attr, searchTerm) {
@@ -275,7 +308,7 @@ angular.module('mwCollection')
           }.bind(this));
         }
 
-      }
+      };
     };
 
     return Filter;
