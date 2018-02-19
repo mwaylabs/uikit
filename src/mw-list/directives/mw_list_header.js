@@ -181,10 +181,10 @@ angular.module('mwUI.List')
         scope.$on('mwList:unRegisterColumn', throttledUpdateCol);
         scope.$watch('hidden', throttledUpdateVisibility);
         attr.$observe('title', throttledUpdateCol);
-        $rootScope.$on('i18n:localeChanged', throttledUpdateCol);
-        $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateCol);
-        $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateVisibility);
-        $rootScope.$on('$modalOpenSuccess', throttledUpdateVisibility);
+        var unbindLocaleChange = $rootScope.$on('i18n:localeChanged', throttledUpdateCol);
+        var unbindBootstrapChangeUpdateCol = $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateCol);
+        var unbindBootstrapChangeUpdateVisibility = $rootScope.$on('mwBootstrapBreakpoint:changed', throttledUpdateVisibility);
+        var unbindModalOpen = $rootScope.$on('$modalOpenSuccess', throttledUpdateVisibility);
 
         if (tableConfigurator) {
           var persistedCol = tableConfigurator.get('columns').get(persistId);
@@ -197,6 +197,13 @@ angular.module('mwUI.List')
           updateCol();
           updateVisibility();
           mwListCtrl.registerColumn(getColumn());
+        });
+
+        scope.$on('$destroy', function(){
+          unbindLocaleChange();
+          unbindBootstrapChangeUpdateCol();
+          unbindBootstrapChangeUpdateVisibility();
+          unbindModalOpen();
         });
       }
     };
