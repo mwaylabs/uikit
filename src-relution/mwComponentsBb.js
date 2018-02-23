@@ -2,18 +2,18 @@
 
 angular.module('mwComponentsBb', [])
 
-/**
- * @ngdoc directive
- * @name mwComponents.directive:mwFilterableSearch
- * @element div
- * @description
- *
- * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
- *
- * @param {filterable} filterable Filterable instance.
- * @param {expression} disabled If expression evaluates to true, input is disabled.
- * @param {string} property The name of the property on which the filtering should happen.
- */
+  /**
+   * @ngdoc directive
+   * @name mwComponents.directive:mwFilterableSearch
+   * @element div
+   * @description
+   *
+   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+   *
+   * @param {filterable} filterable Filterable instance.
+   * @param {expression} disabled If expression evaluates to true, input is disabled.
+   * @param {string} property The name of the property on which the filtering should happen.
+   */
   .service('ignoreKeyPress', function () {
     var ENTER_KEY = 13;
     return {
@@ -118,13 +118,12 @@ angular.module('mwComponentsBb', [])
           throw new Error('[mwFilterableSearchBb] Either collection or mwCollection has to be set');
         }
 
-        scope.$watch(function () {
-          if (collection.filterable && scope.property) {
-            return collection.filterable.filterValues[scope.property];
-          }
-        }, function (val) {
-          scope.viewModel.searchVal = val;
-        });
+        /*
+         * If the collection has already a value as searchvalue, update the searchvalue. 
+         */
+        if (collection.filterable && scope.property) {
+          scope.viewModel.searchVal = collection.filterable.filterValues[scope.property];
+        }
 
         scope.$on('$destroy', function () {
           el.off();
