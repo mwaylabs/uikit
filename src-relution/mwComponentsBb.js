@@ -118,12 +118,15 @@ angular.module('mwComponentsBb', [])
           throw new Error('[mwFilterableSearchBb] Either collection or mwCollection has to be set');
         }
 
-        /*
-         * If the collection has already a value as searchvalue, update the searchvalue. 
-         */
-        if (collection.filterable && scope.property) {
-          scope.viewModel.searchVal = collection.filterable.filterValues[scope.property];
-        }
+        scope.$watch(function () {
+          if (collection.filterable && scope.property) {
+            return collection.filterable.filterValues[scope.property];
+          }
+        }, function (val) {
+          if (val !== scope.viewModel.searchVal) {
+            scope.viewModel.searchVal = val;
+          }
+        });
 
         scope.$on('$destroy', function () {
           el.off();
