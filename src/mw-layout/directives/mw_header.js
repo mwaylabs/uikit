@@ -16,12 +16,16 @@ angular.module('mwUI.Layout')
       link: function (scope, el, attrs, mwUiCtrl, $transclude) {
         $rootScope.siteTitleDetails = scope.title;
         BrowserTitleHandler.setTitle(scope.title);
+        scope.showRefreshButton = true;
         if (scope.mwTitleIcon) {
           el.find('.description').addClass('has-title-icon');
         }
         $transclude(function (clone) {
           if ((!clone || clone.length === 0) && !scope.showBackButton) {
             el.find('.mw-header').addClass('no-buttons');
+          }
+          if (el.find('[mw-form-actions]') && el.find('[mw-form-actions]').length > 0) {
+            scope.showRefreshButton = false;
           }
         });
 

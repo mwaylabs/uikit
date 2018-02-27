@@ -1,3 +1,8 @@
+# v1.22.1
+## Features
+- The directive mw-prevent-default stops now also the propagation of an event.
+- The mw-header directive hides the refresh button if the directive mw-form-actions is present
+
 # v1.22.0
 ## Features
 - Improve memory usage by unbinding several event and rootscope listeners on $destroy
