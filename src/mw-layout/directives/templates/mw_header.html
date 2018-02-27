@@ -8,12 +8,12 @@
               ng-if="mwTitleIcon">
         </span>
         <div ng-if="mwBreadCrumbs"
-            mw-bread-crumbs-holder>
+             mw-bread-crumbs-holder>
           <div ng-repeat="breadCrumb in mwBreadCrumbs"
-                mw-bread-crumb
-                url="{{breadCrumb.url}}"
-                title="{{breadCrumb.title}}"
-                show-left-arrow="canShowBackButton() && $index === 0">
+               mw-bread-crumb
+               url="{{breadCrumb.url}}"
+               title="{{breadCrumb.title}}"
+               show-left-arrow="canShowBackButton() && $index === 0">
           </div>
         </div>
         <div>
@@ -29,11 +29,6 @@
         </div>
       </div>
     </div>
-
-    <div class="additional-content-holder"
-         ng-transclude>
-    </div>
-
     <div class="action-btn-bar">
       <div ng-if="canShowDescriptionButton()"
            class="action-btn clickable round-btn description-btn"
@@ -41,11 +36,15 @@
         <span mw-icon="mwUI.info"></span>
       </div>
 
-      <div class="action-btn  clickable round-btn"
+      <div ng-if="showRefreshButton"
+           class="action-btn  clickable round-btn"
            ng-click="refresh()">
         <span mw-icon="mwUI.refresh"></span>
       </div>
     </div>
 
+    <div class="additional-content-holder"
+         ng-transclude>
+    </div>
   </div>
 </div>
