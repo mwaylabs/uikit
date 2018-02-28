@@ -9,7 +9,7 @@ angular.module('mwUI.Layout')
         mwTitleIcon: '@?',
         showBackButton: '=?',
         mwBreadCrumbs: '=?',
-        description: '@?'
+        description: '@?',
       },
       require: '^?mwUi',
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',

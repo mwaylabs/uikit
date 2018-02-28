@@ -66,10 +66,6 @@ angular.module('mwUI.UiComponents')
             open();
           }
         });
-
-        scope.$on('$destroy', function () {
-          collapsedBody.off();
-        });
       }
     };
   });

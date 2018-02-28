@@ -21,8 +21,9 @@ angular.module('mwUI.UiComponents')
         });
 
         var destroyPopOver = function () {
-          if(el.popover){
-            el.popover('destroy');
+          var popover = el.data('bs.popover');
+          if (popover && popover.tip()) {
+            popover.tip().detach().remove();
           }
         };
 

@@ -8,8 +8,8 @@ angular.module('mwUI.Menu')
       },
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_top_bar.html',
       require: '^?mwUi',
-      link: function (scope, el, attrs, mwUiCtrl) {
-        if (mwUiCtrl) {
+      link: function(scope, el, attrs, mwUiCtrl){
+        if(mwUiCtrl){
           mwUiCtrl.addClass('has-mw-menu-top-bar');
         }
 
@@ -26,10 +26,10 @@ angular.module('mwUI.Menu')
 
         angular.element(window).on('resize', throttledCloseMenu);
 
-        scope.$on('$destroy', function () {
+        scope.$on('$destroy', function(){
           unBindLocationListener();
           angular.element(window).off('resize', throttledCloseMenu);
-          if (mwUiCtrl) {
+          if(mwUiCtrl){
             mwUiCtrl.removeClass('has-mw-menu-top-bar');
           }
         });

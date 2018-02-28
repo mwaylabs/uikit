@@ -96,13 +96,13 @@ angular.module('mwComponentsBb', [])
           el.children().removeClass('is-focused');
         });
 
-        el.on('mousedown touch', function (ev) {
+        el.on('mousedown touch', function(ev){
           var searchBtn = el.find('.trigger-search'),
-            resetBtn = el.find('.reset-search');
+              resetBtn = el.find('.reset-search');
 
-          if (resetBtn.find(ev.target).length !== 0) {
+          if(resetBtn.find(ev.target).length !== 0){
             scope.reset();
-          } else if (searchBtn.find(ev.target).length !== 0) {
+          } else if(searchBtn.find(ev.target).length !== 0){
             scope.search();
           }
         });
@@ -126,10 +126,6 @@ angular.module('mwComponentsBb', [])
           if (val !== scope.viewModel.searchVal) {
             scope.viewModel.searchVal = val;
           }
-        });
-
-        scope.$on('$destroy', function () {
-          el.off();
         });
       }
     };

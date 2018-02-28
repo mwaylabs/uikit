@@ -250,6 +250,15 @@ angular.module('mwUI.List')
 
           scrollEl.on('resize', throttledRecalculate);
 
+          // Deregister scroll callback if scope is destroyed
+          scope.$on('$destroy', function () {
+            scrollEl.off('scroll', throttledScrollFn);
+          });
+
+          scope.$on('$destroy', function () {
+            scrollEl.off('resize', throttledRecalculate);
+          });
+
           el.on('focus', 'input[type=text]', function () {
             el.find('.search-bar').addClass('focused');
           });
@@ -276,11 +285,6 @@ angular.module('mwUI.List')
           if (val < 1) {
             scope.hideSelected();
           }
-        });
-
-        scope.$on('$destroy', function(){
-          el.off();
-          scrollEl.off();
         });
 
         if (scope.mwListCollection) {

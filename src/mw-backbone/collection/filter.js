@@ -7,6 +7,7 @@ mwUI.Backbone.Filter = function () {
   var returnNullOrObjectForMultipleValues = function (values, object) {
     var hasValue = false;
     if(!_.isObject(values)){
+      console.log(values);
       throw new Error('The argument values has to be an object');
     }
     for(var key in values){

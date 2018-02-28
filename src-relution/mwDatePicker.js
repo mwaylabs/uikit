@@ -273,13 +273,6 @@ angular.module('mwUI.Relution')
           scope.stopDecrementCounter();
           scope.stopIncrementCounter();
         });
-
-        scope.$on('$destroy', function(){
-          if (_datePicker && _datePicker.datepicker) {
-            _datePicker.datepicker('destroy');
-          }
-          el.off();
-        });
       }
     };
   });

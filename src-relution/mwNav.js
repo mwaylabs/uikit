@@ -61,10 +61,6 @@ angular.module('mwNav', [])
               elm.collapse('hide');
             }
           });
-
-          scope.$on('$destroy', function(){
-            elm.off();
-          });
         }
       };
     })
@@ -83,10 +79,8 @@ angular.module('mwNav', [])
           isActive();
           $rootScope.$on('$routeChangeSuccess', isActive);
 
-          elm.find('a').on('click', scope.uncollapse);
-
-          scope.$on('$destroy', function(){
-            elm.find('a').off('click', scope.uncollapse);
+          elm.find('a').on('click', function() {
+            scope.uncollapse();
           });
         }
       };
@@ -160,10 +154,8 @@ angular.module('mwNav', [])
 
           $rootScope.$on('$routeChangeSuccess', isActive);
 
-          elm.find('a').on('click', scope.uncollapse);
-
-          scope.$on('$destroy', function(){
-            elm.find('a').off('click', scope.uncollapse);
+          elm.find('a').on('click', function() {
+            scope.uncollapse();
           });
         }
       };
