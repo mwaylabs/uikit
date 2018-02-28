@@ -1,3 +1,7 @@
+# v1.22.3
+## Bug Fixes
+- Reverted "Improve memory usage by unbinding several event and rootscope listeners on $destroy" which was introduced in 1.22.0 because it's unstable
+
 # v1.22.2
 ## Bug Fixes
 - Minor fixes regarding anchor href references.
