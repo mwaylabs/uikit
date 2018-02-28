@@ -250,10 +250,6 @@ angular.module('mwListable', [])
 
           if(scope.property){
             elm.find('.title').on('click',scope.toggleSortOrder);
-
-            scope.$on('$destroy', function(){
-              elm.find('.title').off('click',scope.toggleSortOrder);
-            });
           }
 
           mwListableCtrl.registerColumn(scope);
@@ -361,10 +357,6 @@ angular.module('mwListable', [])
             scope.isDisabled = function () {
               return scope.$eval(attr.mwListableDisabled, { item: scope.item });
             };
-
-            scope.$on('$destroy', function(){
-              elm.off();
-            });
           };
         }
       };

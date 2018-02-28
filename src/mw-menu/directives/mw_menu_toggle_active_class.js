@@ -31,15 +31,9 @@ angular.module('mwUI.Menu')
         }
 
         setIsActiveState();
-        var unbindMenuToggleStateListener = $rootScope.$on('menu-toggle-active-class-changed', setIsActiveState);
-        var unbindLocationChangeListener = $rootScope.$on('$locationChangeSuccess', setIsActiveState);
-        var unbindLocationErrorListener = $rootScope.$on('$routeChangeError', setIsActiveState);
-
-        scope.$on('$destroy', function(){
-          unbindMenuToggleStateListener();
-          unbindLocationChangeListener();
-          unbindLocationErrorListener();
-        });
+        $rootScope.$on('menu-toggle-active-class-changed', setIsActiveState);
+        $rootScope.$on('$locationChangeSuccess', setIsActiveState);
+        $rootScope.$on('$routeChangeError', setIsActiveState);
       }
     };
   });

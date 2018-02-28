@@ -1,5 +1,5 @@
 angular.module('mwUI.Utils')
-
+  
   .directive('mwDraggable', function ($timeout) {
     return {
       restrict: 'A',
@@ -32,10 +32,6 @@ angular.module('mwUI.Utils')
               scope.mwDragend({event: event});
             });
           }
-        });
-
-        scope.$on('$destroy', function () {
-          el.off();
         });
       }
     };

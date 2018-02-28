@@ -4,8 +4,8 @@ angular.module('mwUI.List')
   .directive('mwListableBodyRowBb', function ($timeout) {
     return {
       require: '^mwListableBb',
-      controller: function ($scope) {
-        this.getId = function () {
+      controller: function($scope){
+        this.getId = function(){
           return $scope.$id;
         };
       },
@@ -55,10 +55,6 @@ angular.module('mwUI.List')
             } else {
               elm.removeClass(selectedClass);
             }
-          });
-
-          scope.$on('$destroy', function () {
-            elm.off();
           });
         };
       }

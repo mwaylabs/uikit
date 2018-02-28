@@ -33,10 +33,6 @@ angular.module('mwUI.Layout')
 
         setMaxHeight();
         angular.element(window).on('resize', throttledSetMaxHeight);
-
-        scope.$on('$destroy', function () {
-          angular.element(window).off('resize', throttledSetMaxHeight);
-        });
       }
     };
   });
