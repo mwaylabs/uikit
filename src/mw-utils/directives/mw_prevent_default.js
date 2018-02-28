@@ -9,7 +9,6 @@ angular.module('mwUI.Utils')
         }
         elm.on(attr.mwPreventDefault, function (event) {
           event.preventDefault();
-          event.stopPropagation();
         });
 
         scope.$on('$destroy', function () {

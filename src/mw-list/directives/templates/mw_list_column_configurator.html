@@ -1,5 +1,9 @@
 <div class="mw-list-column-configurator btn-group">
-  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <button type="button"
+          class="btn btn-default btn-xs dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false">
     <span mw-icon="mwUI.gears"></span>
     <span class="caret"></span>
   </button>
@@ -7,14 +11,18 @@
     <li ng-repeat="column in columns"
         ng-if="column.scope && getColTitle(column)"
         ng-class="{'is-checked': column.scope.isVisible(), disabled: column.scope.isMandatory()}">
-      <a href="#" mw-prevent-default="click" ng-click="toggleColumn(column)" mw-stop-propagation="click">
-        <span mw-icon="mwUI.check" class="checked-indicator"></span>
+      <a mw-prevent-default="click"
+         ng-click="toggleColumn(column)"
+         mw-stop-propagation="click">
+        <span mw-icon="mwUI.check"
+              class="checked-indicator"></span>
         {{getColTitle(column)}}
       </a>
     </li>
     <li class="divider"></li>
     <li>
-      <a href="#" mw-prevent-default="click" ng-click="reset()">
+      <a mw-prevent-default="click"
+         ng-click="reset()">
         <span mw-icon="mwUI.undo"></span>
         Reset
       </a>
