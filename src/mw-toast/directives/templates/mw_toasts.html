@@ -1,7 +1,8 @@
 <div class="message messages-list mw-toasts">
   <div class="content">
     <ul>
-      <li ng-repeat="toast in toasts" class="message-item">
+      <li ng-repeat="toast in toasts"
+          class="message-item">
 
         <div class="status-indicator {{toast.type}}">
           <span mw-icon="{{toast.icon}}"></span>
@@ -14,13 +15,19 @@
             <h5 ng-if="toast.title">{{toast.title}}</h5>
 
             <span ng-if="!toast.isHtmlMessage">{{toast.message | limitTo:500}}</span>
-            <span ng-if="toast.isHtmlMessage" ng-bind-html="getHtmlMessage(toast.message)"></span>
+            <span ng-if="toast.isHtmlMessage"
+                  ng-bind-html="getHtmlMessage(toast.message)"></span>
 
-            <a class="action-button btn btn-link btn-xs" ng-if="toast.button && toast.button.isLink && toast.button.action && !toast.button.link" href="#">
-              <span ng-click="hideToast(toast); toast.button.action()" mw-prevent-default="click">{{toast.button.title}}</span>
+            <a class="action-button btn btn-link btn-xs"
+               ng-if="toast.button && toast.button.isLink && toast.button.action && !toast.button.link">
+              <span ng-click="hideToast(toast); toast.button.action()"
+                    mw-prevent-default="click">{{toast.button.title}}</span>
             </a>
 
-            <a class="action-button btn btn-link btn-xs" ng-if="toast.button && toast.button.isLink && toast.button.link" ng-href="{{toast.button.link}}" target="{{toast.button.target}}">
+            <a class="action-button btn btn-link btn-xs"
+               ng-if="toast.button && toast.button.isLink && toast.button.link"
+               ng-href="{{toast.button.link}}"
+               target="{{toast.button.target}}">
               <span>{{toast.button.title}}</span>
             </a>
 
@@ -32,7 +39,8 @@
 
           </div>
 
-          <div class="closer {{toast.type}}" ng-click="hideToast(toast.id)">
+          <div class="closer {{toast.type}}"
+               ng-click="hideToast(toast.id)">
             <span mw-icon="mwUI.cross"></span>
           </div>
 

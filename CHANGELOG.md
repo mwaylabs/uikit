@@ -1,3 +1,8 @@
+# v1.22.2
+## Bug Fixes
+- Minor fixes regarding anchor href references.
+- The directive mw-prevent-default allow event propagation again.
+
 # v1.22.1
 ## Features
 - The directive mw-prevent-default stops now also the propagation of an event.

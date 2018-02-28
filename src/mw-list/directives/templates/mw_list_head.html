@@ -3,13 +3,17 @@
      ng-class="{'show-selected':canShowSelected(),'has-selection-control':!selectable.isSingleSelection() || selectedAmount > 0,'has-search-bar':searchAttribute}">
 
   <div class="selection-controller">
-    <div ng-if="selectable" class="holder">
+    <div ng-if="selectable"
+         class="holder">
 
-      <span ng-click="toggleSelectAll()" class="clickable select-all" ng-if="!selectable.isSingleSelection()">
+      <span ng-click="toggleSelectAll()"
+            class="clickable select-all"
+            ng-if="!selectable.isSingleSelection()">
         <span class="selected-icon">
-          <span class="indicator" ng-if="selectable.allSelected()"></span>
+          <span class="indicator"
+                ng-if="selectable.allSelected()"></span>
         </span>
-        <a href="#" mw-prevent-default="click">
+        <a mw-prevent-default="click">
           {{'List.mwListHead.selectAll' | i18n }}
         </a>
       </span>
@@ -18,7 +22,7 @@
             class="clickable clear"
             ng-click="selectable.unSelectAll()">
         <span mw-icon="mwUI.cross"></span>
-       <a href="#" mw-prevent-default="click">{{'List.mwListHead.clearSelection' | i18n}}</a>
+        <a mw-prevent-default="click">{{'List.mwListHead.clearSelection' | i18n}}</a>
       </span>
 
     </div>
@@ -35,26 +39,33 @@
   </div>
 
   <div class="selected-counter">
-    <span ng-if="selectable && selectedAmount>0" class="clickable" ng-click="toggleShowSelected()">
-      <a href="#" mw-prevent-default="click">
-      <span ng-if="selectedAmount === 1">
-        {{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
-      </span>
-      <span ng-if="selectedAmount > 1">
-        {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount, total: getTotalAmount()} }}
-      </span>
-        <span mw-icon="mwUI.angleUp" ng-show="canShowSelected()"></span>
-        <span mw-icon="mwUI.angleDown" ng-show="!canShowSelected()"></span>
+    <span ng-if="selectable && selectedAmount>0"
+          class="clickable"
+          ng-click="toggleShowSelected()">
+      <a mw-prevent-default="click">
+        <span ng-if="selectedAmount === 1">
+          {{'List.mwListHead.itemSelected' | i18n:{name: getModelAttribute(selectable.getSelected().first())} }}
+        </span>
+        <span ng-if="selectedAmount > 1">
+          {{'List.mwListHead.itemsSelected' | i18n:{name: collectionName, count: selectedAmount, total: getTotalAmount()} }}
+        </span>
+        <span mw-icon="mwUI.angleUp"
+              ng-show="canShowSelected()"></span>
+        <span mw-icon="mwUI.angleDown"
+              ng-show="!canShowSelected()"></span>
       </a>
     </span>
 
-    <div ng-if="!selectable || selectedAmount<1" ng-transclude class="extra-content"></div>
+    <div ng-if="!selectable || selectedAmount<1"
+         ng-transclude
+         class="extra-content"></div>
     <span ng-if="!selectable || selectedAmount<1">
       {{'List.mwListHead.itemAmount' | i18n:{name: collectionName, total: getTotalAmount()} }}
     </span>
   </div>
 
-  <div class="selected-items" ng-if="canShowSelected()">
+  <div class="selected-items"
+       ng-if="canShowSelected()">
     <div class="items clearfix">
       <div class="box-shadow-container">
         <div ng-if="!isLoadingModelsNotInCollection"
@@ -75,7 +86,8 @@
         </div>
       </div>
     </div>
-    <div class="close-pane" ng-click="hideSelected()"></div>
+    <div class="close-pane"
+         ng-click="hideSelected()"></div>
   </div>
 
 </div>
