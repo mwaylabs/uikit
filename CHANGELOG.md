@@ -1,3 +1,7 @@
+# v1.22.4
+## Features
+- add id attribute to `mwMenuTopItem` and `mwMenuTopDropDownItem` to support a better navigation in e2e test cases.
+
 # v1.22.3
 ## Bug Fixes
 - Reverted "Improve memory usage by unbinding several event and rootscope listeners on $destroy" which was introduced in 1.22.0 because it's unstable
