@@ -1,3 +1,7 @@
+# v1.22.5
+## Features
+- Improve style of badges in the directive `mwFormCheckbox`
+
 # v1.22.4
 ## Features
 - add id attribute to `mwMenuTopItem` and `mwMenuTopDropDownItem` to support a better navigation in e2e test cases.

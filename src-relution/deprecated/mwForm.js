@@ -54,7 +54,7 @@ angular.module('mwUI.Relution')
                 type = 'android';
               }
               if (badge.toLowerCase().indexOf('ios') > -1) {
-                type = 'ios';
+                type = 'info';
               }
               if (badge.toLowerCase().indexOf('knox') > -1) {
                 type = 'knox';
@@ -66,6 +66,12 @@ angular.module('mwUI.Relution')
               if (badge.toLowerCase().indexOf('knox') > -1 &&
                 badge.toLowerCase().indexOf('android') > -1) {
                 type = 'multi';
+              }
+              if (badge.toLowerCase().indexOf('deprecated') > -1 || badge.toLowerCase().indexOf('veraltet') > -1) {
+                type = 'warning';
+              }
+              if (badge.toLowerCase().indexOf('removed') > -1 || badge.toLowerCase().indexOf('entfernt') > -1) {
+                type = 'danger';
               }
               scope.typedBadges.push({
                 text: badge,
