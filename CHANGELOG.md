@@ -1,3 +1,7 @@
+# v1.22.6
+## Features
+- Improve styling of the directive `mwCollapsable`.
+
 # v1.22.5
 ## Features
 - Improve style of badges in the directive `mwFormCheckbox`
