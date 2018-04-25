@@ -33,10 +33,12 @@ angular.module('mwComponentsBb', [])
         property: '@',
         customUrlParameter: '@',
         mwDisabled: '=',
-        placeholder: '@'
+        placeholder: '@',
+        inputSearchId: '@?'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
       link: function (scope, el) {
+        scope.inputSearchId = scope.inputSearchId || 'mw-input-search-field';
         var inputEl = el.find('input'),
           collection,
           listCollectionFilter;
