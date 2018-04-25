@@ -7,7 +7,7 @@
             ng-if="viewModel.showCancel"
             ng-disabled="form.$pristine && !viewModel.hasCancel"
             ng-click="cancelFacade()"
-            id="mwCancelButton">
+            id="mw_cancel_button">
       <span mw-icon="mwUI.cross"></span>
       <span class="action-text cancel">
         {{ 'mwForm.formActions.cancel' | i18n }}
@@ -18,7 +18,7 @@
             ng-click="saveFacade()"
             ng-if="viewModel.hasSave && viewModel.showSave"
             ng-disabled="form.$invalid || (form.$pristine && executeDefaultCancel)"
-            id="mwSaveButton">
+            id="mw_save_button">
       <span mw-icon="mwUI.check"></span>
       <span class="action-text save">
         {{ 'mwForm.formActions.save' | i18n }}

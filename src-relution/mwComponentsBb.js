@@ -38,7 +38,7 @@ angular.module('mwComponentsBb', [])
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
       link: function (scope, el) {
-        scope.inputSearchId = scope.inputSearchId || 'mw-input-search-field';
+        scope.inputSearchId = scope.inputSearchId || 'mw_input_search_field';
         var inputEl = el.find('input'),
           collection,
           listCollectionFilter;
