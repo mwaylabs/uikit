@@ -80,13 +80,14 @@ angular.module('mwComponents', ['ngSanitize','mwUI.Utils'])
       scope: {
         filterable: '=',
         mwDisabled: '=',
-        property: '@'
-//        loading: '='
+        property: '@',
+        inputSearchId: '@?'
       },
       templateUrl: 'uikit/templates/mwComponents/mwFilterableSearch.html',
       link: function (scope, elm) {
         $animate.enabled(false, elm.find('.search-indicator'));
         scope.model = scope.filterable.properties[scope.property];
+        scope.inputSearchId = scope.inputSearchId || 'inputSearchId';
         scope.inputLength = 0;
         scope.isMobile = Detect.isMobile();
 
