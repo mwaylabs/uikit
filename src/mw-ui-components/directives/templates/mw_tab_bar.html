@@ -6,7 +6,7 @@
     <li ng-repeat="pane in panes"
         ng-class="{ active: $index === getActivePaneIndex() }">
       <a ng-class="{ 'has-error': pane.isInvalid }"
-         ng-click="select(pane)">
+         ng-click="select(pane)" id="{{pane.id}}">
         <span ng-if="pane.icon"
               mw-icon="{{pane.icon}}"></span>
         {{ pane.title }}
