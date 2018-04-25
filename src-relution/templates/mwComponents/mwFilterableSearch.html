@@ -7,7 +7,7 @@
              ng-keyup="search($event)"
              ng-model="model.value"
              ng-disabled="mwDisabled"
-             id="{{ searchInputId }}>
+             id="{{searchInputId}}">
       <span class="input-group-addon filterable-search-btn" ng-click="search()">
         <span ng-show="searching" class="search-indicator"></span>
         <span ng-hide="(searching || model.value.length>0) || isMobile" mw-icon="search"></span>
