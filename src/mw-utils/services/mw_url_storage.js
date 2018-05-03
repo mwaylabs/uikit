@@ -60,9 +60,10 @@ angular.module('mwUI.Utils')
 
       $rootScope.$on('$routeChangeStart', function (ev, newRoute, oldRoute) {
         if (newRoute && oldRoute &&
-          newRoute.originalPath !== oldRoute.originalPath &&
-          removeOnUrlChangekeys.length > 0) {
-          cleanUpInvalidQueryParams();
+          newRoute.originalPath !== oldRoute.originalPath) {
+          if (removeOnUrlChangekeys.length > 0) {
+            cleanUpInvalidQueryParams(newRoute.params);
+          }
           setUrlQueryParams();
         }
       });
