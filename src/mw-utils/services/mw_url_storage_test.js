@@ -144,15 +144,6 @@ describe('MwUrlStorageTest', function () {
     expect(locationSpy.search()).toEqual({abc: 'IRRELEVANT'});
   });
 
-  it('does not overwrite a changed url query param with the storage param on a route change', function () {
-    locationSpy.path('/irrelevant');
-    subject.setItem('abc', 'IRRELEVANT');
-
-    locationSpy.path('/irrelevant-change?abc=CHANGED_IRRELEVANT');
-
-    expect(subject.getItem('abc')).toEqual('CHANGED_IRRELEVANT');
-  });
-
   it('discard the query param after a route change when the option removeOnUrlChange is set to true', function () {
     locationSpy.path('/irrelevant');
     subject.setItem('abc', 'IRRELEVANT', {removeOnUrlChange: true});
