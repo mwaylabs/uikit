@@ -153,15 +153,6 @@ describe('MwUrlStorageTest', function () {
     expect(locationSpy.search()).toEqual({});
   });
 
-  it('discard the query param after a route change when the option removeOnUrlChange is set to true and the url still contains the param', function () {
-    locationSpy.path('/irrelevant');
-    subject.setItem('abc', 'IRRELEVANT', {removeOnUrlChange: true});
-
-    locationSpy.path('/irrelevant-change?abc=IRRELEVANT');
-
-    expect(locationSpy.search()).toEqual({abc: null});
-  });
-
   it('discard the query param after a route change when the option removeOnUrlChange is set to true but keeps the other', function () {
     locationSpy.path('/irrelevant');
     subject.setItem('abc', 'IRRELEVANT', {removeOnUrlChange: true});
@@ -169,6 +160,15 @@ describe('MwUrlStorageTest', function () {
 
     locationSpy.path('/irrelevant-change');
 
-    expect(locationSpy.search()).toEqual({xyz: 'IRRELEVANT-STAY', abc: null});
+    expect(locationSpy.search()).toEqual({xyz: 'IRRELEVANT-STAY'});
+  });
+
+  it('discard the query param after a route change when the option removeOnUrlChange is set to true but keeps the url query param', function () {
+    locationSpy.path('/irrelevant');
+    subject.setItem('abc', 'IRRELEVANT', {removeOnUrlChange: true});
+
+    locationSpy.path('/irrelevant-change?xyz=IRRELEVANT-STAY');
+
+    expect(locationSpy.search()).toEqual({xyz: 'IRRELEVANT-STAY'});
   });
 });
