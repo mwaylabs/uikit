@@ -8,6 +8,10 @@ angular.module('mwUI.Utils')
       var originalReloadOnSearchValue = null;
 
       var preventRouteReload = function () {
+        // In case the path has not route definition do nothing
+        if (!$route.current || !$route.current.$$route) {
+          return;
+        }
         if (unbindRouteUpdate) {
           unbindRouteUpdate();
         }
