@@ -9,6 +9,39 @@ describe('MwUrlStorageTest', function () {
     routeSpy,
     locationSpy;
 
+  var getQueryParamsFrom = function (url) {
+    var request = {};
+    if (url && url.indexOf('?')) {
+      var pairs = url.substring(url.indexOf('?') + 1).split('&');
+      if (url.indexOf('?') === -1) {
+        return request;
+      }
+      for (var i = 0; i < pairs.length; i++) {
+        if (!pairs[i]) {
+          continue;
+        }
+        var pair = pairs[i].split('=');
+        request[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+      }
+    }
+    return request;
+  };
+
+  var toQueryParamString = function (obj) {
+    var str = '';
+    for (var key in obj) {
+      if (str !== '') {
+        str += '&';
+      } else {
+        str += '?';
+      }
+      if (obj[key]) {
+        str += key + '=' + encodeURIComponent(obj[key]);
+      }
+    }
+    return str;
+  };
+
   beforeEach(module('mwUI.Utils'));
 
   beforeEach(module(function ($provide) {
@@ -17,35 +50,31 @@ describe('MwUrlStorageTest', function () {
         return currentUrl;
       },
       path: function (newPath) {
-        function getQueryParamsFrom(url) {
-          var request = {};
-          if(url && url.indexOf('?')){
-            var pairs = url.substring(url.indexOf('?') + 1).split('&');
-            if (url.indexOf('?') === -1) {
-              return request;
-            }
-            for (var i = 0; i < pairs.length; i++) {
-              if (!pairs[i]) {
-                continue;
-              }
-              var pair = pairs[i].split('=');
-              request[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-            }
-          }
-          return request;
+        var pathParams = getQueryParamsFrom(newPath);
+        this.search(pathParams);
+        if (newPath.split('?')[0] !== currentUrl.split('?')[0]) {
+          $rootScope.$broadcast('$locationChangeStart', newPath, currentUrl);
+          $rootScope.$broadcast('$routeChangeStart', {
+            originalPath: newPath
+          }, {
+            originalPath: currentUrl
+          });
+          currentUrl = newPath.split('?')[0] + toQueryParamString(this.search());
+          $rootScope.$broadcast('$locationChangeSuccess', newPath, currentUrl);
+          $rootScope.$broadcast('$routeChangeSuccess');
+        } else {
+          $rootScope.$broadcast('$routeUpdate');
         }
-        _.extend(queryParams, getQueryParamsFrom(newPath));
-        $rootScope.$broadcast('$locationChangeStart', newPath, currentUrl);
-        $rootScope.$broadcast('$routeChangeStart', {originalPath: newPath}, {originalPath: currentUrl});
-        $rootScope.$broadcast('$locationChangeSuccess', newPath, currentUrl);
-        $rootScope.$broadcast('$routeChangeSuccess');
-        currentUrl = newPath;
         return locationSpy;
       },
       search: function (params) {
         if (params && _.isObject(params)) {
           queryParams = params;
-          this.path(currentUrl);
+        }
+        for (var key in queryParams) {
+          if (queryParams.hasOwnProperty(key) && queryParams[key] === null) {
+            delete queryParams[key];
+          }
         }
         return queryParams;
       },
@@ -103,7 +132,7 @@ describe('MwUrlStorageTest', function () {
 
     subject.removeItem('abc');
 
-    expect(locationSpy.search).toHaveBeenCalledWith({abc: null});
+    expect(locationSpy.search()).toEqual({});
   });
 
   it('keeps the query param after a route change', function () {
@@ -130,7 +159,7 @@ describe('MwUrlStorageTest', function () {
 
     locationSpy.path('/irrelevant-change');
 
-    expect(locationSpy.search()).toEqual({abc: null});
+    expect(locationSpy.search()).toEqual({});
   });
 
   it('discard the query param after a route change when the option removeOnUrlChange is set to true and the url still contains the param', function () {
