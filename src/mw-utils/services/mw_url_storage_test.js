@@ -9,6 +9,39 @@ describe('MwUrlStorageTest', function () {
     routeSpy,
     locationSpy;
 
+  var getQueryParamsFrom = function (url) {
+    var request = {};
+    if (url && url.indexOf('?')) {
+      var pairs = url.substring(url.indexOf('?') + 1).split('&');
+      if (url.indexOf('?') === -1) {
+        return request;
+      }
+      for (var i = 0; i < pairs.length; i++) {
+        if (!pairs[i]) {
+          continue;
+        }
+        var pair = pairs[i].split('=');
+        request[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+      }
+    }
+    return request;
+  };
+
+  var toQueryParamString = function (obj) {
+    var str = '';
+    for (var key in obj) {
+      if (str !== '') {
+        str += '&';
+      } else {
+        str += '?';
+      }
+      if (obj[key]) {
+        str += key + '=' + encodeURIComponent(obj[key]);
+      }
+    }
+    return str;
+  };
+
   beforeEach(module('mwUI.Utils'));
 
   beforeEach(module(function ($provide) {
@@ -17,37 +50,36 @@ describe('MwUrlStorageTest', function () {
         return currentUrl;
       },
       path: function (newPath) {
-        function getQueryParamsFrom(url) {
-          var request = {};
-          var pairs = url.substring(url.indexOf('?') + 1).split('&');
-          if (url.indexOf('?') === -1) {
-            return request;
-          }
-          for (var i = 0; i < pairs.length; i++) {
-            if (!pairs[i]) {
-              continue;
-            }
-            var pair = pairs[i].split('=');
-            request[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-          }
-          return request;
+        var pathParams = getQueryParamsFrom(newPath);
+        this.search(pathParams);
+        if (newPath.split('?')[0] !== currentUrl.split('?')[0]) {
+          $rootScope.$broadcast('$locationChangeStart', newPath, currentUrl);
+          $rootScope.$broadcast('$routeChangeStart', {
+            originalPath: newPath
+          }, {
+            originalPath: currentUrl
+          });
+          currentUrl = newPath.split('?')[0] + toQueryParamString(this.search());
+          $rootScope.$broadcast('$locationChangeSuccess', newPath, currentUrl);
+          $rootScope.$broadcast('$routeChangeSuccess');
+        } else {
+          $rootScope.$broadcast('$routeUpdate');
         }
-
-        this.search(getQueryParamsFrom(newPath));
-        $rootScope.$broadcast('$locationChangeStart');
-        $rootScope.$broadcast('$routeChangeStart');
-        $rootScope.$broadcast('$locationChangeSuccess', null, newPath, currentUrl);
-        $rootScope.$broadcast('$routeChangeSuccess');
-        currentUrl = newPath;
         return locationSpy;
       },
       search: function (params) {
         if (params && _.isObject(params)) {
           queryParams = params;
         }
+        for (var key in queryParams) {
+          if (queryParams.hasOwnProperty(key) && queryParams[key] === null) {
+            delete queryParams[key];
+          }
+        }
         return queryParams;
       },
-      replace: function(){}
+      replace: function () {
+      }
     };
     spyOn(locationSpy, 'path').and.callThrough();
     spyOn(locationSpy, 'search').and.callThrough();
@@ -70,8 +102,8 @@ describe('MwUrlStorageTest', function () {
   }));
 
   afterEach(function () {
-    this.queryParams = {};
-    this.currentUrl = '';
+    queryParams = {};
+    currentUrl = '';
     subject.clear();
   });
 
@@ -87,12 +119,6 @@ describe('MwUrlStorageTest', function () {
     expect(locationSpy.replace).toHaveBeenCalled();
   });
 
-  it('does create a new navigation history entry when calling setItem and keepInHistory is set to true', function () {
-    subject.setItem('abc', 'IRRELEVANT', {keepInHistory: true});
-
-    expect(locationSpy.replace).not.toHaveBeenCalled();
-  });
-
   it('updated query param when calling setItem and a previous value does exist', function () {
     subject.setItem('abc', 'IRRELEVANT');
 
@@ -106,25 +132,16 @@ describe('MwUrlStorageTest', function () {
 
     subject.removeItem('abc');
 
-    expect(locationSpy.search).toHaveBeenCalledWith({abc: null});
+    expect(locationSpy.search()).toEqual({});
   });
 
   it('keeps the query param after a route change', function () {
     locationSpy.path('/irrelevant');
-    subject.setItem('abc', 'IRRELEVANT');
+    subject.setItem('abc', 'IRRELEVANT', {removeOnUrlChange: false});
 
     locationSpy.path('/irrelevant-change');
 
-    expect(locationSpy.search.calls.mostRecent().args[0]).toEqual({abc: 'IRRELEVANT'});
-  });
-
-  it('does not overwrite a changed url query param with the storage param on a route change', function () {
-    locationSpy.path('/irrelevant');
-    subject.setItem('abc', 'IRRELEVANT');
-
-    locationSpy.path('/irrelevant-change?abc=CHANGED_IRRELEVANT');
-
-    expect(locationSpy.search.calls.mostRecent().args[0]).toEqual({abc: 'CHANGED_IRRELEVANT'});
+    expect(locationSpy.search()).toEqual({abc: 'IRRELEVANT'});
   });
 
   it('discard the query param after a route change when the option removeOnUrlChange is set to true', function () {
@@ -133,7 +150,7 @@ describe('MwUrlStorageTest', function () {
 
     locationSpy.path('/irrelevant-change');
 
-    expect(locationSpy.search.calls.mostRecent().args.length).toBe(0);
+    expect(locationSpy.search()).toEqual({});
   });
 
   it('discard the query param after a route change when the option removeOnUrlChange is set to true but keeps the other', function () {
@@ -143,6 +160,15 @@ describe('MwUrlStorageTest', function () {
 
     locationSpy.path('/irrelevant-change');
 
-    expect(locationSpy.search.calls.mostRecent().args[0]).toEqual({xyz: 'IRRELEVANT-STAY'});
+    expect(locationSpy.search()).toEqual({xyz: 'IRRELEVANT-STAY'});
+  });
+
+  it('discard the query param after a route change when the option removeOnUrlChange is set to true but keeps the url query param', function () {
+    locationSpy.path('/irrelevant');
+    subject.setItem('abc', 'IRRELEVANT', {removeOnUrlChange: true});
+
+    locationSpy.path('/irrelevant-change?xyz=IRRELEVANT-STAY');
+
+    expect(locationSpy.search()).toEqual({xyz: 'IRRELEVANT-STAY'});
   });
 });

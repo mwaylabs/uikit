@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('mwSidebarBb', [])
-/**
- * @ngdoc directive
- * @name mwSidebar.directive:mwSidebarFilters
- * @element div
- * @description
- *
- * Container for filters
- *
- */
+  /**
+   * @ngdoc directive
+   * @name mwSidebar.directive:mwSidebarFilters
+   * @element div
+   * @description
+   *
+   * Container for filters
+   *
+   */
   .directive('mwSidebarFiltersBb', function ($timeout, FilterHolderModel, InvalidFilterModal) {
     return {
       transclude: true,
@@ -31,7 +31,7 @@ angular.module('mwSidebarBb', [])
             var filterVal = {};
             filterVal[property] = value;
             $scope.collection.filterable.setFilters(filterVal);
-            $scope.viewModel.tmpFilter.set({filter: $scope.collection.filterable.getFilters()});
+            $scope.viewModel.tmpFilter.set({ filter: $scope.collection.filterable.getFilters() });
             $scope.viewModel.tmpFilter.get('filterValues')[property] = value;
           }
 
@@ -456,7 +456,7 @@ angular.module('mwSidebarBb', [])
     };
   })
 
-  .directive('mwSidebarDateRangeBb', function () {
+  .directive('mwSidebarDateRangeBb', function ($timeout, $rootScope, i18n) {
     return {
       require: '^mwSidebarFiltersBb',
       scope: {
@@ -469,20 +469,92 @@ angular.module('mwSidebarBb', [])
       },
       templateUrl: 'uikit/templates/mwSidebarBb/mwSidebarDateRange.html',
       link: function (scope, elm, attr, ctrl) {
-
-        scope.viewModel = {};
-
+        var _datePicker;
         scope.isValid = function () {
           return elm.find('input').first().hasClass('ng-valid');
         };
 
         scope.setFromDate = function (val) {
+          scope.viewModel.oldFrom = val;
           ctrl.changeFilter(scope.fromProperty, val);
         };
 
         scope.setToDate = function (val) {
+          scope.viewModel.oldTo = val;
           ctrl.changeFilter(scope.toProperty, val);
         };
+
+        scope.viewModel = {
+          oldFrom: null,
+          oldTo: null
+        }
+        var _defaultDatePickerOptions = {
+          inputs: elm.find('.actualrange'),
+          clearBtn: true,
+          format: 'dd.mm.yyyy',
+          endDate: scope.max,
+          startDate: scope.min
+        }
+        var updateMwModel = function (datepicker) {
+          if (isFinite(datepicker.dates[0]) && isFinite(datepicker.dates[1])) {
+            if (scope.oldFrom === null || scope.viewModel.oldFrom.toUTCString() !== datepicker.dates[0].toUTCString()) {
+              scope.setFromDate(datepicker.dates[0]);
+              $timeout(function () {
+                elm.find('.actualrange')[1].focus();
+              });
+            } else {
+              scope.setToDate(datepicker.dates[1]);
+
+              $timeout(function () {
+                elm.find('.actualrange').first().focus();
+              });
+            }
+          } else if (isFinite(datepicker.dates[0])) {
+            scope.setFromDate(datepicker.dates[0]);
+            $timeout(function () {
+              elm.find('.actualrange')[1].focus();
+            });
+          } else if (isFinite(datepicker.dates[1])) {
+            scope.setToDate(datepicker.dates[1]);
+
+            $timeout(function () {
+              elm.find('.actualrange').first().focus();
+            });
+          }
+        }
+        var bindChangeListener = function (datepicker) {
+          datepicker.on('changeDate', updateMwModel.bind(this, datepicker.data().datepicker));
+          datepicker.on('show', function () {
+            $timeout(function () {
+              scope.viewModel.datepickerIsOpened = true;
+            });
+          });
+          datepicker.on('hide', function () {
+            $timeout(function () {
+              scope.viewModel.datepickerIsOpened = false;
+            });
+          });
+        };
+
+        var checkIfDatepickerLibIsAvailable = function (datePickerEl) {
+          if (!datePickerEl.datepicker) {
+            throw new Error('bootstrap-sass-datepicker is not available. Make sure you included the javascript file');
+          }
+        };
+
+        var setDatepicker = function (options) {
+          var datePickerEl;
+
+          if (_datePicker && _datePicker.data().datepicker) {
+            _datePicker.data().datepicker.remove();
+          }
+
+          datePickerEl = elm.find('.input-daterange');
+          checkIfDatepickerLibIsAvailable(datePickerEl);
+          _datePicker = datePickerEl.datepicker(_.extend(_defaultDatePickerOptions, options));
+          bindChangeListener(_datePicker);
+        };
+        setDatepicker();
       }
     };
   });
