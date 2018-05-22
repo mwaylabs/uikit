@@ -1,3 +1,12 @@
+# v1.23.0
+## Features
+- Improve `mwSidebarDateRange` usability.
+- Extend e2e support
+
+## Bug Fixes
+- make sure that query params that are set to removeOnUrlChange are removed on url change (Fix #202)
+- make sure that controller is not reinitialised when a query param is set by url storage
+
 # v1.22.6
 ## Features
 - Improve styling of the directive `mwCollapsable`.

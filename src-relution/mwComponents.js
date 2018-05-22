@@ -81,7 +81,6 @@ angular.module('mwComponents', ['ngSanitize','mwUI.Utils'])
         filterable: '=',
         mwDisabled: '=',
         property: '@'
-//        loading: '='
       },
       templateUrl: 'uikit/templates/mwComponents/mwFilterableSearch.html',
       link: function (scope, elm) {
