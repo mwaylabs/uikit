@@ -1,6 +1,6 @@
 angular.module('mwUI.Modal')
 
-  .service('Modal', function ($rootScope, $templateCache, $document, $compile, $controller, $injector, $q, $templateRequest, $timeout, mwModalOptions, Toast) {
+  .service('Modal', function ($rootScope, $location, $templateCache, $document, $compile, $controller, $injector, $q, $templateRequest, $timeout, mwModalOptions, Toast) {
 
     var _openedModals = [];
 
@@ -55,11 +55,12 @@ angular.module('mwUI.Modal')
       };
 
       var _destroyOnRouteChange = function () {
-        var changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, newUrl) {
+        var changeLocationOff = $rootScope.$on('$routeChangeStart', function (ev) {
           if (_bootstrapModal && _modalOpened) {
+            var gotoPath = $location.path();
             ev.preventDefault();
             _self.hide().then(function () {
-              document.location.href = newUrl;
+              $location.path(gotoPath);
               changeLocationOff();
             });
           } else {
