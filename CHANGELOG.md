@@ -1,3 +1,8 @@
+# v1.20.2
+## Features
+### List module
+- Directive `mw-file-uploader`has two new flags to show and hide the control buttons.
+
 # v1.20.1
 ## Features
 ### List module
