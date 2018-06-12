@@ -98,6 +98,10 @@ setting scope property `activePaneNumber`
 ### Utils module
 - Fix mwUrlStorage so it also removes query params from url when they were set to `options.removeOnUrlChange` and remove is called
 
+# v1.20.2
+## Features
+- Directive `mw-file-uploader`has two new flags to show and hide the control buttons.
+
 # v1.20.1
 ## Features
 ### List module
