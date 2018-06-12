@@ -38,7 +38,9 @@ angular.module('mwFileUpload', [])
         hiddenBtn: '=',
         hasDropZone: '=?',
         hideCancelBtn: '=?',
-        abortFlag: '=?'
+        abortFlag: '=?',
+        showUploadBtnAlways: '=?',
+        hideRemoveBtn: '=?'
       },
       require: '?^form',
       templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
