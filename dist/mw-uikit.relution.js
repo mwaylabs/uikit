@@ -874,7 +874,9 @@ angular.module('mwFileUpload', [])
         hiddenBtn: '=',
         hasDropZone: '=?',
         hideCancelBtn: '=?',
-        abortFlag: '=?'
+        abortFlag: '=?',
+        showUploadBtnAlways: '=?',
+        hideRemoveBtn: '=?'
       },
       require: '?^form',
       templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
@@ -4600,7 +4602,7 @@ angular.module("mwUI.Relution").run(["$templateCache", function($templateCache) 
     "  'drag-over':isInDragOverState,\n" +
     "  'full-screen':fullScreen,\n" +
     "  'hidden-btn':hiddenBtn\n" +
-    "  }\"><div ng-class=\"{'has-error': file.$error.required}\" class=\"upload-container\"><div class=\"upload-info panel panel-primary\">{{uploadMessage}}<div class=\"state-indicator\"><div class=\"progress\" ng-style=\"{width: uploadProgress + '%'}\"></div></div></div><div ng-if=\"!hideCancelBtn && uploadState == 'uploading'\" class=\"btn btn-danger\" ng-click=\"abort()\">{{'rlnUikit.mwFileUpload.abort' | i18n}}</div><button ng-if=\"!fileIsSet() && uploadState != 'uploading'\" type=\"button\" class=\"btn btn-primary btn-upload hidden-on-drag\" ng-click=\"triggerUploadDialog()\"><span mw-icon=\"rln-icon upload\"></span> {{ text || ('rlnUikit.mwFileUpload.upload' | i18n) }}</button><div ng-show=\"uploadState != 'uploading'\" class=\"upload-btn\" style=\"width: 100%\"><div class=\"drop-zone\"><div class=\"content\"><span mw-icon=\"fa-file-o\"></span><h3>{{'rlnUikit.mwFileUpload.dropFiles' | i18n}}</h3></div></div><div ng-if=\"fileIsSet()\" class=\"hidden-on-drag selected-file-info\"><p ng-if=\"_showFileName\" class=\"filename panel panel-default\"><span mw-icon=\"fa-file-o\"></span> {{getFileName()}}</p><button type=\"button\" class=\"btn btn-danger\" ng-click=\"remove()\"><span mw-icon=\"rln-icon delete\"></span> {{'rlnUikit.mwFileUpload.remove' | i18n }}</button></div></div></div><input type=\"file\" class=\"hidden\" name=\"file\" accept=\"{{inputValidator}}\" ng-model=\"selectedFile\" ng-required=\"mwRequired\" mw-set-dirty-on-model-change mw-custom-error-validator=\"{{uploadError}}\" mw-is-valid=\"!isInvalid\"></div>"
+    "  }\"><div ng-class=\"{'has-error': file.$error.required}\" class=\"upload-container\"><div class=\"upload-info panel panel-primary\">{{uploadMessage}}<div class=\"state-indicator\"><div class=\"progress\" ng-style=\"{width: uploadProgress + '%'}\"></div></div></div><div ng-if=\"!hideCancelBtn && uploadState == 'uploading'\" class=\"btn btn-danger\" ng-click=\"abort()\">{{'rlnUikit.mwFileUpload.abort' | i18n}}</div><button ng-if=\"(!fileIsSet() || showUploadBtnAlways)&& uploadState != 'uploading'\" type=\"button\" class=\"btn btn-primary btn-upload hidden-on-drag\" ng-click=\"triggerUploadDialog()\"><span mw-icon=\"rln-icon upload\"></span> {{ text || ('rlnUikit.mwFileUpload.upload' | i18n) }}</button><div ng-show=\"uploadState != 'uploading'\" class=\"upload-btn\" style=\"width: 100%\"><div class=\"drop-zone\"><div class=\"content\"><span mw-icon=\"fa-file-o\"></span><h3>{{'rlnUikit.mwFileUpload.dropFiles' | i18n}}</h3></div></div><div ng-if=\"fileIsSet() && !hideRemoveBtn\" class=\"hidden-on-drag selected-file-info\"><p ng-if=\"_showFileName\" class=\"filename panel panel-default\"><span mw-icon=\"fa-file-o\"></span> {{getFileName()}}</p><button type=\"button\" class=\"btn btn-danger\" ng-click=\"remove()\"><span mw-icon=\"rln-icon delete\"></span> {{'rlnUikit.mwFileUpload.remove' | i18n }}</button></div></div></div><input type=\"file\" class=\"hidden\" name=\"file\" accept=\"{{inputValidator}}\" ng-model=\"selectedFile\" ng-required=\"mwRequired\" mw-set-dirty-on-model-change mw-custom-error-validator=\"{{uploadError}}\" mw-is-valid=\"!isInvalid\"></div>"
   );
 
 
