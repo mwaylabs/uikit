@@ -1,48 +1,59 @@
-<div ng-form="file" class="mw-file-upload {{uploadState}}" ng-class="{
-  'drag-start':isInDragState,
-  'drag-over':isInDragOverState,
+<div ng-form="file" class="mw-file-upload" ng-class="{
+  'drag-start':viewModel.documentDragOver,
+  'drag-over':viewModel.dropzoneDragOver,
   'full-screen':fullScreen,
-  'hidden-btn':hiddenBtn
+  'hidden-btn':hiddenBtn,
+  'UPLOADING': viewModel.state == 'UPLOADING',
+  'DONE': viewModel.state != 'UPLOADING'
   }">
 
-  <div ng-class="{'has-error': file.$error.required}" class="upload-container">
+  <div class="upload-container">
 
     <div class="upload-info panel panel-primary">
-      {{uploadMessage}}
+      {{viewModel.uploadMessage}}
       <div class="state-indicator">
-        <div class="progress" ng-style="{width: uploadProgress + '%'}"></div>
+        <div class="progress" ng-style="{width: viewModel.uploadProgress + '%'}"></div>
       </div>
     </div>
-    <div ng-if="!hideCancelBtn && uploadState == 'uploading'"
+    <div ng-if="!hideCancelBtn && viewModel.state == 'UPLOADING'"
          class="btn btn-danger"
          ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}
     </div>
 
-    <button ng-if="!fileIsSet() && uploadState != 'uploading'"
+    <button ng-hide="viewModel.fileName || viewModel.state == 'UPLOADING'"
             type="button"
-            class="btn btn-primary btn-upload hidden-on-drag"
-            ng-click="triggerUploadDialog()">
+            class="btn btn-primary btn-upload hidden-on-drag upload-btn"
+            mw-file-upload-button
+            accepts="{{validator}}"
+            drop-zone-element="viewModel.dropZoneElmement"
+            max-file-size-byte="maxFileSizeByte"
+            on-progress-callback="onUploadProgress"
+            on-success-callback="onUploadSuccess"
+            on-error-callback="onUploadError"
+            on-abort-callback="onUploadAbort"
+            abort-flag="abortFlag"
+            blue-imp-options="viewModel.blueImpOptions">
       <span mw-icon="rln-icon upload"></span> {{ text || ('rlnUikit.mwFileUpload.upload' | i18n) }}
     </button>
 
-    <div ng-show="uploadState != 'uploading'" class="upload-btn" style="width: 100%">
+    <div ng-show="viewModel.state != 'UPLOADING'" class="upload-btn" style="width: 100%">
 
-      <div class="drop-zone">
+      <div ng-if="viewModel.hasDropZone"
+           mw-file-upload-drag-and-drop
+           id="{{viewModel.dropZoneId}}"
+           on-document-drag-over-callback="dragoverDocumentStateChange"
+           on-dropzone-drag-over-callback="dragoverDropzoneStateChange"
+           on-drop="onDrop"></div>
 
-        <div class="content">
+      <div ng-if="viewModel.fileName" class="hidden-on-drag selected-file-info">
+        <p ng-if="showFileName"
+           class="filename panel panel-default">
           <span mw-icon="fa-file-o"></span>
-
-          <h3>{{'rlnUikit.mwFileUpload.dropFiles' | i18n}}</h3>
-        </div>
-
-      </div>
-
-      <div ng-if="fileIsSet()" class="hidden-on-drag selected-file-info">
-        <p ng-if="_showFileName" class="filename panel panel-default"><span mw-icon="fa-file-o"></span>
-          {{getFileName()}}</p>
+          {{viewModel.fileName}}
+        </p>
 
         <button type="button" class="btn btn-danger"
-                ng-click="remove()">
+                ng-click="removeFile()">
           <span mw-icon="rln-icon delete"></span> {{'rlnUikit.mwFileUpload.remove' | i18n }}
         </button>
       </div>
@@ -50,14 +61,11 @@
     </div>
   </div>
 
-  <input type="file"
+  <input type="text"
          class="hidden"
-         name="file"
-         accept="{{inputValidator}}"
-         ng-model="selectedFile"
+         ng-model="viewModel.fileName"
          ng-required="mwRequired"
          mw-set-dirty-on-model-change
-         mw-custom-error-validator="{{uploadError}}"
-         mw-is-valid="!isInvalid">
-
+         mw-custom-error-validator="{{viewModel.uploadError}}"
+         mw-is-valid="!viewModel.isInvalid">
 </div>
