@@ -120,7 +120,8 @@
     }
   }
 
-  &.drag-start {
+  &.drag-start,
+  &.drag-over{
     height: 150px;
 
     .hidden-on-drag {
