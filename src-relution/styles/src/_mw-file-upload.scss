@@ -99,7 +99,7 @@
     }
   }
 
-  &:not(.uploading) {
+  &:not(.UPLOADING) {
     .upload-info {
       width: 0;
       flex-grow: 0;
@@ -110,7 +110,7 @@
     }
   }
 
-  &.uploading {
+  &.UPLOADING {
     .upload-info {
       flex-grow: 1;
       padding-left: 12px;
@@ -165,11 +165,11 @@
     display: none;
     height: 0;
 
-    &.drag-start, &.uploading {
+    &.drag-start, &.UPLOADING {
       display: block;
     }
 
-    &.uploading {
+    &.UPLOADING {
       .upload-container {
         display: flex !important;
 
