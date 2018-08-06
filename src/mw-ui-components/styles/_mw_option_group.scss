@@ -44,6 +44,10 @@
 
               .badges{
                 margin-left: 5px;
+
+                .mw-badge + .mw-badge{
+                  margin-bottom: 0;
+                }
               }
             }
           }
