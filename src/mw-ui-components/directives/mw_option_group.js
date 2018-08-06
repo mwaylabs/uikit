@@ -15,9 +15,16 @@ angular.module('mwUI.UiComponents')
         scope.randomId = _.uniqueId('option_group_');
         el.find('input').attr('id', scope.randomId);
 
-        if(scope.badges && !_.isArray(scope.badges)){
+        if (scope.badges && !_.isArray(scope.badges)) {
           throw new Error('[mwOptionGroup] The attribute badges only accept an array of strings');
         }
+
+        scope.select = function () {
+          var input = el.find('input[type=radio]');
+          if (input) {
+            input.click();
+          }
+        };
       }
 
     };
