@@ -42,17 +42,19 @@ angular.module('mwUI.Backbone')
           }
         };
 
+        var onModelChange = function (model, val, options) {
+          if (!options.fromNgModel) {
+            updateNgModel();
+          }
+        };
+
         var init = function () {
           model = scope.$eval(attrs.mwModel);
           modelAttr = getModelAttrName();
 
           if (ngModelCtrl && model && modelAttr) {
 
-            model.on('change:' + modelAttr, function (model, val, options) {
-              if (!options.fromNgModel) {
-                updateNgModel();
-              }
-            });
+            model.on('change:' + modelAttr, onModelChange);
 
             ngModelCtrl.$viewChangeListeners.push(updateBackboneModel);
             ngModelCtrl.$parsers.push(function (val) {
@@ -87,6 +89,12 @@ angular.module('mwUI.Backbone')
             init();
           });
         }
+
+        scope.$on('$destroy', function () {
+          if(model && modelAttr){
+            model.off('change:' + modelAttr, onModelChange);
+          }
+        });
       }
     };
   });
