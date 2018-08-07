@@ -34,7 +34,8 @@ angular.module('mwComponentsBb', [])
         customUrlParameter: '@',
         mwDisabled: '=',
         placeholder: '@',
-        inputSearchId: '@?'
+        inputSearchId: '@?',
+        minLength: '=?'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
       link: function (scope, el) {
@@ -63,7 +64,7 @@ angular.module('mwComponentsBb', [])
         };
 
         scope.search = function () {
-          if (canSearch) {
+          if (canSearch && scope.viewModel.searchVal.length >= scope.minLength) {
             scope.searching = true;
             //backup searched text to reset after fetch complete in case of search text was empty
             setFilterVal(scope.viewModel.searchVal);
@@ -123,6 +124,10 @@ angular.module('mwComponentsBb', [])
 
         if (!(collection instanceof Backbone.Collection)) {
           throw new Error('[mwFilterableSearchBb] Either collection or mwCollection has to be set');
+        }
+
+        if (!scope.minLength) {
+          scope.minLength = 0;
         }
 
         scope.$watch(function () {
