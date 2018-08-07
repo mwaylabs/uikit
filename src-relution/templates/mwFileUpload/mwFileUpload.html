@@ -20,7 +20,7 @@
          ng-click="abort()">{{'rlnUikit.mwFileUpload.abort' | i18n}}
     </div>
 
-    <button ng-hide="viewModel.fileName || viewModel.state == 'UPLOADING'"
+    <button ng-show="canShowUploadBtn()"
             type="button"
             class="btn btn-primary btn-upload hidden-on-drag upload-btn"
             mw-file-upload-button
@@ -52,7 +52,9 @@
           {{viewModel.fileName}}
         </p>
 
-        <button type="button" class="btn btn-danger"
+        <button ng-show="canShowRemoveBtn()"
+                type="button"
+                class="btn btn-danger"
                 ng-click="removeFile()">
           <span mw-icon="rln-icon delete"></span> {{'rlnUikit.mwFileUpload.remove' | i18n }}
         </button>

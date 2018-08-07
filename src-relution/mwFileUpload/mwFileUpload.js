@@ -36,8 +36,10 @@ angular.module('mwFileUpload', [])
         stateChangeCallback: '&',
         fullScreen: '=',
         hiddenBtn: '=',
+        showUploadBtnAlways: '=?',
         hasDropZone: '=?',
         hideCancelBtn: '=?',
+        hideRemoveBtn: '=?',
         abortFlag: '=?',
         maxFileSizeByte: '=?'
       },
@@ -48,7 +50,6 @@ angular.module('mwFileUpload', [])
           blueImpOptions: {},
           state: null,
           uploadProgress: 0,
-          fileIsSet: false,
           fileName: null,
           uploadError: null,
           isInvalid: false,
@@ -180,7 +181,16 @@ angular.module('mwFileUpload', [])
           }
         };
 
-        /* data = {
+        scope.canShowUploadBtn = function () {
+          return scope.viewModel.state !== 'UPLOADING' &&
+            (!scope.viewModel.fileName || scope.showUploadBtnAlways || scope.hideRemoveBtn);
+        };
+
+        scope.canShowRemoveBtn = function () {
+          return !scope.hideRemoveBtn && scope.viewModel.fileName;
+        };
+
+        /* progressData = {
             data:blueImpXhr,
             progress: progress,
             total: dataTotal,
