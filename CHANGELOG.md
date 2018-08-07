@@ -1,3 +1,11 @@
+# v1.23.1
+## Bug Fixes
+- Refactor fileuploader to split up uploader directive into smaller directives
+- Fix double click issue in internet explorer (#220)
+
+## Features
+- Add options to file uploader to hide remove file button and to show select file button always
+
 # v1.23.0
 ## Features
 - Improve `mwSidebarDateRange` usability.
