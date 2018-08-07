@@ -47,7 +47,7 @@ angular.module('mwFileUpload', [])
       templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
       link: function (scope, elm, attrs, formController) {
         scope.viewModel = {
-          blueImpOptions: {},
+          uploaderOptions: {},
           state: null,
           uploadProgress: 0,
           fileName: null,
@@ -83,7 +83,7 @@ angular.module('mwFileUpload', [])
 
         var updateFileName = function () {
           var labelAttr = scope.labelAttribute || 'name';
-          if (scope.model instanceof window.mCAP.Model) {
+          if (scope.model instanceof window.Backbone.Model) {
             scope.viewModel.fileName = scope.model.get(labelAttr);
           } else if (scope.model) {
             scope.viewModel.fileName = scope.model[labelAttr];
@@ -126,7 +126,10 @@ angular.module('mwFileUpload', [])
           }
         };
 
-        var fileToBigError = function (files) {
+        var triggerFileToBigError = function (files) {
+          if (!files || !angular.isArray(files) || files.length === 0) {
+            return;
+          }
           var file = files[0];
           var actualFileSizeReadable = $filter('mwReadableFileSize')(file.size);
           var maxFileSizeReadable = $filter('mwReadableFileSize')(scope.maxFileSizeByte);
@@ -149,9 +152,9 @@ angular.module('mwFileUpload', [])
           scope.viewModel.uploadError = errorMsg;
         };
 
-        var updateBlueImpFileOptions = function (options) {
+        var updateUploaderOptions = function (options) {
           options = options || {};
-          _.extend(scope.viewModel.blueImpOptions, options);
+          _.extend(scope.viewModel.uploaderOptions, options);
         };
 
         var setDropZone = function () {
@@ -197,12 +200,19 @@ angular.module('mwFileUpload', [])
             loaded: dataLoaded
          } */
         scope.onUploadProgress = function (progressData) {
+          var fileName = '';
+          if (!angular.isObject(progressData)) {
+            return;
+          }
+          if (progressData.data && angular.isArray(progressData.data.files) && progressData.data.files[0]) {
+            fileName = progressData.data.files[0].name;
+          }
           scope.abortFlag = false;
           scope.viewModel.state = 'UPLOADING';
           scope.viewModel.isInvalid = true;
           scope.viewModel.uploadProgress = progressData.progress;
           scope.viewModel.uploadMessage = i18n.get('rlnUikit.mwFileUpload.uploading', {
-            fileName: progressData.data.files[0].name
+            fileName: fileName
           });
           $timeout(scope.stateChangeCallback.bind(this, {
             data: progressData.data,
@@ -236,7 +246,7 @@ angular.module('mwFileUpload', [])
           scope.viewModel.state = 'DONE';
           switch (data.type) {
             case 'FILE_TOO_BIG':
-              fileToBigError(data.result.files);
+              triggerFileToBigError(data.result.files);
               break;
             case 'SERVER':
               break;
@@ -260,7 +270,7 @@ angular.module('mwFileUpload', [])
 
         scope.$watch('url', function (val) {
           if (val) {
-            updateBlueImpFileOptions({
+            updateUploaderOptions({
               url: val
             });
           }
@@ -268,7 +278,7 @@ angular.module('mwFileUpload', [])
 
         scope.$watch('formData', function (val) {
           if (val) {
-            updateBlueImpFileOptions({
+            updateUploaderOptions({
               formData: val
             });
           }
@@ -287,7 +297,7 @@ angular.module('mwFileUpload', [])
           scope.hasDropZone = true;
         }
 
-        updateBlueImpFileOptions(mwFileUpload.getGlobalConfig());
+        updateUploaderOptions(mwFileUpload.getGlobalConfig());
 
         scope.$watch('model', updateFileName);
       }

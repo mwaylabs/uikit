@@ -4,7 +4,7 @@ angular.module('mwFileUpload')
     return {
       restrict: 'A',
       scope: {
-        blueImpOptions: '=?',
+        uploaderOptions: '=?',
         maxFileSizeByte: '=?',
         dropZoneElement: '=?',
         onBeforeUploadCallback: '=?',
@@ -63,7 +63,7 @@ angular.module('mwFileUpload')
         };
 
         var stateChange = function (data) {
-          if (typeof scope.onProgressCallback === 'function') {
+          if (data && typeof scope.onProgressCallback === 'function') {
             var dataLoaded = data.loaded;
             var dataTotal = data.total;
             var progress = parseInt(dataLoaded / dataTotal * 100, 10);
@@ -105,6 +105,9 @@ angular.module('mwFileUpload')
         });
 
         hiddenfileEl.bind('fileuploadadd', function (e, data) {
+          if (!data || !angular.isArray(data.files) || data.files.length === 0) {
+            return;
+          }
           scope.file = data.files;
           userHasCanceled = false;
 
@@ -170,7 +173,7 @@ angular.module('mwFileUpload')
             formData: {}
           }
         */
-        scope.$watch('blueImpOptions', function (val) {
+        scope.$watch('uploaderOptions', function (val) {
           if (val) {
             hiddenfileEl.fileupload('option', val);
           }
