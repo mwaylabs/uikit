@@ -1,6 +1,6 @@
 angular.module('mwUI.UiComponents')
 
-  .directive('mwOptionGroup', function () {
+  .directive('mwOptionGroup', function ($timeout) {
     return {
       scope: {
         title: '@',
@@ -20,9 +20,12 @@ angular.module('mwUI.UiComponents')
         }
 
         scope.select = function () {
-          var input = el.find('input[type=radio]');
+          var input = el.find('input');
           if (input) {
             input.click();
+            $timeout(function () {
+              input.triggerHandler('click');
+            });
           }
         };
       }
