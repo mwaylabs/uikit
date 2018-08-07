@@ -6,10 +6,10 @@ angular.module('mwUI.Backbone')
       link: function (scope, el, attrs, ctrls) {
         var model, modelAttr, ngModelCtrl, formCtrl;
 
-        if(ctrls.length>0){
+        if(ctrls.length > 0){
           ngModelCtrl = ctrls[0];
         }
-        if(ctrls.length>1){
+        if(ctrls.length > 1){
           formCtrl = ctrls[1];
         }
 
@@ -67,7 +67,7 @@ angular.module('mwUI.Backbone')
             } else if (model.get(modelAttr)) {
               updateNgModel();
               ngModelCtrl.$setPristine();
-              if(formCtrl){
+              if (formCtrl) {
                 formCtrl.$setPristine(ngModelCtrl);
               }
             } else if (ngModelCtrl.$modelValue) {
