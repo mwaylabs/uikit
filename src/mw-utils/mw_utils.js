@@ -18,6 +18,7 @@ angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
 // @include ./directives/mw_prevent_default.js
 // @include ./directives/mw_stop_propagation.js
 
+// @include ./filters/mw_readable_file_size.js
 // @include ./filters/mw_reduce_string_to.js
 
 // @include ./modals/mw_leave_confirmation_modal.js

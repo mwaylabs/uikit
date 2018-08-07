@@ -17,7 +17,7 @@ angular.module('mwFileUpload', [])
 
   })
 
-  .directive('mwFileUpload', function ($q, $timeout, mwFileUpload, ResponseHandler, mwMimetype, i18n) {
+  .directive('mwFileUpload', function ($q, $timeout, $filter, mwFileUpload, ResponseHandler, mwMimetype, i18n) {
     return {
       restrict: 'A',
       scope: {
@@ -36,42 +36,31 @@ angular.module('mwFileUpload', [])
         stateChangeCallback: '&',
         fullScreen: '=',
         hiddenBtn: '=',
+        showUploadBtnAlways: '=?',
         hasDropZone: '=?',
         hideCancelBtn: '=?',
+        hideRemoveBtn: '=?',
         abortFlag: '=?',
         maxFileSizeByte: '=?'
       },
       require: '?^form',
       templateUrl: 'uikit/templates/mwFileUpload/mwFileUpload.html',
       link: function (scope, elm, attrs, formController) {
+        scope.viewModel = {
+          uploaderOptions: {},
+          state: null,
+          uploadProgress: 0,
+          fileName: null,
+          uploadError: null,
+          isInvalid: false,
+          dropZoneId: _.uniqueId('dropzone'),
+          dropZoneElmement: null,
+          documentDragOver: false,
+          dropzoneDragOver: false,
+          hasDropzone: false
+        };
 
-        var timeout,
-          fileUploaderEl = elm.find('.mw-file-upload'),
-          hiddenfileEl = elm.find('input[type=file]'),
-          userHasCanceledUpload = false,
-          uploadXhr;
-
-        scope._showFileName = angular.isDefined(scope.showFileName) ? scope.showFileName : true;
-
-        scope.uploadState = 'none';
-
-        scope.isInvalid = false;
-
-        scope.uploadError = false;
-
-        scope.selectedFile = null;
-
-        scope.uploadMessage = '';
-
-        scope.mimeTypeGroup = mwMimetype.getMimeTypeGroup(attrs.validator);
-
-        if (!scope.mimeTypeGroup) {
-          scope.inputValidator = '*/*';
-        } else {
-          scope.inputValidator = attrs.validator;
-        }
-
-        var handle = function (response, isError) {
+        var handleResponse = function (response, isError) {
           var ngResponse = {
             config: {
               method: response.type,
@@ -92,246 +81,196 @@ angular.module('mwFileUpload', [])
           }
         };
 
-        var error = function (data, result) {
-          handle(data, true).catch(function () {
-            $timeout(scope.errorCallback.bind(this, {result: result}));
-          });
-        };
-
-        var getResult = function (msg) {
-          if (msg && msg.results && _.isArray(msg.results) && msg.results.length > 0) {
-            msg = msg.results[0];
+        var updateFileName = function () {
+          var labelAttr = scope.labelAttribute || 'name';
+          if (scope.model instanceof window.Backbone.Model) {
+            scope.viewModel.fileName = scope.model.get(labelAttr);
+          } else if (scope.model) {
+            scope.viewModel.fileName = scope.model[labelAttr];
+          } else {
+            scope.viewModel.fileName = null;
           }
-          return msg;
         };
 
-        var success = function (data, result) {
-          var parsedResult = getResult(result);
+        var updateModel = function (file) {
           if (scope.model instanceof Backbone.Model) {
-            scope.model.set(scope.model.parse(parsedResult));
+            scope.model.set(scope.model.parse(file));
           } else if (scope.attribute) {
-            scope.model = parsedResult[scope.attribute];
+            scope.model = file[scope.attribute];
           } else {
-            scope.model = parsedResult;
+            scope.model = file;
           }
+          updateFileName();
+        };
 
-          if (formController) {
-            formController.$setDirty();
-          }
-
-          handle(data, false).then(function () {
-            $timeout(scope.successCallback.bind(this, {result: parsedResult}));
-          });
-
-          if (attrs.validator && !mwMimetype.checkMimeType(parsedResult.contentType, attrs.validator)) {
-            if (data.result && data.result.message) {
+        var updateFile = function (xhr, response, file) {
+          if (attrs.validator && !mwMimetype.checkMimeType(file.contentType, attrs.validator)) {
+            if (response && response.message) {
               scope.uploadError = i18n.get('rlnUikit.mwFileUpload.invalidMimeType', {mimeType: attrs.validator});
-              scope.isInvalid = true;
+              scope.viewModel.isInvalid = true;
+              scope.viewModel.fileName = file.name;
+              return;
             }
           }
-        };
 
-        var stateChange = function (data) {
-          scope.dataLoaded = data.loaded;
-          scope.dataTotal = data.total;
-          scope.uploadProgress = parseInt(scope.dataLoaded / scope.dataTotal * 100, 10);
-          scope.stateChangeCallback({data: data, progress: scope.uploadProgress});
-        };
+          updateModel(file);
 
-        var documentDragOver = function () {
-          if (!timeout) {
-            $timeout(function () {
-              scope.isInDragState = true;
-            });
-          }
-          else {
-            clearTimeout(timeout);
-          }
-
-          timeout = setTimeout(function () {
-            timeout = null;
-            $timeout(function () {
-              scope.isInDragState = false;
-            });
-          }, 100);
-        };
-
-        var documentDrop = function (ev) {
-          ev.preventDefault();
-        };
-
-        var elDragOver = function () {
-          $timeout(function () {
-            scope.isInDragOverState = true;
+          handleResponse(xhr, false).then(function () {
+            $timeout(scope.successCallback.bind(this, {result: file}));
           });
         };
 
-        var elDragLeave = function () {
-          $timeout(function () {
-            scope.isInDragOverState = false;
-          });
-        };
-
-        var initDragAndDrop = function () {
-          /*
-         * This implementation was found on https://github.com/blueimp/jQuery-File-Upload/wiki/Drop-zone-effects
-         * The tricky part is the dragleave stuff when the user decides not to drop the file
-         * You can not just use the dragleave event. This implemtation did solve the problem
-         * It was a bit modified
-         */
-          angular.element(document).on('dragover', documentDragOver);
-          fileUploaderEl.on('dragover', elDragOver);
-          fileUploaderEl.on('dragleave', elDragLeave);
-          angular.element(document).on('drop dragover', documentDrop);
-        };
-
-        var deInitDragAndDrop = function () {
-          angular.element(document).off('dragover', documentDragOver);
-          fileUploaderEl.off('dragover', elDragOver);
-          fileUploaderEl.off('dragleave', elDragLeave);
-          angular.element(document).off('drop dragover', documentDrop);
-        };
-
-        function readableFileSize(bytes) {
-          if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) return '-';
-          var units = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
-            number = Math.floor(Math.log(bytes) / Math.log(1024));
-          return (bytes / Math.pow(1024, Math.floor(number))).toFixed(2) +  ' ' + units[number];
-        }
-
-        scope.triggerUploadDialog = function () {
-          elm.find('input').click();
-        };
-
-        scope.fileIsSet = function () {
-          if (scope.model instanceof window.mCAP.Model) {
-            return !scope.model.isNew();
-          } else {
-            return !!scope.model;
-          }
-        };
-
-        scope.getFileName = function () {
-          if (scope.fileIsSet) {
-            var labelAttr = scope.labelAttribute || 'name';
-            if (scope.model instanceof window.mCAP.Model) {
-              return scope.model.get(labelAttr);
-            } else {
-              return scope.model[labelAttr];
-            }
-          }
-        };
-
-        scope.remove = function () {
+        var setFormDirty = function () {
           if (formController) {
             formController.$setDirty();
           }
-          if (scope.model instanceof window.mCAP.Model) {
-            scope.model.clear();
-          } else {
-            scope.model = null;
+        };
+
+        var triggerFileToBigError = function (files) {
+          if (!files || !angular.isArray(files) || files.length === 0) {
+            return;
           }
-          scope.uploadError = false;
-          scope.isInvalid = false;
+          var file = files[0];
+          var actualFileSizeReadable = $filter('mwReadableFileSize')(file.size);
+          var maxFileSizeReadable = $filter('mwReadableFileSize')(scope.maxFileSizeByte);
+          var errorMsg = i18n.get('rlnUikit.mwFileUpload.fileTooLarge', {
+            fileName: file.name,
+            max: maxFileSizeReadable,
+            actual: '(' + actualFileSizeReadable + ')'
+          });
+          $timeout(scope.errorCallback.bind(this, {
+            result: {
+              msg: errorMsg,
+              code: 413,
+              fileSize: file.size,
+              fileName: file.name,
+              fileType: file.type,
+              maxFileSizeByte: scope.maxFileSizeByte
+            }
+          }));
+          scope.viewModel.fileName = file.name;
+          scope.viewModel.uploadError = errorMsg;
+        };
+
+        var updateUploaderOptions = function (options) {
+          options = options || {};
+          _.extend(scope.viewModel.uploaderOptions, options);
+        };
+
+        var setDropZone = function () {
+          $timeout(function () {
+            scope.viewModel.dropZoneElmement = elm.find('#' + scope.viewModel.dropZoneId);
+          });
         };
 
         scope.abort = function () {
-          if (uploadXhr) {
-            userHasCanceledUpload = true;
-            uploadXhr.abort();
+          scope.abortFlag = true;
+        };
+
+        scope.dragoverDocumentStateChange = function (newState) {
+          if (newState === 'DOCUMENT_DRAG_OVER') {
+            scope.viewModel.documentDragOver = true;
+          } else {
+            scope.viewModel.documentDragOver = false;
+            scope.viewModel.dropzoneDragOver = false;
           }
         };
 
-        hiddenfileEl.fileupload({
-          url: scope.url,
-          dropZone: elm.find('.drop-zone'),
-          dataType: 'json',
-          formData: scope.formData,
-          progress: function (e, data) {
-            $timeout(function () {
-              stateChange(data);
-            });
-          },
-          done: function (e, data) {
-            scope.isInvalid = false;
-            $timeout(function () {
-              scope.uploadState = 'done';
-              scope.uploadProgress = 0;
-              success(data, data.result);
-            });
-          },
-          error: function (rsp) {
-            $timeout(function () {
-              scope.uploadState = 'done';
-              scope.uploadProgress = 0;
-
-              if (!userHasCanceledUpload) {
-                scope.uploadError = rsp.statusText;
-                scope.isInvalid = true;
-                error(this, rsp.responseJSON);
-              } else {
-                scope.isInvalid = false;
-              }
-            }.bind(this));
-          },
-          add: function (e, data) {
-            var hasFileSizeError = false;
-            if (scope.maxFileSizeByte) {
-              // check each file if it is too large to upload.
-              angular.forEach(data.files, function (file) {
-                if(file.size > scope.maxFileSizeByte) {
-                  hasFileSizeError = true;
-                  var errorMsg = i18n.get('rlnUikit.mwFileUpload.fileTooLarge', {fileName: file.name, max: readableFileSize(scope.maxFileSizeByte), actual: '(' + readableFileSize(file.size) + ')'});
-                  $timeout(scope.errorCallback.bind(this, {
-                    result: {
-                      msg: errorMsg,
-                      code: 413,
-                      fileSize: file.size,
-                      fileName: file.name,
-                      fileType: file.type,
-                      maxFileSizeByte: scope.maxFileSizeByte,
-                    }
-                  }));
-                  scope.uploadError = errorMsg;
-                  scope.isInvalid = true;
-                }
-              });
-            }
-
-            if (hasFileSizeError) {
-              return;
-            }
-
-            userHasCanceledUpload = false;
-            var fileName = data.originalFiles[0].name || '';
-            scope.uploadError = false;
-            scope.isInvalid = true;
-            scope.uploadMessage = i18n.get('rlnUikit.mwFileUpload.uploading', {fileName: fileName});
-            $timeout(function () {
-              scope.uploadState = 'uploading';
-            });
-            scope.selectedFile = hiddenfileEl.val();
-            uploadXhr = data.submit();
-          }
-        });
-
-        hiddenfileEl.fileupload('option', mwFileUpload.getGlobalConfig());
-
-        scope.$watch('model', function (val, previousVal) {
-          if (val) {
-            scope.selectedFile = val;
+        scope.dragoverDropzoneStateChange = function (newState) {
+          if (newState === 'DROPZONE_DRAG_OVER') {
+            scope.viewModel.dropzoneDragOver = true;
           } else {
-            if (previousVal) {
-              scope.selectedFile = '';
-            } else {
-              scope.selectedFile = null;
-            }
+            scope.viewModel.dropzoneDragOver = false;
           }
-        });
+        };
+
+        scope.canShowUploadBtn = function () {
+          return scope.viewModel.state !== 'UPLOADING' &&
+            (!scope.viewModel.fileName || scope.showUploadBtnAlways || scope.hideRemoveBtn);
+        };
+
+        scope.canShowRemoveBtn = function () {
+          return !scope.hideRemoveBtn && scope.viewModel.fileName;
+        };
+
+        /* progressData = {
+            data:blueImpXhr,
+            progress: progress,
+            total: dataTotal,
+            loaded: dataLoaded
+         } */
+        scope.onUploadProgress = function (progressData) {
+          var fileName = '';
+          if (!angular.isObject(progressData)) {
+            return;
+          }
+          if (progressData.data && angular.isArray(progressData.data.files) && progressData.data.files[0]) {
+            fileName = progressData.data.files[0].name;
+          }
+          scope.abortFlag = false;
+          scope.viewModel.state = 'UPLOADING';
+          scope.viewModel.isInvalid = true;
+          scope.viewModel.uploadProgress = progressData.progress;
+          scope.viewModel.uploadMessage = i18n.get('rlnUikit.mwFileUpload.uploading', {
+            fileName: fileName
+          });
+          $timeout(scope.stateChangeCallback.bind(this, {
+            data: progressData.data,
+            progress: progressData.progress
+          }));
+        };
+
+        /* data = {
+           xhr: blueImpXhr,
+           response: {}
+           file: {}
+         } */
+        scope.onUploadSuccess = function (data) {
+          scope.viewModel.state = 'DONE';
+          scope.viewModel.uploadProgress = 0;
+          updateFile(data.xhr, data.response, data.file);
+          scope.viewModel.isInvalid = false;
+          setFormDirty();
+          $timeout(scope.successCallback.bind(this, {result: data.file}));
+        };
+
+        /* data = {
+           type: FILE_TOO_BIG | SERVER | CUSTOM_VALIDATION_FAILED,
+           xhr: blueImpXhr,
+           result: {
+             files: [] | null,
+             response: {} | null
+           }
+         } */
+        scope.onUploadError = function (data) {
+          scope.viewModel.state = 'DONE';
+          switch (data.type) {
+            case 'FILE_TOO_BIG':
+              triggerFileToBigError(data.result.files);
+              break;
+            case 'SERVER':
+              break;
+            case 'CUSTOM_VALIDATION_FAILED':
+              break;
+          }
+          scope.viewModel.isInvalid = true;
+          setFormDirty();
+          $timeout(scope.errorCallback.bind(this, {result: data.response || {}}));
+        };
+
+        scope.onUploadAbort = function () {
+          scope.viewModel.state = 'DONE';
+          scope.viewModel.isInvalid = false;
+        };
+
+        scope.removeFile = function () {
+          updateModel(null);
+          scope.viewModel.isInvalid = false;
+        };
 
         scope.$watch('url', function (val) {
           if (val) {
-            hiddenfileEl.fileupload('option', {
+            updateUploaderOptions({
               url: val
             });
           }
@@ -339,36 +278,28 @@ angular.module('mwFileUpload', [])
 
         scope.$watch('formData', function (val) {
           if (val) {
-            hiddenfileEl.fileupload('option', {
-              formData: scope.formData
+            updateUploaderOptions({
+              formData: val
             });
           }
         }, true);
 
-        if (angular.isUndefined(scope.hasDropZone)) {
-          initDragAndDrop();
-        }
-        scope.$watch('hasDropZone', function (hasDropZone) {
-          if (angular.isUndefined(hasDropZone) || hasDropZone) {
-            initDragAndDrop();
+        scope.$watch('hasDropZone', function (val) {
+          if (val) {
+            scope.viewModel.hasDropZone = true;
+            setDropZone();
           } else {
-            deInitDragAndDrop();
+            scope.viewModel.hasDropZone = false;
           }
         });
 
-        scope.$watch('abortFlag', function (abortFlag) {
-          if (abortFlag) {
-            scope.abort();
-          }
-        });
+        if (angular.isUndefined(scope.hasDropZone)) {
+          scope.hasDropZone = true;
+        }
 
-        scope.$on('$destroy', function () {
-          deInitDragAndDrop();
-          try {
-            hiddenfileEl.fileupload('destroy');
-          } catch (err) {
-          }
-        });
+        updateUploaderOptions(mwFileUpload.getGlobalConfig());
+
+        scope.$watch('model', updateFileName);
       }
     };
   });
