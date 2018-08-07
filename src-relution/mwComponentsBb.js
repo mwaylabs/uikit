@@ -41,7 +41,8 @@ angular.module('mwComponentsBb', [])
         scope.inputSearchId = scope.inputSearchId || 'mw_input_search_field';
         var inputEl = el.find('input'),
           collection,
-          listCollectionFilter;
+          listCollectionFilter,
+          canSearch = false;
 
         var setFilterVal = function (val) {
           if (scope.customUrlParameter) {
@@ -62,14 +63,18 @@ angular.module('mwComponentsBb', [])
         };
 
         scope.search = function () {
-          scope.searching = true;
-          //backup searched text to reset after fetch complete in case of search text was empty
-          setFilterVal(scope.viewModel.searchVal);
-          return collection.fetch().finally(function () {
-            $timeout(function () {
-              scope.searching = false;
-            }, 500);
-          });
+          if (canSearch) {
+            scope.searching = true;
+            //backup searched text to reset after fetch complete in case of search text was empty
+            setFilterVal(scope.viewModel.searchVal);
+            return collection.fetch().finally(function () {
+              $timeout(function () {
+                scope.searching = false;
+              }, 500);
+            });
+          } else {
+            $q.reject();
+          }
         };
 
         scope.reset = function () {
@@ -125,8 +130,16 @@ angular.module('mwComponentsBb', [])
             return collection.filterable.filterValues[scope.property];
           }
         }, function (val) {
-          if (val !== scope.viewModel.searchVal) {
+          if (val && val !== scope.viewModel.searchVal) {
+            canSearch = true;
             scope.viewModel.searchVal = val;
+          }
+        });
+
+        scope.$watch('viewModel.searchVal', function (val) {
+          if (val && val.length > 0) {
+            canSearch = true;
+            scope.search();
           }
         });
       }
