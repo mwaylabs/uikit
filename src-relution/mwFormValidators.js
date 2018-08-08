@@ -34,21 +34,13 @@
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          var regex = /^(00|\+)[0-9()\/-]{6,}$/;
-
-          var removeNonDigitValues = function (value) {
-            if (value) {
-              value = value.replace(/[^ 0-9+]/g, '');
-            }
-            return value;
-          };
+          var regex = /^(00|\+)[0-9()\/\-\.x\s]{6,}$/;
 
           var validateNumber = function (value) {
             return validateRegex(value, regex);
           };
 
           ngModel.$validators.phone = validateNumber;
-          ngModel.$formatters.push(removeNonDigitValues);
         }
       };
     })
