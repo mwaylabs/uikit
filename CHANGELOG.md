@@ -1,3 +1,11 @@
+# v1.23.2
+## Features
+- Make option group body clickable to select option (#214)
+- Add option to mw-header to disable refresh button (#221)
+- Don't trigger request when search term is empty and user clicks on search icon (#222)
+- Fix allignments of badges and tooltip of for mw-checkbox-wrapper (#205)
+- Soften phone number validation and allow slashes/dashes/slashes/whitspaces (#215)
+
 # v1.23.1
 ## Bug Fixes
 - Refactor fileuploader to split up uploader directive into smaller directives
