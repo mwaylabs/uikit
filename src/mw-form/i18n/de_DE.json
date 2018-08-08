@@ -11,7 +11,7 @@
     "hasToBeValidEmail": "muss eine valide E-Mail Adresse sein",
     "hasToMatchPattern": "muss dem Muster entsprechen",
     "hasToBeValidUrl": "muss eine valide URL sein",
-    "hasToBeValidPhoneNumber": "muss eine gültige Telefonnummer sein",
+    "hasToBeValidPhoneNumber": "muss die Ländervorwahl beinhalten zum Beispiel: +49 1577 / 8344",
     "hasToBeMin": "muss mindestens {{min}} sein",
     "hasToBeMinLength": "muss mindestens {{ngMinlength}} Zeichen haben",
     "hasToBeSmaller": "darf maximal {{max}} sein",
