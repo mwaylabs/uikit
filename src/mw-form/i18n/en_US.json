@@ -11,7 +11,7 @@
     "hasToBeValidEmail": "has to be a valid e-mail",
     "hasToMatchPattern": "has to match the pattern",
     "hasToBeValidUrl": "has to be a valid URL",
-    "hasToBeValidPhoneNumber": "has to be a valid phone number",
+    "hasToBeValidPhoneNumber": "must include the country code e.g. +49 1577 834-443",
     "hasToBeMin": "has to be at least {{min}}",
     "hasToBeMinLength": "has to have a least {{ngMinlength}} chars",
     "hasToBeSmaller": "must not be greater than {{max}}",

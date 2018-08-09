@@ -19,7 +19,12 @@
    * @description
    *
    * Adds validation for phone numbers.
-   * Valid Examples are: +491234567 or 00491234567
+   * Valid Examples are:
+   * - +491234567
+   * - 00491234567
+   * - +1234/(678)-999
+   *
+   * The value will be cleaned up before setting the model
    *
    * Note: this directive requires `ngModel` to be present.
    *
@@ -29,21 +34,13 @@
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, elm, attr, ngModel) {
-          var regex = /^\+(?:[0-9]){6,14}[0-9]$/;
-
-          var removeNonDigitValues = function (value) {
-            if (value) {
-              value = value.replace(/[^ 0-9+]/g, '');
-            }
-            return value;
-          };
+          var regex = /^(00|\+)[0-9()\/\-\.x\s]{6,}$/;
 
           var validateNumber = function (value) {
             return validateRegex(value, regex);
           };
 
           ngModel.$validators.phone = validateNumber;
-          ngModel.$formatters.push(removeNonDigitValues);
         }
       };
     })

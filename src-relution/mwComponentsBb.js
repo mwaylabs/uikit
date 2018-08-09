@@ -2,18 +2,18 @@
 
 angular.module('mwComponentsBb', [])
 
-  /**
-   * @ngdoc directive
-   * @name mwComponents.directive:mwFilterableSearch
-   * @element div
-   * @description
-   *
-   * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
-   *
-   * @param {filterable} filterable Filterable instance.
-   * @param {expression} disabled If expression evaluates to true, input is disabled.
-   * @param {string} property The name of the property on which the filtering should happen.
-   */
+/**
+ * @ngdoc directive
+ * @name mwComponents.directive:mwFilterableSearch
+ * @element div
+ * @description
+ *
+ * Creates a search field to filter by in the sidebar. Search is triggered on keypress 'enter'.
+ *
+ * @param {filterable} filterable Filterable instance.
+ * @param {expression} disabled If expression evaluates to true, input is disabled.
+ * @param {string} property The name of the property on which the filtering should happen.
+ */
   .service('ignoreKeyPress', function () {
     var ENTER_KEY = 13;
     return {
@@ -25,7 +25,7 @@ angular.module('mwComponentsBb', [])
     };
   })
 
-  .directive('mwFilterableSearchBb', function ($timeout, ignoreKeyPress) {
+  .directive('mwFilterableSearchBb', function ($timeout, $q, ignoreKeyPress) {
     return {
       scope: {
         collection: '=',
@@ -34,14 +34,16 @@ angular.module('mwComponentsBb', [])
         customUrlParameter: '@',
         mwDisabled: '=',
         placeholder: '@',
-        inputSearchId: '@?'
+        inputSearchId: '@?',
+        minLength: '=?'
       },
       templateUrl: 'uikit/templates/mwComponentsBb/mwFilterableSearch.html',
       link: function (scope, el) {
         scope.inputSearchId = scope.inputSearchId || 'mw_input_search_field';
         var inputEl = el.find('input'),
           collection,
-          listCollectionFilter;
+          listCollectionFilter,
+          canSearch = false;
 
         var setFilterVal = function (val) {
           if (scope.customUrlParameter) {
@@ -62,14 +64,18 @@ angular.module('mwComponentsBb', [])
         };
 
         scope.search = function () {
-          scope.searching = true;
-          //backup searched text to reset after fetch complete in case of search text was empty
-          setFilterVal(scope.viewModel.searchVal);
-          return collection.fetch().finally(function () {
-            $timeout(function () {
-              scope.searching = false;
-            }, 500);
-          });
+          if (canSearch && scope.viewModel.searchVal.length >= scope.minLength) {
+            scope.searching = true;
+            //backup searched text to reset after fetch complete in case of search text was empty
+            setFilterVal(scope.viewModel.searchVal);
+            return collection.fetch().finally(function () {
+              $timeout(function () {
+                scope.searching = false;
+              }, 500);
+            });
+          } else {
+            $q.reject();
+          }
         };
 
         scope.reset = function () {
@@ -98,13 +104,13 @@ angular.module('mwComponentsBb', [])
           el.children().removeClass('is-focused');
         });
 
-        el.on('mousedown touch', function(ev){
+        el.on('mousedown touch', function (ev) {
           var searchBtn = el.find('.trigger-search'),
-              resetBtn = el.find('.reset-search');
+            resetBtn = el.find('.reset-search');
 
-          if(resetBtn.find(ev.target).length !== 0){
+          if (resetBtn.find(ev.target).length !== 0) {
             scope.reset();
-          } else if(searchBtn.find(ev.target).length !== 0){
+          } else if (searchBtn.find(ev.target).length !== 0) {
             scope.search();
           }
         });
@@ -120,13 +126,24 @@ angular.module('mwComponentsBb', [])
           throw new Error('[mwFilterableSearchBb] Either collection or mwCollection has to be set');
         }
 
+        if (!scope.minLength) {
+          scope.minLength = 0;
+        }
+
         scope.$watch(function () {
           if (collection.filterable && scope.property) {
             return collection.filterable.filterValues[scope.property];
           }
         }, function (val) {
-          if (val !== scope.viewModel.searchVal) {
+          if (val && val !== scope.viewModel.searchVal) {
+            canSearch = true;
             scope.viewModel.searchVal = val;
+          }
+        });
+
+        scope.$watch('viewModel.searchVal', function (val) {
+          if (val && val.length > 0) {
+            canSearch = true;
           }
         });
       }

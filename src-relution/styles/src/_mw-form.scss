@@ -45,9 +45,19 @@
   }
 }
 
-.mw-checkbox-wrapper{
-  .badges-holder{
+.mw-checkbox-wrapper {
+  label + *[mw-icon] {
+    margin-left: 5px;
+  }
+  
+  .badges-holder {
     padding-left: 5px;
+    margin-top: -2px;
+    float: left;
+
+    .mw-badge + .mw-badge {
+      margin-bottom: 0;
+    }
   }
 }
 

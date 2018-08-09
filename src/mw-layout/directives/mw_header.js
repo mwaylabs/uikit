@@ -10,6 +10,7 @@ angular.module('mwUI.Layout')
         showBackButton: '=?',
         mwBreadCrumbs: '=?',
         description: '@?',
+        disableReload: '=?'
       },
       require: '^?mwUi',
       templateUrl: 'uikit/mw-layout/directives/templates/mw_header.html',
@@ -61,6 +62,10 @@ angular.module('mwUI.Layout')
           scope.$on('$destroy', function () {
             mwUiCtrl.removeClass('has-mw-header');
           });
+        }
+
+        if (scope.disableReload) {
+          scope.showRefreshButton = false;
         }
       }
     };

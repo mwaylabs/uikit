@@ -6,10 +6,10 @@ angular.module('mwUI.Backbone')
       link: function (scope, el, attrs, ctrls) {
         var model, modelAttr, ngModelCtrl, formCtrl;
 
-        if(ctrls.length>0){
+        if(ctrls.length > 0){
           ngModelCtrl = ctrls[0];
         }
-        if(ctrls.length>1){
+        if(ctrls.length > 1){
           formCtrl = ctrls[1];
         }
 
@@ -42,17 +42,19 @@ angular.module('mwUI.Backbone')
           }
         };
 
+        var onModelChange = function (model, val, options) {
+          if (!options.fromNgModel) {
+            updateNgModel();
+          }
+        };
+
         var init = function () {
           model = scope.$eval(attrs.mwModel);
           modelAttr = getModelAttrName();
 
           if (ngModelCtrl && model && modelAttr) {
 
-            model.on('change:' + modelAttr, function (model, val, options) {
-              if (!options.fromNgModel) {
-                updateNgModel();
-              }
-            });
+            model.on('change:' + modelAttr, onModelChange);
 
             ngModelCtrl.$viewChangeListeners.push(updateBackboneModel);
             ngModelCtrl.$parsers.push(function (val) {
@@ -65,7 +67,7 @@ angular.module('mwUI.Backbone')
             } else if (model.get(modelAttr)) {
               updateNgModel();
               ngModelCtrl.$setPristine();
-              if(formCtrl){
+              if (formCtrl) {
                 formCtrl.$setPristine(ngModelCtrl);
               }
             } else if (ngModelCtrl.$modelValue) {
@@ -87,6 +89,12 @@ angular.module('mwUI.Backbone')
             init();
           });
         }
+
+        scope.$on('$destroy', function () {
+          if(model && modelAttr){
+            model.off('change:' + modelAttr, onModelChange);
+          }
+        });
       }
     };
   });
