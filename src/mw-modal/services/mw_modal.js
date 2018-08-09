@@ -178,7 +178,6 @@ angular.module('mwUI.Modal')
         _buildModal.call(this).then(function () {
           $rootScope.$broadcast('$modalResolveDependenciesSuccess');
           angular.element(_modalOptions.holderEl).append(_modal);
-          _bootstrapModal.modal('show');
           _modalOpened = true;
           _openedModals.push(this);
           _bootstrapModal.on('shown.bs.modal', function () {
@@ -191,7 +190,7 @@ angular.module('mwUI.Modal')
               _previousFocusedEl.focus();
             });
           }
-
+          _bootstrapModal.modal('show');
         }.bind(this), function (err) {
           $rootScope.$broadcast('$modalOpenError', err);
           dfd.reject(err);
