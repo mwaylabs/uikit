@@ -1,0 +1,19 @@
+.mw-infinite-loading{
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  .mw-spinner,
+  .lead {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .lead {
+    margin: 0 8px;
+    padding: 0;
+
+    color: #ccc;
+    font-weight: lighter;
+    font-size: 20px;
+  }
+}

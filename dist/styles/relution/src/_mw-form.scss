@@ -1,0 +1,105 @@
+.mw-forms {
+
+  .form-group {
+    .form-control {
+      &.input-inline {
+        width: inherit;
+        display: inline-block;
+      }
+    }
+  }
+}
+
+@mixin required-input-highlighter($color) {
+  textarea,
+  input {
+    &:not([type=button]){
+      border-left: 3px solid $color;
+    }
+  }
+
+  input[type=button],button{
+      font-weight: bold;
+  }
+}
+
+.mw-form {
+  &.form-group {
+
+    label {
+      font-weight: normal;
+    }
+
+    &.is-required {
+      label {
+        font-weight: bold;
+      }
+    }
+
+    &.is-required-error {
+      @include required-input-highlighter(#bbb);
+      &.has-error {
+        @include required-input-highlighter($brand-danger);
+      }
+    }
+  }
+}
+
+.mw-checkbox-wrapper {
+  label + *[mw-icon] {
+    margin-left: 5px;
+  }
+  
+  .badges-holder {
+    padding-left: 5px;
+    margin-top: -2px;
+    float: left;
+
+    .mw-badge + .mw-badge {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.checkbox .mw-checkbox {
+  margin-left: -20px;
+  float: left;
+}
+
+.mw-multi-select-boxes {
+
+  .selected-items{
+    ul{
+      list-style: none;
+      padding: 0;
+      margin-top: 2px;
+
+      li{
+        padding: 5px;
+
+        &:hover{
+          background: #efefef;
+        }
+      }
+    }
+  }
+
+  .selector {
+    .custom-select {
+      width: 100%;
+    }
+
+    .toggle-btns {
+      margin-left: -25px;
+    }
+  }
+}
+
+.mw-form-radio-group {
+  padding-top: 6px;
+}
+
+.mw-text-in-form {
+  display: block;
+  padding: 8px 2px;
+}
