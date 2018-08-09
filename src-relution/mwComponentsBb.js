@@ -144,7 +144,6 @@ angular.module('mwComponentsBb', [])
         scope.$watch('viewModel.searchVal', function (val) {
           if (val && val.length > 0) {
             canSearch = true;
-            scope.search();
           }
         });
       }
