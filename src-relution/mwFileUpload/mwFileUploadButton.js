@@ -197,8 +197,16 @@ angular.module('mwFileUpload')
 
         scope.$on('$destroy', function () {
           elm.off('click', scope.triggerUploadDialog);
-          /*Make sure to use selector to have correct reference because the blueimpfileuplaoder changes reference*/
-          elm.find('input[type=file]').fileupload('destroy');
+          
+          /*
+           * Make sure to use selector to have correct reference because the blueimpfileuplaoder changes reference
+           * Catch exception that fileuplaoder was bot initiliased yet and therefor can not be destroyed
+           */
+          try {
+            elm.find('input[type=file]').fileupload('destroy');
+          } catch (e) {
+
+          }
         });
       }
     };
