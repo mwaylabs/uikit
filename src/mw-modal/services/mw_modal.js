@@ -59,6 +59,7 @@ angular.module('mwUI.Modal')
           if (_bootstrapModal && _modalOpened) {
             var gotoPath = $location.path();
             ev.preventDefault();
+            console.warn('Modal is closed because of a route change!');
             _self.hide().then(function () {
               $location.path(gotoPath);
               changeLocationOff();
