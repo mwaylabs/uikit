@@ -127,7 +127,7 @@ angular.module('mwUI.Modal')
                 $bootstrapBackdrop = bootstrapModal.backdrop;
 
               bootstrapModal.backdrop = function (callback) {
-                $bootstrapBackdrop.call(bootstrapModal, callback, $(_modalOptions.holderEl).find('.modal'));
+                $bootstrapBackdrop.call(bootstrapModal, callback, angular.element(_modalOptions.holderEl).find('.modal'));
               };
             }
             /* jshint ignore:end */
