@@ -1,11 +1,11 @@
-describe('testing mwFormLeaveConfirmation', function () {
+fdescribe('testing mwFormLeaveConfirmation', function () {
   beforeEach(module('mwUI.Form'));
 
   window.mockI18nService();
   var Modal = window.mockModal();
 
   var fakeRouteChange = function () {
-    this.$rootScope.$broadcast('$locationChangeStart');
+    this.$rootScope.$broadcast('$locationChangeStart','/new','/old');
     this.scope.$digest();
   };
 
