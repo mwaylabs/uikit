@@ -11,7 +11,7 @@ angular.module('mwUI.Form')
           } else {
             ngModelCtrl.$setPristine();
           }
-          return val;
+          return true;
         };
       }
     };
