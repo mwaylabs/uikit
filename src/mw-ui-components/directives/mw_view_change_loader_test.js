@@ -28,9 +28,9 @@ describe('mwViewChangeLoader', function () {
   it('should not have listeners when scope is destroyed', function () {
     scope.$destroy();
 
-    expect($rootScope.$$listeners.$locationChangeSuccess[0]).toBe(null);
-    expect($rootScope.$$listeners.$routeChangeSuccess[0]).toBe(null);
-    expect($rootScope.$$listeners.$routeChangeError[0]).toBe(null);
+    expect($rootScope.$$listeners.$locationChangeSuccess[0]).toBe(undefined);
+    expect($rootScope.$$listeners.$routeChangeSuccess[0]).toBe(undefined);
+    expect($rootScope.$$listeners.$routeChangeError[0]).toBe(undefined);
   });
 
   it('should activate spinner on location change', function () {

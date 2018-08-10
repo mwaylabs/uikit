@@ -1,4 +1,4 @@
-fdescribe('testing mwFormLeaveConfirmation', function () {
+describe('testing mwFormLeaveConfirmation', function () {
   beforeEach(module('mwUI.Form'));
 
   window.mockI18nService();
