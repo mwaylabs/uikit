@@ -59,6 +59,7 @@ angular.module('mwUI.Modal')
           if (_bootstrapModal && _modalOpened) {
             var gotoPath = $location.path();
             ev.preventDefault();
+            console.warn('Modal is closed because of a route change!');
             _self.hide().then(function () {
               $location.path(gotoPath);
               changeLocationOff();
@@ -127,7 +128,7 @@ angular.module('mwUI.Modal')
                 $bootstrapBackdrop = bootstrapModal.backdrop;
 
               bootstrapModal.backdrop = function (callback) {
-                $bootstrapBackdrop.call(bootstrapModal, callback, $(_modalOptions.holderEl).find('.modal'));
+                $bootstrapBackdrop.call(bootstrapModal, callback, angular.element(_modalOptions.holderEl).find('.modal'));
               };
             }
             /* jshint ignore:end */
@@ -178,7 +179,6 @@ angular.module('mwUI.Modal')
         _buildModal.call(this).then(function () {
           $rootScope.$broadcast('$modalResolveDependenciesSuccess');
           angular.element(_modalOptions.holderEl).append(_modal);
-          _bootstrapModal.modal('show');
           _modalOpened = true;
           _openedModals.push(this);
           _bootstrapModal.on('shown.bs.modal', function () {
@@ -191,7 +191,7 @@ angular.module('mwUI.Modal')
               _previousFocusedEl.focus();
             });
           }
-
+          _bootstrapModal.modal('show');
         }.bind(this), function (err) {
           $rootScope.$broadcast('$modalOpenError', err);
           dfd.reject(err);

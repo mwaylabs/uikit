@@ -25,10 +25,9 @@ angular.module('mwUI.Utils')
           });
           confirmationModal.show();
         };
-
         //In case that just a hashchange event was triggered
-        scope.changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, nextUrl) {
-          if (scope.alertBeforeLeave) {
+        scope.changeLocationOff = $rootScope.$on('$locationChangeStart', function (ev, nextUrl, prevUrl) {
+          if (scope.alertBeforeLeave && prevUrl && nextUrl !== prevUrl) {
             ev.preventDefault();
             showConfirmModal(nextUrl);
           }

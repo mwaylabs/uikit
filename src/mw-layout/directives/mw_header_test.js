@@ -134,8 +134,9 @@ describe('mwHeader', function () {
       '</div>'
     );
     $compile(el)(scope);
+    scope.$digest();
 
-    expect( scope.$digest).toThrow();
+    expect(scope.$digest).toThrow();
   });
 
 });

@@ -5,7 +5,7 @@ describe('testing mwFormLeaveConfirmation', function () {
   var Modal = window.mockModal();
 
   var fakeRouteChange = function () {
-    this.$rootScope.$broadcast('$locationChangeStart');
+    this.$rootScope.$broadcast('$locationChangeStart','/new','/old');
     this.scope.$digest();
   };
 
