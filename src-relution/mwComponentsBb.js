@@ -42,8 +42,7 @@ angular.module('mwComponentsBb', [])
         scope.inputSearchId = scope.inputSearchId || 'mw_input_search_field';
         var inputEl = el.find('input'),
           collection,
-          listCollectionFilter,
-          canSearch = false;
+          listCollectionFilter;
 
         var setFilterVal = function (val) {
           if (scope.customUrlParameter) {
@@ -64,7 +63,7 @@ angular.module('mwComponentsBb', [])
         };
 
         scope.search = function () {
-          if (canSearch && scope.viewModel.searchVal.length >= scope.minLength) {
+          if (scope.viewModel.searchVal.length >= scope.minLength) {
             scope.searching = true;
             //backup searched text to reset after fetch complete in case of search text was empty
             setFilterVal(scope.viewModel.searchVal);
@@ -75,6 +74,7 @@ angular.module('mwComponentsBb', [])
             });
           } else {
             $q.reject();
+            scope.searching = false;
           }
         };
 
@@ -136,14 +136,7 @@ angular.module('mwComponentsBb', [])
           }
         }, function (val) {
           if (val && val !== scope.viewModel.searchVal) {
-            canSearch = true;
             scope.viewModel.searchVal = val;
-          }
-        });
-
-        scope.$watch('viewModel.searchVal', function (val) {
-          if (val && val.length > 0) {
-            canSearch = true;
           }
         });
       }
