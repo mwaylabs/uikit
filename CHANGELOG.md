@@ -6,6 +6,10 @@
 ## Features
 - Update to latest angular version 1.7
 
+# v1.23.3
+## Features
+- Fix broken initial state of searchbar (#222)
+
 # v1.23.2
 ## Features
 - Make option group body clickable to select option (#214)
