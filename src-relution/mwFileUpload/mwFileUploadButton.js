@@ -8,6 +8,7 @@ angular.module('mwFileUpload')
         maxFileSizeByte: '=?',
         dropZoneElement: '=?',
         onBeforeUploadCallback: '=?',
+        onUploadStartCallback: '=?',
         onProgressCallback: '=?',
         onSuccessCallback: '=?',
         onErrorCallback: '=?',
@@ -137,6 +138,9 @@ angular.module('mwFileUpload')
 
         hiddenfileEl.bind('fileuploadstart', function () {
           scope.abortFlag = false;
+          if (typeof scope.onUploadStartCallback === 'function') {
+            scope.onUploadStartCallback();
+          }
         });
 
         hiddenfileEl.bind('fileuploadprogress', function (e, data) {

@@ -9,7 +9,7 @@
 
   <div class="upload-container">
 
-    <div class="upload-info panel panel-primary">
+    <div class="upload-info panel panel-primary" ng-if="viewModel.state == 'UPLOADING'">
       {{viewModel.uploadMessage}}
       <div class="state-indicator">
         <div class="progress" ng-style="{width: viewModel.uploadProgress + '%'}"></div>
@@ -27,6 +27,7 @@
             accepts="{{validator}}"
             drop-zone-element="viewModel.dropZoneElmement"
             max-file-size-byte="maxFileSizeByte"
+            on-upload-start-callback="onUploadStart"
             on-progress-callback="onUploadProgress"
             on-success-callback="onUploadSuccess"
             on-error-callback="onUploadError"

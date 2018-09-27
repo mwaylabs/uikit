@@ -193,6 +193,9 @@ angular.module('mwFileUpload', [])
           return !scope.hideRemoveBtn && scope.viewModel.fileName;
         };
 
+        scope.onUploadStart = function() {
+          scope.viewModel.state = 'UPLOADING';
+        }
         /* progressData = {
             data:blueImpXhr,
             progress: progress,
@@ -208,7 +211,6 @@ angular.module('mwFileUpload', [])
             fileName = progressData.data.files[0].name;
           }
           scope.abortFlag = false;
-          scope.viewModel.state = 'UPLOADING';
           scope.viewModel.isInvalid = true;
           scope.viewModel.uploadProgress = progressData.progress;
           scope.viewModel.uploadMessage = i18n.get('rlnUikit.mwFileUpload.uploading', {
@@ -218,6 +220,8 @@ angular.module('mwFileUpload', [])
             data: progressData.data,
             progress: progressData.progress
           }));
+          scope.dragoverDocumentStateChange();
+          scope.dragoverDropzoneStateChange();
         };
 
         /* data = {
