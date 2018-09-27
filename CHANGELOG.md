@@ -1,4 +1,9 @@
+# v1.24.1
+## Bug Fixes
+- Fix upload state of file uploader for small files.
+
 # v1.24.0
+## Features
 - Update to latest angular version 1.7
 
 # v1.23.2
