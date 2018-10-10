@@ -1,4 +1,5 @@
 <div class="mw-menu-top-item"
+     ng-if="entry.get('isVisible')"
      ng-click="executeAction()">
   <a ng-if="entry.get('type') === 'ENTRY'"
      ng-href="{{entry.get('url')}}"

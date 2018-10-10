@@ -11,7 +11,8 @@ var MwMenuEntry = window.mwUI.Backbone.NestedModel.extend({
       order: null,
       action: null,
       isActive: null,
-      target: null
+      target: null,
+      isVisible: null
     };
   },
   nested: function () {

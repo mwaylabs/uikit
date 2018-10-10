@@ -12,6 +12,7 @@ angular.module('mwUI.Menu')
         class: '@styleClass',
         order: '=',
         activeUrls: '=',
+        isVisible: '=',
         action: '&',
         isActive: '&'
       },
@@ -35,7 +36,8 @@ angular.module('mwUI.Menu')
           menuCtrl = ctrls[2],
           menuEntry = new mwUI.Menu.MwMenuEntry(),
           timeouts = [],
-          entryHolder;
+          entryHolder,
+          isTopEntry;
 
         var getDomOrder = function () {
           var orderDomEl = el;
@@ -60,6 +62,7 @@ angular.module('mwUI.Menu')
             entryHolder = parentCtrl.getMenuEntry().get('subEntries');
           } else if (menuCtrl) {
             entryHolder = menuCtrl.getMenu();
+            isTopEntry = true;
           }
 
           if (entryHolder && !entryHolder.get(menuEntry)) {
@@ -83,7 +86,8 @@ angular.module('mwUI.Menu')
             } : null,
             isActive: attrs.isActive ? function () {
               return scope.isActive();
-            } : null
+            } : null,
+            isVisible: _.isUndefined(scope.isVisible) ? true : scope.isVisible
           });
         };
 
@@ -126,7 +130,7 @@ angular.module('mwUI.Menu')
           ctrl.setMenuEntry(menuEntry);
         });
 
-        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class', 'order', 'target'], setMenuEntry);
+        scope.$watchGroup(['id', 'label', 'url', 'icon', 'class', 'order', 'target', 'isVisible'], setMenuEntry);
       }
     };
   });
