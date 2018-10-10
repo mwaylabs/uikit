@@ -1,0 +1,62 @@
+.mw-autocomplete {
+  width: 100%;
+  position: relative;
+
+  input{
+    z-index: 10;
+    position: relative;
+  }
+
+  &.search-active .auto-complete-holder,
+  &.search-active .auto-complete-holder{
+    display: block;
+  }
+
+  &.search-active .auto-complete-text,
+  &.search-active .auto-complete-text{
+    display: block;
+  }
+
+  .auto-complete-text{
+    top: 0;
+    position: absolute;
+    z-index: 11;
+    margin-left: 13px;
+    margin-top: 8px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .selected-item{
+    position: absolute;
+    z-index: 11;
+    top: 10px;
+    left: 10px;
+  }
+
+  .auto-complete-holder {
+    position: absolute;
+    background: white;
+    width: 100%;
+    z-index: 9;
+    margin-top: -5px;
+    border-radius: 4px;
+    box-shadow: 0 3px 7px 0 rgba(0,0,0,0.2);
+
+      ul{
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li{
+        padding: 10px;
+        border-bottom: 1px solid $gray-lighter;
+
+        &.selected{
+          background: $brand-primary;
+          color: white;
+        }
+      }
+    }
+  }
+}
