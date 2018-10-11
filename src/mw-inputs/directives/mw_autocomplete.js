@@ -225,7 +225,7 @@ angular.module('mwUI.Inputs')
           setResult(item);
         };
 
-        scope.tmpSelect = function(model){
+        scope.tmpSelect = function (model) {
           scope.mwOptionsCollection.selectable.unSelectAll();
           model.selectable.select();
         };
