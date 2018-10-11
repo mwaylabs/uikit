@@ -1,5 +1,44 @@
 angular.module('mwUI.Inputs')
 
+/**
+ * @ngdoc directive
+ * @name mwUI.Inputs.directive:mwAutocomplete
+ *
+ * @description Shows a textfield that let the user search an item by typing and selecting it from a paginated list by
+ *              keyboard arrow keys or by clicking on. It works like a selectbox and also has the same programmatic interface.
+ *              Pass in a mwModel that should be set.
+ *              When a mwModelAttr is provided only the attribute of the model is set otherwise the whole model will be
+ *              replaced with the values from the selected item
+ *              Pass a mwOptionsCollection that will be used to provide the items that a user can select
+ *              The mwSearchProperty is the field for the filter from the filterable of the mwOptionsCollection. It
+ *              will be set with the current search input value and afterwards the mwOptionsCollection is fetched.
+ *
+ * @param {mwModel} backboneModel is the model that will be set with the item that the user selects (required)
+ * @param {mwModelAttr} string when this attribute is set only this attribute of the mwModel will be set instead of the whole model
+ * @param {mwModelLabelKey} string defines the attribute of the mwModel that shall be shown when the user selects an item
+ * @param {mwSearchProperty} string defines the attribute of the filterable filterValues key that shall be set (required)
+ * @param {mwOptionsCollection} backboneCollection the collection that provides the items that the user can select
+ * @param {mwOptionsKey} string works in combination with the mwModelAttr. This is the key that specifies the attribute from the option item to be used
+ * @param {mwOptionsLabelKey} string is the attribute of the option item that shall be used as display value for the user
+ * @param {mwOptionsLabelI18nPrefix} string in case translation is needed. Will be prepended to the option label key
+ * @param {mwMinSearchLength} number amount of letters the user has to enter before search is triggered (default 0)
+ * @param {mwPlaceholder} string placeholder that shall be displayed in the search input
+ * @param {mwRequired} boolean whether input is required
+ * @param {mwDisabled} boolean whether input is disabled
+ *
+ * @example ```html
+ * <!-- Lets the user browse through all availble users and set a user model -->
+ * <div mw-autocomplete
+ *      mw-model="enrollment.attributes.user"
+ *      mw-model-label-attr="name"
+ *      mw-options-collection="users"
+ *      mw-search-property="search"
+ *      mw-options-label-key="name"
+ *      mw-required="true"
+ *      mw-placeholder="Select a user">
+ *  </div>
+ * ```
+ */
   .directive('mwAutocomplete', function ($q, $timeout, i18n) {
     return {
       scope: {
