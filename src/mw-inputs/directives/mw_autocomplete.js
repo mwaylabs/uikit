@@ -10,10 +10,11 @@ angular.module('mwUI.Inputs')
         mwOptionsCollection: '=',
         mwOptionsKey: '@',
         mwOptionsLabelKey: '@',
-        mwOptionsLabelI18nPrefix: '@',
-        mwPlaceholder: '@',
-        mwRequired: '=',
-        mwDisabled: '='
+        mwOptionsLabelI18nPrefix: '@?',
+        mwMinSearchLength: '=?',
+        mwPlaceholder: '@?',
+        mwRequired: '=?',
+        mwDisabled: '=?'
       },
       replace: true,
       templateUrl: 'uikit/mw-inputs/directives/templates/mw_autocomplete.html',
@@ -82,6 +83,16 @@ angular.module('mwUI.Inputs')
           }
         };
 
+        var unsetResult = function () {
+          if (scope.getSelectedModelLabel()) {
+            if (scope.mwModelAttr) {
+              scope.mwModel.unset(scope.mwModelAttr);
+            } else {
+              scope.mwModel.clear();
+            }
+          }
+        };
+
         var selectAt = function (index) {
           var selectedItem = scope.mwOptionsCollection.selectable.getSelected().first(),
             indexOfSelectedItem = scope.mwOptionsCollection.indexOf(selectedItem);
@@ -105,83 +116,18 @@ angular.module('mwUI.Inputs')
           scrollToSelected(false);
         };
 
-        scope.getSelectedModelLabel = function () {
-          if (scope.mwModel && scope.mwModel.get(scope.mwModelAttr)) {
-            return scope.mwModel.get(scope.mwModelAttr);
-          }
-        };
-
-        scope.select = function (item) {
-          setResult(item);
-        };
-
-        scope.getLabel = function (model) {
-          var modelAttr = model.get(scope.mwOptionsLabelKey);
-
-          if (modelAttr) {
-            if (scope.mwOptionsLabelI18nPrefix) {
-              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + modelAttr);
-            } else {
-              return modelAttr;
-            }
-          }
-        };
-
-        scope.search = function () {
-          scope.viewModel.searchActive = true;
-          scope.searching = true;
-          //backup searched text to reset after fetch complete in case of search text was empty
-          setFilterVal(scope.viewModel.searchVal);
-          return scope.mwOptionsCollection.fetch().finally(function () {
-            $timeout(function () {
-              scope.searching = false;
-              scope.mwOptionsCollection.selectable.unSelectAll();
-              el.find('.auto-complete-holder').scrollTop(0);
-            }, 500);
-          });
-        };
-
-        scope.getAutocompleteText = function () {
-          if (scope.viewModel.searchVal.length > 0 && scope.mwOptionsCollection.length > 0) {
-            var firstItemText,
-              selectedItem = scope.mwOptionsCollection.selectable.getSelected().first() || scope.mwOptionsCollection.first();
-            if (selectedItem) {
-              firstItemText = scope.getLabel(selectedItem);
-            }
-            var searchTermRegex = new RegExp('(^' + scope.viewModel.searchVal + ')(.*)$', 'i');
-            if (firstItemText) {
-              var matcher = firstItemText.match(searchTermRegex);
-              if (matcher && matcher.length === 3) {
-                return scope.viewModel.searchVal + matcher[2];
-              }
-            }
-          }
-        };
-
-        scope.fetchSuggestions = function () {
-          scope.search();
-        };
-
-        scope.mwOptionsCollection.on('request', function () {
+        var setToSearching = function () {
           scope.viewModel.isSearching = true;
-        });
-
-        scope.mwOptionsCollection.on('sync error', function () {
-          $timeout(function(){
-            scope.viewModel.isSearching = false;
-          },200);
-        });
-
-        scope.setSearchActive = function (setActive) {
-          if(setActive){
-            scope.viewModel.searchActive = true;
-            scope.fetchSuggestions();
-          } else {
-            scope.viewModel.searchActive = false;
-          }
         };
 
-        el.on('keydown', function (ev) {
+        var unsetSearching = function () {
+          $timeout(function () {
+            scope.viewModel.isSearching = false;
+          }, 200);
+        };
+
+        var handleKeyPress = function (ev) {
+          // Arrow up otherwise cursor is navigating in text backwards
           if (ev.keyCode === 38) {
             ev.preventDefault();
           }
@@ -207,22 +153,120 @@ angular.module('mwUI.Inputs')
                 }
                 break;
               case 8: //backspace
-                if (scope.viewModel.searchVal.length > 0) {
-                  return;
-                }
-                if (scope.getSelectedModelLabel()) {
-                  if (scope.mwModelAttr) {
-                    scope.mwModel.unset(scope.mwModelAttr);
-                  } else {
-                    scope.mwModel.clear();
-                  }
+              case 27: //escape
+                unsetResult();
+                break;
+              case 91: //CMD
+                break;
+              default:
+                /* All letters on keyboard */
+                if (ev.keyCode >= 46) {
+                  unsetResult();
                 }
             }
           });
-        });
+        };
+
+        scope.getSelectedModelLabel = function () {
+          var labelAttr = scope.mwModelLabelKey || scope.mwModelAttr || scope.mwOptionsLabelKey;
+          if (scope.mwModel && labelAttr && scope.mwModel.get(labelAttr)) {
+            return scope.mwModel.get(labelAttr);
+          }
+        };
+
+        scope.select = function (item) {
+          setResult(item);
+        };
+
+        scope.tmpSelect = function(model){
+          scope.mwOptionsCollection.selectable.unSelectAll();
+          model.selectable.select();
+        };
+
+        scope.unselect = function () {
+          unsetResult();
+        };
+
+        scope.getLabel = function (model) {
+          var modelAttr = model.get(scope.mwOptionsLabelKey);
+
+          if (modelAttr) {
+            if (scope.mwOptionsLabelI18nPrefix) {
+              return i18n.get(scope.mwOptionsLabelI18nPrefix + '.' + modelAttr);
+            } else {
+              return modelAttr;
+            }
+          }
+        };
+
+        scope.getModelAttribute = function () {
+          return scope.mwModelAttr || scope.mwModel.idAttribute;
+        };
+
+        scope.search = function () {
+          if (scope.mwMinSearchLength && scope.viewModel.searchVal.length < scope.mwMinSearchLength) {
+            return;
+          }
+          scope.viewModel.searchActive = true;
+          scope.searching = true;
+          //backup searched text to reset after fetch complete in case of search text was empty
+          setFilterVal(scope.viewModel.searchVal);
+          return scope.mwOptionsCollection.fetch().finally(function () {
+            $timeout(function () {
+              scope.searching = false;
+              scope.mwOptionsCollection.selectable.unSelectAll();
+              el.find('.auto-complete-holder').scrollTop(0);
+              if (scope.mwOptionsCollection.length > 0) {
+                scope.mwOptionsCollection.first().selectable.select();
+              }
+            }, 500);
+          });
+        };
+
+        scope.getAutocompleteText = function () {
+          if (scope.viewModel.searchVal.length > 0 && scope.mwOptionsCollection.length > 0) {
+            var firstItemText,
+              selectedItem = scope.mwOptionsCollection.selectable.getSelected().first() || scope.mwOptionsCollection.first();
+            if (selectedItem) {
+              firstItemText = scope.getLabel(selectedItem);
+            }
+            var safeSearchVal = scope.viewModel.searchVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var searchTermRegex = new RegExp('(^' + safeSearchVal + ')(.*)$', 'i');
+            if (firstItemText) {
+              var matcher = firstItemText.match(searchTermRegex);
+              if (matcher && matcher.length === 3) {
+                return scope.viewModel.searchVal + matcher[2];
+              }
+            }
+          }
+        };
+
+        scope.fetchSuggestions = function () {
+          scope.search();
+        };
+
+        scope.setSearchActive = function (setActive) {
+          if (setActive) {
+            scope.viewModel.searchActive = true;
+            scope.fetchSuggestions();
+          } else {
+            scope.viewModel.searchActive = false;
+          }
+        };
+
+        scope.mwOptionsCollection.on('request', setToSearching);
+        scope.mwOptionsCollection.on('sync error', unsetSearching);
+        scope.mwModel.on('change', setInputPadding);
+        el.on('keydown', handleKeyPress);
 
         setInputPadding();
-        scope.mwModel.on('change', setInputPadding);
+
+        scope.$on('$destroy', function () {
+          scope.mwOptionsCollection.off('request', setToSearching);
+          scope.mwOptionsCollection.off('sync error', unsetSearching);
+          scope.mwModel.off('change', setInputPadding);
+          el.off('keydown', handleKeyPress);
+        });
       }
     };
   });

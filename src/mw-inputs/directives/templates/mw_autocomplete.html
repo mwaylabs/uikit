@@ -1,25 +1,30 @@
 <div class="mw-autocomplete" style="width: 100%">
   <input type="text"
+         ng-disabled="mwDisabled"
          ng-model="viewModel.searchVal"
          ng-model-options="{debounce: 100}"
          ng-change="fetchSuggestions($event)"
          ng-focus="setSearchActive(true)"
          ng-blur="setSearchActive(false)">
-  <!--<div mw-collection-search collection="mwOptionsCollection" property="{{mwSearchProperty}}"></div>-->
   <div class="auto-complete-text" ng-show="viewModel.searchActive">
     {{getAutocompleteText()}}
   </div>
   <div class="selected-item badge badge-light" ng-if="getSelectedModelLabel()">
     {{getSelectedModelLabel()}}
+    <span mw-icon="mwUI.cross"
+          class="clickable"
+          ng-click="unselect()"></span>
   </div>
-  <div class="auto-complete-holder" ng-show="(mwOptionsCollection.length>0 || viewModel.isSearching) && viewModel.searchActive"
+  <div class="auto-complete-holder"
+       ng-show="(mwOptionsCollection.length>0 || viewModel.isSearching) && viewModel.searchActive"
        style="max-height: 115px; overflow:scroll">
     <ul mw-infinite-scroll collection="mwOptionsCollection" scroll-container-selector=".auto-complete-holder">
       <li ng-repeat="model in mwOptionsCollection.models"
           class="clickable"
           ng-class="{selected: model.selectable.isSelected()}"
           id="{{model.cid}}"
-          ng-click="select(model)">
+          ng-mouseover="tmpSelect(model)"
+          ng-mousedown="select(model)">
         {{getLabel(model)}}
       </li>
       <li ng-show="viewModel.isSearching" style="display: flex;justify-content: center;">
@@ -27,4 +32,6 @@
       </li>
     </ul>
   </div>
+  <input type="hidden" ng-model="viewModel.tmp" ng-required="mwRequired" mw-model="mwModel"
+         mw-model-attr="{{getModelAttribute()}}">
 </div>
