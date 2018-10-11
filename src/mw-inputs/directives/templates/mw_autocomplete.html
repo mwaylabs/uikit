@@ -1,5 +1,7 @@
-<div class="mw-autocomplete" style="width: 100%">
+<div class="mw-autocomplete"
+     style="width: 100%">
   <input type="text"
+         placeholder="{{getPlaceholder()}}"
          ng-disabled="mwDisabled"
          ng-model="viewModel.searchVal"
          ng-model-options="{debounce: 100}"

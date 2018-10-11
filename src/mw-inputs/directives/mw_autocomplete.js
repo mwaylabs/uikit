@@ -206,6 +206,14 @@ angular.module('mwUI.Inputs')
           });
         };
 
+        scope.getPlaceholder = function () {
+          if (scope.mwPlaceholder && !scope.getSelectedModelLabel()) {
+            return scope.mwPlaceholder;
+          } else {
+            return '';
+          }
+        };
+
         scope.getSelectedModelLabel = function () {
           var labelAttr = scope.mwModelLabelKey || scope.mwModelAttr || scope.mwOptionsLabelKey;
           if (scope.mwModel && labelAttr && scope.mwModel.get(labelAttr)) {
