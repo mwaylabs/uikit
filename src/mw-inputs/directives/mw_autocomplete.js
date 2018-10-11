@@ -301,6 +301,10 @@ angular.module('mwUI.Inputs')
           }
         };
 
+        if (!(scope.mwModel instanceof Backbone.Model) || !(scope.mwOptionsCollection instanceof Backbone.Collection)) {
+          throw Error('[mwAutocomplete] mwModel has to be a Backbone Model and mwOptionsCollection has to be a Backbone Collection');
+        }
+
         scope.mwOptionsCollection.on('request', setToSearching);
         scope.mwOptionsCollection.on('sync error', unsetSearching);
         scope.mwModel.on('change', setInputPadding);
