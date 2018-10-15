@@ -96,8 +96,9 @@ angular.module('mwUI.Inputs')
         var setInputPadding = function () {
           $timeout(function () {
             if (scope.getSelectedModelLabel()) {
-              el.find('input').css('padding-left', el.find('.selected-item').outerWidth(true) + 15);
-              el.find('.auto-complete-text').css('padding-left', el.find('.selected-item').outerWidth(true) + 3);
+              var selectedItemWidth = el.find('.selected-item').outerWidth(true);
+              el.find('input').css('padding-left', selectedItemWidth + 15);
+              el.find('.auto-complete-text').css('padding-left', selectedItemWidth + 3);
             } else {
               el.find('input').css('padding-left', orgInputPadding);
               el.find('.auto-complete-text').css('padding-left', 0);
