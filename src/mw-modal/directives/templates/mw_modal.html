@@ -6,6 +6,10 @@
              ng-src="{{mwModalTmpl.getLogoPath()}}"
              class="pull-left logo"/>
         <h4 class="modal-title pull-left">{{ title }}</h4>
+        <div ng-if="showLoadingSpinner()"
+             class="loading-spinner">
+          <div mw-spinner></div>
+        </div>
       </div>
       <div class="body-holder">
         <div mw-toasts class="notifications"></div>

@@ -1,6 +1,6 @@
 angular.module('mwUI.Modal')
 
-  .directive('mwModal', function (mwModalTmpl) {
+  .directive('mwModal', function (mwModalTmpl, Loading) {
     return {
       restrict: 'A',
       scope: {
@@ -8,21 +8,25 @@ angular.module('mwUI.Modal')
       },
       transclude: true,
       templateUrl: 'uikit/mw-modal/directives/templates/mw_modal.html',
-      controller: function($scope){
-        this.addClass = function(styleClass){
+      controller: function ($scope) {
+        this.addClass = function (styleClass) {
           $scope.addClass(styleClass);
         };
       },
       link: function (scope, el) {
         scope.$emit('COMPILE:FINISHED');
         scope.mwModalTmpl = mwModalTmpl;
-        scope.addClass = function(styleClass){
+        scope.addClass = function (styleClass) {
           el.addClass(styleClass);
         };
 
-        if(scope.title){
+        if (scope.title) {
           scope.addClass('has-header');
         }
+
+        scope.showLoadingSpinner = function () {
+          return Loading.isLoading();
+        };
       }
     };
   });
