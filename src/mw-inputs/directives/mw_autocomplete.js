@@ -72,7 +72,7 @@ angular.module('mwUI.Inputs')
             var selectedEl = el.find('#' + selected.cid),
               scrollContainerEl = el.find('.auto-complete-holder');
 
-            if (selectedEl.length) {
+            if (selectedEl.length > 0) {
               var selectedElOffset = selectedEl.offset().top,
                 selectedElHeight = selectedEl.outerHeight(true),
                 scrollContainerElOffset = scrollContainerEl.offset().top,
