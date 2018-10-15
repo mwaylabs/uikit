@@ -26,6 +26,7 @@ angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
 // @include ./services/mw_bootstrap_breakpoint.js
 // @include ./services/mw_browser_title_handler.js
 // @include ./services/mw_callback_handler.js
+// @include ./services/mw_loading_service.js
 // @include ./services/mw_scheduler.js
 // @include ./services/mw_url_storage.js
 // @include ./services/mw_runtime_storage.js
