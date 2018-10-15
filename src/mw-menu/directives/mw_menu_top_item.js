@@ -1,6 +1,6 @@
 angular.module('mwUI.Menu')
 
-  .directive('mwMenuTopItem', function () {
+  .directive('mwMenuTopItem', function ($timeout) {
     return {
       scope: {
         entry: '=mwMenuTopItem'
@@ -8,10 +8,12 @@ angular.module('mwUI.Menu')
       templateUrl: 'uikit/mw-menu/directives/templates/mw_menu_top_item.html',
       link: function(scope){
         scope.executeAction = function(){
-          var action = scope.entry.get('action');
-          if(action && typeof action === 'function' ){
-            action();
-          }
+          $timeout(function(){
+            var action = scope.entry.get('action');
+            if(action && typeof action === 'function' ){
+              action();
+            }
+          });
         };
       }
     };

@@ -1,3 +1,8 @@
+# v1.24.2
+## Features
+- Add `is-visible` attribute to mw-menu-entry to hide menu entries without removing them from the dom.
+When using `ng-if` to hide/show menu entries it can lead to a jump in the navigation bar when it is re-added  
+
 # v1.24.1
 ## Bug Fixes
 - Fix upload state of file uploader for small files.
