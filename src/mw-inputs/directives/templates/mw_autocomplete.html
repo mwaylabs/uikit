@@ -11,7 +11,8 @@
        class="auto-complete-text">
     {{getAutocompleteText()}}
   </div>
-  <div class="selected-item badge badge-light" ng-if="getSelectedModelLabel()">
+  <div ng-if="getSelectedModelLabel()"
+       class="selected-item badge badge-light">
     {{getSelectedModelLabel()}}
     <span mw-icon="mwUI.cross"
           class="clickable"
