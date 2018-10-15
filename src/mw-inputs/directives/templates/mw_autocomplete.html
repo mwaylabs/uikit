@@ -1,5 +1,4 @@
-<div class="mw-autocomplete"
-     style="width: 100%">
+<div class="mw-autocomplete">
   <input type="text"
          placeholder="{{getPlaceholder()}}"
          ng-disabled="mwDisabled"
@@ -8,7 +7,8 @@
          ng-change="fetchSuggestions($event)"
          ng-focus="setSearchActive(true)"
          ng-blur="setSearchActive(false)">
-  <div class="auto-complete-text" ng-show="viewModel.searchActive">
+  <div ng-show="viewModel.searchActive"
+       class="auto-complete-text">
     {{getAutocompleteText()}}
   </div>
   <div class="selected-item badge badge-light" ng-if="getSelectedModelLabel()">
@@ -17,23 +17,26 @@
           class="clickable"
           ng-click="unselect()"></span>
   </div>
-  <div class="auto-complete-holder"
-       ng-show="(mwOptionsCollection.length>0 || viewModel.isSearching) && viewModel.searchActive"
-       style="max-height: 115px; overflow:scroll">
+  <div ng-show="(mwOptionsCollection.length>0 || viewModel.isSearching) && viewModel.searchActive"
+       class="auto-complete-holder">
     <ul mw-infinite-scroll collection="mwOptionsCollection" scroll-container-selector=".auto-complete-holder">
       <li ng-repeat="model in mwOptionsCollection.models"
-          class="clickable"
+          class="search-item clickable"
           ng-class="{selected: model.selectable.isSelected()}"
           id="{{model.cid}}"
           ng-mouseover="tmpSelect(model)"
           ng-mousedown="select(model)">
         {{getLabel(model)}}
       </li>
-      <li ng-show="viewModel.isSearching" style="display: flex;justify-content: center;">
+      <li ng-show="viewModel.isSearching"
+          class="loading-item">
         <div mw-spinner></div>
       </li>
     </ul>
   </div>
-  <input type="hidden" ng-model="viewModel.tmp" ng-required="mwRequired" mw-model="mwModel"
-         mw-model-attr="{{getModelAttribute()}}">
+  <input type="hidden"
+         ng-model="viewModel.tmp"
+         mw-model="mwModel"
+         mw-model-attr="{{getModelAttribute()}}"
+         ng-required="mwRequired">
 </div>

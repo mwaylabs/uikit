@@ -54,6 +54,8 @@
     margin-top: -5px;
     border-radius: $border-radius-small;
     box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.2);
+    max-height: 115px;
+    overflow: scroll;
 
     ul {
       list-style: none;
@@ -68,6 +70,11 @@
           background: $brand-primary;
           color: white;
         }
+      }
+
+      .loading-item {
+        display: flex;
+        justify-content: center;
       }
     }
   }
