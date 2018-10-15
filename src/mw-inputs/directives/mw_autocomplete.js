@@ -58,7 +58,10 @@ angular.module('mwUI.Inputs')
       replace: true,
       templateUrl: 'uikit/mw-inputs/directives/templates/mw_autocomplete.html',
       link: function (scope, el) {
-        var orgInputPadding = el.find('input').css('padding-left');
+        var inputEl = el.find('input'),
+          autoCompleteTextEl = el.find('.auto-complete-text'),
+          autoCompleteHolderEl = el.find('.auto-complete-holder'),
+          orgInputPadding = inputEl.css('padding-left');
 
         scope.viewModel = {
           searchVal: '',
@@ -70,7 +73,7 @@ angular.module('mwUI.Inputs')
           var selected = scope.mwOptionsCollection.selectable.getSelected().first();
           if (selected) {
             var selectedEl = el.find('#' + selected.cid),
-              scrollContainerEl = el.find('.auto-complete-holder');
+              scrollContainerEl = autoCompleteHolderEl;
 
             if (selectedEl.length > 0) {
               var selectedElOffset = selectedEl.offset().top,
@@ -97,11 +100,11 @@ angular.module('mwUI.Inputs')
           $timeout(function () {
             if (scope.getSelectedModelLabel()) {
               var selectedItemWidth = el.find('.selected-item').outerWidth(true);
-              el.find('input').css('padding-left', selectedItemWidth + 15);
-              el.find('.auto-complete-text').css('padding-left', selectedItemWidth + 3);
+              inputEl.css('padding-left', selectedItemWidth + 15);
+              autoCompleteTextEl.css('padding-left', selectedItemWidth + 3);
             } else {
-              el.find('input').css('padding-left', orgInputPadding);
-              el.find('.auto-complete-text').css('padding-left', 0);
+              inputEl.css('padding-left', orgInputPadding);
+              autoCompleteTextEl.css('padding-left', 0);
             }
           });
         };
@@ -258,7 +261,7 @@ angular.module('mwUI.Inputs')
             $timeout(function () {
               scope.searching = false;
               scope.mwOptionsCollection.selectable.unSelectAll();
-              el.find('.auto-complete-holder').scrollTop(0);
+              autoCompleteHolderEl.scrollTop(0);
               if (scope.mwOptionsCollection.length > 0) {
                 scope.mwOptionsCollection.first().selectable.select();
               }
