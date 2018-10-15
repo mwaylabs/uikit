@@ -39,7 +39,7 @@ angular.module('mwUI.Inputs')
  *  </div>
  * ```
  */
-  .directive('mwAutocomplete', function ($q, $timeout, i18n) {
+  .directive('mwAutocomplete', function ($timeout, i18n) {
     return {
       scope: {
         mwModel: '=',
