@@ -36,6 +36,25 @@ angular.module('mwUI.Utils', ['mwUI.i18n','mwUI.Modal']);
 // @include ./shims/route_to_regex.js
 // @include ./shims/deprecation_warning.js
 
-angular.module('mwUI.Utils').config(function(i18nProvider){
+angular.module('mwUI.Utils').config(function($provide, $httpProvider, i18nProvider){
   i18nProvider.addResource('mw-utils/i18n', 'uikit');
+
+  $provide.factory('requestInterceptorForLoadingService', function ($q, Loading) {
+    return {
+      request: function(request){
+        Loading.start();
+        return request;
+      },
+      response: function (response) {
+        Loading.done();
+        return response;
+      },
+      responseError: function (response) {
+        Loading.done();
+        return $q.reject(response);
+      }
+    };
+  });
+
+  $httpProvider.interceptors.push('requestInterceptorForLoadingService');
 });
