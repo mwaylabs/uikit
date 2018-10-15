@@ -256,7 +256,6 @@ angular.module('mwUI.Inputs')
           }
           scope.viewModel.searchActive = true;
           scope.searching = true;
-          //backup searched text to reset after fetch complete in case of search text was empty
           setFilterVal(scope.viewModel.searchVal);
           return scope.mwOptionsCollection.fetch().finally(function () {
             $timeout(function () {
@@ -277,7 +276,14 @@ angular.module('mwUI.Inputs')
             if (selectedItem) {
               firstItemText = scope.getLabel(selectedItem);
             }
+            // Replace unsafe regex input values
             var safeSearchVal = scope.viewModel.searchVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            /*
+             * Check whether the found item starts with the current search term
+             * When the user types in `abc` and the first search result is `max musterman` the text should not be autocompleted
+             * However when the user types `max mu` and the first result is `max mustermann then the grey autocomplete text should be
+             * autocompleted with `stermann` so the user can use arrow right key to finish the typing
+             */
             var searchTermRegex = new RegExp('(^' + safeSearchVal + ')(.*)$', 'i');
             if (firstItemText) {
               var matcher = firstItemText.match(searchTermRegex);
