@@ -208,11 +208,7 @@ angular.module('mwUI.Inputs')
         };
 
         scope.getPlaceholder = function () {
-          if (scope.mwPlaceholder && !scope.getSelectedModelLabel()) {
-            return scope.mwPlaceholder;
-          } else {
-            return '';
-          }
+          return (scope.mwPlaceholder && !scope.getSelectedModelLabel()) ? scope.mwPlaceholder : '';
         };
 
         scope.getSelectedModelLabel = function () {
