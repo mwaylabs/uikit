@@ -40,6 +40,10 @@
     z-index: 11;
     top: 10px;
     left: 10px;
+
+    *[mw-icon] i{
+      color: $gray-light !important;
+    }
   }
 
   .auto-complete-holder {
