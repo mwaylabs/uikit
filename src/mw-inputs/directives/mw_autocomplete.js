@@ -192,15 +192,15 @@ angular.module('mwUI.Inputs')
                   setResult(scope.mwOptionsCollection.selectable.getSelected().first());
                 }
                 break;
-              case 8: //backspace
-              case 27: //escape
-                unsetResult();
-                break;
               case 91: //CMD
                 break;
               default:
                 /* All letters on keyboard */
-                if (ev.keyCode >= 46) {
+                if (
+                  ev.keyCode >= 46 || // letters
+                  ev.keyCode === 8 || // backspace
+                  ev.keyCode === 27   // escape
+                ) {
                   unsetResult();
                 }
             }
