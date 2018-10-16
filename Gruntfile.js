@@ -61,7 +61,6 @@ module.exports = function (grunt) {
           '!src-relution/test/**/*.js',
           '.tmp/templates-relution.js',
           '.tmp/templates-relution-i18n.js',
-          'libs/angular-sanitize/angular-sanitize.js',
           'libs/showdown/dist/showdown.js',
           'libs/jquery-ui/ui/widget.js',
           'libs/blueimp-file-upload/js/jquery.fileupload.js',
