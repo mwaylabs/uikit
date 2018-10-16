@@ -285,6 +285,10 @@ angular.module('mwFileUpload', [])
             updateUploaderOptions({
               formData: val
             });
+          } else {
+            updateUploaderOptions({
+              formData: {}
+            });
           }
         }, true);
 
