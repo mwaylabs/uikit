@@ -4,6 +4,12 @@
   "author": "Alexander Zarges <a.zarges@mwaysolutions.com> (http://relution.io)",
   "version": "1.24.3",
   "license": "Apache-2.0",
+  "dependencies": {
+    "showdown": "1.2.3",
+    "jquery": "3.1.0",
+    "jquery-ui": "1.12.1",
+    "blueimp-file-upload": "9.22.0"
+  },
   "devDependencies": {
     "angular": "1.7.3",
     "angular-mocks": "1.7.3",
