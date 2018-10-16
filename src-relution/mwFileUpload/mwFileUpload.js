@@ -195,7 +195,7 @@ angular.module('mwFileUpload', [])
 
         scope.onUploadStart = function() {
           scope.viewModel.state = 'UPLOADING';
-        }
+        };
         /* progressData = {
             data:blueImpXhr,
             progress: progress,
@@ -284,6 +284,10 @@ angular.module('mwFileUpload', [])
           if (val) {
             updateUploaderOptions({
               formData: val
+            });
+          } else {
+            updateUploaderOptions({
+              formData: {}
             });
           }
         }, true);
