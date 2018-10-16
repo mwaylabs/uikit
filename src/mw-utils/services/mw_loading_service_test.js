@@ -6,6 +6,7 @@ describe('Loading', function () {
   beforeEach(module('mwUI.Utils'));
 
   afterEach(function () {
+    $timeout.verifyNoPendingTasks();
     service = null;
     rootScope = null;
     $timeout = null;
