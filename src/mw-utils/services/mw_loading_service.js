@@ -24,10 +24,10 @@ angular.module('mwUI.Utils')
       itemsAlreadyLoaded = 0;
     };
 
-    var executeCallbacks = function (cbs, args, scope) {
+    var executeCallbacks = function (callbacks, args, scope) {
       scope = scope || this;
-      cbs.forEach(function (cb) {
-        cb.apply(scope, args);
+      callbacks.forEach(function (callback) {
+        callback.apply(scope, args);
       });
     };
 
