@@ -1,3 +1,7 @@
+# v1.24.3
+## Bug Fixes
+- Remove angular sanitize from file include in mwUI.Relution to provide angular 1.5 support
+
 # v1.24.2
 ## Features
 - Add `is-visible` attribute to mw-menu-entry to hide menu entries without removing them from the dom.
