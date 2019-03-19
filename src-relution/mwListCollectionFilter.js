@@ -1,13 +1,13 @@
 angular.module('mwCollection')
 
   .service('MwListCollectionFilter', function ($q,
-                                               $rootScope,
-                                               $location,
-                                               $route,
-                                               mwUrlStorage,
-                                               mwRuntimeStorage,
-                                               FilterHoldersCollection,
-                                               FilterHolderProvider) {
+    $rootScope,
+    $location,
+    $route,
+    mwUrlStorage,
+    mwRuntimeStorage,
+    FilterHoldersCollection,
+    FilterHolderProvider) {
 
     var Filter = function (type) {
 
@@ -26,7 +26,7 @@ angular.module('mwCollection')
           property: null
         };
 
-      var setUrlQueryParams = function () {
+      var setUrlQueryParams = function (preventReload) {
         var searchFilter = {};
 
         if (!_appliedFilter.isNew()) {
@@ -43,7 +43,7 @@ angular.module('mwCollection')
           searchFilter.q = null;
         }
 
-        mwUrlStorage.setObject(searchFilter, {removeOnUrlChange: true});
+        mwUrlStorage.setObject(searchFilter, { removeOnUrlChange: true }, preventReload);
       };
 
       var urlContainsFilters = function () {
@@ -71,9 +71,9 @@ angular.module('mwCollection')
       };
 
       this.saveFilter = function (filterModel) {
-        _filterHolders.add(filterModel, {merge: true});
+        _filterHolders.add(filterModel, { merge: true });
         return filterModel.save().then(function (savedModel) {
-          _filterHolders.add(savedModel, {merge: true});
+          _filterHolders.add(savedModel, { merge: true });
           return savedModel;
         });
       };
@@ -94,7 +94,7 @@ angular.module('mwCollection')
 
       this.filterWasSetByUser = function (filter) {
         return this.fetchFilters().then(function () {
-          return !!_filterHolders.findWhere({uuid: filter.uuid});
+          return !!_filterHolders.findWhere({ uuid: filter.uuid });
         }, function () {
           return false;
         });
@@ -103,7 +103,7 @@ angular.module('mwCollection')
       this._getAppliedFilterFromUrl = function () {
         var filterUuid = mwUrlStorage.getItem('f');
         if (filterUuid) {
-          return {uuid: filterUuid};
+          return { uuid: filterUuid };
         } else {
           return null;
         }
@@ -154,7 +154,7 @@ angular.module('mwCollection')
         })
       };
 
-      this.applyFilter = function (filterModel) {
+      this.applyFilter = function (filterModel, preventReload) {
         var jsonFilter;
         if (filterModel instanceof Backbone.Model) {
           jsonFilter = filterModel.toJSON();
@@ -164,7 +164,7 @@ angular.module('mwCollection')
 
         if (jsonFilter && _appliedFilter.id !== jsonFilter.uuid) {
           _appliedFilter.set(jsonFilter);
-          setUrlQueryParams();
+          setUrlQueryParams(preventReload);
           return $q.when(mwRuntimeStorage.setItem(_localFilterIdentifier, jsonFilter)).then(function () {
             return _appliedFilter;
           });
@@ -190,7 +190,7 @@ angular.module('mwCollection')
           return $q.when(_appliedSortOrder);
         } else {
           return $q.when(mwRuntimeStorage.getItem(_localSortOrderIdentifier)).then(function (appliedSortOrder) {
-            _appliedSortOrder = appliedSortOrder || {order: null, property: null};
+            _appliedSortOrder = appliedSortOrder || { order: null, property: null };
             return _appliedSortOrder;
           });
         }

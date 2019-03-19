@@ -4,6 +4,7 @@ angular.module('mwUI.Utils')
     var storage = {};
 
     var preventRouteReload = function () {
+
       //Check whether reloadOnSearch is already disabled
       if ($route.current.$$route.reloadOnSearch === false) {
         return;
@@ -36,19 +37,22 @@ angular.module('mwUI.Utils')
       return _.difference(_.values(params), _.values(currentSearchParams));
     };
 
-    var setUrlQueryParams = function (params, preferQueryOverStorage) {
+    var setUrlQueryParams = function (params, preferQueryOverStorage, preventReload) {
       if (getChangedValues(params).length > 0) {
         var currentSearchParams = $location.search(),
           newSearchParams;
 
-        if(preferQueryOverStorage){
+        if (preferQueryOverStorage) {
           newSearchParams = _.extend(params, currentSearchParams);
         } else {
           newSearchParams = _.extend(currentSearchParams, params);
         }
 
         preventRouteReload();
-        $location.search(newSearchParams);
+
+        if (!preventReload) {
+          $location.search(newSearchParams);
+        }
       }
     };
 
@@ -62,7 +66,7 @@ angular.module('mwUI.Utils')
       getItem: function (key) {
         return $location.search()[key];
       },
-      setObject: function (obj, options) {
+      setObject: function (obj, options, preventReload) {
         options = options || {};
         var wasChanged = false;
         if (_.isObject(obj)) {
@@ -79,7 +83,7 @@ angular.module('mwUI.Utils')
         }
 
         if (wasChanged) {
-          setUrlQueryParams(obj);
+          setUrlQueryParams(obj, undefined, preventReload);
         }
       },
       setItem: function (key, value, options) {
