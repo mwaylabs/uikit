@@ -1,3 +1,14 @@
+# v1.20.4
+## Features
+### Retagging of v1.20.3
+
+# v1.20.3
+## Features
+### List module
+- extend MwListCollectionFilter to add preventReload option for applyFilter method
+- extend mwUrlStorage to forward preventReload option for preventing route reload
+- fix using the affixOffset option of the mwListableHead2 directive to use custom offsets
+
 # v1.20.2
 ## Features
 ### List module

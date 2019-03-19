@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = '1.20.2';
+  root.mwUI.VERSION = '1.20.3';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 
@@ -2417,6 +2417,7 @@ angular.module('mwUI.Utils')
     var storage = {};
 
     var preventRouteReload = function () {
+
       //Check whether reloadOnSearch is already disabled
       if ($route.current.$$route.reloadOnSearch === false) {
         return;
@@ -2449,19 +2450,22 @@ angular.module('mwUI.Utils')
       return _.difference(_.values(params), _.values(currentSearchParams));
     };
 
-    var setUrlQueryParams = function (params, preferQueryOverStorage) {
+    var setUrlQueryParams = function (params, preferQueryOverStorage, preventReload) {
       if (getChangedValues(params).length > 0) {
         var currentSearchParams = $location.search(),
           newSearchParams;
 
-        if(preferQueryOverStorage){
+        if (preferQueryOverStorage) {
           newSearchParams = _.extend(params, currentSearchParams);
         } else {
           newSearchParams = _.extend(currentSearchParams, params);
         }
 
         preventRouteReload();
-        $location.search(newSearchParams);
+
+        if (!preventReload) {
+          $location.search(newSearchParams);
+        }
       }
     };
 
@@ -2475,7 +2479,7 @@ angular.module('mwUI.Utils')
       getItem: function (key) {
         return $location.search()[key];
       },
-      setObject: function (obj, options) {
+      setObject: function (obj, options, preventReload) {
         options = options || {};
         var wasChanged = false;
         if (_.isObject(obj)) {
@@ -2492,7 +2496,7 @@ angular.module('mwUI.Utils')
         }
 
         if (wasChanged) {
-          setUrlQueryParams(obj);
+          setUrlQueryParams(obj, undefined, preventReload);
         }
       },
       setItem: function (key, value, options) {
@@ -4700,8 +4704,8 @@ angular.module('mwUI.List')
   });
 angular.module('mwUI.List')
 
-// TODO:  rename to something else
-// TODO: extract functionalities into smaller directives
+  // TODO:  rename to something else
+  // TODO: extract functionalities into smaller directives
   .directive('mwListableHead2', ['$window', '$document', 'i18n', function ($window, $document, i18n) {
     return {
       scope: {
@@ -4777,7 +4781,11 @@ angular.module('mwUI.List')
             headerBottomOffset = headerOffset + headerHeight;
             listHeaderOffset = el.offset().top;
 
-            newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            if (angular.isDefined(scope.affixOffset)) {
+              newOffset = listHeaderOffset - headerOffset + scope.affixOffset;
+            } else {
+              newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            }
           }
 
           var scrollTop = scrollEl.scrollTop();
@@ -4930,7 +4938,7 @@ angular.module('mwUI.List')
               return modelAttr;
             }
           } else {
-            return scope.nameFn({item: model});
+            return scope.nameFn({ item: model });
           }
         };
 
