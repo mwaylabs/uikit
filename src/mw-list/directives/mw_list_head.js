@@ -1,7 +1,7 @@
 angular.module('mwUI.List')
 
-// TODO:  rename to something else
-// TODO: extract functionalities into smaller directives
+  // TODO:  rename to something else
+  // TODO: extract functionalities into smaller directives
   .directive('mwListableHead2', function ($window, $document, i18n) {
     return {
       scope: {
@@ -77,7 +77,11 @@ angular.module('mwUI.List')
             headerBottomOffset = headerOffset + headerHeight;
             listHeaderOffset = el.offset().top;
 
-            newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            if (angular.isDefined(scope.affixOffset)) {
+              newOffset = listHeaderOffset - headerOffset + scope.affixOffset;
+            } else {
+              newOffset = listHeaderOffset - headerBottomOffset - spacer;
+            }
           }
 
           var scrollTop = scrollEl.scrollTop();
@@ -230,7 +234,7 @@ angular.module('mwUI.List')
               return modelAttr;
             }
           } else {
-            return scope.nameFn({item: model});
+            return scope.nameFn({ item: model });
           }
         };
 
