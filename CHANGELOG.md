@@ -1,3 +1,8 @@
+# v1.0.16-1
+## Bug Fixes
+### mwMimetype
+- Fix typo in mwMimetype
+
 # v1.0.16
 ## Features
 ### Layout module
