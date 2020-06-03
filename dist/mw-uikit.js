@@ -41,7 +41,7 @@
 
   //Will be replaced with the actual version number duringh the build process;
   //DO NOT TOUCH
-  root.mwUI.VERSION = 'UIKITVERSIONNUMBER';
+  root.mwUI.VERSION = '1.24.4';
 
 angular.module("mwUI").run(["$templateCache", function($templateCache) {  'use strict';
 

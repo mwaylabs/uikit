@@ -119,7 +119,7 @@ mv .ignore_tmp .gitignore
 
 # Create tag and push it
 git tag -a v${VERSION_NUMBER} -m "Version ${VERSION_NUMBER}" -m "${CHANGELOG}"
-git push origin_gh --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
+git push origin --tags --no-verify > /dev/null 2>&1 || exit_with_error "Could not publish tag v${VERSION_NUMBER}"
 
 echo "##########################################"
 echo "#                                        #"
