@@ -36,8 +36,9 @@ angular.module('mwUI.Inputs')
         };
 
         var setSelectedVal = function () {
-
-          if (scope.mwModel.id) {
+          if(scope.mwModelAttr){
+            scope.viewModel.selected = scope.mwModel.get(scope.mwModelAttr);
+          } else if (scope.mwModel.id) {
             scope.viewModel.selected = scope.mwModel.id.toString();
           }
         };

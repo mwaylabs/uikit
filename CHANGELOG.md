@@ -1,3 +1,7 @@
+# v1.24.4
+## Bug Fixes
+- `mwSelectBox`: Use mwModelAttr if provided to set selected item of selectbox
+
 # v1.24.3
 ## Bug Fixes
 - Remove angular sanitize from file include in mwUI.Relution to provide angular 1.5 support
