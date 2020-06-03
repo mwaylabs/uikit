@@ -1,0 +1,19 @@
+.mw-wizard-progress {
+  margin: 10px 0;
+
+  .bar {
+    width: 100%;
+    position: relative;
+    height: 5px;
+    background: #ccc;
+
+    .current-progress {
+      position: absolute;
+      height: inherit;
+      background: $brand-primary;
+      left: 0;
+      top: 0;
+      transition: width 0.5s ease;
+    }
+  }
+}
